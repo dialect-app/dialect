@@ -1,6 +1,6 @@
 ![](https://raw.githubusercontent.com/gi-lom/gnabel/master/icon.png)
 
-# gnabel
+# Gnabel
 A translation app for GTK environments based on Google Translate.
 
 ## Preview
