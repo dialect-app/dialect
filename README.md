@@ -24,7 +24,7 @@ Python 3 and Pip 3.
 ```bash
 ./install.sh
 ```
-if the message "permission denied" appears, then execute this command:
+if the message "permission denied" appears, then execute this command before:
 ```bash
 chmod +x install.sh
 ```
