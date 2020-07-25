@@ -23,7 +23,8 @@ mkdir ${DEST_DIR}/gnabel
 cp gnabel.py ${DEST_DIR}/gnabel
 cp icon.png ${DEST_DIR}/gnabel
 
-#Replacing icon line
+#Replacing icon and JSON line
+sed -i "s;settings.json;${DEST_DIR}/gnabel/settings.json;" ${DEST_DIR}/gnabel/gnabel.py
 sed -i "s;icon.png;${DEST_DIR}/gnabel/icon.png;" ${DEST_DIR}/gnabel/gnabel.py
 
 #Creating desktop entry
