@@ -1,10 +1,10 @@
-![](https://raw.githubusercontent.com/gi-lom/gnabel/master/icon.png)
+![](https://raw.githubusercontent.com/gi-lom/gnabel/master2/icon.png)
 
 # Gnabel
 A translation app for GTK environments based on Google Translate.
 
 ## Preview
-![alt text](https://raw.githubusercontent.com/gi-lom/gnabel/master/preview.png)
+![](https://raw.githubusercontent.com/gi-lom/gnabel/master2/preview.png)
 
 ## Features
 - Translation based on the [googletrans](https://github.com/ssut/py-googletrans) Python API, an unofficial API for Google Translate
