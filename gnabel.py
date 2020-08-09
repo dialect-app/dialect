@@ -461,7 +461,7 @@ class MainWindow(Gtk.Window):
                         SecondText = self.Translator.translate(FirstText, src=self.LangCode[FirstLanguagePos-1], dest=self.LangCode[SecondLanguagePos]).text
                         self.CurrentHistory == 0
                         #SecondText = str(time.time())
-                    except Exception as e:
+                    except Exception:
                         pass
                     SecondBuffer.set_text(SecondText)
                     #Finally, everything is saved in history
