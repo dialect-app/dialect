@@ -142,18 +142,18 @@ class MainWindow(Gtk.Window):
         self.Voice.connect("clicked", self.UIVoice)
 
         ### Clipboard
-        self.Clipboard = Gtk.Button()
+        self.ClipboardButton = Gtk.Button()
         self.ClipboardIcon = Gio.ThemedIcon(name="edit-paste-symbolic")
         self.ClipboardPic = Gtk.Image.new_from_gicon(self.ClipboardIcon, Gtk.IconSize.BUTTON)
-        self.Clipboard.set_tooltip_text("Copy to Clipboard")
-        self.Clipboard.add(self.ClipboardPic)
-        self.Clipboard.connect("clicked", self.UIPaperclip)
+        self.ClipboardButton.set_tooltip_text("Copy to Clipboard")
+        self.ClipboardButton.add(self.ClipboardPic)
+        self.ClipboardButton.connect("clicked", self.UIPaperclip)
 
         ### About button
         self.About = Gtk.Button()
         self.AboutIcon = Gio.ThemedIcon(name="help-about-symbolic")
         self.AboutPic = Gtk.Image.new_from_gicon(self.AboutIcon, Gtk.IconSize.BUTTON)
-        self.Clipboard.set_tooltip_text("About")
+        self.About.set_tooltip_text("About")
         self.About.add(self.AboutPic)
         self.About.connect("clicked", self.UIAbout)
 
@@ -167,7 +167,7 @@ class MainWindow(Gtk.Window):
 
         ### Right side
         self.OptionsBox.pack_start(self.Voice, True, True, 0)
-        self.OptionsBox.pack_start(self.Clipboard, True, True, 0)
+        self.OptionsBox.pack_start(self.ClipboardButton, True, True, 0)
         self.OptionsBox.pack_start(self.About, True, True, 0)
 
     # Window
