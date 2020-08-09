@@ -480,6 +480,6 @@ class MainWindow(Gtk.Window):
 #Final part, run the Window
 win = MainWindow()
 win.connect("destroy", Gtk.main_quit)
-win.set_default_icon_from_file('icon.png') #
+win.set_default_icon_name('gnabel')
 win.show_all()
 Gtk.main()
