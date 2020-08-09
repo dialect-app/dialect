@@ -327,6 +327,7 @@ class MainWindow(Gtk.Window):
         AboutText.set_website("https://github.com/gi-lom/gnabel")
         AboutText.set_website_label("Github page")
         AboutText.set_logo(None)
+        AboutText.connect('response', lambda dialog, response: dialog.destroy())
         AboutText.show()
 
     # This starts the translation if the enter button is pressed
