@@ -17,6 +17,7 @@ TransNumber = 10 #number of translations to save in history
 LanNumber = 8 #number of language tuples to save in history
 ButtonLength = 65 #length of language buttons
 ButtonNumLanguages = 3 #number of language buttons
+SettingsFile = os.path.expanduser('~/.config/gnabel/settings.json')
 
 #Main part
 class MainWindow(Gtk.Window):
@@ -35,22 +36,23 @@ class MainWindow(Gtk.Window):
     FirstKey = 0
     SecondKey = 0
     #Config Settings JSON file
-    if not os.path.exists('settings.json'):
+    if not os.path.exists(SettingsFile):
         Settings = {}
         Settings["Languages"] = [['en', 'fr', 'es', 'de'], ['en', 'fr', 'es', 'de']]
         Settings["Translations"] = []
-        with open('settings.json','w') as outfile:
-            json.dump(Settings, outfile)
+        os.makedirs(os.path.dirname(SettingsFile), exist_ok=True)
+        with open(SettingsFile,'w') as outfile:
+            json.dump(Settings, outfile, indent=2)
     else:
-        with open('settings.json') as json_file:
+        with open(SettingsFile) as json_file:
             Settings = json.load(json_file)
         if not "Languages" in Settings:
             Settings["Languages"] = [['en', 'fr', 'es', 'de'], ['en', 'fr', 'es', 'de']]
-            with open('settings.json','w') as outfile:
+            with open(SettingsFile,'w') as outfile:
                 json.dump(Settings, outfile)
         if not "Translations" in Settings:
             Settings["Translations"] = []
-            with open('settings.json','w') as outfile:
+            with open(SettingsFile,'w') as outfile:
                 json.dump(Settings, outfile)
 
     #Mount everything
@@ -378,7 +380,7 @@ class MainWindow(Gtk.Window):
                 self.Settings["Languages"][0].pop()
                 self.Settings["Languages"][0].insert(0, Code)
             self.Settings["Languages"][0][0] = Code
-            with open('settings.json','w') as outfile:
+            with open(SettingsFile,'w') as outfile:
                 json.dump(self.Settings, outfile)
             if self.CurrentHistory == 0:
                 self.RewriteLeftLanguageButtons()
@@ -403,7 +405,7 @@ class MainWindow(Gtk.Window):
                 self.Settings["Languages"][1].pop()
                 self.Settings["Languages"][1].insert(0, Code)
             self.Settings["Languages"][1][0] = Code
-            with open('settings.json','w') as outfile:
+            with open(SettingsFile,'w') as outfile:
                 json.dump(self.Settings, outfile)
             if self.CurrentHistory == 0:
                 self.RewriteRightLanguageButtons()
@@ -472,7 +474,7 @@ class MainWindow(Gtk.Window):
                         self.Settings["Translations"].pop()
                     self.Settings["Translations"].insert(0, NewHistoryTrans)
                     #Save everything in the JSON file
-                    with open('settings.json','w') as outfile:
+                    with open(SettingsFile,'w') as outfile:
                         json.dump(self.Settings, outfile)
 
 #Final part, run the Window
