@@ -2,12 +2,15 @@
 
 ROOT_UID=0
 DEST_DIR=
+ICON_DIR=
 
 # Destination directory
 if [ "$UID" -eq "$ROOT_UID" ]; then
   DEST_DIR="/usr/share/"
+  ICON_DIR="/usr/share/default"
 else
   DEST_DIR="$HOME/.local/share"
+  ICON_DIR="$HOME/.icons"
 fi
 
 #Starting
@@ -21,7 +24,7 @@ pip3 install pyperclip gobject googletrans gtts pydub
 #Copying source files
 mkdir ${DEST_DIR}/gnabel
 cp gnabel.py ${DEST_DIR}/gnabel
-cp icon.png ${DEST_DIR}/gnabel
+cp icon.png "$ICON_DIR"
 
 #Replacing icon and JSON line
 sed -i "s;settings.json;${DEST_DIR}/gnabel/settings.json;" ${DEST_DIR}/gnabel/gnabel.py
