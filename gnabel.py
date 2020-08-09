@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 
 #Initial setup
-import gi, pyperclip, gobject, googletrans, tempfile, io, os, json
-
-gi.require_version("Gtk", "3.0")
-from gi.repository import GLib, Gtk, Gdk, Gio, GObject
-from googletrans import Translator
-from gtts import gTTS, lang
+import json
+import os
 from io import BytesIO
+
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, Gdk, Gio
+
+from googletrans import LANGUAGES, Translator
+from gtts import gTTS, lang
 from pydub import AudioSegment
 from pydub.playback import play
 
@@ -23,8 +26,8 @@ SettingsFile = os.path.expanduser('~/.config/gnabel/settings.json')
 class MainWindow(Gtk.Window):
 
     #Language values
-    LangCode = list(googletrans.LANGUAGES.keys())
-    LangName = list(googletrans.LANGUAGES.values())
+    LangCode = list(LANGUAGES.keys())
+    LangName = list(LANGUAGES.values())
     Translator = Translator()
     #Languages available for speech
     LangSpeech = list(lang.tts_langs(tld='com').keys())
