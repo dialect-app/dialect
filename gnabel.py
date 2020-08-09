@@ -362,7 +362,6 @@ class MainWindow(Gtk.Window):
 
     # Update language buttons below (left)
     def HistoryLeftLanUpdate(self, button):
-        print(button)
         FirstLanguagePos = self.FirstLanguageCombo.get_active()
         # If you select the same language of the other part, they get switched
         if FirstLanguagePos - 1 == self.SecondLanguageCombo.get_active():
