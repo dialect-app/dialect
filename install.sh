@@ -17,6 +17,9 @@ else
   ICON_DIR="$HOME/.icons"
 fi
 
+mkdir -pv "$DEST_DIR"
+mkdir -pv "$ICON_DIR"
+
 #Starting
 echo "NOTE: Gnabel requires Python 3 and Pip. If they are not present, you should be able to install them using your distribution's package"
 echo ""
