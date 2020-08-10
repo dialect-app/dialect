@@ -5,7 +5,7 @@
     "sdk":"org.gnome.Sdk",
     "command":"gnabel",
     "finish-args":[
-    	"--share=network",
+        "--share=network",
         "--share=ipc",
         "--device=dri",
         "--socket=fallback-x11",
@@ -13,25 +13,25 @@
         "--socket=pulseaudio"
     ],
     "modules":[
-    	"pypi-dependencies.json",
-	{
-	    "name":"ffmpeg",
-	    "cleanup":[
-		"/include",
-		"/lib/pkgconfig",
-		"/share/ffmpeg/examples"
-	    ],
-	    "config-opts":[
-		"--disable-doc"
-	    ],
-	    "sources":[
-		{
-		    "type":"archive",
-		    "url":"https://ffmpeg.org/releases/ffmpeg-4.2.3.tar.xz",
-		    "sha256":"9df6c90aed1337634c1fb026fb01c154c29c82a64ea71291ff2da9aacb9aad31"
-		}
-	    ]
-	},
+        "pypi-dependencies.json",
+        {
+            "name":"ffmpeg",
+            "cleanup":[
+                "/include",
+                "/lib/pkgconfig",
+                "/share/ffmpeg/examples"
+            ],
+            "config-opts":[
+                "--disable-doc"
+            ],
+            "sources":[
+                {
+                    "type":"archive",
+                    "url":"https://ffmpeg.org/releases/ffmpeg-4.2.3.tar.xz",
+                    "sha256":"9df6c90aed1337634c1fb026fb01c154c29c82a64ea71291ff2da9aacb9aad31"
+                }
+            ]
+        },
         {
             "name":"gnabel",
             "buildsystem":"simple",
