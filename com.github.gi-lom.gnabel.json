@@ -3,7 +3,7 @@
     "runtime":"org.gnome.Platform",
     "runtime-version":"3.36",
     "sdk":"org.gnome.Sdk",
-    "command":"gnabel.py",
+    "command":"gnabel",
     "finish-args":[
     	"--share=network",
         "--share=ipc",
@@ -38,8 +38,8 @@
             "build-commands":[
                 "mkdir -p /app/bin",
                 "cp -r * /app/bin/",
-                "install -D icon.png /app/share/icons/hicolor/64x64/apps/${FLATPAK_ID}.png",
-                "install -D gnabel.desktop /app/share/applications/${FLATPAK_ID}.desktop",
+                "install -D icon.png /app/share/icons/hicolor/64x64/apps/gnabel.png",
+                "install -D gnabel.desktop /app/share/applications/gnabel.desktop",
                 "install -D gnabel.py /app/bin/gnabel"
             ],
             "sources":[
