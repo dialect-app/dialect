@@ -29,7 +29,7 @@ echo "Installing..."
 pip3 install pyperclip gobject googletrans gtts pydub
 
 #Copying source files
-cp -v gnabel.py "$DEST_DIR/gnabel.py"
+cp -v gnabel.py "$DEST_DIR/gnabel"
 cp -v icon.png "$ICON_DIR/gnabel.png"
 cp -v gnabel.desktop "$DEST_DIR/applications/gnabel.desktop"
 
