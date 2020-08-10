@@ -33,8 +33,10 @@ pip3 install pyperclip gobject googletrans gtts pydub
 
 #Copying source files
 cp -v gnabel.py "$BIN_DIR/gnabel"
-cp -v icon.png "$ICON_DIR/gnabel.png"
 cp -v gnabel.desktop "$BIN_DIR/applications/gnabel.desktop"
+
+#Install icon
+xdg-icon-resource install --size 64 icon.png gnabel
 
 #Ending
 echo ""
