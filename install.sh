@@ -14,7 +14,7 @@ if [ "$UID" -eq "$ROOT_UID" ]; then
   ICON_DIR="/usr/share/default"
 else
   DEST_DIR="$HOME/.local/bin"
-  ICON_DIR="$HOME/.icons"
+  ICON_DIR="$HOME/.local/share/icons"
 fi
 
 mkdir -pv "$DEST_DIR"
