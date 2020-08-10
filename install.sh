@@ -13,7 +13,7 @@ if [ "$UID" -eq "$ROOT_UID" ]; then
   DEST_DIR="/usr/bin"
   ICON_DIR="/usr/share/default"
 else
-  DEST_DIR="$HOME/bin"
+  DEST_DIR="$HOME/.local/bin"
   ICON_DIR="$HOME/.icons"
 fi
 
