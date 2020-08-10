@@ -3,7 +3,7 @@
 set -o errexit -o pipefail -o nounset
 
 ROOT_UID=0
-DEST_DIR=
+BIN_DIR=
 ICON_DIR=
 DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 
@@ -11,15 +11,15 @@ cd "$(dirname "$0")"
 
 # Destination directory
 if [ "$UID" -eq "$ROOT_UID" ]; then
-  DEST_DIR="/usr/bin"
+  BIN_DIR="/usr/bin"
   ICON_DIR="/usr/share/default"
 else
-  DEST_DIR="$HOME/.local/bin"
+  BIN_DIR="$HOME/.local/bin"
   ICON_DIR="$DATA_HOME/icons"
 fi
 
 # Make sure destination directories exist
-mkdir -pv "$DEST_DIR"
+mkdir -pv "$BIN_DIR"
 mkdir -pv "$ICON_DIR"
 
 #Starting
@@ -31,9 +31,9 @@ echo "Installing..."
 pip3 install pyperclip gobject googletrans gtts pydub
 
 #Copying source files
-cp -v gnabel.py "$DEST_DIR/gnabel"
+cp -v gnabel.py "$BIN_DIR/gnabel"
 cp -v icon.png "$ICON_DIR/gnabel.png"
-cp -v gnabel.desktop "$DEST_DIR/applications/gnabel.desktop"
+cp -v gnabel.desktop "$BIN_DIR/applications/gnabel.desktop"
 
 #Ending
 echo ""
