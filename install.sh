@@ -7,6 +7,7 @@ BIN_DIR=
 ICON_DIR=
 DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 
+# Use containing folder of this script as working directory
 cd "$(dirname "$0")"
 
 # Destination directory
