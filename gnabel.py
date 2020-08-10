@@ -17,7 +17,8 @@ TransNumber = 10 #number of translations to save in history
 LanNumber = 8 #number of language tuples to save in history
 ButtonLength = 65 #length of language buttons
 ButtonNumLanguages = 3 #number of language buttons
-SettingsFile = os.path.expanduser('~/.config/gnabel/settings.json')
+XdgConfigHome = GLib.get_user_config_dir()
+SettingsFile = os.path.join(XdgConfigHome, 'gnabel/settings.json')
 
 #Main part
 class MainWindow(Gtk.Window):
