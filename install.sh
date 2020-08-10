@@ -5,6 +5,7 @@ set -o errexit -o pipefail -o nounset
 ROOT_UID=0
 DEST_DIR=
 ICON_DIR=
+DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 
 cd "$(dirname "$0")"
 
@@ -14,7 +15,7 @@ if [ "$UID" -eq "$ROOT_UID" ]; then
   ICON_DIR="/usr/share/default"
 else
   DEST_DIR="$HOME/.local/bin"
-  ICON_DIR="$HOME/.local/share/icons"
+  ICON_DIR="$DATA_HOME/icons"
 fi
 
 mkdir -pv "$DEST_DIR"
