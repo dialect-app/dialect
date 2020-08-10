@@ -18,6 +18,7 @@ else
   ICON_DIR="$DATA_HOME/icons"
 fi
 
+# Make sure destination directories exist
 mkdir -pv "$DEST_DIR"
 mkdir -pv "$ICON_DIR"
 
