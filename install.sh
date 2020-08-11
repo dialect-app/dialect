@@ -36,7 +36,7 @@ cp -v gnabel.py "$BIN_DIR/gnabel"
 cp -v gnabel.desktop "$DESKTOP_DIR/gnabel.desktop"
 
 #Install icon
-xdg-icon-resource install --size 64 icon.png gnabel
+xdg-icon-resource install --size 64 icon.svg gnabel
 
 #Ending
 echo ""
