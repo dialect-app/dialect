@@ -5,6 +5,7 @@ set -o errexit -o pipefail -o nounset
 ROOT_UID=0
 BIN_DIR=
 DESKTOP_DIR=
+DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 
 # Use containing folder of this script as working directory
 cd "$(dirname "$0")"
@@ -15,7 +16,7 @@ if [ "$UID" -eq "$ROOT_UID" ]; then
   DESKTOP_DIR="/usr/share/applications"
 else
   BIN_DIR="$HOME/.local/bin"
-  DESKTOP_DIR="$HOME/.local/share/applications"
+  DESKTOP_DIR="$DATA_HOME/applications"
 fi
 
 # Make sure destination directories exist
