@@ -4,20 +4,6 @@
     "build-commands": [],
     "modules": [
         {
-            "name": "python3-pyperclip",
-            "buildsystem": "simple",
-            "build-commands": [
-                "pip3 install --exists-action=i --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} \"pyperclip\""
-            ],
-            "sources": [
-                {
-                    "type": "file",
-                    "url": "https://files.pythonhosted.org/packages/f6/5b/55866e1cde0f86f5eec59dab5de8a66628cb0d53da74b8dbc15ad8dabda3/pyperclip-1.8.0.tar.gz",
-                    "sha256": "b75b975160428d84608c26edba2dec146e7799566aea42c1fe1b32e72b6028f2"
-                }
-            ]
-        },
-        {
             "name": "python3-pydub",
             "buildsystem": "simple",
             "build-commands": [
