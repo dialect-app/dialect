@@ -3,6 +3,7 @@
 # Initial setup
 import json
 import os
+import sys
 from io import BytesIO
 
 import gi
@@ -32,8 +33,6 @@ class MainWindow(Gtk.Window):
     LangCode = list(LANGUAGES.keys())
     LangName = list(LANGUAGES.values())
     Translator = Translator()
-    # Languages available for speech
-    LangSpeech = list(lang.tts_langs(tld='com').keys())
     # Current input Text
     CurrentInputText = ""
     CurrentHistory = 0
@@ -71,6 +70,20 @@ class MainWindow(Gtk.Window):
 
         MainWindow.Header(self)
         MainWindow.Window(self)
+
+        # Languages available for speech
+        try:
+            self.LangSpeech = list(lang.tts_langs(tld='com').keys())
+        except RuntimeError as e:
+            ErrorDialog = Gtk.MessageDialog(transient_for=self,
+                                            modal=True,
+                                            message_type=Gtk.MessageType.ERROR,
+                                            buttons=Gtk.ButtonsType.OK,
+                                            text="No network connection detected. Closing.")
+            print("Error: " + e)
+            Response = ErrorDialog.run()
+            if Response:
+                sys.exit(1)
 
     # Header bar
     def Header(self):
