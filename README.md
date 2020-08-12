@@ -29,6 +29,8 @@ if the message "permission denied" appears, then execute this command before:
 chmod +x install.sh
 ```
 
+Arch-based distro users can install it from AUR.
+
 ## How to use
 
 Open Gnabel directly from your menu. For starting a translation, press "Enter" or the button between the two text spaces.
