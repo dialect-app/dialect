@@ -35,7 +35,7 @@ read rmv
 if [ "$rmv" = "y" ]; then
     echo "NOTE: gobject will not be removed"
     echo "Removing Python dependencies..."
-    sudo pip3 uninstall googletrans gtts pydub
+    pip3 uninstall googletrans gtts pydub
 fi
 echo ""
 echo "################"
