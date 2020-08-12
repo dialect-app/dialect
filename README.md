@@ -14,19 +14,26 @@ A translation app for GTK environments based on Google Translate.
 - Clipboard button
 
 ## Requirements
-Python 3 and Pip 3.
+
+- Python 3 `python`
+- PyGObject `python-gobject`
+- GTK3 `gtk3`
+- Meson `meson`
+- Ninja `ninja`
+- Googletrans `python-googletrans`
+- gTTS `python-gtts`
+- Pydub `python-pydub`
 
 ## Installation
 
 - Clone the repository
 - Open the repository folder in a terminal
-- Run the following command: 
+- Run the following commands: 
+
 ```bash
-./install.sh
-```
-if the message "permission denied" appears, then execute this command before:
-```bash
-chmod +x install.sh
+meson builddir --prefix=/usr/local
+sudo ninja -C builddir install
+
 ```
 
 Arch-based distro users can install it from AUR.
