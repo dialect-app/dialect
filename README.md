@@ -20,9 +20,9 @@ Python 3 and Pip 3.
 
 - Clone the repository
 - Open the repository folder in a terminal
-- Run the following command: 
+- Run the following command:
 ```bash
-./install.sh
+./install.sh install
 ```
 if the message "permission denied" appears, then execute this command before:
 ```bash
