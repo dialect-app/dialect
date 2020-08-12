@@ -7,7 +7,7 @@ from io import BytesIO
 
 import gi
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk, Gio
+from gi.repository import Gtk, Gdk, Gio, GLib
 
 from googletrans import LANGUAGES, Translator
 from gtts import gTTS, lang
@@ -21,6 +21,7 @@ TransNumber = 10  # number of translations to save in history
 LanNumber = 8  # number of language tuples to save in history
 ButtonLength = 65  # length of language buttons
 ButtonNumLanguages = 3  # number of language buttons
+XdgConfigHome = GLib.get_user_config_dir()
 SettingsFile = os.path.join(XdgConfigHome, 'gnabel', 'settings.json')
 
 
