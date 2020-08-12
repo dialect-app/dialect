@@ -38,7 +38,7 @@
             "build-commands":[
                 "mkdir -p /app/bin",
                 "cp -r * /app/bin/",
-                "install -D icon.svg /app/share/icons/hicolor/64x64/apps/gnabel.svg",
+                "install -D icon.svg /app/share/icons/hicolor/scalable/apps/gnabel.svg",
                 "install -D gnabel.desktop /app/share/applications/gnabel.desktop",
                 "install -D gnabel.py /app/bin/gnabel"
             ],
