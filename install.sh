@@ -33,7 +33,7 @@ echo ""
 echo "Installing..."
 
 #Installing Python libraries
-sudo pip3 install gobject googletrans gtts pydub
+sudo pip3 install googletrans gtts pydub
 
 #Copying source files
 cp -v gnabel.py "$BIN_DIR/gnabel"
