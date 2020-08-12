@@ -26,6 +26,11 @@ A translation app for GTK environments based on Google Translate.
 
 ## Installation
 
+### AUR
+Arch-based distro users can install it from [AUR](https://aur.archlinux.org/packages/gnabel/).
+
+### Meson
+- Install requirements
 - Clone the repository
 - Open the repository folder in a terminal
 - Run the following commands: 
@@ -33,10 +38,7 @@ A translation app for GTK environments based on Google Translate.
 ```bash
 meson builddir --prefix=/usr/local
 sudo ninja -C builddir install
-
 ```
-
-Arch-based distro users can install it from AUR.
 
 ## How to use
 
