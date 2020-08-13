@@ -1,4 +1,4 @@
-![](https://raw.githubusercontent.com/gi-lom/gnabel/master2/icon.svg)
+![](https://raw.githubusercontent.com/gi-lom/gnabel/master2/data/gnabel.svg)
 
 # Gnabel
 A translation app for GTK environments based on Google Translate.
@@ -14,22 +14,31 @@ A translation app for GTK environments based on Google Translate.
 - Clipboard button
 
 ## Requirements
-Python 3 and Pip 3.
+
+- Python 3 `python`
+- PyGObject `python-gobject`
+- GTK3 `gtk3`
+- Meson `meson`
+- Ninja `ninja`
+- Googletrans `python-googletrans`
+- gTTS `python-gtts`
+- Pydub `python-pydub`
 
 ## Installation
 
+### AUR
+Arch-based distro users can install it from [AUR](https://aur.archlinux.org/packages/gnabel/).
+
+### Meson
+- Install requirements
 - Clone the repository
 - Open the repository folder in a terminal
-- Run the following command: 
-```bash
-./install.sh
-```
-if the message "permission denied" appears, then execute this command before:
-```bash
-chmod +x install.sh
-```
+- Run the following commands: 
 
-Arch-based distro users can install it from AUR.
+```bash
+meson builddir --prefix=/usr/local
+sudo ninja -C builddir install
+```
 
 ## How to use
 
