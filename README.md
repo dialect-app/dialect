@@ -13,8 +13,17 @@ A translation app for GTK environments based on Google Translate.
 - Text to speech
 - Clipboard button
 
-## Requirements
+## Installation
 
+### Flathub
+Available soon on Flathub.
+
+### AUR
+Arch-based distro users can install it from [AUR](https://aur.archlinux.org/packages/gnabel/).
+
+## Building
+
+### Requirements
 - Python 3 `python`
 - PyGObject `python-gobject`
 - GTK3 `gtk3`
@@ -24,18 +33,15 @@ A translation app for GTK environments based on Google Translate.
 - gTTS `python-gtts`
 - Pydub `python-pydub`
 
-## Installation
-
-### AUR
-Arch-based distro users can install it from [AUR](https://aur.archlinux.org/packages/gnabel/).
-
-### Meson
-- Install requirements
-- Clone the repository
-- Open the repository folder in a terminal
-- Run the following commands: 
-
+You can install python dependencies from pip:
 ```bash
+pip install googletrans gtts pydub
+```
+
+### Building from Git
+```bash
+git clone https://github.com/gi-lom/gnabel.git
+cd gnabel
 meson builddir --prefix=/usr/local
 sudo ninja -C builddir install
 ```
