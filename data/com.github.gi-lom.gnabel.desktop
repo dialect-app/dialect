@@ -6,5 +6,5 @@ Terminal=false
 Exec=gnabel
 Name=Gnabel
 Comment=A translation app for GTK environments based on Google Translate.
-Icon=gnabel
+Icon=com.github.gi-lom.gnabel
 Keywords=gnabel;translate;translation
