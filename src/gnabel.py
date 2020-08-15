@@ -18,6 +18,7 @@ from pydub.playback import play
 
 
 # Constant values
+AppID = 'com.github.gi-lom.gnabel'
 MaxLength = 1000  # maximum number of characters you can translate at once
 TransNumber = 10  # number of translations to save in history
 LanNumber = 8  # number of language tuples to save in history
@@ -33,12 +34,8 @@ MenuBuilder = """
         <section>
             <attribute name="id">help-section</attribute>
             <item>
-                <attribute name="label" translatable="yes">About</attribute>
+                <attribute name="label" translatable="yes">About Gnabel</attribute>
                 <attribute name="action">app.about</attribute>
-            </item>
-            <item>
-                <attribute name="label" translatable="yes">Quit</attribute>
-                <attribute name="action">app.quit</attribute>
             </item>
         </section>
     </menu>
@@ -83,11 +80,11 @@ class MainWindow(Gtk.ApplicationWindow):
     # Mount everything
     def __init__(self, app):
         self.Translator = Translator()
-        Gtk.Window.__init__(self, title="Gnabel", application=app)
+        Gtk.ApplicationWindow.__init__(self, title="Gnabel", application=app)
         self.Clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)  # This is only for the Clipboard button
         self.set_border_width(10)
         self.set_default_size(400, 200)
-        self.set_icon_name("com.github.gi-lom.gnabel")
+        self.set_default_icon_name(AppID)
 
         self.Header()
         self.Window()
@@ -114,8 +111,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
         # Boxes creation
         HeaderBox = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
-        OptionsBox = Gtk.ButtonBox(orientation=Gtk.Orientation.HORIZONTAL)
-        OptionsBox.set_layout(Gtk.ButtonBoxStyle.EXPAND)
+        OptionsBox = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
 
         HeaderBar.pack_start(HeaderBox)
         HeaderBar.pack_end(OptionsBox)
@@ -357,7 +353,7 @@ class MainWindow(Gtk.ApplicationWindow):
         AboutText.set_license_type(Gtk.License(3))
         AboutText.set_website("https://github.com/gi-lom/gnabel")
         AboutText.set_website_label("Github page")
-        AboutText.set_logo_icon_name("com.github.gi-lom.gnabel")
+        AboutText.set_logo_icon_name(AppID)
         AboutText.connect('response', lambda dialog, response: dialog.destroy())
         AboutText.show()
 
@@ -518,16 +514,12 @@ class MainWindow(Gtk.ApplicationWindow):
 class Gnabel(Gtk.Application):
 
     def __init__(self):
-        Gtk.Application.__init__(self, application_id="com.github.gi_lom.gnabel")
+        Gtk.Application.__init__(self, application_id=AppID)
 
     def do_activate(self):
 
         def setup_actions(window):
             """Setup menu actions."""
-            QuitAction = Gio.SimpleAction.new('quit', None)
-            QuitAction.connect('activate', self.OnQuit)
-            self.add_action(QuitAction)
-
             AboutAction = Gio.SimpleAction.new('about', None)
             AboutAction.connect('activate', window.UIAbout)
             self.add_action(AboutAction)
@@ -540,10 +532,6 @@ class Gnabel(Gtk.Application):
 
     def do_startup(self):
         Gtk.Application.do_startup(self)
-
-    def OnQuit(self, action, param):
-        """Quit the application from the menu."""
-        self.quit()
 
 
 # Final part, run the Application
