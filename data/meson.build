@@ -10,8 +10,14 @@ install_data(
   install_dir: join_paths(get_option('datadir'), 'metainfo')
 )
 
-# Install icon
+# Install colored icon
 install_data(
   'com.github.gi-lom.gnabel.svg',
+  install_dir: join_paths(get_option('datadir'), 'icons/hicolor/scalable/apps')
+)
+
+# Install symbolic icon
+install_data(
+  'com.github.gi-lom.gnabel-symbolic.svg',
   install_dir: join_paths(get_option('datadir'), 'icons/hicolor/scalable/apps')
 )
