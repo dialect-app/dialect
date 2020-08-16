@@ -8,7 +8,8 @@ from io import BytesIO
 
 import gi
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk, GLib
+gi.require_version("Gdk", "3.0")
+from gi.repository import Gio, GLib, Gdk, Gtk
 
 from googletrans import LANGUAGES, Translator
 from gtts import gTTS, lang
@@ -17,6 +18,7 @@ from pydub.playback import play
 
 
 # Constant values
+AppID = 'com.github.gi-lom.gnabel'
 MaxLength = 1000  # maximum number of characters you can translate at once
 TransNumber = 10  # number of translations to save in history
 LanNumber = 8  # number of language tuples to save in history
@@ -24,6 +26,21 @@ ButtonLength = 65  # length of language buttons
 ButtonNumLanguages = 3  # number of language buttons
 XdgConfigHome = GLib.get_user_config_dir()
 SettingsFile = os.path.join(XdgConfigHome, 'gnabel', 'settings.json')
+
+MenuBuilder = """
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <menu id="app-menu">
+        <section>
+            <attribute name="id">help-section</attribute>
+            <item>
+                <attribute name="label" translatable="yes">About Gnabel</attribute>
+                <attribute name="action">app.about</attribute>
+            </item>
+        </section>
+    </menu>
+</interface>
+"""
 
 
 # Main part
@@ -61,15 +78,16 @@ class MainWindow(Gtk.ApplicationWindow):
                 json.dump(Settings, outfile, indent=2)
 
     # Mount everything
-    def __init__(self):
+    def __init__(self, app):
         self.Translator = Translator()
-        Gtk.Window.__init__(self, title="GTranslate")
+        Gtk.ApplicationWindow.__init__(self, title="Gnabel", application=app)
         self.Clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)  # This is only for the Clipboard button
         self.set_border_width(10)
         self.set_default_size(400, 200)
+        self.set_default_icon_name(AppID)
 
-        MainWindow.Header(self)
-        MainWindow.Window(self)
+        self.Header()
+        self.Window()
 
         # Languages available for speech
         try:
@@ -92,8 +110,8 @@ class MainWindow(Gtk.ApplicationWindow):
         self.set_titlebar(HeaderBar)
 
         # Boxes creation
-        HeaderBox = Gtk.HBox(spacing=6)
-        OptionsBox = Gtk.HBox(spacing=6)
+        HeaderBox = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
+        OptionsBox = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
 
         HeaderBar.pack_start(HeaderBox)
         HeaderBar.pack_end(OptionsBox)
@@ -110,6 +128,12 @@ class MainWindow(Gtk.ApplicationWindow):
         self.Forward.set_tooltip_text("Next translation")
         self.Forward.set_sensitive(False)
         self.Forward.connect("clicked", self.UIForward)
+
+        ### Button box for history navigation buttons
+        HistoryButtonBox = Gtk.ButtonBox(orientation=Gtk.Orientation.HORIZONTAL)
+        HistoryButtonBox.set_layout(Gtk.ButtonBoxStyle.EXPAND)
+        HistoryButtonBox.pack_start(self.Return, True, True, 0)
+        HistoryButtonBox.pack_start(self.Forward, True, True, 0)
 
         ### First language
         FirstLanguageList = Gtk.ListStore(str)
@@ -139,6 +163,14 @@ class MainWindow(Gtk.ApplicationWindow):
         self.SecondLanguageCombo.set_active(self.LangCode.index(self.Settings['Languages'][1][0]))
         self.SecondLanguageCombo.connect("changed", self.HistoryRightLanUpdate)
 
+        ### Button box for history navigation buttons
+        LanguageButtonBox = Gtk.ButtonBox(orientation=Gtk.Orientation.HORIZONTAL)
+        LanguageButtonBox.set_layout(Gtk.ButtonBoxStyle.EXPAND)
+        LanguageButtonBox.set_homogeneous(False)
+        LanguageButtonBox.pack_start(self.FirstLanguageCombo, True, True, 0)
+        LanguageButtonBox.pack_start(Switch, True, False, 0)
+        LanguageButtonBox.pack_start(self.SecondLanguageCombo, True, True, 0)
+
         ### Voice
         Voice = Gtk.Button.new_from_icon_name("audio-speakers-symbolic", Gtk.IconSize.BUTTON)
         Voice.set_tooltip_text("Reproduce")
@@ -149,38 +181,40 @@ class MainWindow(Gtk.ApplicationWindow):
         ClipboardButton.set_tooltip_text("Copy to Clipboard")
         ClipboardButton.connect("clicked", self.UIPaperclip)
 
-        ### About button
-        About = Gtk.Button.new_from_icon_name("help-about-symbolic", Gtk.IconSize.BUTTON)
-        About.set_tooltip_text("About")
-        About.connect("clicked", self.UIAbout)
+        ### Menu button
+        Builder = Gtk.Builder.new_from_string(MenuBuilder, -1) 
+        Menu = Builder.get_object("app-menu")
+        MenuButton = Gtk.MenuButton()
+        MenuButton.set_direction(Gtk.ArrowType.NONE)
+        MenuPopover = Gtk.Popover.new_from_model(MenuButton, Menu)
+        MenuButton.set_popover(MenuPopover)
 
         # Mount buttons
         ### Left side
-        HeaderBox.pack_start(self.Return, True, True, 0)
-        HeaderBox.pack_start(self.Forward, True, True, 0)
-        HeaderBar.pack_start(self.FirstLanguageCombo)
-        HeaderBar.pack_start(Switch)
-        HeaderBar.pack_start(self.SecondLanguageCombo)
+        HeaderBar.pack_start(HistoryButtonBox)
+
+        ### Center
+        HeaderBar.set_custom_title(LanguageButtonBox)
 
         ### Right side
         OptionsBox.pack_start(Voice, True, True, 0)
         OptionsBox.pack_start(ClipboardButton, True, True, 0)
-        OptionsBox.pack_start(About, True, True, 0)
+        OptionsBox.pack_start(MenuButton, True, True, 0)
 
     # Window
     def Window(self):
         # Boxes
-        Box = Gtk.VBox(spacing=6)
+        Box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.VERTICAL)
         self.add(Box)
 
-        UpperBox = Gtk.HBox(spacing=6)
-        LowerBox = Gtk.HBox(spacing=6)
+        UpperBox = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
+        LowerBox = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
         Box.pack_start(UpperBox, True, True, 0)
         Box.pack_end(LowerBox, False, False, 0)
 
         # Left side
         ### Language box
-        LanLeftBox = Gtk.HBox(spacing=6)
+        LanLeftBox = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
         LanL0 = Gtk.Button.new_with_label("Auto")
         LanL0.set_property("width-request", 65)
         LanLeftBox.pack_start(LanL0, False, False, 0)
@@ -215,14 +249,14 @@ class MainWindow(Gtk.ApplicationWindow):
         # Central part
         ### The button that starts the translation
         self.TransStart = Gtk.Button.new_from_icon_name("go-next-symbolic", Gtk.IconSize.BUTTON)
-        self.TransStart.set_tooltip_text("Hint: you can press 'Enter' to translate. Press 'Alt+Enter' to add a backspace in the text")
-        self.TransStart.set_sensitive(True)
+        self.TransStart.set_tooltip_text("Hint: you can press 'Ctrl+Enter' to translate.")
+        self.TransStart.set_sensitive(self.LeftBuffer.get_char_count() != 0)
         self.TransStart.connect("clicked", self.Translation)
         UpperBox.pack_start(self.TransStart, False, False, 0)
 
         # Right side
         ### Language box
-        LanRightBox = Gtk.HBox(spacing=6)
+        LanRightBox = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
         self.LanRightButtons = []
         for i in range(ButtonNumLanguages):
             self.LanRightButtons.append(Gtk.Button())
@@ -312,13 +346,14 @@ class MainWindow(Gtk.ApplicationWindow):
             SoundToPlay = AudioSegment.from_file(FileToPlay, format="mp3")
             play(SoundToPlay)
 
-    def UIAbout(self, button):
-        AboutText = Gtk.AboutDialog()
+    def UIAbout(self, action, param):
+        AboutText = Gtk.AboutDialog(transient_for=self, modal=True)
         AboutText.set_program_name("Gnabel")
+        AboutText.set_comments("A translation app for GTK environments based on Google Translate.")
         AboutText.set_license_type(Gtk.License(3))
         AboutText.set_website("https://github.com/gi-lom/gnabel")
         AboutText.set_website_label("Github page")
-        AboutText.set_logo_icon_name("gnabel")
+        AboutText.set_logo_icon_name(AppID)
         AboutText.connect('response', lambda dialog, response: dialog.destroy())
         AboutText.show()
 
@@ -337,9 +372,8 @@ class MainWindow(Gtk.ApplicationWindow):
                 GLib.idle_add(self.Translation, button)
                 return Gdk.EVENT_STOP
 
-        self.TransStart.set_sensitive(self.LeftBuffer.get_char_count() != 0)
-
     def TextChanged(self, buffer):
+        self.TransStart.set_sensitive(self.LeftBuffer.get_char_count() != 0)
         if os.environ.get("GNABEL_LIVE") == "1":
             GLib.idle_add(self.Translation, None)
 
@@ -477,9 +511,30 @@ class MainWindow(Gtk.ApplicationWindow):
                         json.dump(self.Settings, outfile, indent=2)
 
 
-# Final part, run the Window
-win = MainWindow()
-win.connect("destroy", Gtk.main_quit)
-win.set_default_icon_name('gnabel')
-win.show_all()
-Gtk.main()
+class Gnabel(Gtk.Application):
+
+    def __init__(self):
+        Gtk.Application.__init__(self, application_id=AppID)
+
+    def do_activate(self):
+
+        def setup_actions(window):
+            """Setup menu actions."""
+            AboutAction = Gio.SimpleAction.new('about', None)
+            AboutAction.connect('activate', window.UIAbout)
+            self.add_action(AboutAction)
+
+        win = self.props.active_window
+        if not win:
+            win = MainWindow(self)
+            setup_actions(win)
+        win.show_all()
+
+    def do_startup(self):
+        Gtk.Application.do_startup(self)
+
+
+# Final part, run the Application
+app = Gnabel()
+exit_status = app.run(sys.argv)
+sys.exit(exit_status)
