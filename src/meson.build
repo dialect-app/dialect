@@ -1,3 +1,3 @@
 
-# Install gnabel.py in bindir
-install_data('gnabel.py', rename: 'gnabel', install_dir: get_option('bindir'))
+# Install dialect.py in bindir
+install_data('dialect.py', rename: 'dialect', install_dir: get_option('bindir'))

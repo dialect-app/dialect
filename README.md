@@ -1,12 +1,12 @@
-![Gnabel icon](data/com.github.gi-lom.gnabel.svg?raw=true)
+![Dialect icon](data/com.github.gi-lom.dialect.svg?raw=true)
 
-# Gnabel
+# Dialect
 
 A translation app for GTK environments based on Google Translate.
 
 ## Preview
 
-![Gnabel](preview.png?raw=true)
+![Dialect](preview.png?raw=true)
 
 ## Features
 
@@ -24,7 +24,7 @@ Available soon on Flathub.
 
 ### AUR
 
-Arch-based distro users can install it from [AUR](https://aur.archlinux.org/packages/gnabel/).
+Arch-based distro users can install it from [AUR](https://aur.archlinux.org/packages/dialect/).
 
 ## Building
 
@@ -48,15 +48,15 @@ pip install googletrans gtts pydub
 ### Building from Git
 
 ```bash
-git clone https://github.com/gi-lom/gnabel.git
-cd gnabel
+git clone https://github.com/gi-lom/dialect.git
+cd dialect
 meson builddir --prefix=/usr/local
 sudo ninja -C builddir install
 ```
 
 ## How to use
 
-Open Gnabel directly from your menu. For starting a translation, press "Enter" or the button between the two text spaces.
+Open Dialect directly from your menu. For starting a translation, press "Enter" or the button between the two text spaces.
 
 ## Contributing
 
