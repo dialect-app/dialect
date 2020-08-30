@@ -7,4 +7,4 @@ Exec=dialect
 Name=Dialect
 Comment=A translation app for GTK environments based on Google Translate.
 Icon=com.github.gi-lom.dialect
-Keywords=gnabel;translate;translation
+Keywords=translate;translation
