@@ -4,6 +4,7 @@
 import json
 import os
 import sys
+import threading
 from io import BytesIO
 
 import gi
@@ -34,7 +35,7 @@ MenuBuilder = """
         <section>
             <attribute name="id">help-section</attribute>
             <item>
-                <attribute name="label" translatable="yes">About dialect</attribute>
+                <attribute name="label" translatable="yes">About Dialect</attribute>
                 <attribute name="action">app.about</attribute>
             </item>
         </section>
@@ -80,7 +81,7 @@ class MainWindow(Gtk.ApplicationWindow):
     # Mount everything
     def __init__(self, app):
         self.Translator = Translator()
-        Gtk.ApplicationWindow.__init__(self, title="dialect", application=app)
+        Gtk.ApplicationWindow.__init__(self, title="Dialect", application=app)
         self.Clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)  # This is only for the Clipboard button
         self.set_border_width(10)
         self.set_default_size(400, 200)
@@ -340,9 +341,11 @@ class MainWindow(Gtk.ApplicationWindow):
         SecondLanguageVoice = self.LangCode[SecondLanguagePos]
         # Add here code that changes voice button behavior
         if SecondText != "" and SecondLanguageVoice in self.LangSpeech:
-            self.VoiceDownload(SecondText, SecondLanguageVoice)
+            button.set_sensitive(False)
+            threading.Thread(target=self.VoiceDownload,
+                             args=(SecondText, SecondLanguageVoice, button)).start()
             
-    def VoiceDownload(self, Text, Lang):
+    def VoiceDownload(self, Text, Lang, Button):
         FileToPlay = BytesIO()
         try:
             tts = gTTS(Text, Lang)
@@ -356,11 +359,12 @@ class MainWindow(Gtk.ApplicationWindow):
             play(SoundToPlay)
         finally:
             # The code to execute no matter what
+            GLib.idle_add(Button.set_sensitive, True)
             pass
 
     def UIAbout(self, action, param):
         AboutText = Gtk.AboutDialog(transient_for=self, modal=True)
-        AboutText.set_program_name("dialect")
+        AboutText.set_program_name("Dialect")
         AboutText.set_comments("A translation app for GTK environments based on Google Translate.")
         AboutText.set_license_type(Gtk.License(3))
         AboutText.set_website("https://github.com/gi-lom/dialect")
@@ -386,7 +390,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def TextChanged(self, buffer):
         self.TransStart.set_sensitive(self.LeftBuffer.get_char_count() != 0)
-        if os.environ.get("dialect_LIVE") == "1":
+        if os.environ.get("DIALECT_LIVE") == "1":
             GLib.idle_add(self.Translation, None)
 
     # The history part
@@ -523,7 +527,7 @@ class MainWindow(Gtk.ApplicationWindow):
                         json.dump(self.Settings, outfile, indent=2)
 
 
-class dialect(Gtk.Application):
+class Dialect(Gtk.Application):
 
     def __init__(self):
         Gtk.Application.__init__(self, application_id=AppID)
@@ -547,6 +551,6 @@ class dialect(Gtk.Application):
 
 
 # Final part, run the Application
-app = dialect()
+app = Dialect()
 exit_status = app.run(sys.argv)
 sys.exit(exit_status)
