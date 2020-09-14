@@ -1,4 +1,4 @@
-![Dialect icon](data/com.github.gi-lom.dialect.svg?raw=true)
+![Dialect icon](data/com.github.gi_lom.dialect.svg?raw=true)
 
 # Dialect
 
