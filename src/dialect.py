@@ -18,7 +18,7 @@ from pydub.playback import play
 
 
 # Constant values
-AppID = 'com.github.gi-lom.dialect'
+AppID = 'com.github.gi_lom.dialect'
 MaxLength = 1000  # maximum number of characters you can translate at once
 TransNumber = 10  # number of translations to save in history
 LanNumber = 8  # number of language tuples to save in history
