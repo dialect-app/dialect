@@ -173,9 +173,12 @@ class MainWindow(Gtk.ApplicationWindow):
         LanguageButtonBox.pack_start(self.SecondLanguageCombo, True, True, 0)
 
         ### Voice
-        Voice = Gtk.Button.new_from_icon_name("audio-speakers-symbolic", Gtk.IconSize.BUTTON)
-        Voice.set_tooltip_text("Reproduce")
-        Voice.connect("clicked", self.UIVoice)
+        self.Voice = Gtk.Button()
+        self.Voice.set_tooltip_text("Reproduce")
+        self.Voice.connect("clicked", self.UIVoice)
+        self.VoiceImage = Gtk.Image.new_from_icon_name("audio-speakers-symbolic", Gtk.IconSize.BUTTON)
+        self.VoiceSpinner = Gtk.Spinner()  # For use while audio is running.
+        self.Voice.set_image(self.VoiceImage)
 
         ### Clipboard
         ClipboardButton = Gtk.Button.new_from_icon_name("edit-paste-symbolic", Gtk.IconSize.BUTTON)
@@ -198,7 +201,7 @@ class MainWindow(Gtk.ApplicationWindow):
         HeaderBar.set_custom_title(LanguageButtonBox)
 
         ### Right side
-        OptionsBox.pack_start(Voice, True, True, 0)
+        OptionsBox.pack_start(self.Voice, True, True, 0)
         OptionsBox.pack_start(ClipboardButton, True, True, 0)
         OptionsBox.pack_start(MenuButton, True, True, 0)
 
@@ -341,11 +344,13 @@ class MainWindow(Gtk.ApplicationWindow):
         SecondLanguageVoice = self.LangCode[SecondLanguagePos]
         # Add here code that changes voice button behavior
         if SecondText != "" and SecondLanguageVoice in self.LangSpeech:
-            button.set_sensitive(False)
+            self.Voice.set_sensitive(False)
+            self.Voice.set_image(self.VoiceSpinner)
+            self.VoiceSpinner.start()
             threading.Thread(target=self.VoiceDownload,
-                             args=(SecondText, SecondLanguageVoice, button)).start()
+                             args=(SecondText, SecondLanguageVoice)).start()
             
-    def VoiceDownload(self, Text, Lang, Button):
+    def VoiceDownload(self, Text, Lang):
         FileToPlay = BytesIO()
         try:
             tts = gTTS(Text, Lang)
@@ -359,7 +364,9 @@ class MainWindow(Gtk.ApplicationWindow):
             play(SoundToPlay)
         finally:
             # The code to execute no matter what
-            GLib.idle_add(Button.set_sensitive, True)
+            GLib.idle_add(self.Voice.set_sensitive, True)
+            GLib.idle_add(self.Voice.set_image, self.VoiceImage)
+            GLib.idle_add(self.VoiceSpinner.stop)
             pass
 
     def UIAbout(self, action, param):
