@@ -55,6 +55,8 @@ class MainWindow(Gtk.ApplicationWindow):
     CurrentInputText = ""
     CurrentHistory = 0
     TypeTime = 0
+    TransQueue = []
+    ActiveThread = None
     # These are for being able to go backspace
     FirstKey = 0
     SecondKey = 0
@@ -79,9 +81,9 @@ class MainWindow(Gtk.ApplicationWindow):
                 json.dump(Settings, outfile, indent=2)
 
     # Mount everything
-    def __init__(self, app):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.Translator = Translator()
-        Gtk.ApplicationWindow.__init__(self, title="Dialect", application=app)
         self.Clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)  # This is only for the Clipboard button
         self.set_border_width(10)
         self.set_default_size(400, 200)
@@ -489,21 +491,41 @@ class MainWindow(Gtk.ApplicationWindow):
     def Translation(self, button):
         # If it's like the last translation then it's useless to continue
         if len(self.Settings["Translations"]) == 0 or not self.AppearedBefore():
-            # ItWasARepeatedAuto = -1
             FirstBuffer = self.LeftBuffer
-            SecondBuffer = self.RightBuffer
             FirstText = FirstBuffer.get_text(FirstBuffer.get_start_iter(), FirstBuffer.get_end_iter(), True)
             # If the first text is empty, then everything is simply resetted and nothing is saved in history
             if FirstText == "":
-                SecondBuffer.set_text("")
+                self.RightBuffer.set_text("")
             else:
                 FirstLanguagePos = self.FirstLanguageCombo.get_active()
                 SecondLanguagePos = self.SecondLanguageCombo.get_active()
-                # If the first language is revealed automatically, let's set it
+
+                if self.TransQueue:
+                    self.TransQueue.pop(0)
+                self.TransQueue.append({
+                    'FirstText': FirstText,
+                    'FirstLanguagePos': FirstLanguagePos,
+                    'SecondLanguagePos': SecondLanguagePos
+                })
+
+                # Check if there are any active threads.
+                if self.ActiveThread is None:
+                    # If there are not any active threads, create one and start it.
+                    self.ActiveThread = threading.Thread(target=self.RunTranslation, daemon=True)
+                    self.ActiveThread.start()
+
+    def RunTranslation(self):
+        while True:
+            # If the first language is revealed automatically, let's set it
+            if self.TransQueue:
+                TransDict = self.TransQueue.pop(0)
+                FirstText = TransDict['FirstText']
+                FirstLanguagePos = TransDict['FirstLanguagePos']
+                SecondLanguagePos = TransDict['SecondLanguagePos']
                 if FirstLanguagePos == 0 and FirstText != "":
                     RevealedLanguage = str(self.Translator.detect(FirstText).lang)
                     FirstLanguagePos = self.LangCode.index(RevealedLanguage) + 1
-                    self.FirstLanguageCombo.set_active(FirstLanguagePos)
+                    GLib.idle_add(self.FirstLanguageCombo.set_active, FirstLanguagePos)
                     self.Settings["Languages"][0][0] = self.LangCode[SecondLanguagePos]
                 # If the two languages are the same, nothing is done
                 if FirstLanguagePos - 1 != SecondLanguagePos:
@@ -518,7 +540,7 @@ class MainWindow(Gtk.ApplicationWindow):
                         # SecondText = str(time.time())
                     except Exception:
                         pass
-                    SecondBuffer.set_text(SecondText)
+                    GLib.idle_add(self.RightBuffer.set_text, SecondText)
                     # Finally, everything is saved in history
                     NewHistoryTrans = {
                         "Languages": [self.LangCode[FirstLanguagePos - 1], self.LangCode[SecondLanguagePos]],
@@ -549,15 +571,22 @@ class Dialect(Gtk.Application):
 
         win = self.props.active_window
         if not win:
-            win = MainWindow(self)
+            win = MainWindow(
+                application=self,
+                title='Dialect'
+            )
             setup_actions(win)
         win.show_all()
 
     def do_startup(self):
         Gtk.Application.do_startup(self)
+        GLib.set_application_name('Dialect')
+        GLib.set_prgname('com.github.gi_lom.dialect')
 
 
-# Final part, run the Application
-app = Dialect()
-exit_status = app.run(sys.argv)
-sys.exit(exit_status)
+def main():
+    # Final part, run the Application
+    app = Dialect()
+    return app.run(sys.argv)
+
+main()
