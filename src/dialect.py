@@ -50,7 +50,6 @@ class MainWindow(Gtk.ApplicationWindow):
     # Language values
     LangCode = list(LANGUAGES.keys())
     LangName = list(LANGUAGES.values())
-    Translator = Translator()
     # Current input Text
     CurrentInputText = ""
     CurrentHistory = 0
@@ -151,9 +150,9 @@ class MainWindow(Gtk.ApplicationWindow):
         self.FirstLanguageCombo.connect("changed", self.HistoryLeftLanUpdate)
 
         ### Switch
-        Switch = Gtk.Button.new_from_icon_name("object-flip-horizontal-symbolic", Gtk.IconSize.BUTTON)
-        Switch.set_tooltip_text("Switch languages")
-        Switch.connect("clicked", self.UISwitch)
+        self.Switch = Gtk.Button.new_from_icon_name("object-flip-horizontal-symbolic", Gtk.IconSize.BUTTON)
+        self.Switch.set_tooltip_text("Switch languages")
+        self.Switch.connect("clicked", self.UISwitch)
 
         ### Second language
         SecondLanguageList = Gtk.ListStore(str)
@@ -171,7 +170,7 @@ class MainWindow(Gtk.ApplicationWindow):
         LanguageButtonBox.set_layout(Gtk.ButtonBoxStyle.EXPAND)
         LanguageButtonBox.set_homogeneous(False)
         LanguageButtonBox.pack_start(self.FirstLanguageCombo, True, True, 0)
-        LanguageButtonBox.pack_start(Switch, True, False, 0)
+        LanguageButtonBox.pack_start(self.Switch, True, False, 0)
         LanguageButtonBox.pack_start(self.SecondLanguageCombo, True, True, 0)
 
         ### Voice
@@ -310,8 +309,31 @@ class MainWindow(Gtk.ApplicationWindow):
         ll = button.get_label()
         self.SecondLanguageCombo.set_active(self.LangName.index(ll.lower()))
 
+    def SwitchAll(self, FirstLanguage, SecondLanguage, FirstText, SecondText):
+        self.FirstLanguageCombo.set_active(self.LangCode.index(SecondLanguage) + 1)
+        self.SecondLanguageCombo.set_active(self.LangCode.index(FirstLanguage))
+        self.LeftBuffer.set_text(SecondText)
+        self.RightBuffer.set_text(FirstText)
+
+        # Re-enable widgets
+        self.FirstLanguageCombo.set_sensitive(True)
+        self.SecondLanguageCombo.set_sensitive(True)
+        self.Switch.set_sensitive(True)
+
+    def SwitchAutoLang(self, SecondLanguagePos, FirstText, SecondText):
+        RevealedLanguage = str(self.Translator.detect(FirstText).lang)
+        FirstLanguagePos = self.LangCode.index(RevealedLanguage) + 1
+        FirstLanguage = self.LangCode[FirstLanguagePos - 1]
+        SecondLanguage = self.LangCode[SecondLanguagePos]
+
+        # Switch all
+        GLib.idle_add(self.SwitchAll, FirstLanguage, SecondLanguage, FirstText, SecondText)
+
     def UISwitch(self, button):
         # Get variables
+        self.FirstLanguageCombo.set_sensitive(False)
+        self.SecondLanguageCombo.set_sensitive(False)
+        self.Switch.set_sensitive(False)
         FirstBuffer = self.LeftBuffer
         SecondBuffer = self.RightBuffer
         FirstLanguagePos = self.FirstLanguageCombo.get_active()
@@ -322,16 +344,13 @@ class MainWindow(Gtk.ApplicationWindow):
             if FirstText == "":
                 FirstLanguagePos = self.LangCode.index(self.Settings["Languages"][0][0]) + 1
             else:
-                RevealedLanguage = str(self.Translator.detect(FirstText).lang)
-                FirstLanguagePos = self.LangCode.index(RevealedLanguage) + 1
+                threading.Thread(target=self.SwitchAutoLang, args=(SecondLanguagePos, FirstText, SecondText)).start()
+                return
         FirstLanguage = self.LangCode[FirstLanguagePos - 1]
         SecondLanguage = self.LangCode[SecondLanguagePos]
 
         # Switch all
-        self.FirstLanguageCombo.set_active(self.LangCode.index(SecondLanguage) + 1)
-        self.SecondLanguageCombo.set_active(self.LangCode.index(FirstLanguage))
-        FirstBuffer.set_text(SecondText)
-        SecondBuffer.set_text(FirstText)
+        self.SwitchAll(FirstLanguage, SecondLanguage, FirstText, SecondText)
 
     def UIPaperclip(self, button):
         SecondBuffer = self.RightBuffer
