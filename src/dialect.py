@@ -492,10 +492,11 @@ class MainWindow(Gtk.ApplicationWindow):
         # If it's like the last translation then it's useless to continue
         if len(self.Settings["Translations"]) == 0 or not self.AppearedBefore():
             FirstBuffer = self.LeftBuffer
+            SecondBuffer = self.RightBuffer
             FirstText = FirstBuffer.get_text(FirstBuffer.get_start_iter(), FirstBuffer.get_end_iter(), True)
             # If the first text is empty, then everything is simply resetted and nothing is saved in history
             if FirstText == "":
-                self.RightBuffer.set_text("")
+                SecondBuffer.set_text("")
             else:
                 FirstLanguagePos = self.FirstLanguageCombo.get_active()
                 SecondLanguagePos = self.SecondLanguageCombo.get_active()
@@ -507,6 +508,9 @@ class MainWindow(Gtk.ApplicationWindow):
                     'FirstLanguagePos': FirstLanguagePos,
                     'SecondLanguagePos': SecondLanguagePos
                 })
+                CurrentRightText = SecondBuffer.get_text(SecondBuffer.get_start_iter(), SecondBuffer.get_end_iter(), True)
+                if not CurrentRightText.endswith("..."):
+                    self.RightBuffer.set_text(CurrentRightText + "...")
 
                 # Check if there are any active threads.
                 if self.ActiveThread is None:
