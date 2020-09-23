@@ -4,6 +4,7 @@
 import json
 import os
 import sys
+import threading
 from io import BytesIO
 
 import gi
@@ -34,7 +35,7 @@ MenuBuilder = """
         <section>
             <attribute name="id">help-section</attribute>
             <item>
-                <attribute name="label" translatable="yes">About dialect</attribute>
+                <attribute name="label" translatable="yes">About Dialect</attribute>
                 <attribute name="action">app.about</attribute>
             </item>
         </section>
@@ -49,11 +50,12 @@ class MainWindow(Gtk.ApplicationWindow):
     # Language values
     LangCode = list(LANGUAGES.keys())
     LangName = list(LANGUAGES.values())
-    Translator = Translator()
     # Current input Text
     CurrentInputText = ""
     CurrentHistory = 0
     TypeTime = 0
+    TransQueue = []
+    ActiveThread = None
     # These are for being able to go backspace
     FirstKey = 0
     SecondKey = 0
@@ -78,9 +80,9 @@ class MainWindow(Gtk.ApplicationWindow):
                 json.dump(Settings, outfile, indent=2)
 
     # Mount everything
-    def __init__(self, app):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.Translator = Translator()
-        Gtk.ApplicationWindow.__init__(self, title="dialect", application=app)
         self.Clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)  # This is only for the Clipboard button
         self.set_border_width(10)
         self.set_default_size(400, 200)
@@ -148,9 +150,9 @@ class MainWindow(Gtk.ApplicationWindow):
         self.FirstLanguageCombo.connect("changed", self.HistoryLeftLanUpdate)
 
         ### Switch
-        Switch = Gtk.Button.new_from_icon_name("object-flip-horizontal-symbolic", Gtk.IconSize.BUTTON)
-        Switch.set_tooltip_text("Switch languages")
-        Switch.connect("clicked", self.UISwitch)
+        self.Switch = Gtk.Button.new_from_icon_name("object-flip-horizontal-symbolic", Gtk.IconSize.BUTTON)
+        self.Switch.set_tooltip_text("Switch languages")
+        self.Switch.connect("clicked", self.UISwitch)
 
         ### Second language
         SecondLanguageList = Gtk.ListStore(str)
@@ -168,13 +170,16 @@ class MainWindow(Gtk.ApplicationWindow):
         LanguageButtonBox.set_layout(Gtk.ButtonBoxStyle.EXPAND)
         LanguageButtonBox.set_homogeneous(False)
         LanguageButtonBox.pack_start(self.FirstLanguageCombo, True, True, 0)
-        LanguageButtonBox.pack_start(Switch, True, False, 0)
+        LanguageButtonBox.pack_start(self.Switch, True, False, 0)
         LanguageButtonBox.pack_start(self.SecondLanguageCombo, True, True, 0)
 
         ### Voice
-        Voice = Gtk.Button.new_from_icon_name("audio-speakers-symbolic", Gtk.IconSize.BUTTON)
-        Voice.set_tooltip_text("Reproduce")
-        Voice.connect("clicked", self.UIVoice)
+        self.Voice = Gtk.Button()
+        self.Voice.set_tooltip_text("Reproduce")
+        self.Voice.connect("clicked", self.UIVoice)
+        self.VoiceImage = Gtk.Image.new_from_icon_name("audio-speakers-symbolic", Gtk.IconSize.BUTTON)
+        self.VoiceSpinner = Gtk.Spinner()  # For use while audio is running.
+        self.Voice.set_image(self.VoiceImage)
 
         ### Clipboard
         ClipboardButton = Gtk.Button.new_from_icon_name("edit-paste-symbolic", Gtk.IconSize.BUTTON)
@@ -197,7 +202,7 @@ class MainWindow(Gtk.ApplicationWindow):
         HeaderBar.set_custom_title(LanguageButtonBox)
 
         ### Right side
-        OptionsBox.pack_start(Voice, True, True, 0)
+        OptionsBox.pack_start(self.Voice, True, True, 0)
         OptionsBox.pack_start(ClipboardButton, True, True, 0)
         OptionsBox.pack_start(MenuButton, True, True, 0)
 
@@ -304,8 +309,31 @@ class MainWindow(Gtk.ApplicationWindow):
         ll = button.get_label()
         self.SecondLanguageCombo.set_active(self.LangName.index(ll.lower()))
 
+    def SwitchAll(self, FirstLanguage, SecondLanguage, FirstText, SecondText):
+        self.FirstLanguageCombo.set_active(self.LangCode.index(SecondLanguage) + 1)
+        self.SecondLanguageCombo.set_active(self.LangCode.index(FirstLanguage))
+        self.LeftBuffer.set_text(SecondText)
+        self.RightBuffer.set_text(FirstText)
+
+        # Re-enable widgets
+        self.FirstLanguageCombo.set_sensitive(True)
+        self.SecondLanguageCombo.set_sensitive(True)
+        self.Switch.set_sensitive(True)
+
+    def SwitchAutoLang(self, SecondLanguagePos, FirstText, SecondText):
+        RevealedLanguage = str(self.Translator.detect(FirstText).lang)
+        FirstLanguagePos = self.LangCode.index(RevealedLanguage) + 1
+        FirstLanguage = self.LangCode[FirstLanguagePos - 1]
+        SecondLanguage = self.LangCode[SecondLanguagePos]
+
+        # Switch all
+        GLib.idle_add(self.SwitchAll, FirstLanguage, SecondLanguage, FirstText, SecondText)
+
     def UISwitch(self, button):
         # Get variables
+        self.FirstLanguageCombo.set_sensitive(False)
+        self.SecondLanguageCombo.set_sensitive(False)
+        self.Switch.set_sensitive(False)
         FirstBuffer = self.LeftBuffer
         SecondBuffer = self.RightBuffer
         FirstLanguagePos = self.FirstLanguageCombo.get_active()
@@ -316,16 +344,13 @@ class MainWindow(Gtk.ApplicationWindow):
             if FirstText == "":
                 FirstLanguagePos = self.LangCode.index(self.Settings["Languages"][0][0]) + 1
             else:
-                RevealedLanguage = str(self.Translator.detect(FirstText).lang)
-                FirstLanguagePos = self.LangCode.index(RevealedLanguage) + 1
+                threading.Thread(target=self.SwitchAutoLang, args=(SecondLanguagePos, FirstText, SecondText)).start()
+                return
         FirstLanguage = self.LangCode[FirstLanguagePos - 1]
         SecondLanguage = self.LangCode[SecondLanguagePos]
 
         # Switch all
-        self.FirstLanguageCombo.set_active(self.LangCode.index(SecondLanguage) + 1)
-        self.SecondLanguageCombo.set_active(self.LangCode.index(FirstLanguage))
-        FirstBuffer.set_text(SecondText)
-        SecondBuffer.set_text(FirstText)
+        self.SwitchAll(FirstLanguage, SecondLanguage, FirstText, SecondText)
 
     def UIPaperclip(self, button):
         SecondBuffer = self.RightBuffer
@@ -340,7 +365,11 @@ class MainWindow(Gtk.ApplicationWindow):
         SecondLanguageVoice = self.LangCode[SecondLanguagePos]
         # Add here code that changes voice button behavior
         if SecondText != "" and SecondLanguageVoice in self.LangSpeech:
-            self.VoiceDownload(SecondText, SecondLanguageVoice)
+            self.Voice.set_sensitive(False)
+            self.Voice.set_image(self.VoiceSpinner)
+            self.VoiceSpinner.start()
+            threading.Thread(target=self.VoiceDownload,
+                             args=(SecondText, SecondLanguageVoice)).start()
             
     def VoiceDownload(self, Text, Lang):
         FileToPlay = BytesIO()
@@ -356,11 +385,14 @@ class MainWindow(Gtk.ApplicationWindow):
             play(SoundToPlay)
         finally:
             # The code to execute no matter what
+            GLib.idle_add(self.Voice.set_sensitive, True)
+            GLib.idle_add(self.Voice.set_image, self.VoiceImage)
+            GLib.idle_add(self.VoiceSpinner.stop)
             pass
 
     def UIAbout(self, action, param):
         AboutText = Gtk.AboutDialog(transient_for=self, modal=True)
-        AboutText.set_program_name("dialect")
+        AboutText.set_program_name("Dialect")
         AboutText.set_comments("A translation app for GTK environments based on Google Translate.")
         AboutText.set_license_type(Gtk.License(3))
         AboutText.set_website("https://github.com/gi-lom/dialect")
@@ -386,7 +418,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def TextChanged(self, buffer):
         self.TransStart.set_sensitive(self.LeftBuffer.get_char_count() != 0)
-        if os.environ.get("dialect_LIVE") == "1":
+        if os.environ.get("DIALECT_LIVE") == "1":
             GLib.idle_add(self.Translation, None)
 
     # The history part
@@ -478,7 +510,6 @@ class MainWindow(Gtk.ApplicationWindow):
     def Translation(self, button):
         # If it's like the last translation then it's useless to continue
         if len(self.Settings["Translations"]) == 0 or not self.AppearedBefore():
-            # ItWasARepeatedAuto = -1
             FirstBuffer = self.LeftBuffer
             SecondBuffer = self.RightBuffer
             FirstText = FirstBuffer.get_text(FirstBuffer.get_start_iter(), FirstBuffer.get_end_iter(), True)
@@ -488,11 +519,36 @@ class MainWindow(Gtk.ApplicationWindow):
             else:
                 FirstLanguagePos = self.FirstLanguageCombo.get_active()
                 SecondLanguagePos = self.SecondLanguageCombo.get_active()
-                # If the first language is revealed automatically, let's set it
+
+                if self.TransQueue:
+                    self.TransQueue.pop(0)
+                self.TransQueue.append({
+                    'FirstText': FirstText,
+                    'FirstLanguagePos': FirstLanguagePos,
+                    'SecondLanguagePos': SecondLanguagePos
+                })
+                CurrentRightText = SecondBuffer.get_text(SecondBuffer.get_start_iter(), SecondBuffer.get_end_iter(), True)
+                if not CurrentRightText.endswith("..."):
+                    self.RightBuffer.set_text(CurrentRightText + "...")
+
+                # Check if there are any active threads.
+                if self.ActiveThread is None:
+                    # If there are not any active threads, create one and start it.
+                    self.ActiveThread = threading.Thread(target=self.RunTranslation, daemon=True)
+                    self.ActiveThread.start()
+
+    def RunTranslation(self):
+        while True:
+            # If the first language is revealed automatically, let's set it
+            if self.TransQueue:
+                TransDict = self.TransQueue.pop(0)
+                FirstText = TransDict['FirstText']
+                FirstLanguagePos = TransDict['FirstLanguagePos']
+                SecondLanguagePos = TransDict['SecondLanguagePos']
                 if FirstLanguagePos == 0 and FirstText != "":
                     RevealedLanguage = str(self.Translator.detect(FirstText).lang)
                     FirstLanguagePos = self.LangCode.index(RevealedLanguage) + 1
-                    self.FirstLanguageCombo.set_active(FirstLanguagePos)
+                    GLib.idle_add(self.FirstLanguageCombo.set_active, FirstLanguagePos)
                     self.Settings["Languages"][0][0] = self.LangCode[SecondLanguagePos]
                 # If the two languages are the same, nothing is done
                 if FirstLanguagePos - 1 != SecondLanguagePos:
@@ -507,7 +563,7 @@ class MainWindow(Gtk.ApplicationWindow):
                         # SecondText = str(time.time())
                     except Exception:
                         pass
-                    SecondBuffer.set_text(SecondText)
+                    GLib.idle_add(self.RightBuffer.set_text, SecondText)
                     # Finally, everything is saved in history
                     NewHistoryTrans = {
                         "Languages": [self.LangCode[FirstLanguagePos - 1], self.LangCode[SecondLanguagePos]],
@@ -523,7 +579,7 @@ class MainWindow(Gtk.ApplicationWindow):
                         json.dump(self.Settings, outfile, indent=2)
 
 
-class dialect(Gtk.Application):
+class Dialect(Gtk.Application):
 
     def __init__(self):
         Gtk.Application.__init__(self, application_id=AppID)
@@ -538,15 +594,22 @@ class dialect(Gtk.Application):
 
         win = self.props.active_window
         if not win:
-            win = MainWindow(self)
+            win = MainWindow(
+                application=self,
+                title='Dialect'
+            )
             setup_actions(win)
         win.show_all()
 
     def do_startup(self):
         Gtk.Application.do_startup(self)
+        GLib.set_application_name('Dialect')
+        GLib.set_prgname('com.github.gi_lom.dialect')
 
 
-# Final part, run the Application
-app = dialect()
-exit_status = app.run(sys.argv)
-sys.exit(exit_status)
+def main():
+    # Final part, run the Application
+    app = Dialect()
+    return app.run(sys.argv)
+
+main()
