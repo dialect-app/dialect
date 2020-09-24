@@ -187,7 +187,7 @@ class MainWindow(Gtk.ApplicationWindow):
         ClipboardButton.connect("clicked", self.UIPaperclip)
 
         ### Menu button
-        Builder = Gtk.Builder.new_from_string(MenuBuilder, -1) 
+        Builder = Gtk.Builder.new_from_string(MenuBuilder, -1)
         Menu = Builder.get_object("app-menu")
         MenuButton = Gtk.MenuButton()
         MenuButton.set_direction(Gtk.ArrowType.NONE)
@@ -370,7 +370,7 @@ class MainWindow(Gtk.ApplicationWindow):
             self.VoiceSpinner.start()
             threading.Thread(target=self.VoiceDownload,
                              args=(SecondText, SecondLanguageVoice)).start()
-            
+
     def VoiceDownload(self, Text, Lang):
         FileToPlay = BytesIO()
         try:
@@ -607,9 +607,7 @@ class Dialect(Gtk.Application):
         GLib.set_prgname('com.github.gi_lom.dialect')
 
 
-def main():
-    # Final part, run the Application
+def main(version):
+    # Run the Application
     app = Dialect()
     return app.run(sys.argv)
-
-main()
