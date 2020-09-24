@@ -28,21 +28,6 @@ ButtonNumLanguages = 3  # number of language buttons
 XdgConfigHome = GLib.get_user_config_dir()
 SettingsFile = os.path.join(XdgConfigHome, 'dialect', 'settings.json')
 
-MenuBuilder = """
-<?xml version="1.0" encoding="UTF-8"?>
-<interface>
-    <menu id="app-menu">
-        <section>
-            <attribute name="id">help-section</attribute>
-            <item>
-                <attribute name="label" translatable="yes">About Dialect</attribute>
-                <attribute name="action">app.about</attribute>
-            </item>
-        </section>
-    </menu>
-</interface>
-"""
-
 
 # Main part
 class MainWindow(Gtk.ApplicationWindow):
@@ -187,7 +172,7 @@ class MainWindow(Gtk.ApplicationWindow):
         ClipboardButton.connect("clicked", self.UIPaperclip)
 
         ### Menu button
-        Builder = Gtk.Builder.new_from_string(MenuBuilder, -1)
+        Builder = Gtk.Builder.new_from_resource("/com/github/gi_lom/dialect/menu.ui")
         Menu = Builder.get_object("app-menu")
         MenuButton = Gtk.MenuButton()
         MenuButton.set_direction(Gtk.ArrowType.NONE)
