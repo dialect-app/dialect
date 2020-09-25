@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <menu id="app-menu">
+    <section>
+      <attribute name="id">help-section</attribute>
+      <item>
+        <attribute name="label" translatable="yes">About Dialect</attribute>
+          <attribute name="action">app.about</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

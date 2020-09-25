@@ -1,3 +1,5 @@
+subdir('resources')
+
 # Install desktop
 install_data(
   'com.github.gi_lom.dialect.desktop',
