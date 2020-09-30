@@ -21,6 +21,7 @@ from pydub.playback import play
 
 # Constant values
 APP_ID = 'com.github.gi_lom.dialect'
+RES_PATH = '/com/github/gi_lom/dialect'
 MAX_LENGTH = 1000  # maximum number of characters you can translate at once
 TRANS_NUMBER = 10  # number of translations to save in history
 LANG_NUMBER = 8  # number of language tuples to save in history
@@ -181,7 +182,7 @@ class DialectWindow(Gtk.ApplicationWindow):
         copy_button.connect("clicked", self.ui_copy)
 
         ### Menu button
-        builder = Gtk.Builder.new_from_resource("/com/github/gi_lom/dialect/menu.ui")
+        builder = Gtk.Builder.new_from_resource(f"{RES_PATH}/menu.ui")
         menu = builder.get_object("app-menu")
         menu_button = Gtk.MenuButton()
         menu_button.set_direction(Gtk.ArrowType.NONE)
@@ -367,8 +368,10 @@ class DialectWindow(Gtk.ApplicationWindow):
             self.voice.set_sensitive(False)
             self.voice.set_image(self.voice_spinner)
             self.voice_spinner.start()
-            threading.Thread(target=self.voice_download,
-                             args=(second_text, second_language_voice)).start()
+            threading.Thread(
+                target=self.voice_download,
+                args=(second_text, second_language_voice)
+            ).start()
 
     def voice_download(self, text, lang):
         file_to_play = BytesIO()
@@ -539,10 +542,10 @@ class DialectWindow(Gtk.ApplicationWindow):
                 # Check if there are any active threads.
                 if self.active_thread is None:
                     # If there are not any active threads, create one and start it.
-                    self.active_thread = threading.Thread(target=self.RunTranslation, daemon=True)
+                    self.active_thread = threading.Thread(target=self.run_translation, daemon=True)
                     self.active_thread.start()
 
-    def RunTranslation(self):
+    def run_translation(self):
         while True:
             # If the first language is revealed automatically, let's set it
             if self.trans_queue:
