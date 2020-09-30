@@ -5,11 +5,11 @@ project('dialect',
                    ],
 )
 
-python = import('python3')
+python = import('python')
 
 message('Looking for dependencies')
-python_bin = python.find_python()
-if not python_bin.found()
+py_installation = python.find_installation('python3')
+if not py_installation.found()
     error('No valid python3 binary found')
 else
     message('Found python3 binary')
