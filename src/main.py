@@ -4,7 +4,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 # Initial setup
-import json
 import os
 import sys
 import threading
@@ -218,11 +217,7 @@ class DialectWindow(Gtk.ApplicationWindow):
         self.left_text = Gtk.TextView()
         self.left_text.set_wrap_mode(2)
         self.left_buffer = self.left_text.get_buffer()
-        if len(self.history) > 0:
-            self.first_text = self.history[0]["Text"][0]
-            self.left_buffer.set_text(self.first_text)
-        else:
-            self.left_buffer.set_text("")
+        self.left_buffer.set_text("")
         self.left_text.connect("key-press-event", self.update_trans_button)
         self.left_buffer.connect("changed", self.text_changed)
         self.connect("key-press-event", self.update_trans_button)
@@ -258,11 +253,7 @@ class DialectWindow(Gtk.ApplicationWindow):
         right_text.set_wrap_mode(2)
         self.right_buffer = right_text.get_buffer()
         right_text.set_editable(False)
-        if len(self.history) > 0:
-            self.second_text = self.history[0]["Text"][1]
-            self.right_buffer.set_text(self.second_text)
-        else:
-            self.right_buffer.set_text("")
+        self.right_buffer.set_text("")
         right_scroll.add(right_text)
         upper_box.pack_end(right_scroll, True, True, 0)
 
@@ -442,7 +433,7 @@ class DialectWindow(Gtk.ApplicationWindow):
                 self.left_langs.insert(0, code)
             self.left_langs[0] = code
             self.settings.set_value('left-langs',
-                                     GLib.Variant('as', self.left_langs))
+                                    GLib.Variant('as', self.left_langs))
             if self.current_history == 0:
                 self.rewrite_left_language_buttons()
 
@@ -467,7 +458,7 @@ class DialectWindow(Gtk.ApplicationWindow):
                 self.right_langs.insert(0, code)
             self.right_langs[0] = code
             self.settings.set_value('right-langs',
-                                     GLib.Variant('as', self.right_langs))
+                                    GLib.Variant('as', self.right_langs))
             if self.current_history == 0:
                 self.rewrite_right_language_buttons()
 
@@ -541,7 +532,7 @@ class DialectWindow(Gtk.ApplicationWindow):
                     GLib.idle_add(self.first_language_combo.set_active, first_language_pos)
                     self.left_langs[0] = self.lang_code[second_language_pos]
                     self.settings.set_value('left-langs',
-                                     GLib.Variant('as', self.left_langs))
+                                            GLib.Variant('as', self.left_langs))
                 # If the two languages are the same, nothing is done
                 if first_language_pos - 1 != second_language_pos:
                     second_text = ""
