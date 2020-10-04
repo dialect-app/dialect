@@ -11,7 +11,8 @@ from io import BytesIO
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
-from gi.repository import Gio, GLib, Gtk
+gi.require_version('Handy', '1')
+from gi.repository import Gio, GLib, Gtk, Handy
 
 from .define import APP_ID, RES_PATH
 from .window import DialectWindow
@@ -40,6 +41,9 @@ class Dialect(Gtk.Application):
         GLib.set_application_name('Dialect')
         GLib.set_prgname('com.github.gi_lom.dialect')
         self.setup_actions()
+
+        # Init Handy
+        Handy.init()
 
     def setup_actions(self):
         """Setup menu actions."""

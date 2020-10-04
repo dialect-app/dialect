@@ -33,6 +33,7 @@ Arch-based distro users can install it from [AUR](https://aur.archlinux.org/pack
 - Python 3 `python`
 - PyGObject `python-gobject`
 - GTK3 `gtk3`
+- libhandy (>= 0.90.0) `libhandy`
 - Meson `meson`
 - Ninja `ninja`
 - Googletrans `python-googletrans`
