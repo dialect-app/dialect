@@ -1,10 +1,9 @@
 # Copyright 2020 gi-lom
 # Copyright 2020 Mufeed Ali
+# Copyright 2020 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 # Initial setup
-import json
-import os
 import sys
 import threading
 from io import BytesIO
@@ -27,8 +26,6 @@ TRANS_NUMBER = 10  # number of translations to save in history
 LANG_NUMBER = 8  # number of language tuples to save in history
 BUTTON_LENGTH = 65  # length of language buttons
 BUTTON_NUM_LANGUAGES = 3  # number of language buttons
-XDG_CONFIG_HOME = GLib.get_user_config_dir()
-SETTINGS_FILE = os.path.join(XDG_CONFIG_HOME, 'dialect', 'settings.json')
 
 
 # Main part
@@ -40,41 +37,24 @@ class DialectWindow(Gtk.ApplicationWindow):
     # Current input Text
     current_input_text = ""
     current_history = 0
+    history = []
     type_time = 0
     trans_queue = []
     active_thread = None
     # These are for being able to go backspace
     first_key = 0
     second_key = 0
-    # Config Settings JSON file
-    if not os.path.exists(SETTINGS_FILE):
-        settings = {}
-        settings["Languages"] = [
-            ['en', 'fr', 'es', 'de'],
-            ['en', 'fr', 'es', 'de']
-        ]
-        settings["Translations"] = []
-        os.makedirs(os.path.dirname(SETTINGS_FILE), exist_ok=True)
-        with open(SETTINGS_FILE, 'w') as out_file:
-            json.dump(settings, out_file, indent=2)
-    else:
-        with open(SETTINGS_FILE) as json_file:
-            settings = json.load(json_file)
-        if "Languages" not in settings:
-            settings["Languages"] = [
-                ['en', 'fr', 'es', 'de'],
-                ['en', 'fr', 'es', 'de']
-            ]
-            with open(SETTINGS_FILE, 'w') as out_file:
-                json.dump(settings, out_file, indent=2)
-        if "Translations" not in settings:
-            settings["Translations"] = []
-            with open(SETTINGS_FILE, 'w') as out_file:
-                json.dump(settings, out_file, indent=2)
 
     # Mount everything
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        # GSettings object
+        self.settings = Gio.Settings.new(APP_ID)
+        # Get saved languages
+        self.left_langs = list(self.settings.get_value('left-langs'))
+        self.right_langs = list(self.settings.get_value('right-langs'))
+
         self.translator = Translator()
         self.clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)  # This is only for the Clipboard button
         self.set_border_width(10)
@@ -117,7 +97,7 @@ class DialectWindow(Gtk.ApplicationWindow):
         ### return button
         self.return_button = Gtk.Button.new_from_icon_name("go-previous-symbolic", Gtk.IconSize.BUTTON)
         self.return_button.set_tooltip_text("Previous translation")
-        self.return_button.set_sensitive(len(self.settings["Translations"]) > 1)
+        self.return_button.set_sensitive(len(self.history) > 1)
         self.return_button.connect("clicked", self.ui_return)
 
         ### forward button
@@ -157,7 +137,7 @@ class DialectWindow(Gtk.ApplicationWindow):
         second_language_cell = Gtk.CellRendererText()
         self.second_language_combo.pack_start(second_language_cell, True)
         self.second_language_combo.add_attribute(second_language_cell, 'text', 0)
-        self.second_language_combo.set_active(self.lang_code.index(self.settings['Languages'][1][0]))
+        self.second_language_combo.set_active(self.lang_code.index(self.right_langs[0]))
         self.second_language_combo.connect("changed", self.history_right_lang_update)
 
         ### Button box for history navigation buttons
@@ -236,11 +216,7 @@ class DialectWindow(Gtk.ApplicationWindow):
         self.left_text = Gtk.TextView()
         self.left_text.set_wrap_mode(2)
         self.left_buffer = self.left_text.get_buffer()
-        if len(self.settings["Translations"]) > 0:
-            self.first_text = self.settings["Translations"][0]["Text"][0]
-            self.left_buffer.set_text(self.first_text)
-        else:
-            self.left_buffer.set_text("")
+        self.left_buffer.set_text("")
         self.left_text.connect("key-press-event", self.update_trans_button)
         self.left_buffer.connect("changed", self.text_changed)
         self.connect("key-press-event", self.update_trans_button)
@@ -276,11 +252,7 @@ class DialectWindow(Gtk.ApplicationWindow):
         right_text.set_wrap_mode(2)
         self.right_buffer = right_text.get_buffer()
         right_text.set_editable(False)
-        if len(self.settings["Translations"]) > 0:
-            self.second_text = self.settings["Translations"][0]["Text"][1]
-            self.right_buffer.set_text(self.second_text)
-        else:
-            self.right_buffer.set_text("")
+        self.right_buffer.set_text("")
         right_scroll.add(right_text)
         upper_box.pack_end(right_scroll, True, True, 0)
 
@@ -339,7 +311,7 @@ class DialectWindow(Gtk.ApplicationWindow):
         second_text = second_buffer.get_text(second_buffer.get_start_iter(), second_buffer.get_end_iter(), True)
         if first_language_pos == 0:
             if first_text == "":
-                first_language_pos = self.lang_code.index(self.settings["Languages"][0][0]) + 1
+                first_language_pos = self.lang_code.index(self.left_langs[0]) + 1
             else:
                 threading.Thread(
                     target=self.switch_auto_lang,
@@ -421,18 +393,18 @@ class DialectWindow(Gtk.ApplicationWindow):
 
     def text_changed(self, buffer):
         self.trans_start.set_sensitive(self.left_buffer.get_char_count() != 0)
-        if os.environ.get("DIALECT_LIVE") == "1":
+        if self.settings.get_boolean('live-translation'):
             GLib.idle_add(self.translation, None)
 
     # The history part
     def reset_return_forward_buttons(self):
-        self.return_button.set_sensitive(self.current_history < len(self.settings["Translations"]) - 1)
+        self.return_button.set_sensitive(self.current_history < len(self.history) - 1)
         self.forward_button.set_sensitive(self.current_history > 0)
 
     # Retrieve translation history
     def history_update(self):
         self.reset_return_forward_buttons()
-        lang_hist = self.settings["Translations"][self.current_history]
+        lang_hist = self.history[self.current_history]
         self.first_language_combo.set_active(self.lang_code.index(lang_hist["Languages"][0]) + 1)
         self.second_language_combo.set_active(self.lang_code.index(lang_hist["Languages"][1]))
         self.left_buffer.set_text(lang_hist["Text"][0])
@@ -443,8 +415,8 @@ class DialectWindow(Gtk.ApplicationWindow):
         first_language_pos = self.first_language_combo.get_active()
         # If you select the same language of the other part, they get switched
         if first_language_pos - 1 == self.second_language_combo.get_active():
-            un = self.settings["Languages"][0][0]
-            dos = self.settings["Languages"][1][0]
+            un = self.left_langs[0]
+            dos = self.right_langs[0]
             self.first_language_combo.set_active(self.lang_code.index(dos) + 1)
             self.second_language_combo.set_active(self.lang_code.index(un))
             first_buffer = self.left_buffer
@@ -455,12 +427,12 @@ class DialectWindow(Gtk.ApplicationWindow):
             second_buffer.set_text(first_text)
         else:
             code = self.lang_code[first_language_pos - 1]
-            if self.settings["Languages"][0][0] not in self.settings["Languages"][0][1:]:
-                self.settings["Languages"][0].pop()
-                self.settings["Languages"][0].insert(0, code)
-            self.settings["Languages"][0][0] = code
-            with open(SETTINGS_FILE, 'w') as out_file:
-                json.dump(self.settings, out_file, indent=2)
+            if self.left_langs[0] not in self.left_langs[1:]:
+                self.left_langs.pop()
+                self.left_langs.insert(0, code)
+            self.left_langs[0] = code
+            self.settings.set_value('left-langs',
+                                    GLib.Variant('as', self.left_langs))
             if self.current_history == 0:
                 self.rewrite_left_language_buttons()
 
@@ -469,8 +441,8 @@ class DialectWindow(Gtk.ApplicationWindow):
         second_language_pos = self.second_language_combo.get_active()
         code = self.lang_code[second_language_pos]
         if code == self.first_language_combo.get_active() - 1:
-            un = self.settings["Languages"][0][0]
-            dos = self.settings["Languages"][1][0]
+            un = self.left_langs[0]
+            dos = self.right_langs[0]
             self.first_language_combo.set_active(self.lang_code.index(dos) + 1)
             self.second_language_combo.set_active(self.lang_code.index(un))
             first_buffer = self.left_buffer
@@ -480,24 +452,24 @@ class DialectWindow(Gtk.ApplicationWindow):
             first_buffer.set_text(second_text)
             second_buffer.set_text(first_text)
         else:
-            if not self.settings["Languages"][1][0] in self.settings["Languages"][1][1:]:
-                self.settings["Languages"][1].pop()
-                self.settings["Languages"][1].insert(0, code)
-            self.settings["Languages"][1][0] = code
-            with open(SETTINGS_FILE, 'w') as out_file:
-                json.dump(self.settings, out_file, indent=2)
+            if not self.right_langs[0] in self.right_langs[1:]:
+                self.right_langs.pop()
+                self.right_langs.insert(0, code)
+            self.right_langs[0] = code
+            self.settings.set_value('right-langs',
+                                    GLib.Variant('as', self.right_langs))
             if self.current_history == 0:
                 self.rewrite_right_language_buttons()
 
     # Every time a new language is selected, the language buttons below are updated
     def rewrite_left_language_buttons(self):
         for i in range(BUTTON_NUM_LANGUAGES):
-            num = self.lang_code.index(self.settings['Languages'][0][i + 1])
+            num = self.lang_code.index(self.left_langs[i + 1])
             self.lang_left_buttons[i].set_label(self.lang_name[num].capitalize())
 
     def rewrite_right_language_buttons(self):
         for i in range(BUTTON_NUM_LANGUAGES):
-            num = self.lang_code.index(self.settings['Languages'][1][i + 1])
+            num = self.lang_code.index(self.right_langs[i + 1])
             self.lan_right_buttons[i].set_label(self.lang_name[num].capitalize())
 
     # THE TRANSLATION AND SAVING TO HISTORY PART
@@ -505,15 +477,15 @@ class DialectWindow(Gtk.ApplicationWindow):
         first_language_pos = self.first_language_combo.get_active()
         second_language_pos = self.second_language_combo.get_active()
         first_text = self.left_buffer.get_text(self.left_buffer.get_start_iter(), self.left_buffer.get_end_iter(), True)
-        if (self.settings["Translations"][0]["Languages"][0] == self.lang_code[first_language_pos - 1] and
-                self.settings["Translations"][0]["Languages"][1] == self.lang_code[second_language_pos] and
-                self.settings["Translations"][0]["Text"][0] == first_text):
+        if (self.history[0]["Languages"][0] == self.lang_code[first_language_pos - 1] and
+                self.history[0]["Languages"][1] == self.lang_code[second_language_pos] and
+                self.history[0]["Text"][0] == first_text):
             return True
         return False
 
     def translation(self, button):
         # If it's like the last translation then it's useless to continue
-        if len(self.settings["Translations"]) == 0 or not self.appeared_before():
+        if len(self.history) == 0 or not self.appeared_before():
             first_buffer = self.left_buffer
             second_buffer = self.right_buffer
             first_text = first_buffer.get_text(first_buffer.get_start_iter(), first_buffer.get_end_iter(), True)
@@ -557,7 +529,9 @@ class DialectWindow(Gtk.ApplicationWindow):
                     revealed_language = str(self.translator.detect(first_text).lang)
                     first_language_pos = self.lang_code.index(revealed_language) + 1
                     GLib.idle_add(self.first_language_combo.set_active, first_language_pos)
-                    self.settings["Languages"][0][0] = self.lang_code[second_language_pos]
+                    self.left_langs[0] = self.lang_code[second_language_pos]
+                    self.settings.set_value('left-langs',
+                                            GLib.Variant('as', self.left_langs))
                 # If the two languages are the same, nothing is done
                 if first_language_pos - 1 != second_language_pos:
                     second_text = ""
@@ -581,14 +555,11 @@ class DialectWindow(Gtk.ApplicationWindow):
                         "Languages": [self.lang_code[first_language_pos - 1], self.lang_code[second_language_pos]],
                         "Text": [first_text, second_text]
                     }
-                    if len(self.settings["Translations"]) > 0:
+                    if len(self.history) > 0:
                         self.return_button.set_sensitive(True)
-                    if len(self.settings["Translations"]) == TRANS_NUMBER:
-                        self.settings["Translations"].pop()
-                    self.settings["Translations"].insert(0, new_history_trans)
-                    # Save everything in the JSON file
-                    with open(SETTINGS_FILE, 'w') as out_file:
-                        json.dump(self.settings, out_file, indent=2)
+                    if len(self.history) == TRANS_NUMBER:
+                        self.history.pop()
+                    self.history.insert(0, new_history_trans)
 
 
 class Dialect(Gtk.Application):

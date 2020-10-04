@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="dialect">
+  <schema id="com.github.gi_lom.dialect" path="/com/github/gi_lom/dialect/">
+    <key type="b" name="dark-mode">
+        <default>false</default>
+    </key>
+    <key type="b" name="live-translation">
+        <default>false</default>
+    </key>
+    <key type="i" name="translate-accel">
+        <!-- 0 = Ctrl+Enter | 1 = Enter -->
+        <default>0</default>
+    </key>
+    <key type="as" name="left-langs">
+        <default>["en", "fr", "es", "de"]</default>
+    </key>
+    <key type="as" name="right-langs">
+        <default>["en", "fr", "es", "de"]</default>
+    </key>
+  </schema>
+</schemalist>
