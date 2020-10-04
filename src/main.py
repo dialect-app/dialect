@@ -4,7 +4,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 # Initial setup
-import os
 import sys
 import threading
 from io import BytesIO
@@ -394,7 +393,7 @@ class DialectWindow(Gtk.ApplicationWindow):
 
     def text_changed(self, buffer):
         self.trans_start.set_sensitive(self.left_buffer.get_char_count() != 0)
-        if os.environ.get("DIALECT_LIVE") == "1":
+        if self.settings.get_boolean('live-translation'):
             GLib.idle_add(self.translation, None)
 
     # The history part
