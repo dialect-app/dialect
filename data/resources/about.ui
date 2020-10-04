@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.0 -->
+<interface>
+  <requires lib="gtk+" version="3.22"/>
+  <object class="GtkAboutDialog" id="about">
+    <property name="can_focus">False</property>
+    <property name="modal">True</property>
+    <property name="destroy_with_parent">True</property>
+    <property name="type_hint">dialog</property>
+    <property name="program_name">Dialect</property>
+    <property name="copyright" translatable="yes">Copyright 2020 gi-lom</property>
+    <property name="comments" translatable="yes">A translation app for GTK environments based on Google Translate.</property>
+    <property name="website">https://github.com/gi-lom/dialect</property>
+    <property name="website_label" translatable="yes">Github page</property>
+    <property name="authors">gi-lom
+Mufeed Ali
+Rafael Mardojai CM
+</property>
+    <property name="license_type">gpl-3-0</property>
+  </object>
+</interface>

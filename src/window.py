@@ -355,17 +355,6 @@ class DialectWindow(Gtk.ApplicationWindow):
             GLib.idle_add(self.voice.set_image, self.voice_image)
             GLib.idle_add(self.voice_spinner.stop)
 
-    def ui_about(self, _action, _param):
-        about_text = Gtk.AboutDialog(transient_for=self, modal=True)
-        about_text.set_program_name('Dialect')
-        about_text.set_comments('A translation app for GTK environments based on Google Translate.')
-        about_text.set_license_type(Gtk.License(3))
-        about_text.set_website('https://github.com/gi-lom/dialect')
-        about_text.set_website_label('Github page')
-        about_text.set_logo_icon_name(APP_ID)
-        about_text.connect('response', lambda dialog, response: dialog.destroy())
-        about_text.show()
-
     # This starts the translation if Ctrl+Enter button is pressed
     def update_trans_button(self, button, keyboard):
         modifiers = keyboard.get_state() & Gtk.accelerator_get_default_mod_mask()
