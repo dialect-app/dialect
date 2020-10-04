@@ -21,6 +21,8 @@ configure_file(
 sources = [
   '__init__.py',
   'main.py',
+  'define.py',
+  'window.py',
 ]
 # Install sources
 install_data(sources, install_dir: moduledir)
