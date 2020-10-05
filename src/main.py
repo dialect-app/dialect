@@ -12,7 +12,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 gi.require_version('Handy', '1')
-from gi.repository import Gio, GLib, Gdk, Gtk, Handy
+from gi.repository import Gdk, Gio, GLib, Gtk, Handy
 
 from dialect.define import APP_ID, RES_PATH
 from dialect.window import DialectWindow
