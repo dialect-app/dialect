@@ -155,20 +155,18 @@ class DialectWindow(Handy.ApplicationWindow):
         self.left_text.connect('key-press-event', self.update_trans_button)
         self.left_buffer.connect('changed', self.text_changed)
         self.connect('key-press-event', self.update_trans_button)
-
         # Clear button
         self.clear_btn.connect('clicked', self.ui_clear)
-
+        # Paste button
+        self.paste_btn.connect('clicked', self.ui_paste)
         # Translate button
         self.translate_btn.connect('clicked', self.translation)
 
         # Right buffer
         self.right_buffer = self.right_text.get_buffer()
         self.right_buffer.set_text('')
-
         # Clipboard button
         self.copy_btn.connect('clicked', self.ui_copy)
-
         # Voice btn
         self.voice_btn.connect('clicked', self.ui_voice)
         self.voice_image = Gtk.Image.new_from_icon_name(
@@ -254,6 +252,12 @@ class DialectWindow(Handy.ApplicationWindow):
         second_text = second_buffer.get_text(second_buffer.get_start_iter(), second_buffer.get_end_iter(), True)
         self.clipboard.set_text(second_text, -1)
         self.clipboard.store()
+
+    def ui_paste(self, _button):
+        text = self.clipboard.wait_for_text()
+        if text is not None:
+            end_iter = self.left_buffer.get_end_iter()
+            self.left_buffer.insert(end_iter, text)
 
     def ui_voice(self, _button):
         second_buffer = self.right_buffer
