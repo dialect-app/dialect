@@ -14,9 +14,9 @@ gi.require_version('Gdk', '3.0')
 gi.require_version('Handy', '1')
 from gi.repository import Gio, GLib, Gtk, Handy
 
-from .define import APP_ID, RES_PATH
-from .window import DialectWindow
-from .preferences import DialectPreferencesWindow
+from dialect.define import APP_ID, RES_PATH
+from dialect.window import DialectWindow
+from dialect.preferences import DialectPreferencesWindow
 
 
 class Dialect(Gtk.Application):

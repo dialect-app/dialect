@@ -14,8 +14,8 @@ from gtts import gTTS, lang
 from pydub import AudioSegment
 from pydub.playback import play
 
-from .define import APP_ID, RES_PATH, MAX_LENGTH, TRANS_NUMBER, LANG_NUMBER, \
-    BUTTON_LENGTH, BUTTON_NUM_LANGUAGES
+from dialect.define import APP_ID, RES_PATH, MAX_LENGTH, TRANS_NUMBER, \
+    LANG_NUMBER, BUTTON_LENGTH, BUTTON_NUM_LANGUAGES
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/window.ui')
