@@ -12,7 +12,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 gi.require_version('Handy', '1')
-from gi.repository import Gio, GLib, Gtk, Handy
+from gi.repository import Gio, GLib, Gdk, Gtk, Handy
 
 from dialect.define import APP_ID, RES_PATH
 from dialect.window import DialectWindow
@@ -45,6 +45,13 @@ class Dialect(Gtk.Application):
 
         # Init Handy
         Handy.init()
+
+        # Load CSS
+        css_provider = Gtk.CssProvider()
+        css_provider.load_from_resource(f'{RES_PATH}/style.css')
+        screen = Gdk.Screen.get_default()
+        style_context = Gtk.StyleContext()
+        style_context.add_provider_for_screen(screen, css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
 
     def setup_actions(self):
         """ Setup menu actions """

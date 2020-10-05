@@ -5,5 +5,6 @@
     <file>window.ui</file>
     <file>about.ui</file>
     <file>preferences.ui</file>
+    <file>style.css</file>
   </gresource>
 </gresources>
