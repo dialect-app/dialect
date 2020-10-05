@@ -4,6 +4,10 @@
     <section>
       <attribute name="id">help-section</attribute>
       <item>
+        <attribute name="label" translatable="yes">Preferences</attribute>
+          <attribute name="action">app.preferences</attribute>
+      </item>
+      <item>
         <attribute name="label" translatable="yes">About Dialect</attribute>
           <attribute name="action">app.about</attribute>
       </item>

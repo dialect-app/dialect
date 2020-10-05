@@ -23,6 +23,7 @@ sources = [
   'main.py',
   'define.py',
   'window.py',
+  'preferences.py',
 ]
 # Install sources
 install_data(sources, install_dir: moduledir)

@@ -7,7 +7,6 @@ import sys
 import threading
 from io import BytesIO
 
-import gi
 from gi.repository import Gdk, Gio, GLib, Gtk
 
 from googletrans import LANGUAGES, Translator
@@ -50,6 +49,12 @@ class DialectWindow(Gtk.ApplicationWindow):
         self.set_border_width(10)
         self.set_default_size(400, 200)
         self.set_default_icon_name(APP_ID)
+
+        # Load saved dark mode
+        gtk_settings = Gtk.Settings.get_default()
+        dark_mode = self.settings.get_boolean('dark-mode')
+        gtk_settings.set_property('gtk-application-prefer-dark-theme',
+                                  dark_mode)
 
         self.header()
         self.window()
