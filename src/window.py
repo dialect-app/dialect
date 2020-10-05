@@ -139,6 +139,9 @@ class DialectWindow(Handy.ApplicationWindow):
                                          True, True, 0)
         self.langs_button_box.set_homogeneous(False)
 
+        # Switch button
+        self.switch_btn.connect('clicked', self.ui_switch)
+
         # Add menu to menu button
         builder = Gtk.Builder.new_from_resource(f'{RES_PATH}/menu.ui')
         menu = builder.get_object('app-menu')
@@ -204,7 +207,7 @@ class DialectWindow(Handy.ApplicationWindow):
         # Re-enable widgets
         self.first_language_combo.set_sensitive(True)
         self.second_language_combo.set_sensitive(True)
-        self.switch_button.set_sensitive(True)
+        self.switch_btn.set_sensitive(True)
 
     def switch_auto_lang(self, second_language_pos, first_text, second_text):
         revealed_language = str(self.translator.detect(first_text).lang)
@@ -254,8 +257,8 @@ class DialectWindow(Handy.ApplicationWindow):
         second_language_voice = self.lang_codes[second_language_pos]
         # Add here code that changes voice button behavior
         if second_text != '' and second_language_voice in self.lang_speech:
-            self.voice.set_sensitive(False)
-            self.voice.set_image(self.voice_spinner)
+            self.voice_btn.set_sensitive(False)
+            self.voice_btn.set_image(self.voice_spinner)
             self.voice_spinner.start()
             threading.Thread(
                 target=self.voice_download,
@@ -276,8 +279,8 @@ class DialectWindow(Handy.ApplicationWindow):
             play(sound_to_play)
         finally:
             # The code to execute no matter what
-            GLib.idle_add(self.voice.set_sensitive, True)
-            GLib.idle_add(self.voice.set_image, self.voice_image)
+            GLib.idle_add(self.voice_btn.set_sensitive, True)
+            GLib.idle_add(self.voice_btn.set_image, self.voice_image)
             GLib.idle_add(self.voice_spinner.stop)
 
     # This starts the translation if Ctrl+Enter button is pressed
