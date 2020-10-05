@@ -6,3 +6,8 @@
   border-bottom-right-radius: 8px;
   padding: 6px;
 }
+
+scrolledwindow, textview, textview text  {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
