@@ -7,7 +7,7 @@ import sys
 import threading
 from io import BytesIO
 
-from gi.repository import Gdk, Gio, GLib, Gtk
+from gi.repository import Gdk, Gio, GLib, Gtk, Handy
 
 from googletrans import LANGUAGES, Translator
 from gtts import gTTS, lang
@@ -18,11 +18,35 @@ from .define import APP_ID, RES_PATH, MAX_LENGTH, TRANS_NUMBER, LANG_NUMBER, \
     BUTTON_LENGTH, BUTTON_NUM_LANGUAGES
 
 
-class DialectWindow(Gtk.ApplicationWindow):
+@Gtk.Template(resource_path=f'{RES_PATH}/window.ui')
+class DialectWindow(Handy.ApplicationWindow):
+    __gtype_name__ = 'DialectWindow'
+
+    # Get widgets
+    main_stack = Gtk.Template.Child()
+    exit_btn = Gtk.Template.Child()
+
+    langs_button_box = Gtk.Template.Child()
+    switch_btn = Gtk.Template.Child()
+
+    return_btn = Gtk.Template.Child()
+    forward_btn = Gtk.Template.Child()
+
+    menu_btn = Gtk.Template.Child()
+
+    left_text = Gtk.Template.Child()
+    clear_btn = Gtk.Template.Child()
+    paste_btn = Gtk.Template.Child()
+    translate_btn = Gtk.Template.Child()
+
+    right_text = Gtk.Template.Child()
+    copy_btn = Gtk.Template.Child()
+    voice_btn = Gtk.Template.Child()
 
     # Language values
     lang_codes = list(LANGUAGES.keys())
     lang_names = list(LANGUAGES.values())
+    lang_speech = None
     # Current input Text
     current_input_text = ''
     current_history = 0
@@ -34,7 +58,6 @@ class DialectWindow(Gtk.ApplicationWindow):
     first_key = 0
     second_key = 0
 
-    # Mount everything
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -44,10 +67,16 @@ class DialectWindow(Gtk.ApplicationWindow):
         self.left_langs = list(self.settings.get_value('left-langs'))
         self.right_langs = list(self.settings.get_value('right-langs'))
 
+        # Google Translate object
         self.translator = Translator()
+
+        # Clipboard
         self.clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)  # This is only for the Clipboard button
-        self.set_border_width(10)
-        self.set_default_size(400, 200)
+
+        # Setup window
+        self.setup()
+
+    def setup(self):
         self.set_default_icon_name(APP_ID)
 
         # Load saved dark mode
@@ -56,59 +85,31 @@ class DialectWindow(Gtk.ApplicationWindow):
         gtk_settings.set_property('gtk-application-prefer-dark-theme',
                                   dark_mode)
 
-        self.header()
-        self.window()
+        # Get languages available for speech
+        threading.Thread(target=self.load_lang_speech).start()
 
-        # Languages available for speech
+        self.setup_headerbar()
+        self.setup_translation()
+
+    def load_lang_speech(self):
         try:
             self.lang_speech = list(lang.tts_langs(tld='com').keys())
+            GLib.idle_add(self.main_stack.set_visible_child_name, 'translate')
+
         except RuntimeError as exc:
-            error_dialog = Gtk.MessageDialog(
-                transient_for=self,
-                modal=True,
-                message_type=Gtk.MessageType.ERROR,
-                buttons=Gtk.ButtonsType.OK,
-                text='No network connection detected. Exiting.'
-            )
-            print('Error: ' + str(exc))
-            response = error_dialog.run()
-            if response:
+            def quit(self):
                 sys.exit(1)
 
-    # Header bar
-    def header(self):
-        header_bar = Gtk.HeaderBar()
-        header_bar.set_show_close_button(True)
-        self.set_titlebar(header_bar)
+            self.main_stack.set_visible_child_name('error')
+            self.exit_btn.connect('clicked', quit)
+            print('Error: ' + str(exc))
 
-        # Boxes creation
-        header_box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
-        options_box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
+    def setup_headerbar(self):
+        # Connect history buttons
+        self.return_btn.connect('clicked', self.ui_return)
+        self.forward_btn.connect('clicked', self.ui_forward)
 
-        header_bar.pack_start(header_box)
-        header_bar.pack_end(options_box)
-
-        # Header box
-        #
-        # Return button
-        self.return_button = Gtk.Button.new_from_icon_name('go-previous-symbolic', Gtk.IconSize.BUTTON)
-        self.return_button.set_tooltip_text('Previous translation')
-        self.return_button.set_sensitive(len(self.history) > 1)
-        self.return_button.connect('clicked', self.ui_return)
-
-        # Forward button
-        self.forward_button = Gtk.Button.new_from_icon_name('go-next-symbolic', Gtk.IconSize.BUTTON)
-        self.forward_button.set_tooltip_text('Next translation')
-        self.forward_button.set_sensitive(False)
-        self.forward_button.connect('clicked', self.ui_forward)
-
-        # Button box for history navigation buttons
-        history_button_box = Gtk.ButtonBox(orientation=Gtk.Orientation.HORIZONTAL)
-        history_button_box.set_layout(Gtk.ButtonBoxStyle.EXPAND)
-        history_button_box.pack_start(self.return_button, True, True, 0)
-        history_button_box.pack_start(self.forward_button, True, True, 0)
-
-        # First language
+        # First language combo
         first_language_list = Gtk.ListStore(str)
         first_language_list.append(['Auto'])
         for lang_name in self.lang_names:
@@ -118,14 +119,8 @@ class DialectWindow(Gtk.ApplicationWindow):
         self.first_language_combo.pack_start(first_language_cell, True)
         self.first_language_combo.add_attribute(first_language_cell, 'text', 0)
         self.first_language_combo.set_active(0)
-        self.first_language_combo.connect('changed', self.history_left_lang_update)
 
-        # Switch
-        self.switch_button = Gtk.Button.new_from_icon_name('object-flip-horizontal-symbolic', Gtk.IconSize.BUTTON)
-        self.switch_button.set_tooltip_text('Switch languages')
-        self.switch_button.connect('clicked', self.ui_switch)
-
-        # Second language
+        # Second language combo
         second_language_list = Gtk.ListStore(str)
         for lang_name in self.lang_names:
             second_language_list.append([lang_name.capitalize()])
@@ -134,126 +129,51 @@ class DialectWindow(Gtk.ApplicationWindow):
         self.second_language_combo.pack_start(second_language_cell, True)
         self.second_language_combo.add_attribute(second_language_cell, 'text', 0)
         self.second_language_combo.set_active(self.lang_codes.index(self.right_langs[0]))
-        self.second_language_combo.connect('changed', self.history_right_lang_update)
 
-        # Button box for history navigation buttons
-        language_button_box = Gtk.ButtonBox(orientation=Gtk.Orientation.HORIZONTAL)
-        language_button_box.set_layout(Gtk.ButtonBoxStyle.EXPAND)
-        language_button_box.set_homogeneous(False)
-        language_button_box.pack_start(self.first_language_combo, True, True, 0)
-        language_button_box.pack_start(self.switch_button, True, False, 0)
-        language_button_box.pack_start(self.second_language_combo, True, True, 0)
+        # Setup combos in the button box
+        self.langs_button_box.pack_start(self.first_language_combo,
+                                         True, True, 0)
+        self.langs_button_box.child_set_property(self.first_language_combo,
+                                                 'position', 0)
+        self.langs_button_box.pack_start(self.second_language_combo,
+                                         True, True, 0)
+        self.langs_button_box.set_homogeneous(False)
 
-        # Voice
-        self.voice = Gtk.Button()
-        self.voice.set_tooltip_text('Reproduce')
-        self.voice.connect('clicked', self.ui_voice)
-        self.voice_image = Gtk.Image.new_from_icon_name('audio-speakers-symbolic', Gtk.IconSize.BUTTON)
-        self.voice_spinner = Gtk.Spinner()  # For use while audio is running.
-        self.voice.set_image(self.voice_image)
-
-        # Clipboard
-        copy_button = Gtk.Button.new_from_icon_name('edit-paste-symbolic', Gtk.IconSize.BUTTON)
-        copy_button.set_tooltip_text('Copy to Clipboard')
-        copy_button.connect('clicked', self.ui_copy)
-
-        # Menu button
+        # Add menu to menu button
         builder = Gtk.Builder.new_from_resource(f'{RES_PATH}/menu.ui')
         menu = builder.get_object('app-menu')
-        menu_button = Gtk.MenuButton()
-        menu_button.set_direction(Gtk.ArrowType.NONE)
-        menu_popover = Gtk.Popover.new_from_model(menu_button, menu)
-        menu_button.set_popover(menu_popover)
+        menu_popover = Gtk.Popover.new_from_model(self.menu_btn, menu)
+        self.menu_btn.set_popover(menu_popover)
 
-        # Mount buttons
-        #
-        # Left side
-        header_bar.pack_start(history_button_box)
-
-        # Center
-        header_bar.set_custom_title(language_button_box)
-
-        # Right side
-        options_box.pack_start(self.voice, True, True, 0)
-        options_box.pack_start(copy_button, True, True, 0)
-        options_box.pack_start(menu_button, True, True, 0)
-
-    # Window
-    def window(self):
-        # Boxes
-        box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.VERTICAL)
-        self.add(box)
-
-        upper_box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
-        lower_box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
-        box.pack_start(upper_box, True, True, 0)
-        box.pack_end(lower_box, False, False, 0)
-
-        # Left side
-        #
-        # Language box
-        lang_left_box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
-        lang_l0 = Gtk.Button.new_with_label('Auto')
-        lang_l0.set_property('width-request', 65)
-        lang_left_box.pack_start(lang_l0, False, False, 0)
-        lang_l0.connect('clicked', self.ui_left_language_button)
-        self.lang_left_buttons = []
-        for i in range(BUTTON_NUM_LANGUAGES):
-            self.lang_left_buttons.append(Gtk.Button())
-            self.lang_left_buttons[i].set_property('width-request', BUTTON_LENGTH)
-            self.lang_left_buttons[i].connect('clicked', self.ui_left_language_button)
-            lang_left_box.pack_start(self.lang_left_buttons[i], False, False, 0)
-        self.rewrite_left_language_buttons()
-        lower_box.pack_start(lang_left_box, False, False, 0)
-
-        # Text side
-        left_scroll = Gtk.ScrolledWindow()
-        left_scroll.set_border_width(2)
-        left_scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        self.left_text = Gtk.TextView()
-        self.left_text.set_wrap_mode(2)
+    def setup_translation(self):
+        # Left buffer
         self.left_buffer = self.left_text.get_buffer()
         self.left_buffer.set_text('')
         self.left_text.connect('key-press-event', self.update_trans_button)
         self.left_buffer.connect('changed', self.text_changed)
         self.connect('key-press-event', self.update_trans_button)
-        left_scroll.add(self.left_text)
-        upper_box.pack_start(left_scroll, True, True, 0)
 
-        # Central part
-        #
-        # The button that starts the translation
-        self.trans_start = Gtk.Button.new_from_icon_name('go-next-symbolic', Gtk.IconSize.BUTTON)
-        self.trans_start.set_tooltip_text("Hint: you can press 'Ctrl+Enter' to translate.")
-        self.trans_start.set_sensitive(self.left_buffer.get_char_count() != 0)
-        self.trans_start.connect('clicked', self.translation)
-        upper_box.pack_start(self.trans_start, False, False, 0)
+        # Translate button
+        self.translate_btn.set_sensitive(False)
+        self.translate_btn.connect('clicked', self.translation)
 
-        # Right side
-        # Language box
-        lang_right_box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
-        self.lan_right_buttons = []
-        for i in range(BUTTON_NUM_LANGUAGES):
-            self.lan_right_buttons.append(Gtk.Button())
-            self.lan_right_buttons[i].set_property('width-request', BUTTON_LENGTH)
-            self.lan_right_buttons[i].connect('clicked', self.ui_right_language_button)
-            lang_right_box.pack_start(self.lan_right_buttons[i], False, False, 0)
-        self.rewrite_right_language_buttons()
-        lower_box.pack_end(lang_right_box, False, True, 0)
-
-        # Text side
-        right_scroll = Gtk.ScrolledWindow()
-        right_scroll.set_border_width(2)
-        right_scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        right_text = Gtk.TextView()
-        right_text.set_wrap_mode(2)
-        self.right_buffer = right_text.get_buffer()
-        right_text.set_editable(False)
+        # Right buffer
+        self.right_buffer = self.right_text.get_buffer()
         self.right_buffer.set_text('')
-        right_scroll.add(right_text)
-        upper_box.pack_end(right_scroll, True, True, 0)
 
-    # User interface functions
+        # Clipboard button
+        self.copy_btn.connect('clicked', self.ui_copy)
+
+        # Voice btn
+        self.voice_btn.connect('clicked', self.ui_voice)
+        self.voice_image = Gtk.Image.new_from_icon_name(
+            'audio-speakers-symbolic', Gtk.IconSize.BUTTON)
+        self.voice_spinner = Gtk.Spinner()  # For use while audio is running.
+        self.voice_btn.set_image(self.voice_image)
+
+    """
+    User interface functions
+    """
     def ui_return(self, _button):
         if self.current_history != TRANS_NUMBER:
             self.current_history += 1
@@ -378,85 +298,23 @@ class DialectWindow(Gtk.ApplicationWindow):
         return Gdk.EVENT_PROPAGATE
 
     def text_changed(self, buffer):
-        self.trans_start.set_sensitive(buffer.get_char_count() != 0)
+        self.translate_btn.set_sensitive(buffer.get_char_count() != 0)
         if self.settings.get_boolean('live-translation'):
             GLib.idle_add(self.translation, None)
 
     # The history part
-    def reset_return_forward_buttons(self):
-        self.return_button.set_sensitive(self.current_history < len(self.history) - 1)
-        self.forward_button.set_sensitive(self.current_history > 0)
+    def reset_return_forward_btns(self):
+        self.return_btn.set_sensitive(self.current_history < len(self.history) - 1)
+        self.forward_btn.set_sensitive(self.current_history > 0)
 
     # Retrieve translation history
     def history_update(self):
-        self.reset_return_forward_buttons()
+        self.reset_return_forward_btns()
         lang_hist = self.history[self.current_history]
         self.first_language_combo.set_active(self.lang_codes.index(lang_hist['Languages'][0]) + 1)
         self.second_language_combo.set_active(self.lang_codes.index(lang_hist['Languages'][1]))
         self.left_buffer.set_text(lang_hist['Text'][0])
         self.right_buffer.set_text(lang_hist['Text'][1])
-
-    # Update language buttons below (left)
-    def history_left_lang_update(self, _button):
-        first_language_pos = self.first_language_combo.get_active()
-        # If you select the same language of the other part, they get switched
-        if first_language_pos - 1 == self.second_language_combo.get_active():
-            lang_one = self.left_langs[0]
-            lang_two = self.right_langs[0]
-            self.first_language_combo.set_active(self.lang_codes.index(lang_two) + 1)
-            self.second_language_combo.set_active(self.lang_codes.index(lang_one))
-            first_buffer = self.left_buffer
-            second_buffer = self.right_buffer
-            first_text = first_buffer.get_text(first_buffer.get_start_iter(), first_buffer.get_end_iter(), True)
-            second_text = second_buffer.get_text(second_buffer.get_start_iter(), second_buffer.get_end_iter(), True)
-            first_buffer.set_text(second_text)
-            second_buffer.set_text(first_text)
-        else:
-            code = self.lang_codes[first_language_pos - 1]
-            if self.left_langs[0] not in self.left_langs[1:]:
-                self.left_langs.pop()
-                self.left_langs.insert(0, code)
-            self.left_langs[0] = code
-            self.settings.set_value('left-langs',
-                                    GLib.Variant('as', self.left_langs))
-            if self.current_history == 0:
-                self.rewrite_left_language_buttons()
-
-    # Update language buttons below (right)
-    def history_right_lang_update(self, _button):
-        second_language_pos = self.second_language_combo.get_active()
-        code = self.lang_codes[second_language_pos]
-        if code == self.first_language_combo.get_active() - 1:
-            lang_one = self.left_langs[0]
-            lang_two = self.right_langs[0]
-            self.first_language_combo.set_active(self.lang_codes.index(lang_two) + 1)
-            self.second_language_combo.set_active(self.lang_codes.index(lang_one))
-            first_buffer = self.left_buffer
-            second_buffer = self.right_buffer
-            first_text = first_buffer.get_text(first_buffer.get_start_iter(), first_buffer.get_end_iter(), True)
-            second_text = second_buffer.get_text(second_buffer.get_start_iter(), second_buffer.get_end_iter(), True)
-            first_buffer.set_text(second_text)
-            second_buffer.set_text(first_text)
-        else:
-            if not self.right_langs[0] in self.right_langs[1:]:
-                self.right_langs.pop()
-                self.right_langs.insert(0, code)
-            self.right_langs[0] = code
-            self.settings.set_value('right-langs',
-                                    GLib.Variant('as', self.right_langs))
-            if self.current_history == 0:
-                self.rewrite_right_language_buttons()
-
-    # Every time a new language is selected, the language buttons below are updated
-    def rewrite_left_language_buttons(self):
-        for i in range(BUTTON_NUM_LANGUAGES):
-            num = self.lang_codes.index(self.left_langs[i + 1])
-            self.lang_left_buttons[i].set_label(self.lang_names[num].capitalize())
-
-    def rewrite_right_language_buttons(self):
-        for i in range(BUTTON_NUM_LANGUAGES):
-            num = self.lang_codes.index(self.right_langs[i + 1])
-            self.lan_right_buttons[i].set_label(self.lang_names[num].capitalize())
 
     # THE TRANSLATION AND SAVING TO HISTORY PART
     def appeared_before(self):
@@ -541,7 +399,7 @@ class DialectWindow(Gtk.ApplicationWindow):
                         'Text': [first_text, second_text]
                     }
                     if len(self.history) > 0:
-                        self.return_button.set_sensitive(True)
+                        self.return_btn.set_sensitive(True)
                     if len(self.history) == TRANS_NUMBER:
                         self.history.pop()
                     self.history.insert(0, new_history_trans)

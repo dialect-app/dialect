@@ -2,6 +2,7 @@
 <gresources>
   <gresource prefix="/com/github/gi_lom/dialect">
     <file>menu.ui</file>
+    <file>window.ui</file>
     <file>about.ui</file>
     <file>preferences.ui</file>
   </gresource>
