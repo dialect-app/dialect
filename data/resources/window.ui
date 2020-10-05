@@ -303,6 +303,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
+                                    <property name="sensitive">False</property>
                                     <child>
                                       <object class="GtkImage">
                                         <property name="visible">True</property>
@@ -349,6 +350,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <property name="sensitive">False</property>
                                 <style>
                                   <class name="suggested-action"/>
                                 </style>

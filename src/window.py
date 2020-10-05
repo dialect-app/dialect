@@ -156,8 +156,10 @@ class DialectWindow(Handy.ApplicationWindow):
         self.left_buffer.connect('changed', self.text_changed)
         self.connect('key-press-event', self.update_trans_button)
 
+        # Clear button
+        self.clear_btn.connect('clicked', self.ui_clear)
+
         # Translate button
-        self.translate_btn.set_sensitive(False)
         self.translate_btn.connect('clicked', self.translation)
 
         # Right buffer
@@ -244,6 +246,9 @@ class DialectWindow(Handy.ApplicationWindow):
         # Switch all
         self.switch_all(first_language, second_language, first_text, second_text)
 
+    def ui_clear(self, _button):
+        self.left_buffer.set_text('')
+
     def ui_copy(self, _button):
         second_buffer = self.right_buffer
         second_text = second_buffer.get_text(second_buffer.get_start_iter(), second_buffer.get_end_iter(), True)
@@ -301,7 +306,9 @@ class DialectWindow(Handy.ApplicationWindow):
         return Gdk.EVENT_PROPAGATE
 
     def text_changed(self, buffer):
-        self.translate_btn.set_sensitive(buffer.get_char_count() != 0)
+        sensitive = buffer.get_char_count() != 0
+        self.translate_btn.set_sensitive(sensitive)
+        self.clear_btn.set_sensitive(sensitive)
         if self.settings.get_boolean('live-translation'):
             GLib.idle_add(self.translation, None)
 
