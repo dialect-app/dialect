@@ -344,6 +344,7 @@ class DialectWindow(Handy.ApplicationWindow):
     def translation(self, _button):
         # If it's like the last translation then it's useless to continue
         if len(self.history) == 0 or not self.appeared_before():
+            self.copy_btn.set_sensitive(True)
             self.voice_btn.set_sensitive(True)
             first_buffer = self.left_buffer
             second_buffer = self.right_buffer

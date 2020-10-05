@@ -368,24 +368,6 @@
                           <class name="toolbox"/>
                         </style>
                         <child>
-                          <object class="GtkButton" id="copy_btn">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="tooltip_text" translatable="yes">Copy</property>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="icon_name">edit-copy-symbolic</property>
-                              </object>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="pack_type">end</property>
-                          </packing>
-                        </child>
-                        <child>
                           <object class="GtkButton" id="voice_btn">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
@@ -397,6 +379,25 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="icon_name">audio-speakers-symbolic</property>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="pack_type">end</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="copy_btn">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="sensitive">False</property>
+                            <property name="tooltip_text" translatable="yes">Copy</property>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="icon_name">edit-copy-symbolic</property>
                               </object>
                             </child>
                           </object>
