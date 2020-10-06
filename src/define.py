@@ -11,4 +11,3 @@ TRANS_NUMBER = 10  # number of translations to save in history
 LANG_NUMBER = 8  # number of language tuples to save in history
 BUTTON_LENGTH = 65  # length of language buttons
 BUTTON_NUM_LANGUAGES = 3  # number of language buttons
-

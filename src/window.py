@@ -7,7 +7,7 @@ import sys
 import threading
 from io import BytesIO
 
-from gi.repository import Gdk, Gio, GLib, GObject, Gtk, Handy
+from gi.repository import Gdk, Gio, GLib, Gtk, Handy
 
 from googletrans import LANGUAGES, Translator
 from gtts import gTTS, lang
@@ -113,7 +113,6 @@ class DialectWindow(Handy.ApplicationWindow):
         # Connect history buttons
         self.return_btn.connect('clicked', self.ui_return)
         self.forward_btn.connect('clicked', self.ui_forward)
-
 
         # Left lang selector
         self.left_lang_selector = DialectLangSelector()
@@ -226,7 +225,6 @@ class DialectWindow(Handy.ApplicationWindow):
 
         # Refresh list
         self.right_lang_selector.refresh_selected()
-
 
     """
     User interface functions
@@ -458,4 +456,3 @@ class DialectWindow(Handy.ApplicationWindow):
                     if len(self.history) == TRANS_NUMBER:
                         self.history.pop()
                     self.history.insert(0, new_history_trans)
-

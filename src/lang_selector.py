@@ -5,9 +5,10 @@
 
 import re
 
-from gi.repository import Gio, GObject, Gtk, Handy
+from gi.repository import GObject, Gtk
 
 from dialect.define import RES_PATH
+
 
 @Gtk.Template(resource_path=f'{RES_PATH}/lang-selector.ui')
 class DialectLangSelector(Gtk.Popover):
@@ -21,7 +22,7 @@ class DialectLangSelector(Gtk.Popover):
     separator = Gtk.Template.Child()
 
     # Propeties
-    selected = GObject.Property(type=str) # Key of the selected lang
+    selected = GObject.Property(type=str)  # Key of the selected lang
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

@@ -5,8 +5,6 @@
 
 # Initial setup
 import sys
-import threading
-from io import BytesIO
 
 import gi
 gi.require_version('Gtk', '3.0')

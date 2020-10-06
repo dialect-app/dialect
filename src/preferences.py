@@ -7,6 +7,7 @@ from gi.repository import Gio, Gtk, Handy
 
 from dialect.define import APP_ID, RES_PATH
 
+
 @Gtk.Template(resource_path=f'{RES_PATH}/preferences.ui')
 class DialectPreferencesWindow(Handy.PreferencesWindow):
     __gtype_name__ = 'DialectPreferencesWindow'
