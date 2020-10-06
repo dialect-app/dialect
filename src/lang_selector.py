@@ -26,12 +26,14 @@ class DialectLangSelector(Gtk.Popover):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+        # Connect popover closed signal
+        self.connect('closed', self._closed)
         # Connect list signals
         self.recent_list.connect('row-activated', self._activated)
         self.lang_list.connect('row-activated', self._activated)
-
+        # Set filter func to lang list
         self.lang_list.set_filter_func(self.filter_func, None, False)
-
+        # Connect search entry changed signal
         self.search.connect('changed', self._update_search)
 
     def filter_func(self, row, _data, _notify_destroy):
@@ -52,11 +54,13 @@ class DialectLangSelector(Gtk.Popover):
     def _activated(self, _list, row):
         # Close popover
         self.popdown()
+        # Set selected property
+        self.set_property('selected', row.code)
+
+    def _closed(self, _popover):
         # Reset scroll
         vscroll = self.scroll.get_vadjustment()
         vscroll.set_value(0)
-        # Set selected property
-        self.set_property('selected', row.code)
 
     def _update_search(self, _entry):
         search = self.search.get_text()
