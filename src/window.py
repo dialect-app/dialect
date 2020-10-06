@@ -300,8 +300,7 @@ class DialectWindow(Handy.ApplicationWindow):
     def ui_voice(self, _button):
         second_buffer = self.right_buffer
         second_text = second_buffer.get_text(second_buffer.get_start_iter(), second_buffer.get_end_iter(), True)
-        second_language_pos = self.second_language_combo.get_active()
-        second_language_voice = self.lang_codes[second_language_pos]
+        second_language_voice = self.right_lang_selector.get_property('selected')
         # Add here code that changes voice button behavior
         if second_text != '' and second_language_voice in self.lang_speech:
             self.voice_btn.set_sensitive(False)
