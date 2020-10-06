@@ -7,6 +7,8 @@ import re
 
 from gi.repository import Gio, GObject, Gtk, Handy
 
+from dialect.define import RES_PATH
+
 @Gtk.Template(resource_path=f'{RES_PATH}/lang-selector.ui')
 class DialectLangSelector(Gtk.Popover):
     __gtype_name__ = 'DialectLangSelector'
