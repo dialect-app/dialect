@@ -30,7 +30,9 @@ class DialectWindow(Handy.ApplicationWindow):
     langs_button_box = Gtk.Template.Child()
     switch_btn = Gtk.Template.Child()
     left_lang_btn = Gtk.Template.Child()
+    left_lang_label = Gtk.Template.Child()
     right_lang_btn = Gtk.Template.Child()
+    right_lang_label = Gtk.Template.Child()
 
     return_btn = Gtk.Template.Child()
     forward_btn = Gtk.Template.Child()
@@ -177,7 +179,7 @@ class DialectWindow(Handy.ApplicationWindow):
         code = self.left_lang_selector.get_property('selected')
 
         if code in LANGUAGES:
-            self.left_lang_btn.set_label(LANGUAGES[code].capitalize())
+            self.left_lang_label.set_label(LANGUAGES[code].capitalize())
             # Updated saved left langs list
             if code in self.left_langs:
                 # Bring lang to the top
@@ -189,7 +191,7 @@ class DialectWindow(Handy.ApplicationWindow):
             self.settings.set_value('left-langs',
                                     GLib.Variant('as', self.left_langs))
         else:
-            self.left_lang_btn.set_label('Auto')
+            self.left_lang_label.set_label('Auto')
 
         # Rewrite recent langs
         self.left_lang_selector.clear_recent()
@@ -201,7 +203,7 @@ class DialectWindow(Handy.ApplicationWindow):
     def on_right_lang_changed(self, _obj, _param):
         code = self.right_lang_selector.get_property('selected')
         name = LANGUAGES[code].capitalize()
-        self.right_lang_btn.set_label(name)
+        self.right_lang_label.set_label(name)
         # Updated saved right langs list
         if code in self.right_langs:
             # Bring lang to the top
