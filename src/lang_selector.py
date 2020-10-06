@@ -82,6 +82,7 @@ class LangRow(Gtk.ListBoxRow):
         self.name = name
 
         label = Gtk.Label(self.name, halign=Gtk.Align.START,
-                          margin_start=8)
+                          margin_start=4)
         self.add(label)
+        self.get_style_context().add_class('langselector')
         self.show_all()

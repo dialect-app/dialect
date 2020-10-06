@@ -27,6 +27,9 @@
           <object class="GtkScrolledWindow" id="scroll">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="margin_bottom">8</property>
+            <property name="margin_start">8</property>
+            <property name="margin_end">8</property>
             <child>
               <object class="GtkViewport">
                 <property name="visible">True</property>
