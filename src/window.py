@@ -45,6 +45,7 @@ class DialectWindow(Handy.ApplicationWindow):
     translate_btn = Gtk.Template.Child()
 
     right_text = Gtk.Template.Child()
+    trans_spinner = Gtk.Template.Child()
     copy_btn = Gtk.Template.Child()
     voice_btn = Gtk.Template.Child()
 
@@ -102,7 +103,7 @@ class DialectWindow(Handy.ApplicationWindow):
             GLib.idle_add(self.main_stack.set_visible_child_name, 'translate')
 
         except RuntimeError as exc:
-            def quit(self):
+            def quit():
                 sys.exit(1)
 
             self.main_stack.set_visible_child_name('error')
@@ -400,13 +401,7 @@ class DialectWindow(Handy.ApplicationWindow):
                     'first_language': first_language,
                     'second_language': second_language
                 })
-                current_right_text = second_buffer.get_text(
-                    second_buffer.get_start_iter(),
-                    second_buffer.get_end_iter(),
-                    True
-                )
-                if not current_right_text.endswith('...'):
-                    self.right_buffer.set_text(current_right_text + '...')
+                self.trans_spinner.start()
 
                 # Check if there are any active threads.
                 if self.active_thread is None:
@@ -446,6 +441,7 @@ class DialectWindow(Handy.ApplicationWindow):
                     except Exception:
                         pass
                     GLib.idle_add(self.right_buffer.set_text, second_text)
+                    GLib.idle_add(self.trans_spinner.stop)
                     # Finally, everything is saved in history
                     new_history_trans = {
                         'Languages': [first_language, second_language],

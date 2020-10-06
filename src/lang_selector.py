@@ -39,7 +39,7 @@ class DialectLangSelector(Gtk.Popover):
 
     def filter_func(self, row, _data, _notify_destroy):
         search = self.search.get_text()
-        return True if re.search(search, row.name, re.IGNORECASE) else False
+        return bool(re.search(search, row.name, re.IGNORECASE))
 
     def insert(self, code, name, position=-1):
         row_selected = (code == self.selected)

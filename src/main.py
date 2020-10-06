@@ -62,13 +62,13 @@ class Dialect(Gtk.Application):
         about_action.connect('activate', self.on_about)
         self.add_action(about_action)
 
-    def on_preferences(self, action, param):
+    def on_preferences(self, _action, _param):
         """ Show preferences window """
         window = DialectPreferencesWindow()
         window.set_transient_for(self.window)
         window.present()
 
-    def on_about(self, action, param):
+    def on_about(self, _action, _param):
         """ Show about dialog """
         builder = Gtk.Builder.new_from_resource(f'{RES_PATH}/about.ui')
         about = builder.get_object('about')

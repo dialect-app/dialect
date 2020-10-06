@@ -425,6 +425,20 @@
                           <class name="toolbox"/>
                         </style>
                         <child>
+                          <object class="GtkSpinner" id="trans_spinner">
+                            <property name="visible">False</property>
+                            <property name="can_focus">False</property>
+                            <property name="active">False</property>
+                            <property name="margin_start">8</property>
+                            <property name="tooltip_text" translatable="yes">Translation in progress...</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
                           <object class="GtkButton" id="voice_btn">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
