@@ -41,15 +41,21 @@ class DialectLangSelector(Gtk.Popover):
         return True if re.search(search, row.name, re.IGNORECASE) else False
 
     def insert(self, code, name, position=-1):
-        self.lang_list.insert(LangRow(code, name), position)
+        row_selected = (code == self.selected)
+        self.lang_list.insert(LangRow(code, name, row_selected), position)
 
     def insert_recent(self, code, name, position=-1):
-        self.recent_list.insert(LangRow(code, name), position)
+        row_selected = (code == self.selected)
+        self.recent_list.insert(LangRow(code, name, row_selected), position)
 
     def clear_recent(self):
         children = self.recent_list.get_children()
         for child in children:
             self.recent_list.remove(child)
+
+    def refresh_selected(self):
+        for lang in self.lang_list.get_children():
+            lang.selected = (lang.code == self.selected)
 
     def _activated(self, _list, row):
         # Close popover
@@ -75,14 +81,27 @@ class DialectLangSelector(Gtk.Popover):
 
 class LangRow(Gtk.ListBoxRow):
 
-    def __init__(self, code, name, **kwargs):
+    def __init__(self, code, name, selected=False, **kwargs):
         super().__init__(**kwargs)
 
         self.code = code
         self.name = name
 
+        row_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
         label = Gtk.Label(self.name, halign=Gtk.Align.START,
                           margin_start=4)
-        self.add(label)
         self.get_style_context().add_class('langselector')
+        row_box.pack_start(label, False, True, 0)
+        self.selected_icon = Gtk.Image.new_from_icon_name('object-select-symbolic', Gtk.IconSize.BUTTON)
+        row_box.pack_start(self.selected_icon, False, True, 0)
+        self.add(row_box)
         self.show_all()
+        self.selected = selected
+
+    @property
+    def selected(self):
+        return self.selected_icon.get_visible()
+
+    @selected.setter
+    def selected(self, value):
+        self.selected_icon.set_visible(value)

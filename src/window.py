@@ -200,6 +200,9 @@ class DialectWindow(Handy.ApplicationWindow):
             name = LANGUAGES[code].capitalize()
             self.left_lang_selector.insert_recent(code, name)
 
+        # Refresh list
+        self.left_lang_selector.refresh_selected()
+
     def on_right_lang_changed(self, _obj, _param):
         code = self.right_lang_selector.get_property('selected')
         name = LANGUAGES[code].capitalize()
@@ -220,6 +223,9 @@ class DialectWindow(Handy.ApplicationWindow):
         for code in self.right_langs[1:]:
             name = LANGUAGES[code].capitalize()
             self.right_lang_selector.insert_recent(code, name)
+
+        # Refresh list
+        self.right_lang_selector.refresh_selected()
 
 
     """
