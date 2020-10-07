@@ -342,8 +342,16 @@ class DialectWindow(Handy.ApplicationWindow):
 
         if control_mask == modifiers:
             if keyboard.keyval == Gdk.KEY_Return:
+                if not self.settings.get_value('translate-accel'):
+                    GLib.idle_add(self.translation, button)
+                    return Gdk.EVENT_STOP
+                return Gdk.EVENT_PROPAGATE
+        elif keyboard.keyval == Gdk.KEY_Return:
+            if self.settings.get_value('translate-accel'):
                 GLib.idle_add(self.translation, button)
                 return Gdk.EVENT_STOP
+            return Gdk.EVENT_PROPAGATE
+
         return Gdk.EVENT_PROPAGATE
 
     def text_changed(self, buffer):
