@@ -104,7 +104,7 @@ class DialectWindow(Handy.ApplicationWindow):
             GLib.idle_add(self.main_stack.set_visible_child_name, 'translate')
 
         except RuntimeError as exc:
-            def quit():
+            def quit(_button):
                 sys.exit(1)
 
             self.main_stack.set_visible_child_name('error')
@@ -154,7 +154,6 @@ class DialectWindow(Handy.ApplicationWindow):
         # Left buffer
         self.left_buffer = self.left_text.get_buffer()
         self.left_buffer.set_text('')
-        self.left_text.connect('key-press-event', self.update_trans_button)
         self.left_buffer.connect('changed', self.text_changed)
         self.connect('key-press-event', self.update_trans_button)
         # Clear button
