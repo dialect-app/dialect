@@ -44,6 +44,7 @@ class DialectWindow(Handy.ApplicationWindow):
     paste_btn = Gtk.Template.Child()
     translate_btn = Gtk.Template.Child()
 
+    right_box = Gtk.Template.Child()
     right_text = Gtk.Template.Child()
     trans_spinner = Gtk.Template.Child()
     copy_btn = Gtk.Template.Child()
@@ -402,6 +403,7 @@ class DialectWindow(Handy.ApplicationWindow):
                     'second_language': second_language
                 })
                 self.trans_spinner.start()
+                self.right_box.set_sensitive(False)
 
                 # Check if there are any active threads.
                 if self.active_thread is None:
@@ -410,45 +412,46 @@ class DialectWindow(Handy.ApplicationWindow):
                     self.active_thread.start()
 
     def run_translation(self):
-        while True:
+        while self.trans_queue:
             # If the first language is revealed automatically, let's set it
-            if self.trans_queue:
-                trans_dict = self.trans_queue.pop(0)
-                first_text = trans_dict['first_text']
-                first_language = trans_dict['first_language']
-                second_language = trans_dict['second_language']
-                if first_language == 'auto' and first_text != '':
-                    first_language = str(self.translator.detect(first_text).lang)
-                    GLib.idle_add(self.left_lang_selector.set_property,
-                                  'selected', first_language)
-                    self.left_langs[0] = second_language
-                    self.settings.set_value('left-langs',
-                                            GLib.Variant('as', self.left_langs))
-                # If the two languages are the same, nothing is done
-                if first_language != second_language:
-                    second_text = ''
-                    # If the text is over the highest number of characters allowed, it is truncated.
-                    # This is done for avoiding exceeding the limit imposed by Google.
-                    if len(first_text) > 100:
-                        first_text = first_text[:MAX_LENGTH]
-                    # THIS IS WHERE THE TRANSLATION HAPPENS. The try is necessary to circumvent a bug of the used API
-                    try:
-                        second_text = self.translator.translate(
-                            first_text,
-                            src=first_language,
-                            dest=second_language
-                        ).text
-                    except Exception:
-                        pass
-                    GLib.idle_add(self.right_buffer.set_text, second_text)
-                    GLib.idle_add(self.trans_spinner.stop)
-                    # Finally, everything is saved in history
-                    new_history_trans = {
-                        'Languages': [first_language, second_language],
-                        'Text': [first_text, second_text]
-                    }
-                    if len(self.history) > 0:
-                        self.return_btn.set_sensitive(True)
-                    if len(self.history) == TRANS_NUMBER:
-                        self.history.pop()
-                    self.history.insert(0, new_history_trans)
+            trans_dict = self.trans_queue.pop(0)
+            first_text = trans_dict['first_text']
+            first_language = trans_dict['first_language']
+            second_language = trans_dict['second_language']
+            if first_language == 'auto' and first_text != '':
+                first_language = str(self.translator.detect(first_text).lang)
+                GLib.idle_add(self.left_lang_selector.set_property,
+                                'selected', first_language)
+                self.left_langs[0] = second_language
+                self.settings.set_value('left-langs',
+                                        GLib.Variant('as', self.left_langs))
+            # If the two languages are the same, nothing is done
+            if first_language != second_language:
+                second_text = ''
+                # If the text is over the highest number of characters allowed, it is truncated.
+                # This is done for avoiding exceeding the limit imposed by Google.
+                if len(first_text) > 100:
+                    first_text = first_text[:MAX_LENGTH]
+                # THIS IS WHERE THE TRANSLATION HAPPENS. The try is necessary to circumvent a bug of the used API
+                try:
+                    second_text = self.translator.translate(
+                        first_text,
+                        src=first_language,
+                        dest=second_language
+                    ).text
+                except Exception:
+                    pass
+                GLib.idle_add(self.right_buffer.set_text, second_text)
+                GLib.idle_add(self.trans_spinner.stop)
+                GLib.idle_add(self.right_box.set_sensitive, True)
+                # Finally, everything is saved in history
+                new_history_trans = {
+                    'Languages': [first_language, second_language],
+                    'Text': [first_text, second_text]
+                }
+                if len(self.history) > 0:
+                    self.return_btn.set_sensitive(True)
+                if len(self.history) == TRANS_NUMBER:
+                    self.history.pop()
+                self.history.insert(0, new_history_trans)
+        self.active_thread = None
