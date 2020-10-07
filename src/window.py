@@ -340,17 +340,18 @@ class DialectWindow(Handy.ApplicationWindow):
                 modifiers in (shift_mask, 0) and not self.left_text.is_focus()):
             self.left_text.grab_focus()
 
-        if control_mask == modifiers:
-            if keyboard.keyval == Gdk.KEY_Return:
-                if not self.settings.get_value('translate-accel'):
-                    GLib.idle_add(self.translation, button)
+        if not self.settings.get_boolean('live-translation'):
+            if control_mask == modifiers:
+                if keyboard.keyval == Gdk.KEY_Return:
+                    if not self.settings.get_value('translate-accel'):
+                        self.translation(button)
+                        return Gdk.EVENT_STOP
+                    return Gdk.EVENT_PROPAGATE
+            elif keyboard.keyval == Gdk.KEY_Return:
+                if self.settings.get_value('translate-accel'):
+                    self.translation(button)
                     return Gdk.EVENT_STOP
                 return Gdk.EVENT_PROPAGATE
-        elif keyboard.keyval == Gdk.KEY_Return:
-            if self.settings.get_value('translate-accel'):
-                GLib.idle_add(self.translation, button)
-                return Gdk.EVENT_STOP
-            return Gdk.EVENT_PROPAGATE
 
         return Gdk.EVENT_PROPAGATE
 
@@ -359,7 +360,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.translate_btn.set_sensitive(sensitive)
         self.clear_btn.set_sensitive(sensitive)
         if self.settings.get_boolean('live-translation'):
-            GLib.idle_add(self.translation, None)
+            self.translation(None)
 
     # The history part
     def reset_return_forward_btns(self):
@@ -429,8 +430,8 @@ class DialectWindow(Handy.ApplicationWindow):
             if first_language == 'auto' and first_text != '':
                 first_language = str(self.translator.detect(first_text).lang)
                 GLib.idle_add(self.left_lang_selector.set_property,
-                                'selected', first_language)
-                self.left_langs[0] = second_language
+                              'selected', first_language)
+                self.left_langs[0] = first_language
                 self.settings.set_value('left-langs',
                                         GLib.Variant('as', self.left_langs))
             # If the two languages are the same, nothing is done
@@ -450,8 +451,7 @@ class DialectWindow(Handy.ApplicationWindow):
                 except Exception:
                     pass
                 GLib.idle_add(self.right_buffer.set_text, second_text)
-                GLib.idle_add(self.trans_spinner.stop)
-                GLib.idle_add(self.right_box.set_sensitive, True)
+
                 # Finally, everything is saved in history
                 new_history_trans = {
                     'Languages': [first_language, second_language],
@@ -462,4 +462,6 @@ class DialectWindow(Handy.ApplicationWindow):
                 if len(self.history) == TRANS_NUMBER:
                     self.history.pop()
                 self.history.insert(0, new_history_trans)
+            GLib.idle_add(self.trans_spinner.stop)
+            GLib.idle_add(self.right_box.set_sensitive, True)
         self.active_thread = None
