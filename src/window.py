@@ -120,8 +120,8 @@ class DialectWindow(Handy.ApplicationWindow):
         self.left_lang_selector = DialectLangSelector()
         self.left_lang_selector.connect('notify::selected',
                                         self.on_left_lang_changed)
-        # Set selected lang to auto
-        self.left_lang_selector.set_property('selected', 'auto')
+        # Load saved left lang
+        self.left_lang_selector.set_property('selected', self.left_langs[0])
         # Set popover selector to button
         self.left_lang_btn.set_popover(self.left_lang_selector)
 
