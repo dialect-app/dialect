@@ -197,7 +197,9 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def responsive_listener(self, window):
         if self.get_allocation().width < 700:
-            if self.mobile_mode is None or False:
+            if self.mobile_mode is None:
+                self.mobile_mode = True
+            if self.mobile_mode is False:
                 return
 
             self.mobile_mode = True
