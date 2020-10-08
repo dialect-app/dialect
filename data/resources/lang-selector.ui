@@ -40,20 +40,34 @@
                     <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkListBox" id="recent_list">
+                      <object class="GtkRevealer" id="revealer">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="selection-mode">none</property>
-                        <style>
-                          <class name="background"/>
-                        </style>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator" id="separator">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin">8</property>
+                        <property name="reveal-child">True</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkListBox" id="recent_list">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="selection-mode">none</property>
+                                <style>
+                                  <class name="background"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator" id="separator">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="margin">8</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
