@@ -517,97 +517,108 @@
                 <property name="visible">False</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkMenuButton" id="left_lang_btn2">
+                  <object class="GtkBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="receives_default">True</property>
+                    <property name="can_focus">False</property>
                     <property name="hexpand">True</property>
-                    <property name="sensitive" bind-source="left_lang_btn" bind-property="sensitive"></property>
+                    <style>
+                      <class name="linked"/>
+                    </style>
                     <child>
-                      <object class="GtkBox">
+                      <object class="GtkMenuButton" id="left_lang_btn2">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="orientation">horizontal</property>
-                        <property name="spacing">8</property>
+                        <property name="can_focus">True</property>
+                        <property name="focus_on_click">False</property>
+                        <property name="receives_default">True</property>
+                        <property name="sensitive" bind-source="left_lang_btn" bind-property="sensitive"></property>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkBox">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="xalign">0</property>
-                            <property name="label" bind-source="left_lang_label" bind-property="label"></property>
-                            <property name="ellipsize">end</property>
+                            <property name="orientation">horizontal</property>
+                            <property name="spacing">8</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="xalign">0</property>
+                                <property name="label" bind-source="left_lang_label" bind-property="label"></property>
+                                <property name="ellipsize">end</property>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="icon_name">pan-down-symbolic</property>
+                              </object>
+                            </child>
                           </object>
-                          <packing>
-                            <property name="expand">True</property>
-                          </packing>
                         </child>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="switch_btn2">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="tooltip_text" translatable="yes">Switch languages</property>
+                        <property name="sensitive" bind-source="switch_btn" bind-property="sensitive"></property>
                         <child>
                           <object class="GtkImage">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="icon_name">pan-down-symbolic</property>
+                            <property name="icon_name">object-flip-horizontal-symbolic</property>
                           </object>
                         </child>
                       </object>
                     </child>
-                  </object>
-                </child>
-                <child type="center">
-                  <object class="GtkButton" id="switch_btn2">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="tooltip_text" translatable="yes">Switch languages</property>
-                    <property name="sensitive" bind-source="switch_btn" bind-property="sensitive"></property>
                     <child>
-                      <object class="GtkImage">
+                      <object class="GtkMenuButton" id="right_lang_btn2">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="icon_name">object-flip-horizontal-symbolic</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkMenuButton" id="right_lang_btn2">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="receives_default">True</property>
-                    <property name="hexpand">True</property>
-                    <property name="sensitive" bind-source="right_lang_btn" bind-property="sensitive"></property>
-                    <child>
-                      <object class="GtkBox">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="orientation">horizontal</property>
-                        <property name="spacing">8</property>
+                        <property name="can_focus">True</property>
+                        <property name="focus_on_click">False</property>
+                        <property name="receives_default">True</property>
+                        <property name="sensitive" bind-source="right_lang_btn" bind-property="sensitive"></property>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkBox">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="xalign">0</property>
-                            <property name="label" bind-source="right_lang_label" bind-property="label"></property>
-                            <property name="ellipsize">end</property>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkImage">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="icon_name">pan-down-symbolic</property>
+                            <property name="orientation">horizontal</property>
+                            <property name="spacing">8</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="xalign">0</property>
+                                <property name="label" bind-source="right_lang_label" bind-property="label"></property>
+                                <property name="ellipsize">end</property>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="icon_name">pan-down-symbolic</property>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>
+                      <packing>
+                        <property name="expand">True</property>
+                      </packing>
                     </child>
                   </object>
-                  <packing>
-                    <property name="pack_type">end</property>
-                  </packing>
                 </child>
               </object>
             </child>
@@ -623,6 +634,12 @@
     <widgets>
       <widget name="left_lang_btn"/>
       <widget name="right_lang_btn"/>
+    </widgets>
+  </object>
+  <object class="GtkSizeGroup">
+    <widgets>
+      <widget name="left_lang_btn2"/>
+      <widget name="right_lang_btn2"/>
     </widgets>
   </object>
 </interface>
