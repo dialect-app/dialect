@@ -196,11 +196,9 @@ class DialectWindow(Handy.ApplicationWindow):
         self.voice_btn.set_image(self.voice_image)
 
     def responsive_listener(self, window):
-        if self.get_allocation().width < 700:
+        if self.get_allocation().width < 600:
             if self.mobile_mode is True:
                 return
-            elif self.mobile_mode is None:
-                self.mobile_mode = True
 
             self.mobile_mode = True
             self.toggle_mobile_mode()
