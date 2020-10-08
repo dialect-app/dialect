@@ -17,9 +17,10 @@ class DialectLangSelector(Gtk.Popover):
     # Get widgets
     search = Gtk.Template.Child()
     scroll = Gtk.Template.Child()
+    revealer = Gtk.Template.Child()
     recent_list = Gtk.Template.Child()
-    lang_list = Gtk.Template.Child()
     separator = Gtk.Template.Child()
+    lang_list = Gtk.Template.Child()
 
     # Propeties
     selected = GObject.Property(type=str)  # Key of the selected lang
@@ -68,15 +69,15 @@ class DialectLangSelector(Gtk.Popover):
         # Reset scroll
         vscroll = self.scroll.get_vadjustment()
         vscroll.set_value(0)
+        # Clear search
+        self.search.set_text('')
 
     def _update_search(self, _entry):
         search = self.search.get_text()
         if search != '':
-            self.recent_list.hide()
-            self.separator.hide()
+            self.revealer.set_reveal_child(False)
         else:
-            self.recent_list.show()
-            self.separator.show()
+            self.revealer.set_reveal_child(True)
         self.lang_list.invalidate_filter()
 
 
