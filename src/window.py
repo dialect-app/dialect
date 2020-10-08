@@ -25,8 +25,10 @@ class DialectWindow(Handy.ApplicationWindow):
 
     # Get widgets
     main_stack = Gtk.Template.Child()
+    main_box = Gtk.Template.Child()
     exit_btn = Gtk.Template.Child()
 
+    title_stack = Gtk.Template.Child()
     langs_button_box = Gtk.Template.Child()
     switch_btn = Gtk.Template.Child()
     left_lang_btn = Gtk.Template.Child()
@@ -50,6 +52,11 @@ class DialectWindow(Handy.ApplicationWindow):
     copy_btn = Gtk.Template.Child()
     voice_btn = Gtk.Template.Child()
 
+    actionbar = Gtk.Template.Child()
+    left_lang_btn2 = Gtk.Template.Child()
+    switch_btn2 = Gtk.Template.Child()
+    right_lang_btn2 = Gtk.Template.Child()
+
     # Language values
     lang_codes = list(LANGUAGES.keys())
     lang_names = list(LANGUAGES.values())
@@ -64,6 +71,7 @@ class DialectWindow(Handy.ApplicationWindow):
     # These are for being able to go backspace
     first_key = 0
     second_key = 0
+    mobile_mode = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -92,10 +100,14 @@ class DialectWindow(Handy.ApplicationWindow):
         gtk_settings.set_property('gtk-application-prefer-dark-theme',
                                   dark_mode)
 
+        # Connect responsive design function
+        self.connect('check-resize', self.responsive_listener)
+
         # Get languages available for speech
         threading.Thread(target=self.load_lang_speech).start()
 
         self.setup_headerbar()
+        self.setup_actionbar()
         self.setup_translation()
 
     def load_lang_speech(self):
@@ -150,6 +162,14 @@ class DialectWindow(Handy.ApplicationWindow):
         menu_popover = Gtk.Popover.new_from_model(self.menu_btn, menu)
         self.menu_btn.set_popover(menu_popover)
 
+    def setup_actionbar(self):
+        # Set popovers to lang buttons
+        self.left_lang_btn2.set_popover(self.left_lang_selector)
+        self.right_lang_btn2.set_popover(self.right_lang_selector)
+
+        # Switch button
+        self.switch_btn2.connect('clicked', self.ui_switch)
+
     def setup_translation(self):
         # Left buffer
         self.left_buffer = self.left_text.get_buffer()
@@ -174,6 +194,40 @@ class DialectWindow(Handy.ApplicationWindow):
             'audio-speakers-symbolic', Gtk.IconSize.BUTTON)
         self.voice_spinner = Gtk.Spinner()  # For use while audio is running.
         self.voice_btn.set_image(self.voice_image)
+
+    def responsive_listener(self, window):
+        if self.get_allocation().width < 700:
+            if self.mobile_mode is None or False:
+                return
+
+            self.mobile_mode = True
+            self.toggle_mobile_mode()
+        else:
+            if self.mobile_mode is None or True:
+                self.mobile_mode = False
+                self.toggle_mobile_mode()
+
+    def toggle_mobile_mode(self):
+        if self.mobile_mode:
+            # Show actionbar
+            self.actionbar.show()
+            # Change headerbar title
+            self.title_stack.set_visible_child_name('label')
+            # Change translation box orientation
+            self.main_box.set_orientation(Gtk.Orientation.VERTICAL)
+            # Change lang selectors position
+            self.left_lang_selector.set_relative_to(self.left_lang_btn2)
+            self.right_lang_selector.set_relative_to(self.right_lang_btn2)
+        else:
+            # Hide actionbar
+            self.actionbar.hide()
+            # Reset headerbar title
+            self.title_stack.set_visible_child_name('selector')
+            # Reset translation box orientation
+            self.main_box.set_orientation(Gtk.Orientation.HORIZONTAL)
+            # Reset lang selectors position
+            self.left_lang_selector.set_relative_to(self.left_lang_btn)
+            self.right_lang_selector.set_relative_to(self.right_lang_btn)
 
     def on_left_lang_changed(self, _obj, _param):
         code = self.left_lang_selector.get_property('selected')
@@ -257,11 +311,11 @@ class DialectWindow(Handy.ApplicationWindow):
         # Switch all
         GLib.idle_add(self.switch_all, first_language, second_language, first_text, second_text)
 
-    def ui_switch(self, button):
+    def ui_switch(self, _button):
         # Get variables
         self.left_lang_btn.set_sensitive(False)
         self.right_lang_btn.set_sensitive(False)
-        button.set_sensitive(False)
+        self.switch_btn.set_sensitive(False)
         first_buffer = self.left_buffer
         second_buffer = self.right_buffer
         first_language = self.left_lang_selector.get_property('selected')

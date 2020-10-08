@@ -32,7 +32,6 @@ class Dialect(Gtk.Application):
                 application=self,
                 title='Dialect'
             )
-        self.window.show_all()
         self.window.present()
 
     def do_startup(self):
