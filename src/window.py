@@ -107,6 +107,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
         # Connect responsive design function
         self.connect('check-resize', self.responsive_listener)
+        self.connect('destroy', self.on_destroy)
 
         # Get languages available for speech
         threading.Thread(target=self.load_lang_speech).start()
@@ -241,6 +242,12 @@ class DialectWindow(Handy.ApplicationWindow):
             self.left_lang_selector.set_relative_to(self.left_lang_btn)
             self.right_lang_selector.set_relative_to(self.right_lang_btn)
 
+    def on_destroy(self, _window):
+        self.settings.set_value('left-langs',
+                                GLib.Variant('as', self.left_langs))
+        self.settings.set_value('right-langs',
+                                GLib.Variant('as', self.right_langs))
+
     def on_left_lang_changed(self, _obj, _param):
         code = self.left_lang_selector.get_property('selected')
 
@@ -254,8 +261,6 @@ class DialectWindow(Handy.ApplicationWindow):
             else:
                 self.left_langs.pop()
                 self.left_langs.insert(0, code)
-            self.settings.set_value('left-langs',
-                                    GLib.Variant('as', self.left_langs))
         else:
             self.left_lang_label.set_label('Auto')
 
@@ -286,8 +291,6 @@ class DialectWindow(Handy.ApplicationWindow):
         else:
             self.right_langs.pop()
             self.right_langs.insert(0, code)
-        self.settings.set_value('right-langs',
-                                GLib.Variant('as', self.right_langs))
 
         # Rewrite recent langs
         self.right_lang_selector.clear_recent()
