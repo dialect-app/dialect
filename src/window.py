@@ -65,7 +65,6 @@ class DialectWindow(Handy.ApplicationWindow):
     current_input_text = ''
     current_history = 0
     history = []
-    history_traverse = 0
     type_time = 0
     trans_queue = []
     active_thread = None
@@ -176,6 +175,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.left_buffer = self.left_text.get_buffer()
         self.left_buffer.set_text('')
         self.left_buffer.connect('changed', self.text_changed)
+        self.left_buffer.connect('end-user-action', self.user_action_ended)
         self.connect('key-press-event', self.update_trans_button)
         # Clear button
         self.clear_btn.connect('clicked', self.ui_clear)
@@ -313,7 +313,6 @@ class DialectWindow(Handy.ApplicationWindow):
     def switch_all(self, first_language, second_language, first_text, second_text):
         self.left_lang_selector.set_property('selected', second_language)
         self.right_lang_selector.set_property('selected', first_language)
-        self.history_traverse = 2
         self.left_buffer.set_text(second_text)
         self.right_buffer.set_text(first_text)
         self.add_history_entry(first_language, second_language, first_text, second_text)
@@ -432,9 +431,9 @@ class DialectWindow(Handy.ApplicationWindow):
         sensitive = buffer.get_char_count() != 0
         self.translate_btn.set_sensitive(sensitive)
         self.clear_btn.set_sensitive(sensitive)
-        if self.history_traverse > 0:
-            self.history_traverse -= 1
-        elif self.settings.get_boolean('live-translation'):
+
+    def user_action_ended(self, buffer):
+        if self.settings.get_boolean('live-translation'):
             self.translation(None)
 
     # The history part
@@ -450,7 +449,6 @@ class DialectWindow(Handy.ApplicationWindow):
                                              lang_hist['Languages'][0])
         self.right_lang_selector.set_property('selected',
                                               lang_hist['Languages'][1])
-        self.history_traverse = 2
         self.left_buffer.set_text(lang_hist['Text'][0])
         self.right_buffer.set_text(lang_hist['Text'][1])
 
