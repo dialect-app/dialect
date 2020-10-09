@@ -118,6 +118,8 @@ class DialectWindow(Handy.ApplicationWindow):
     def load_lang_speech(self):
         try:
             self.lang_speech = list(lang.tts_langs(tld='com').keys())
+            GLib.idle_add(self.voice_btn.set_sensitive,
+                          self.right_lang_selector.get_property('selected') in self.lang_speech)
             GLib.idle_add(self.main_stack.set_visible_child_name, 'translate')
 
         except RuntimeError as exc:
@@ -195,6 +197,10 @@ class DialectWindow(Handy.ApplicationWindow):
         # Clipboard button
         self.copy_btn.connect('clicked', self.ui_copy)
         # Voice btn
+        if not self.lang_speech:
+            self.voice_btn.set_sensitive(False)
+        else:
+            self.voice_btn.set_sensitive(self.right_lang_selector.get_property('selected') in self.lang_speech)
         self.voice_btn.connect('clicked', self.ui_voice)
         self.voice_image = Gtk.Image.new_from_icon_name(
             'audio-speakers-symbolic', Gtk.IconSize.BUTTON)
@@ -256,7 +262,7 @@ class DialectWindow(Handy.ApplicationWindow):
         # Rewrite recent langs
         self.left_lang_selector.clear_recent()
         self.left_lang_selector.insert_recent('auto', 'Auto')
-        for code in self.left_langs[1:]:
+        for code in self.left_langs:
             name = LANGUAGES[code].capitalize()
             self.left_lang_selector.insert_recent(code, name)
 
@@ -266,7 +272,7 @@ class DialectWindow(Handy.ApplicationWindow):
     def on_right_lang_changed(self, _obj, _param):
         code = self.right_lang_selector.get_property('selected')
 
-        # Disable or enable voice translation.
+        # Disable or enable listen function.
         if self.lang_speech:
             self.voice_btn.set_sensitive(code in self.lang_speech)
 
@@ -285,7 +291,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
         # Rewrite recent langs
         self.right_lang_selector.clear_recent()
-        for code in self.right_langs[1:]:
+        for code in self.right_langs:
             name = LANGUAGES[code].capitalize()
             self.right_lang_selector.insert_recent(code, name)
 
@@ -400,18 +406,19 @@ class DialectWindow(Handy.ApplicationWindow):
         elif message.type == Gst.MessageType.ERROR:
             self.player.set_state(Gst.State.NULL)
             self.player_event.set()
-            print("Some error occured while trying to play.")
+            print('Some error occured while trying to play.')
 
     def voice_download(self, text, language):
         try:
-            tts = gTTS(text, lang=language)
+            tts = gTTS(text, lang=language, lang_check=False)
         except Exception as exc:
             print(exc)
-            print("Audio download failed.")
+            print('Audio download failed.')
             pass
         else:
             with NamedTemporaryFile() as file_to_play:
                 tts.write_to_fp(file_to_play)
+                file_to_play.seek(0)
                 self.player.set_property('uri', 'file://' + file_to_play.name)
                 self.player.set_state(Gst.State.PLAYING)
                 self.player_event.wait()
