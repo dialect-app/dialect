@@ -536,8 +536,6 @@ class DialectWindow(Handy.ApplicationWindow):
                 GLib.idle_add(self.left_lang_selector.set_property,
                               'selected', first_language)
                 self.left_langs[0] = first_language
-                self.settings.set_value('left-langs',
-                                        GLib.Variant('as', self.left_langs))
             # If the two languages are the same, nothing is done
             if first_language != second_language:
                 second_text = ''
