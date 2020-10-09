@@ -34,16 +34,16 @@ Arch-based distro users can install it from [AUR](https://aur.archlinux.org/pack
 - PyGObject `python-gobject`
 - GTK3 `gtk3`
 - libhandy (>= 0.90.0) `libhandy`
+- GStreamer 1.0 `gstreamer`
 - Meson `meson`
 - Ninja `ninja`
 - Googletrans `python-googletrans`
 - gTTS `python-gtts`
-- Pydub `python-pydub`
 
 You can install python dependencies from pip:
 
 ```bash
-pip install googletrans gtts pydub
+pip install googletrans gtts
 ```
 
 ### Building from Git

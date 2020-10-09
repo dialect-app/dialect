@@ -265,6 +265,11 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def on_right_lang_changed(self, _obj, _param):
         code = self.right_lang_selector.get_property('selected')
+
+        # Disable or enable voice translation.
+        if self.lang_speech:
+            self.voice_btn.set_sensitive(code in self.lang_speech)
+
         name = LANGUAGES[code].capitalize()
         self.right_lang_label.set_label(name)
         # Updated saved right langs list
@@ -399,9 +404,10 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def voice_download(self, text, language):
         try:
-            tts = gTTS(text, language)
-        except Exception:
-            # Raise an error message if download fails
+            tts = gTTS(text, lang=language)
+        except Exception as exc:
+            print(exc)
+            print("Audio download failed.")
             pass
         else:
             with NamedTemporaryFile() as file_to_play:
