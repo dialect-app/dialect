@@ -5,14 +5,12 @@
 
 import sys
 import threading
-from io import BytesIO
+from tempfile import NamedTemporaryFile
 
-from gi.repository import Gdk, Gio, GLib, Gtk, Handy
+from gi.repository import Gdk, Gio, GLib, Gtk, Gst, Handy
 
 from googletrans import LANGUAGES, Translator
 from gtts import gTTS, lang
-from pydub import AudioSegment
-from pydub.playback import play
 
 from dialect.define import APP_ID, RES_PATH, MAX_LENGTH, TRANS_NUMBER, \
     LANG_NUMBER, BUTTON_LENGTH, BUTTON_NUM_LANGUAGES
@@ -84,6 +82,13 @@ class DialectWindow(Handy.ApplicationWindow):
 
         # Google Translate object
         self.translator = Translator()
+
+        # GStreamer playbin object and related setup
+        self.player = Gst.ElementFactory.make('playbin', 'player')
+        bus = self.player.get_bus()
+        bus.add_signal_watch()
+        bus.connect('message', self.on_gst_message)
+        self.player_event = threading.Event()  # An event for letting us know when Gst is done playing
 
         # Clipboard
         self.clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)  # This is only for the Clipboard button
@@ -383,18 +388,27 @@ class DialectWindow(Handy.ApplicationWindow):
                 args=(second_text, second_language_voice)
             ).start()
 
+    def on_gst_message(self, _bus, message):
+        if message.type == Gst.MessageType.EOS:
+            self.player.set_state(Gst.State.NULL)
+            self.player_event.set()
+        elif message.type == Gst.MessageType.ERROR:
+            self.player.set_state(Gst.State.NULL)
+            self.player_event.set()
+            print("Some error occured while trying to play.")
+
     def voice_download(self, text, language):
-        file_to_play = BytesIO()
         try:
             tts = gTTS(text, language)
         except Exception:
             # Raise an error message if download fails
             pass
         else:
-            tts.write_to_fp(file_to_play)
-            file_to_play.seek(0)
-            sound_to_play = AudioSegment.from_file(file_to_play, format='mp3')
-            play(sound_to_play)
+            with NamedTemporaryFile() as file_to_play:
+                tts.write_to_fp(file_to_play)
+                self.player.set_property('uri', 'file://' + file_to_play.name)
+                self.player.set_state(Gst.State.PLAYING)
+                self.player_event.wait()
         finally:
             # The code to execute no matter what
             GLib.idle_add(self.voice_btn.set_sensitive, True)
