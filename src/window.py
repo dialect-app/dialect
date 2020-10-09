@@ -65,6 +65,7 @@ class DialectWindow(Handy.ApplicationWindow):
     current_input_text = ''
     current_history = 0
     history = []
+    history_traverse = 0
     type_time = 0
     trans_queue = []
     active_thread = None
@@ -294,16 +295,34 @@ class DialectWindow(Handy.ApplicationWindow):
             self.current_history -= 1
             self.history_update()
 
+    def add_history_entry(self, first_language, second_language, first_text, second_text):
+        new_history_trans = {
+            'Languages': [first_language, second_language],
+            'Text': [first_text, second_text]
+        }
+        if self.current_history > 0:
+            del self.history[:self.current_history]
+            self.current_history = 0
+        if len(self.history) > 0:
+            self.return_btn.set_sensitive(True)
+        if len(self.history) == TRANS_NUMBER:
+            self.history.pop()
+        self.history.insert(0, new_history_trans)
+        GLib.idle_add(self.reset_return_forward_btns)
+
     def switch_all(self, first_language, second_language, first_text, second_text):
         self.left_lang_selector.set_property('selected', second_language)
         self.right_lang_selector.set_property('selected', first_language)
+        self.history_traverse = 2
         self.left_buffer.set_text(second_text)
         self.right_buffer.set_text(first_text)
+        self.add_history_entry(first_language, second_language, first_text, second_text)
 
         # Re-enable widgets
         self.left_lang_btn.set_sensitive(True)
         self.right_lang_btn.set_sensitive(True)
         self.switch_btn.set_sensitive(True)
+        self.translate_btn.set_sensitive(self.left_buffer.get_char_count() != 0)
 
     def switch_auto_lang(self, second_language, first_text, second_text):
         first_language = str(self.translator.detect(first_text).lang)
@@ -316,6 +335,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.left_lang_btn.set_sensitive(False)
         self.right_lang_btn.set_sensitive(False)
         self.switch_btn.set_sensitive(False)
+        self.translate_btn.set_sensitive(False)
         first_buffer = self.left_buffer
         second_buffer = self.right_buffer
         first_language = self.left_lang_selector.get_property('selected')
@@ -412,7 +432,9 @@ class DialectWindow(Handy.ApplicationWindow):
         sensitive = buffer.get_char_count() != 0
         self.translate_btn.set_sensitive(sensitive)
         self.clear_btn.set_sensitive(sensitive)
-        if self.settings.get_boolean('live-translation'):
+        if self.history_traverse > 0:
+            self.history_traverse -= 1
+        elif self.settings.get_boolean('live-translation'):
             self.translation(None)
 
     # The history part
@@ -428,6 +450,7 @@ class DialectWindow(Handy.ApplicationWindow):
                                              lang_hist['Languages'][0])
         self.right_lang_selector.set_property('selected',
                                               lang_hist['Languages'][1])
+        self.history_traverse = 2
         self.left_buffer.set_text(lang_hist['Text'][0])
         self.right_buffer.set_text(lang_hist['Text'][1])
 
@@ -436,9 +459,9 @@ class DialectWindow(Handy.ApplicationWindow):
         first_language = self.left_lang_selector.get_property('selected')
         second_language = self.right_lang_selector.get_property('selected')
         first_text = self.left_buffer.get_text(self.left_buffer.get_start_iter(), self.left_buffer.get_end_iter(), True)
-        if (self.history[0]['Languages'][0] == first_language and
-                self.history[0]['Languages'][1] == second_language and
-                self.history[0]['Text'][0] == first_text):
+        if (self.history[self.current_history]['Languages'][0] == first_language and
+                self.history[self.current_history]['Languages'][1] == second_language and
+                self.history[self.current_history]['Text'][0] == first_text):
             return True
         return False
 
@@ -464,11 +487,11 @@ class DialectWindow(Handy.ApplicationWindow):
                     'first_language': first_language,
                     'second_language': second_language
                 })
-                self.trans_spinner.start()
-                self.right_box.set_sensitive(False)
 
                 # Check if there are any active threads.
                 if self.active_thread is None:
+                    self.trans_spinner.start()
+                    self.right_box.set_sensitive(False)
                     # If there are not any active threads, create one and start it.
                     self.active_thread = threading.Thread(target=self.run_translation, daemon=True)
                     self.active_thread.start()
@@ -506,15 +529,7 @@ class DialectWindow(Handy.ApplicationWindow):
                 GLib.idle_add(self.right_buffer.set_text, second_text)
 
                 # Finally, everything is saved in history
-                new_history_trans = {
-                    'Languages': [first_language, second_language],
-                    'Text': [first_text, second_text]
-                }
-                if len(self.history) > 0:
-                    self.return_btn.set_sensitive(True)
-                if len(self.history) == TRANS_NUMBER:
-                    self.history.pop()
-                self.history.insert(0, new_history_trans)
-            GLib.idle_add(self.trans_spinner.stop)
-            GLib.idle_add(self.right_box.set_sensitive, True)
+                self.add_history_entry(first_language, second_language, first_text, second_text)
+        GLib.idle_add(self.trans_spinner.stop)
+        GLib.idle_add(self.right_box.set_sensitive, True)
         self.active_thread = None
