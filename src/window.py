@@ -23,8 +23,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
     # Get widgets
     main_stack = Gtk.Template.Child()
-    main_box = Gtk.Template.Child()
-    exit_btn = Gtk.Template.Child()
+    translator_box = Gtk.Template.Child()
 
     title_stack = Gtk.Template.Child()
     langs_button_box = Gtk.Template.Child()
@@ -47,6 +46,7 @@ class DialectWindow(Handy.ApplicationWindow):
     right_box = Gtk.Template.Child()
     right_text = Gtk.Template.Child()
     trans_spinner = Gtk.Template.Child()
+    trans_warning = Gtk.Template.Child()
     copy_btn = Gtk.Template.Child()
     voice_btn = Gtk.Template.Child()
 
@@ -54,6 +54,9 @@ class DialectWindow(Handy.ApplicationWindow):
     left_lang_btn2 = Gtk.Template.Child()
     switch_btn2 = Gtk.Template.Child()
     right_lang_btn2 = Gtk.Template.Child()
+
+    notification_revealer = Gtk.Template.Child()
+    notification_label = Gtk.Template.Child()
 
     # Language values
     lang_codes = list(LANGUAGES.keys())
@@ -69,7 +72,7 @@ class DialectWindow(Handy.ApplicationWindow):
     # These are for being able to go backspace
     first_key = 0
     second_key = 0
-    mobile_mode = None
+    mobile_mode = False
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -109,26 +112,27 @@ class DialectWindow(Handy.ApplicationWindow):
         self.connect('check-resize', self.responsive_listener)
         self.connect('destroy', self.on_destroy)
 
-        # Get languages available for speech
-        threading.Thread(target=self.load_lang_speech).start()
-
         self.setup_headerbar()
         self.setup_actionbar()
         self.setup_translation()
 
+        # Get languages available for speech
+        threading.Thread(target=self.load_lang_speech).start()
+
     def load_lang_speech(self):
         try:
             self.lang_speech = list(lang.tts_langs(tld='com').keys())
-            GLib.idle_add(self.voice_btn.set_sensitive,
-                          self.right_lang_selector.get_property('selected') in self.lang_speech)
-            GLib.idle_add(self.main_stack.set_visible_child_name, 'translate')
+            GLib.idle_add(self.toggle_voice_spinner, False)
 
         except RuntimeError as exc:
-            def quit(_button):
-                sys.exit(1)
+            def on_fail():
+                self.voice_btn.set_image(self.voice_warning)
+                self.voice_btn.set_sensitive(False)
+                self.voice_spinner.stop()
+                self.voice_btn.set_tooltip_text('No network connection detected.')
+                self.notify('No network connection detected.')
 
-            self.main_stack.set_visible_child_name('error')
-            self.exit_btn.connect('clicked', quit)
+            GLib.idle_add(on_fail)
             print('Error: ' + str(exc))
 
     def setup_headerbar(self):
@@ -144,6 +148,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.left_lang_selector.set_property('selected', self.left_langs[0])
         # Set popover selector to button
         self.left_lang_btn.set_popover(self.left_lang_selector)
+        self.left_lang_selector.set_relative_to(self.left_lang_btn)
 
         # Right lang selector
         self.right_lang_selector = DialectLangSelector()
@@ -153,6 +158,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.right_lang_selector.set_property('selected', self.right_langs[0])
         # Set popover selector to button
         self.right_lang_btn.set_popover(self.right_lang_selector)
+        self.right_lang_selector.set_relative_to(self.right_lang_btn)
 
         # Add languages to both list
         for code, name in LANGUAGES.items():
@@ -197,47 +203,48 @@ class DialectWindow(Handy.ApplicationWindow):
         self.right_buffer.set_text('')
         # Clipboard button
         self.copy_btn.connect('clicked', self.ui_copy)
-        # Voice btn
-        if not self.lang_speech:
-            self.voice_btn.set_sensitive(False)
-        else:
-            self.voice_btn.set_sensitive(self.right_lang_selector.get_property('selected') in self.lang_speech)
+        # Translation progress spinner
+        self.trans_spinner.hide()
+        self.trans_warning.hide()
+        # Voice button prep-work
+        self.voice_warning = Gtk.Image.new_from_icon_name(
+            'dialog-warning-symbolic', Gtk.IconSize.BUTTON)
         self.voice_btn.connect('clicked', self.ui_voice)
         self.voice_image = Gtk.Image.new_from_icon_name(
             'audio-speakers-symbolic', Gtk.IconSize.BUTTON)
-        self.voice_spinner = Gtk.Spinner()  # For use while audio is running.
-        self.voice_btn.set_image(self.voice_image)
+        self.voice_spinner = Gtk.Spinner()  # For use while audio is running or still loading.
+        self.toggle_voice_spinner(True)
 
     def responsive_listener(self, window):
-        if self.get_allocation().width < 600:
-            if self.mobile_mode is True:
-                return
+        size = self.get_size()
 
-            self.mobile_mode = True
-            self.toggle_mobile_mode()
+        if size.width < 600:
+            if self.mobile_mode is False:
+                self.mobile_mode = True
+                self.toggle_mobile_mode()
         else:
-            if self.mobile_mode is None or True:
+            if self.mobile_mode is True:
                 self.mobile_mode = False
                 self.toggle_mobile_mode()
 
     def toggle_mobile_mode(self):
         if self.mobile_mode:
             # Show actionbar
-            self.actionbar.show()
+            self.actionbar.set_reveal_child(True)
             # Change headerbar title
             self.title_stack.set_visible_child_name('label')
             # Change translation box orientation
-            self.main_box.set_orientation(Gtk.Orientation.VERTICAL)
+            self.translator_box.set_orientation(Gtk.Orientation.VERTICAL)
             # Change lang selectors position
             self.left_lang_selector.set_relative_to(self.left_lang_btn2)
             self.right_lang_selector.set_relative_to(self.right_lang_btn2)
         else:
             # Hide actionbar
-            self.actionbar.hide()
+            self.actionbar.set_reveal_child(False)
             # Reset headerbar title
             self.title_stack.set_visible_child_name('selector')
             # Reset translation box orientation
-            self.main_box.set_orientation(Gtk.Orientation.HORIZONTAL)
+            self.translator_box.set_orientation(Gtk.Orientation.HORIZONTAL)
             # Reset lang selectors position
             self.left_lang_selector.set_relative_to(self.left_lang_btn)
             self.right_lang_selector.set_relative_to(self.right_lang_btn)
@@ -247,6 +254,34 @@ class DialectWindow(Handy.ApplicationWindow):
                                 GLib.Variant('as', self.left_langs))
         self.settings.set_value('right-langs',
                                 GLib.Variant('as', self.right_langs))
+
+    def notify(self, text, timeout=5):
+        """
+        Display an in-app notification.
+
+        Args:
+            text (str): The text or message of the notification.
+            timeout (int, optional): The time before the notification disappears. Defaults to 5.
+        """
+        self.notification_label.set_text(text)
+        self.notification_revealer.set_reveal_child(True)
+
+        timer = threading.Timer(
+            timeout,
+            GLib.idle_add,
+            args=[self.notification_revealer.set_reveal_child, False]
+        )
+        timer.start()
+
+    def toggle_voice_spinner(self, active=True, loading=False):
+        if active:
+            self.voice_btn.set_sensitive(False)
+            self.voice_btn.set_image(self.voice_spinner)
+            self.voice_spinner.start()
+        else:
+            self.voice_btn.set_sensitive(self.right_lang_selector.get_property('selected') in self.lang_speech)
+            self.voice_btn.set_image(self.voice_image)
+            self.voice_spinner.stop()
 
     def on_left_lang_changed(self, _obj, _param):
         code = self.left_lang_selector.get_property('selected')
@@ -337,9 +372,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.add_history_entry(first_language, second_language, first_text, second_text)
 
         # Re-enable widgets
-        self.left_lang_btn.set_sensitive(True)
-        self.right_lang_btn.set_sensitive(True)
-        self.switch_btn.set_sensitive(True)
+        self.langs_button_box.set_sensitive(True)
         self.translate_btn.set_sensitive(self.left_buffer.get_char_count() != 0)
 
     def switch_auto_lang(self, second_language, first_text, second_text):
@@ -350,9 +383,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def ui_switch(self, _button):
         # Get variables
-        self.left_lang_btn.set_sensitive(False)
-        self.right_lang_btn.set_sensitive(False)
-        self.switch_btn.set_sensitive(False)
+        self.langs_button_box.set_sensitive(False)
         self.translate_btn.set_sensitive(False)
         first_buffer = self.left_buffer
         second_buffer = self.right_buffer
@@ -393,10 +424,8 @@ class DialectWindow(Handy.ApplicationWindow):
         second_text = second_buffer.get_text(second_buffer.get_start_iter(), second_buffer.get_end_iter(), True)
         second_language_voice = self.right_lang_selector.get_property('selected')
         # Add here code that changes voice button behavior
-        if second_text != '' and second_language_voice in self.lang_speech:
-            self.voice_btn.set_sensitive(False)
-            self.voice_btn.set_image(self.voice_spinner)
-            self.voice_spinner.start()
+        if second_text != '':
+            self.toggle_voice_spinner(True)
             threading.Thread(
                 target=self.voice_download,
                 args=(second_text, second_language_voice)
@@ -427,9 +456,7 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.player_event.wait()
         finally:
             # The code to execute no matter what
-            GLib.idle_add(self.voice_btn.set_sensitive, True)
-            GLib.idle_add(self.voice_btn.set_image, self.voice_image)
-            GLib.idle_add(self.voice_spinner.stop)
+            GLib.idle_add(self.toggle_voice_spinner, False)
 
     # This starts the translation if Ctrl+Enter button is pressed
     def update_trans_button(self, button, keyboard):
@@ -518,13 +545,16 @@ class DialectWindow(Handy.ApplicationWindow):
 
                 # Check if there are any active threads.
                 if self.active_thread is None:
+                    self.trans_spinner.show()
                     self.trans_spinner.start()
                     self.right_box.set_sensitive(False)
+                    self.langs_button_box.set_sensitive(False)
                     # If there are not any active threads, create one and start it.
                     self.active_thread = threading.Thread(target=self.run_translation, daemon=True)
                     self.active_thread.start()
 
     def run_translation(self):
+        trans_failed = False
         while self.trans_queue:
             # If the first language is revealed automatically, let's set it
             trans_dict = self.trans_queue.pop(0)
@@ -550,12 +580,21 @@ class DialectWindow(Handy.ApplicationWindow):
                         src=first_language,
                         dest=second_language
                     ).text
+                    trans_failed = False
                 except Exception:
+                    trans_failed = True
                     pass
                 GLib.idle_add(self.right_buffer.set_text, second_text)
 
                 # Finally, everything is saved in history
                 self.add_history_entry(first_language, second_language, first_text, second_text)
+        if trans_failed:
+            GLib.idle_add(self.trans_warning.show)
+            GLib.idle_add(self.notify, 'Translation failed.\n Please check for network issues.')
+        else:
+            GLib.idle_add(self.trans_warning.hide)
         GLib.idle_add(self.trans_spinner.stop)
+        GLib.idle_add(self.trans_spinner.hide)
         GLib.idle_add(self.right_box.set_sensitive, True)
+        GLib.idle_add(self.langs_button_box.set_sensitive, True)
         self.active_thread = None

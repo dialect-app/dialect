@@ -15,3 +15,11 @@ scrolledwindow, textview, textview text  {
 .langselector {
   border-radius: 4px;
 }
+
+.bottomlang {
+  background: @theme_base_color;
+  border: 1px solid @borders;
+  border-bottom: 0;
+  border-left: 0;
+  border-right: 0;
+}
