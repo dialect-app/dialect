@@ -393,8 +393,6 @@ class DialectWindow(Handy.ApplicationWindow):
         # Get variables
         self.langs_button_box.set_sensitive(False)
         self.translate_btn.set_sensitive(False)
-        first_buffer = self.left_buffer
-        second_buffer = self.right_buffer
         first_language = self.left_lang_selector.get_property('selected')
         second_language = self.right_lang_selector.get_property('selected')
         first_text = self.left_buffer.get_text(
@@ -424,8 +422,11 @@ class DialectWindow(Handy.ApplicationWindow):
         self.left_buffer.set_text('')
 
     def ui_copy(self, _button):
-        second_buffer = self.right_buffer
-        second_text = second_buffer.get_text(second_buffer.get_start_iter(), second_buffer.get_end_iter(), True)
+        second_text = self.right_buffer.get_text(
+            self.right_buffer.get_start_iter(),
+            self.right_buffer.get_end_iter(),
+            True
+        )
         self.clipboard.set_text(second_text, -1)
         self.clipboard.store()
 
@@ -436,9 +437,11 @@ class DialectWindow(Handy.ApplicationWindow):
             self.left_buffer.insert(end_iter, text)
 
     def ui_voice(self, _button):
-        second_buffer = self.right_buffer
-        second_text = second_buffer.get_text(second_buffer.get_start_iter(),
-                                             second_buffer.get_end_iter(), True)
+        second_text = self.right_buffer.get_text(
+            self.right_buffer.get_start_iter(),
+            self.right_buffer.get_end_iter(),
+            True
+        )
         second_language_voice = self.right_lang_selector.get_property('selected')
         # Add here code that changes voice button behavior
         if second_text != '':
@@ -541,12 +544,14 @@ class DialectWindow(Handy.ApplicationWindow):
     def translation(self, _button):
         # If it's like the last translation then it's useless to continue
         if len(self.history) == 0 or not self.appeared_before():
-            first_buffer = self.left_buffer
-            second_buffer = self.right_buffer
-            first_text = first_buffer.get_text(first_buffer.get_start_iter(), first_buffer.get_end_iter(), True)
+            first_text = self.left_buffer.get_text(
+                self.left_buffer.get_start_iter(),
+                self.left_buffer.get_end_iter(),
+                True
+            )
             # If the first text is empty, then everything is simply resetted and nothing is saved in history
             if first_text == '':
-                second_buffer.set_text('')
+                self.right_buffer.set_text('')
             else:
                 first_language = self.left_lang_selector.get_property('selected')
                 second_language = self.right_lang_selector.get_property('selected')
