@@ -115,6 +115,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.setup_headerbar()
         self.setup_actionbar()
         self.setup_translation()
+        self.toggle_mobile_mode()
 
         # Get languages available for speech
         threading.Thread(target=self.load_lang_speech).start()
@@ -279,7 +280,12 @@ class DialectWindow(Handy.ApplicationWindow):
             self.voice_btn.set_image(self.voice_spinner)
             self.voice_spinner.start()
         else:
-            self.voice_btn.set_sensitive(self.right_lang_selector.get_property('selected') in self.lang_speech)
+            second_buffer = self.right_buffer
+            second_text = second_buffer.get_text(second_buffer.get_start_iter(),
+                                                 second_buffer.get_end_iter(),
+                                                 True)
+            self.voice_btn.set_sensitive(self.right_lang_selector.get_property('selected') in self.lang_speech \
+                                         and second_text != '')
             self.voice_btn.set_image(self.voice_image)
             self.voice_spinner.stop()
 
@@ -421,7 +427,8 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def ui_voice(self, _button):
         second_buffer = self.right_buffer
-        second_text = second_buffer.get_text(second_buffer.get_start_iter(), second_buffer.get_end_iter(), True)
+        second_text = second_buffer.get_text(second_buffer.get_start_iter(),
+                                             second_buffer.get_end_iter(), True)
         second_language_voice = self.right_lang_selector.get_property('selected')
         # Add here code that changes voice button behavior
         if second_text != '':
