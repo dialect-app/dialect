@@ -3,7 +3,6 @@
 # Copyright 2020 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-import sys
 import threading
 from tempfile import NamedTemporaryFile
 
@@ -12,8 +11,7 @@ from gi.repository import Gdk, Gio, GLib, Gtk, Gst, Handy
 from googletrans import LANGUAGES, Translator
 from gtts import gTTS, lang
 
-from dialect.define import APP_ID, RES_PATH, MAX_LENGTH, TRANS_NUMBER, \
-    LANG_NUMBER, BUTTON_LENGTH, BUTTON_NUM_LANGUAGES
+from dialect.define import APP_ID, RES_PATH, MAX_LENGTH, TRANS_NUMBER
 from dialect.lang_selector import DialectLangSelector
 
 
@@ -286,7 +284,7 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.right_buffer.get_end_iter(),
                 True
             )
-            self.voice_btn.set_sensitive(self.right_lang_selector.get_property('selected') in self.lang_speech \
+            self.voice_btn.set_sensitive(self.right_lang_selector.get_property('selected') in self.lang_speech
                                          and second_text != '')
             self.voice_btn.set_image(self.voice_image)
             self.voice_spinner.stop()
