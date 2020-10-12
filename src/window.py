@@ -26,32 +26,32 @@ class DialectWindow(Handy.ApplicationWindow):
     title_stack = Gtk.Template.Child()
     langs_button_box = Gtk.Template.Child()
     switch_btn = Gtk.Template.Child()
-    left_lang_btn = Gtk.Template.Child()
-    left_lang_label = Gtk.Template.Child()
-    right_lang_btn = Gtk.Template.Child()
-    right_lang_label = Gtk.Template.Child()
+    src_lang_btn = Gtk.Template.Child()
+    src_lang_label = Gtk.Template.Child()
+    dest_lang_btn = Gtk.Template.Child()
+    dest_lang_label = Gtk.Template.Child()
 
     return_btn = Gtk.Template.Child()
     forward_btn = Gtk.Template.Child()
 
     menu_btn = Gtk.Template.Child()
 
-    left_text = Gtk.Template.Child()
+    src_text = Gtk.Template.Child()
     clear_btn = Gtk.Template.Child()
     paste_btn = Gtk.Template.Child()
     translate_btn = Gtk.Template.Child()
 
-    right_box = Gtk.Template.Child()
-    right_text = Gtk.Template.Child()
+    dest_box = Gtk.Template.Child()
+    dest_text = Gtk.Template.Child()
     trans_spinner = Gtk.Template.Child()
     trans_warning = Gtk.Template.Child()
     copy_btn = Gtk.Template.Child()
     voice_btn = Gtk.Template.Child()
 
     actionbar = Gtk.Template.Child()
-    left_lang_btn2 = Gtk.Template.Child()
+    src_lang_btn2 = Gtk.Template.Child()
     switch_btn2 = Gtk.Template.Child()
-    right_lang_btn2 = Gtk.Template.Child()
+    dest_lang_btn2 = Gtk.Template.Child()
 
     notification_revealer = Gtk.Template.Child()
     notification_label = Gtk.Template.Child()
@@ -81,8 +81,8 @@ class DialectWindow(Handy.ApplicationWindow):
         # GSettings object
         self.settings = Gio.Settings.new(APP_ID)
         # Get saved languages
-        self.left_langs = list(self.settings.get_value('left-langs'))
-        self.right_langs = list(self.settings.get_value('right-langs'))
+        self.src_langs = list(self.settings.get_value('src-langs'))
+        self.dest_langs = list(self.settings.get_value('dest-langs'))
 
         # Google Translate object
         self.translator = Translator()
@@ -122,22 +122,22 @@ class DialectWindow(Handy.ApplicationWindow):
         threading.Thread(target=self.load_lang_speech).start()
 
         # Load saved left lang
-        self.left_lang_selector.set_property('selected', self.left_langs[0])
+        self.src_lang_selector.set_property('selected', self.src_langs[0])
         # Load saved right lang
-        self.right_lang_selector.set_property('selected', self.right_langs[0])
+        self.dest_lang_selector.set_property('selected', self.dest_langs[0])
 
     def on_listen_failed(self):
         self.voice_btn.set_image(self.voice_warning)
         self.voice_spinner.stop()
         self.voice_btn.set_tooltip_text('A network issue has occured. Retry?')
         self.send_notification('A network issue has occured.\nPlease try again.')
-        dest_text = self.right_buffer.get_text(
-            self.right_buffer.get_start_iter(),
-            self.right_buffer.get_end_iter(),
+        dest_text = self.dest_buffer.get_text(
+            self.dest_buffer.get_start_iter(),
+            self.dest_buffer.get_end_iter(),
             True
         )
         if self.lang_speech:
-            self.voice_btn.set_sensitive(self.right_lang_selector.get_property('selected') in self.lang_speech
+            self.voice_btn.set_sensitive(self.dest_lang_selector.get_property('selected') in self.lang_speech
                                          and dest_text != '')
         else:
             self.voice_btn.set_sensitive(dest_text != '')
@@ -169,25 +169,25 @@ class DialectWindow(Handy.ApplicationWindow):
         self.forward_btn.connect('clicked', self.ui_forward)
 
         # Left lang selector
-        self.left_lang_selector = DialectLangSelector()
-        self.left_lang_selector.connect('notify::selected',
-                                        self.on_left_lang_changed)
+        self.src_lang_selector = DialectLangSelector()
+        self.src_lang_selector.connect('notify::selected',
+                                        self.on_src_lang_changed)
         # Set popover selector to button
-        self.left_lang_btn.set_popover(self.left_lang_selector)
-        self.left_lang_selector.set_relative_to(self.left_lang_btn)
+        self.src_lang_btn.set_popover(self.src_lang_selector)
+        self.src_lang_selector.set_relative_to(self.src_lang_btn)
 
         # Right lang selector
-        self.right_lang_selector = DialectLangSelector()
-        self.right_lang_selector.connect('notify::selected',
-                                         self.on_right_lang_changed)
+        self.dest_lang_selector = DialectLangSelector()
+        self.dest_lang_selector.connect('notify::selected',
+                                         self.on_dest_lang_changed)
         # Set popover selector to button
-        self.right_lang_btn.set_popover(self.right_lang_selector)
-        self.right_lang_selector.set_relative_to(self.right_lang_btn)
+        self.dest_lang_btn.set_popover(self.dest_lang_selector)
+        self.dest_lang_selector.set_relative_to(self.dest_lang_btn)
 
         # Add languages to both list
         for code, name in LANGUAGES.items():
-            self.left_lang_selector.insert(code, name.capitalize())
-            self.right_lang_selector.insert(code, name.capitalize())
+            self.src_lang_selector.insert(code, name.capitalize())
+            self.dest_lang_selector.insert(code, name.capitalize())
 
         self.langs_button_box.set_homogeneous(False)
 
@@ -202,18 +202,18 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def setup_actionbar(self):
         # Set popovers to lang buttons
-        self.left_lang_btn2.set_popover(self.left_lang_selector)
-        self.right_lang_btn2.set_popover(self.right_lang_selector)
+        self.src_lang_btn2.set_popover(self.src_lang_selector)
+        self.dest_lang_btn2.set_popover(self.dest_lang_selector)
 
         # Switch button
         self.switch_btn2.connect('clicked', self.ui_switch)
 
     def setup_translation(self):
         # Left buffer
-        self.left_buffer = self.left_text.get_buffer()
-        self.left_buffer.set_text('')
-        self.left_buffer.connect('changed', self.text_changed)
-        self.left_buffer.connect('end-user-action', self.user_action_ended)
+        self.src_buffer = self.src_text.get_buffer()
+        self.src_buffer.set_text('')
+        self.src_buffer.connect('changed', self.text_changed)
+        self.src_buffer.connect('end-user-action', self.user_action_ended)
         self.connect('key-press-event', self.update_trans_button)
         # Clear button
         self.clear_btn.connect('clicked', self.ui_clear)
@@ -223,8 +223,8 @@ class DialectWindow(Handy.ApplicationWindow):
         self.translate_btn.connect('clicked', self.translation)
 
         # Right buffer
-        self.right_buffer = self.right_text.get_buffer()
-        self.right_buffer.set_text('')
+        self.dest_buffer = self.dest_text.get_buffer()
+        self.dest_buffer.set_text('')
         # Clipboard button
         self.copy_btn.connect('clicked', self.ui_copy)
         # Translation progress spinner
@@ -260,8 +260,8 @@ class DialectWindow(Handy.ApplicationWindow):
             # Change translation box orientation
             self.translator_box.set_orientation(Gtk.Orientation.VERTICAL)
             # Change lang selectors position
-            self.left_lang_selector.set_relative_to(self.left_lang_btn2)
-            self.right_lang_selector.set_relative_to(self.right_lang_btn2)
+            self.src_lang_selector.set_relative_to(self.src_lang_btn2)
+            self.dest_lang_selector.set_relative_to(self.dest_lang_btn2)
         else:
             # Hide actionbar
             self.actionbar.set_reveal_child(False)
@@ -270,14 +270,14 @@ class DialectWindow(Handy.ApplicationWindow):
             # Reset translation box orientation
             self.translator_box.set_orientation(Gtk.Orientation.HORIZONTAL)
             # Reset lang selectors position
-            self.left_lang_selector.set_relative_to(self.left_lang_btn)
-            self.right_lang_selector.set_relative_to(self.right_lang_btn)
+            self.src_lang_selector.set_relative_to(self.src_lang_btn)
+            self.dest_lang_selector.set_relative_to(self.dest_lang_btn)
 
     def on_destroy(self, _window):
-        self.settings.set_value('left-langs',
-                                GLib.Variant('as', self.left_langs))
-        self.settings.set_value('right-langs',
-                                GLib.Variant('as', self.right_langs))
+        self.settings.set_value('src-langs',
+                                GLib.Variant('as', self.src_langs))
+        self.settings.set_value('dest-langs',
+                                GLib.Variant('as', self.dest_langs))
 
     def send_notification(self, text, timeout=5):
         """
@@ -303,47 +303,47 @@ class DialectWindow(Handy.ApplicationWindow):
             self.voice_btn.set_image(self.voice_spinner)
             self.voice_spinner.start()
         else:
-            dest_text = self.right_buffer.get_text(
-                self.right_buffer.get_start_iter(),
-                self.right_buffer.get_end_iter(),
+            dest_text = self.dest_buffer.get_text(
+                self.dest_buffer.get_start_iter(),
+                self.dest_buffer.get_end_iter(),
                 True
             )
-            self.voice_btn.set_sensitive(self.right_lang_selector.get_property('selected') in self.lang_speech
+            self.voice_btn.set_sensitive(self.dest_lang_selector.get_property('selected') in self.lang_speech
                                          and dest_text != '')
             self.voice_btn.set_image(self.voice_image)
             self.voice_spinner.stop()
 
-    def on_left_lang_changed(self, _obj, _param):
-        code = self.left_lang_selector.get_property('selected')
+    def on_src_lang_changed(self, _obj, _param):
+        code = self.src_lang_selector.get_property('selected')
 
         if code in LANGUAGES:
-            self.left_lang_label.set_label(LANGUAGES[code].capitalize())
+            self.src_lang_label.set_label(LANGUAGES[code].capitalize())
             # Updated saved left langs list
-            if code in self.left_langs:
+            if code in self.src_langs:
                 # Bring lang to the top
-                index = self.left_langs.index(code)
-                self.left_langs.insert(0, self.left_langs.pop(index))
+                index = self.src_langs.index(code)
+                self.src_langs.insert(0, self.src_langs.pop(index))
             else:
-                self.left_langs.pop()
-                self.left_langs.insert(0, code)
+                self.src_langs.pop()
+                self.src_langs.insert(0, code)
         else:
-            self.left_lang_label.set_label('Auto')
+            self.src_lang_label.set_label('Auto')
 
         # Rewrite recent langs
-        self.left_lang_selector.clear_recent()
-        self.left_lang_selector.insert_recent('auto', 'Auto')
-        for code in self.left_langs:
+        self.src_lang_selector.clear_recent()
+        self.src_lang_selector.insert_recent('auto', 'Auto')
+        for code in self.src_langs:
             name = LANGUAGES[code].capitalize()
-            self.left_lang_selector.insert_recent(code, name)
+            self.src_lang_selector.insert_recent(code, name)
 
         # Refresh list
-        self.left_lang_selector.refresh_selected()
+        self.src_lang_selector.refresh_selected()
 
-    def on_right_lang_changed(self, _obj, _param):
-        code = self.right_lang_selector.get_property('selected')
-        dest_text = self.right_buffer.get_text(
-            self.right_buffer.get_start_iter(),
-            self.right_buffer.get_end_iter(),
+    def on_dest_lang_changed(self, _obj, _param):
+        code = self.dest_lang_selector.get_property('selected')
+        dest_text = self.dest_buffer.get_text(
+            self.dest_buffer.get_start_iter(),
+            self.dest_buffer.get_end_iter(),
             True
         )
 
@@ -353,24 +353,24 @@ class DialectWindow(Handy.ApplicationWindow):
                                          and dest_text != '')
 
         name = LANGUAGES[code].capitalize()
-        self.right_lang_label.set_label(name)
+        self.dest_lang_label.set_label(name)
         # Updated saved right langs list
-        if code in self.right_langs:
+        if code in self.dest_langs:
             # Bring lang to the top
-            index = self.right_langs.index(code)
-            self.right_langs.insert(0, self.right_langs.pop(index))
+            index = self.dest_langs.index(code)
+            self.dest_langs.insert(0, self.dest_langs.pop(index))
         else:
-            self.right_langs.pop()
-            self.right_langs.insert(0, code)
+            self.dest_langs.pop()
+            self.dest_langs.insert(0, code)
 
         # Rewrite recent langs
-        self.right_lang_selector.clear_recent()
-        for code in self.right_langs:
+        self.dest_lang_selector.clear_recent()
+        for code in self.dest_langs:
             name = LANGUAGES[code].capitalize()
-            self.right_lang_selector.insert_recent(code, name)
+            self.dest_lang_selector.insert_recent(code, name)
 
         # Refresh list
-        self.right_lang_selector.refresh_selected()
+        self.dest_lang_selector.refresh_selected()
 
     """
     User interface functions
@@ -404,15 +404,15 @@ class DialectWindow(Handy.ApplicationWindow):
         GLib.idle_add(self.reset_return_forward_btns)
 
     def switch_all(self, src_language, dest_language, src_text, dest_text):
-        self.left_lang_selector.set_property('selected', dest_language)
-        self.right_lang_selector.set_property('selected', src_language)
-        self.left_buffer.set_text(dest_text)
-        self.right_buffer.set_text(src_text)
+        self.src_lang_selector.set_property('selected', dest_language)
+        self.dest_lang_selector.set_property('selected', src_language)
+        self.src_buffer.set_text(dest_text)
+        self.dest_buffer.set_text(src_text)
         self.add_history_entry(src_language, dest_language, src_text, dest_text)
 
         # Re-enable widgets
         self.langs_button_box.set_sensitive(True)
-        self.translate_btn.set_sensitive(self.left_buffer.get_char_count() != 0)
+        self.translate_btn.set_sensitive(self.src_buffer.get_char_count() != 0)
 
     def switch_auto_lang(self, dest_language, src_text, dest_text):
         src_language = str(self.translator.detect(src_text).lang)
@@ -424,21 +424,21 @@ class DialectWindow(Handy.ApplicationWindow):
         # Get variables
         self.langs_button_box.set_sensitive(False)
         self.translate_btn.set_sensitive(False)
-        src_language = self.left_lang_selector.get_property('selected')
-        dest_language = self.right_lang_selector.get_property('selected')
-        src_text = self.left_buffer.get_text(
-            self.left_buffer.get_start_iter(),
-            self.left_buffer.get_end_iter(),
+        src_language = self.src_lang_selector.get_property('selected')
+        dest_language = self.dest_lang_selector.get_property('selected')
+        src_text = self.src_buffer.get_text(
+            self.src_buffer.get_start_iter(),
+            self.src_buffer.get_end_iter(),
             True
         )
-        dest_text = self.right_buffer.get_text(
-            self.right_buffer.get_start_iter(),
-            self.right_buffer.get_end_iter(),
+        dest_text = self.dest_buffer.get_text(
+            self.dest_buffer.get_start_iter(),
+            self.dest_buffer.get_end_iter(),
             True
         )
         if src_language == 'auto':
             if src_text == '':
-                src_language = self.left_langs[0]
+                src_language = self.src_langs[0]
             else:
                 threading.Thread(
                     target=self.switch_auto_lang,
@@ -450,12 +450,12 @@ class DialectWindow(Handy.ApplicationWindow):
         self.switch_all(src_language, dest_language, src_text, dest_text)
 
     def ui_clear(self, _button):
-        self.left_buffer.set_text('')
+        self.src_buffer.set_text('')
 
     def ui_copy(self, _button):
-        dest_text = self.right_buffer.get_text(
-            self.right_buffer.get_start_iter(),
-            self.right_buffer.get_end_iter(),
+        dest_text = self.dest_buffer.get_text(
+            self.dest_buffer.get_start_iter(),
+            self.dest_buffer.get_end_iter(),
             True
         )
         self.clipboard.set_text(dest_text, -1)
@@ -464,16 +464,16 @@ class DialectWindow(Handy.ApplicationWindow):
     def ui_paste(self, _button):
         text = self.clipboard.wait_for_text()
         if text is not None:
-            end_iter = self.left_buffer.get_end_iter()
-            self.left_buffer.insert(end_iter, text)
+            end_iter = self.src_buffer.get_end_iter()
+            self.src_buffer.insert(end_iter, text)
 
     def ui_voice(self, _button):
-        dest_text = self.right_buffer.get_text(
-            self.right_buffer.get_start_iter(),
-            self.right_buffer.get_end_iter(),
+        dest_text = self.dest_buffer.get_text(
+            self.dest_buffer.get_start_iter(),
+            self.dest_buffer.get_end_iter(),
             True
         )
-        dest_language = self.right_lang_selector.get_property('selected')
+        dest_language = self.dest_lang_selector.get_property('selected')
         # Add here code that changes voice button behavior
         if dest_text != '':
             self.toggle_voice_spinner(True)
@@ -524,8 +524,8 @@ class DialectWindow(Handy.ApplicationWindow):
         shift_mask = Gdk.ModifierType.SHIFT_MASK
         unicode_key_val = Gdk.keyval_to_unicode(keyboard.keyval)
         if (GLib.unichar_isgraph(chr(unicode_key_val)) and
-                modifiers in (shift_mask, 0) and not self.left_text.is_focus()):
-            self.left_text.grab_focus()
+                modifiers in (shift_mask, 0) and not self.src_text.is_focus()):
+            self.src_text.grab_focus()
 
         if not self.settings.get_boolean('live-translation'):
             if control_mask == modifiers:
@@ -560,20 +560,20 @@ class DialectWindow(Handy.ApplicationWindow):
     def history_update(self):
         self.reset_return_forward_btns()
         lang_hist = self.history[self.current_history]
-        self.left_lang_selector.set_property('selected',
+        self.src_lang_selector.set_property('selected',
                                              lang_hist['Languages'][0])
-        self.right_lang_selector.set_property('selected',
+        self.dest_lang_selector.set_property('selected',
                                               lang_hist['Languages'][1])
-        self.left_buffer.set_text(lang_hist['Text'][0])
-        self.right_buffer.set_text(lang_hist['Text'][1])
+        self.src_buffer.set_text(lang_hist['Text'][0])
+        self.dest_buffer.set_text(lang_hist['Text'][1])
 
     # THE TRANSLATION AND SAVING TO HISTORY PART
     def appeared_before(self):
-        src_language = self.left_lang_selector.get_property('selected')
-        dest_language = self.right_lang_selector.get_property('selected')
-        src_text = self.left_buffer.get_text(
-            self.left_buffer.get_start_iter(),
-            self.left_buffer.get_end_iter(),
+        src_language = self.src_lang_selector.get_property('selected')
+        dest_language = self.dest_lang_selector.get_property('selected')
+        src_text = self.src_buffer.get_text(
+            self.src_buffer.get_start_iter(),
+            self.src_buffer.get_end_iter(),
             True
         )
         if (self.history[self.current_history]['Languages'][0] == src_language and
@@ -586,17 +586,17 @@ class DialectWindow(Handy.ApplicationWindow):
     def translation(self, _button):
         # If it's like the last translation then it's useless to continue
         if len(self.history) == 0 or not self.appeared_before():
-            src_text = self.left_buffer.get_text(
-                self.left_buffer.get_start_iter(),
-                self.left_buffer.get_end_iter(),
+            src_text = self.src_buffer.get_text(
+                self.src_buffer.get_start_iter(),
+                self.src_buffer.get_end_iter(),
                 True
             )
             # If the first text is empty, then everything is simply resetted and nothing is saved in history
             if src_text == '':
-                self.right_buffer.set_text('')
+                self.dest_buffer.set_text('')
             else:
-                src_language = self.left_lang_selector.get_property('selected')
-                dest_language = self.right_lang_selector.get_property('selected')
+                src_language = self.src_lang_selector.get_property('selected')
+                dest_language = self.dest_lang_selector.get_property('selected')
 
                 if self.trans_queue:
                     self.trans_queue.pop(0)
@@ -611,10 +611,10 @@ class DialectWindow(Handy.ApplicationWindow):
                     # Show feedback for start of translation.
                     self.trans_spinner.show()
                     self.trans_spinner.start()
-                    self.right_box.set_sensitive(False)
+                    self.dest_box.set_sensitive(False)
                     self.langs_button_box.set_sensitive(False)
                     # If there are not any active threads, create one and start it.
-                    self.active_thread = threading.Thread(target=self.run_translation, daemon=True)
+                    self.active_thread = threading.Thread(target=self.run_translation)
                     self.active_thread.start()
 
     def run_translation(self):
@@ -633,7 +633,7 @@ class DialectWindow(Handy.ApplicationWindow):
         def on_trans_done():
             self.trans_spinner.stop()
             self.trans_spinner.hide()
-            self.right_box.set_sensitive(True)
+            self.dest_box.set_sensitive(True)
             self.langs_button_box.set_sensitive(True)
 
         while self.trans_queue:
@@ -644,9 +644,9 @@ class DialectWindow(Handy.ApplicationWindow):
             dest_language = trans_dict['dest_language']
             if src_language == 'auto' and src_text != '':
                 src_language = str(self.translator.detect(src_text).lang)
-                GLib.idle_add(self.left_lang_selector.set_property,
+                GLib.idle_add(self.src_lang_selector.set_property,
                               'selected', src_language)
-                self.left_langs[0] = src_language
+                self.src_langs[0] = src_language
             # If the two languages are the same, nothing is done
             if src_language != dest_language:
                 dest_text = ''
@@ -664,7 +664,7 @@ class DialectWindow(Handy.ApplicationWindow):
                     self.trans_failed = False
                 except Exception:
                     self.trans_failed = True
-                GLib.idle_add(self.right_buffer.set_text, dest_text)
+                GLib.idle_add(self.dest_buffer.set_text, dest_text)
 
                 # Finally, everything is saved in history
                 self.add_history_entry(src_language, dest_language, src_text, dest_text)

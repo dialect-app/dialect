@@ -11,10 +11,10 @@
         <!-- 0 = Ctrl+Enter | 1 = Enter -->
         <default>0</default>
     </key>
-    <key type="as" name="left-langs">
+    <key type="as" name="src-langs">
         <default>["en", "fr", "es", "de"]</default>
     </key>
-    <key type="as" name="right-langs">
+    <key type="as" name="dest-langs">
         <default>["en", "fr", "es", "de"]</default>
     </key>
   </schema>

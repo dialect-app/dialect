@@ -32,7 +32,7 @@
                         <property name="can-focus">False</property>
                         <property name="layout-style">expand</property>
                         <child>
-                          <object class="GtkMenuButton" id="left_lang_btn">
+                          <object class="GtkMenuButton" id="src_lang_btn">
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="focus-on-click">False</property>
@@ -43,7 +43,7 @@
                                 <property name="can-focus">False</property>
                                 <property name="spacing">8</property>
                                 <child>
-                                  <object class="GtkLabel" id="left_lang_label">
+                                  <object class="GtkLabel" id="src_lang_label">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="ellipsize">end</property>
@@ -97,7 +97,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkMenuButton" id="right_lang_btn">
+                          <object class="GtkMenuButton" id="dest_lang_btn">
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="focus-on-click">False</property>
@@ -108,7 +108,7 @@
                                 <property name="can-focus">False</property>
                                 <property name="spacing">8</property>
                                 <child>
-                                  <object class="GtkLabel" id="right_lang_label">
+                                  <object class="GtkLabel" id="dest_lang_label">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="ellipsize">end</property>
@@ -267,7 +267,7 @@
                                 <property name="can-focus">True</property>
                                 <property name="shadow-type">in</property>
                                 <child>
-                                  <object class="GtkTextView" id="left_text">
+                                  <object class="GtkTextView" id="src_text">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="wrap-mode">word-char</property>
@@ -366,7 +366,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkBox" id="right_box">
+                          <object class="GtkBox" id="dest_box">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="orientation">vertical</property>
@@ -376,7 +376,7 @@
                                 <property name="can-focus">True</property>
                                 <property name="shadow-type">in</property>
                                 <child>
-                                  <object class="GtkTextView" id="right_text">
+                                  <object class="GtkTextView" id="dest_text">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="editable">False</property>
@@ -511,9 +511,9 @@
                                 <property name="margin-bottom">8</property>
                                 <property name="hexpand">True</property>
                                 <child>
-                                  <object class="GtkMenuButton" id="left_lang_btn2">
+                                  <object class="GtkMenuButton" id="src_lang_btn2">
                                     <property name="visible">True</property>
-                                    <property name="sensitive" bind-source="left_lang_btn" bind-property="sensitive">True</property>
+                                    <property name="sensitive" bind-source="src_lang_btn" bind-property="sensitive">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="focus-on-click">False</property>
                                     <property name="receives-default">True</property>
@@ -526,7 +526,7 @@
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can-focus">False</property>
-                                            <property name="label" bind-source="left_lang_label" bind-property="label"/>
+                                            <property name="label" bind-source="src_lang_label" bind-property="label"/>
                                             <property name="ellipsize">end</property>
                                             <property name="xalign">0</property>
                                           </object>
@@ -579,9 +579,9 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkMenuButton" id="right_lang_btn2">
+                                  <object class="GtkMenuButton" id="dest_lang_btn2">
                                     <property name="visible">True</property>
-                                    <property name="sensitive" bind-source="right_lang_btn" bind-property="sensitive">True</property>
+                                    <property name="sensitive" bind-source="dest_lang_btn" bind-property="sensitive">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="focus-on-click">False</property>
                                     <property name="receives-default">True</property>
@@ -594,7 +594,7 @@
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can-focus">False</property>
-                                            <property name="label" bind-source="right_lang_label" bind-property="label"/>
+                                            <property name="label" bind-source="dest_lang_label" bind-property="label"/>
                                             <property name="ellipsize">end</property>
                                             <property name="xalign">0</property>
                                           </object>
@@ -718,14 +718,14 @@
   </template>
   <object class="GtkSizeGroup">
     <widgets>
-      <widget name="left_lang_btn2"/>
-      <widget name="right_lang_btn2"/>
+      <widget name="src_lang_btn2"/>
+      <widget name="dest_lang_btn2"/>
     </widgets>
   </object>
   <object class="GtkSizeGroup">
     <widgets>
-      <widget name="left_lang_btn"/>
-      <widget name="right_lang_btn"/>
+      <widget name="src_lang_btn"/>
+      <widget name="dest_lang_btn"/>
     </widgets>
   </object>
   <object class="GtkImage" id="image1">
