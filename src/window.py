@@ -213,7 +213,7 @@ class DialectWindow(Handy.ApplicationWindow):
         # Left buffer
         self.src_buffer = self.src_text.get_buffer()
         self.src_buffer.set_text('')
-        self.src_buffer.connect('changed', self.text_changed)
+        self.src_buffer.connect('changed', self.on_src_text_changed)
         self.src_buffer.connect('end-user-action', self.user_action_ended)
         self.connect('key-press-event', self.update_trans_button)
         # Clear button
@@ -226,6 +226,7 @@ class DialectWindow(Handy.ApplicationWindow):
         # Right buffer
         self.dest_buffer = self.dest_text.get_buffer()
         self.dest_buffer.set_text('')
+        self.dest_buffer.connect('changed', self.on_dest_text_changed)
         # Clipboard button
         self.copy_btn.connect('clicked', self.ui_copy)
         # Translation progress spinner
@@ -554,10 +555,17 @@ class DialectWindow(Handy.ApplicationWindow):
 
         return Gdk.EVENT_PROPAGATE
 
-    def text_changed(self, buffer):
+    def on_src_text_changed(self, buffer):
         sensitive = buffer.get_char_count() != 0
         self.translate_btn.set_sensitive(sensitive)
         self.clear_btn.set_sensitive(sensitive)
+
+    def on_dest_text_changed(self, buffer):
+        sensitive = buffer.get_char_count() != 0
+        self.copy_btn.set_sensitive(sensitive)
+        if not self.voice_loading:
+            self.voice_btn.set_sensitive(self.dest_lang_selector.get_property('selected') in self.lang_speech
+                                         and sensitive)
 
     def user_action_ended(self, buffer):
         # If the text is over the highest number of characters allowed, it is truncated.
@@ -651,7 +659,7 @@ class DialectWindow(Handy.ApplicationWindow):
             self.trans_warning.hide()
             self.copy_btn.set_sensitive(True)
             if not self.voice_loading:
-                self.voice_btn.set_sensitive(True)
+                self.voice_btn.set_sensitive(self.dest_lang_selector.get_property('selected') in self.lang_speech)
 
         def on_trans_done():
             self.trans_spinner.stop()
