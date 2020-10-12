@@ -15,7 +15,7 @@
         <default>["en", "fr", "es", "de"]</default>
     </key>
     <key type="as" name="dest-langs">
-        <default>["en", "fr", "es", "de"]</default>
+        <default>["fr", "es", "de", "en"]</default>
     </key>
   </schema>
 </schemalist>
