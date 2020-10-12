@@ -122,9 +122,9 @@ class DialectWindow(Handy.ApplicationWindow):
         # Get languages available for speech
         threading.Thread(target=self.load_lang_speech).start()
 
-        # Load saved left lang
+        # Load saved src lang
         self.src_lang_selector.set_property('selected', self.src_langs[0])
-        # Load saved right lang
+        # Load saved dest lang
         self.dest_lang_selector.set_property('selected', self.dest_langs[0])
 
     def on_listen_failed(self):
@@ -316,6 +316,11 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def on_src_lang_changed(self, _obj, _param):
         code = self.src_lang_selector.get_property('selected')
+        dest_code = self.dest_lang_selector.get_property('selected')
+
+        if code == dest_code:
+            code = self.dest_langs[1] if code == self.src_langs[0] else dest_code
+            self.dest_lang_selector.set_property('selected', self.src_langs[0])
 
         if code in LANGUAGES:
             self.src_lang_label.set_label(LANGUAGES[code].capitalize())
@@ -342,11 +347,16 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def on_dest_lang_changed(self, _obj, _param):
         code = self.dest_lang_selector.get_property('selected')
+        src_code = self.src_lang_selector.get_property('selected')
         dest_text = self.dest_buffer.get_text(
             self.dest_buffer.get_start_iter(),
             self.dest_buffer.get_end_iter(),
             True
         )
+
+        if code == src_code:
+            code = src_code
+            self.src_lang_selector.set_property('selected', self.dest_langs[0])
 
         # Disable or enable listen function.
         if self.lang_speech:
