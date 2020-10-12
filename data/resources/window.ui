@@ -52,8 +52,6 @@
                                   </object>
                                   <packing>
                                     <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -62,19 +60,12 @@
                                     <property name="can-focus">False</property>
                                     <property name="icon-name">pan-down-symbolic</property>
                                   </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
-                                  </packing>
                                 </child>
                               </object>
                             </child>
                           </object>
                           <packing>
                             <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
@@ -93,8 +84,6 @@
                           </object>
                           <packing>
                             <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
@@ -117,8 +106,6 @@
                                   </object>
                                   <packing>
                                     <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -127,19 +114,12 @@
                                     <property name="can-focus">False</property>
                                     <property name="icon-name">pan-down-symbolic</property>
                                   </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
-                                  </packing>
                                 </child>
                               </object>
                             </child>
                           </object>
                           <packing>
                             <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">2</property>
                           </packing>
                         </child>
                       </object>
@@ -158,7 +138,6 @@
                       </object>
                       <packing>
                         <property name="name">label</property>
-                        <property name="position">1</property>
                       </packing>
                     </child>
                   </object>
@@ -185,8 +164,6 @@
                       </object>
                       <packing>
                         <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
@@ -206,8 +183,6 @@
                       </object>
                       <packing>
                         <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
                       </packing>
                     </child>
                   </object>
@@ -228,15 +203,9 @@
                   </object>
                   <packing>
                     <property name="pack-type">end</property>
-                    <property name="position">1</property>
                   </packing>
                 </child>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
             <child>
               <object class="GtkOverlay">
@@ -281,8 +250,6 @@
                               </object>
                               <packing>
                                 <property name="expand">True</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
                               </packing>
                             </child>
                             <child>
@@ -305,11 +272,6 @@
                                       </object>
                                     </child>
                                   </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
-                                  </packing>
                                 </child>
                                 <child>
                                   <object class="GtkButton" id="paste_btn">
@@ -325,11 +287,6 @@
                                       </object>
                                     </child>
                                   </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
-                                  </packing>
                                 </child>
                                 <child>
                                   <object class="GtkButton" id="translate_btn">
@@ -343,10 +300,7 @@
                                     </style>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
                                     <property name="pack-type">end</property>
-                                    <property name="position">2</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -364,28 +318,15 @@
                                     </style>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
                                     <property name="pack-type">end</property>
-                                    <property name="position">3</property>
                                   </packing>
                                 </child>
                                 <style>
                                   <class name="toolbox"/>
                                 </style>
                               </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">2</property>
-                              </packing>
                             </child>
                           </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GtkBox" id="dest_box">
@@ -412,8 +353,6 @@
                               </object>
                               <packing>
                                 <property name="expand">True</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
                               </packing>
                             </child>
                             <child>
@@ -428,11 +367,6 @@
                                     <property name="tooltip-text" translatable="yes">Translation in progress...</property>
                                     <property name="margin-start">8</property>
                                   </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
-                                  </packing>
                                 </child>
                                 <child>
                                   <object class="GtkImage" id="trans_warning">
@@ -442,11 +376,6 @@
                                     <property name="margin-start">8</property>
                                     <property name="icon-name">dialog-warning-symbolic</property>
                                   </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
-                                  </packing>
                                 </child>
                                 <child>
                                   <object class="GtkButton" id="voice_btn">
@@ -460,10 +389,7 @@
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
                                     <property name="pack-type">end</property>
-                                    <property name="position">1</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -482,34 +408,19 @@
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
                                     <property name="pack-type">end</property>
-                                    <property name="position">2</property>
                                   </packing>
                                 </child>
                                 <style>
                                   <class name="toolbox"/>
                                 </style>
                               </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">1</property>
-                              </packing>
                             </child>
                           </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
                         </child>
                       </object>
                       <packing>
                         <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
@@ -554,8 +465,6 @@
                                           </object>
                                           <packing>
                                             <property name="expand">True</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">0</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -564,19 +473,12 @@
                                             <property name="can-focus">False</property>
                                             <property name="icon-name">pan-down-symbolic</property>
                                           </object>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">1</property>
-                                          </packing>
                                         </child>
                                       </object>
                                     </child>
                                   </object>
                                   <packing>
                                     <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -594,11 +496,6 @@
                                       </object>
                                     </child>
                                   </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
-                                  </packing>
                                 </child>
                                 <child>
                                   <object class="GtkMenuButton" id="dest_lang_btn2">
@@ -622,8 +519,6 @@
                                           </object>
                                           <packing>
                                             <property name="expand">True</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">0</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -632,30 +527,18 @@
                                             <property name="can-focus">False</property>
                                             <property name="icon-name">pan-down-symbolic</property>
                                           </object>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">1</property>
-                                          </packing>
                                         </child>
                                       </object>
                                     </child>
                                   </object>
                                   <packing>
                                     <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">2</property>
                                   </packing>
                                 </child>
                                 <style>
                                   <class name="linked"/>
                                 </style>
                               </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
                             </child>
                             <style>
                               <class name="bottomlang"/>
@@ -663,11 +546,6 @@
                           </object>
                         </child>
                       </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
                     </child>
                   </object>
                   <packing>
@@ -694,11 +572,6 @@
                             <property name="can-focus">False</property>
                             <property name="icon-name">dialog-warning-symbolic</property>
                           </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GtkLabel" id="notification_label">
@@ -709,8 +582,6 @@
                           </object>
                           <packing>
                             <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
                           </packing>
                         </child>
                         <style>
@@ -726,8 +597,6 @@
               </object>
               <packing>
                 <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
               </packing>
             </child>
           </object>
@@ -749,10 +618,5 @@
       <widget name="src_lang_btn"/>
       <widget name="dest_lang_btn"/>
     </widgets>
-  </object>
-  <object class="GtkImage" id="image1">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <property name="icon-name">window-close-symbolic</property>
   </object>
 </interface>
