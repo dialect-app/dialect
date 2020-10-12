@@ -350,16 +350,19 @@ class DialectWindow(Handy.ApplicationWindow):
     User interface functions
     """
     def ui_return(self, _button):
+        """Go back one step in history."""
         if self.current_history != TRANS_NUMBER:
             self.current_history += 1
             self.history_update()
 
     def ui_forward(self, _button):
+        """Go forward one step in history."""
         if self.current_history != 0:
             self.current_history -= 1
             self.history_update()
 
     def add_history_entry(self, first_language, second_language, first_text, second_text):
+        """Add a history entry to the history list."""
         new_history_trans = {
             'Languages': [first_language, second_language],
             'Text': [first_text, second_text]
@@ -581,6 +584,23 @@ class DialectWindow(Handy.ApplicationWindow):
                     self.active_thread.start()
 
     def run_translation(self):
+        def on_trans_failed():
+            self.trans_warning.show()
+            self.send_notification('Translation failed.\nPlease check for network issues.')
+            self.copy_btn.set_sensitive(False)
+            self.voice_btn.set_sensitive(False)
+
+        def on_trans_success():
+            self.trans_warning.hide()
+            self.copy_btn.set_sensitive(True)
+            self.voice_btn.set_sensitive(True)
+
+        def on_trans_done():
+            self.trans_spinner.stop()
+            self.trans_spinner.hide()
+            self.right_box.set_sensitive(True)
+            self.langs_button_box.set_sensitive(True)
+
         while self.trans_queue:
             # If the first language is revealed automatically, let's set it
             trans_dict = self.trans_queue.pop(0)
@@ -614,16 +634,8 @@ class DialectWindow(Handy.ApplicationWindow):
                 # Finally, everything is saved in history
                 self.add_history_entry(first_language, second_language, first_text, second_text)
         if self.trans_failed:
-            GLib.idle_add(self.trans_warning.show)
-            GLib.idle_add(self.send_notification, 'Translation failed.\n Please check for network issues.')
-            GLib.idle_add(self.copy_btn.set_sensitive, False)
-            GLib.idle_add(self.voice_btn.set_sensitive, False)
+            GLib.idle_add(on_trans_failed)
         else:
-            GLib.idle_add(self.trans_warning.hide)
-            GLib.idle_add(self.copy_btn.set_sensitive, True)
-            GLib.idle_add(self.voice_btn.set_sensitive, True)
-        GLib.idle_add(self.trans_spinner.stop)
-        GLib.idle_add(self.trans_spinner.hide)
-        GLib.idle_add(self.right_box.set_sensitive, True)
-        GLib.idle_add(self.langs_button_box.set_sensitive, True)
+            GLib.idle_add(on_trans_success)
+        GLib.idle_add(on_trans_done)
         self.active_thread = None
