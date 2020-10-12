@@ -73,6 +73,7 @@ class DialectWindow(Handy.ApplicationWindow):
     mobile_mode = False
     # Connectivity issues monitoring
     trans_failed = False
+    voice_loading = False
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -120,6 +121,11 @@ class DialectWindow(Handy.ApplicationWindow):
         # Get languages available for speech
         threading.Thread(target=self.load_lang_speech).start()
 
+        # Load saved left lang
+        self.left_lang_selector.set_property('selected', self.left_langs[0])
+        # Load saved right lang
+        self.right_lang_selector.set_property('selected', self.right_langs[0])
+
     def on_listen_failed(self):
         self.voice_btn.set_image(self.voice_warning)
         self.voice_spinner.stop()
@@ -143,6 +149,7 @@ class DialectWindow(Handy.ApplicationWindow):
         text and language parameters are only needed with listen parameter.
         """
         try:
+            self.voice_loading = True
             self.lang_speech = list(lang.tts_langs(tld='com').keys())
             if not listen:
                 GLib.idle_add(self.toggle_voice_spinner, False)
@@ -152,6 +159,9 @@ class DialectWindow(Handy.ApplicationWindow):
         except RuntimeError as exc:
             GLib.idle_add(self.on_listen_failed)
             print('Error: ' + str(exc))
+        finally:
+            if not listen:
+                self.voice_loading = False
 
     def setup_headerbar(self):
         # Connect history buttons
@@ -162,8 +172,6 @@ class DialectWindow(Handy.ApplicationWindow):
         self.left_lang_selector = DialectLangSelector()
         self.left_lang_selector.connect('notify::selected',
                                         self.on_left_lang_changed)
-        # Load saved left lang
-        self.left_lang_selector.set_property('selected', self.left_langs[0])
         # Set popover selector to button
         self.left_lang_btn.set_popover(self.left_lang_selector)
         self.left_lang_selector.set_relative_to(self.left_lang_btn)
@@ -172,8 +180,6 @@ class DialectWindow(Handy.ApplicationWindow):
         self.right_lang_selector = DialectLangSelector()
         self.right_lang_selector.connect('notify::selected',
                                          self.on_right_lang_changed)
-        # Load saved right lang
-        self.right_lang_selector.set_property('selected', self.right_langs[0])
         # Set popover selector to button
         self.right_lang_btn.set_popover(self.right_lang_selector)
         self.right_lang_selector.set_relative_to(self.right_lang_btn)
@@ -335,10 +341,16 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def on_right_lang_changed(self, _obj, _param):
         code = self.right_lang_selector.get_property('selected')
+        second_text = self.right_buffer.get_text(
+            self.right_buffer.get_start_iter(),
+            self.right_buffer.get_end_iter(),
+            True
+        )
 
         # Disable or enable listen function.
         if self.lang_speech:
-            self.voice_btn.set_sensitive(code in self.lang_speech)
+            self.voice_btn.set_sensitive(code in self.lang_speech
+                                         and second_text != '')
 
         name = LANGUAGES[code].capitalize()
         self.right_lang_label.set_label(name)
@@ -487,6 +499,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def voice_download(self, text, language):
         try:
+            self.voice_loading = True
             tts = gTTS(text, lang=language, lang_check=False)
             with NamedTemporaryFile() as file_to_play:
                 tts.write_to_fp(file_to_play)
@@ -500,6 +513,8 @@ class DialectWindow(Handy.ApplicationWindow):
             GLib.idle_add(self.on_listen_failed)
         else:
             GLib.idle_add(self.toggle_voice_spinner, False)
+        finally:
+            self.voice_loading = False
 
     # This starts the translation if Ctrl+Enter button is pressed
     def update_trans_button(self, button, keyboard):
@@ -607,7 +622,8 @@ class DialectWindow(Handy.ApplicationWindow):
         def on_trans_success():
             self.trans_warning.hide()
             self.copy_btn.set_sensitive(True)
-            self.voice_btn.set_sensitive(True)
+            if not self.voice_loading:
+                self.voice_btn.set_sensitive(True)
 
         def on_trans_done():
             self.trans_spinner.stop()
