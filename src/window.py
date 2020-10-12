@@ -66,12 +66,13 @@ class DialectWindow(Handy.ApplicationWindow):
     history = []
     type_time = 0
     trans_queue = []
-    trans_failed = False
     active_thread = None
     # These are for being able to go backspace
     first_key = 0
     second_key = 0
     mobile_mode = False
+    # Connectivity issues monitoring
+    trans_failed = False
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -119,20 +120,23 @@ class DialectWindow(Handy.ApplicationWindow):
         # Get languages available for speech
         threading.Thread(target=self.load_lang_speech).start()
 
-    def load_lang_speech(self):
+    def on_listen_failed(self):
+        self.voice_btn.set_image(self.voice_warning)
+        self.voice_spinner.stop()
+        self.voice_btn.set_tooltip_text('A network issue has occured. Retry?')
+        self.send_notification('A network issue has occured.\nPlease try again.')
+
+    def load_lang_speech(self, search_after=False, second_text=None, second_language_voice=None):
+        """Load the language list for gTTS."""
         try:
             self.lang_speech = list(lang.tts_langs(tld='com').keys())
-            GLib.idle_add(self.toggle_voice_spinner, False)
+            if not search_after:
+                GLib.idle_add(self.toggle_voice_spinner, False)
+            elif second_language_voice in self.lang_speech and second_text != '':
+                self.voice_download(second_text, second_language_voice)
 
         except RuntimeError as exc:
-            def on_fail():
-                self.voice_btn.set_image(self.voice_warning)
-                self.voice_btn.set_sensitive(False)
-                self.voice_spinner.stop()
-                self.voice_btn.set_tooltip_text('No network connection detected.')
-                self.notify('No network connection detected.')
-
-            GLib.idle_add(on_fail)
+            GLib.idle_add(self.on_listen_failed)
             print('Error: ' + str(exc))
 
     def setup_headerbar(self):
@@ -255,7 +259,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.settings.set_value('right-langs',
                                 GLib.Variant('as', self.right_langs))
 
-    def notify(self, text, timeout=5):
+    def send_notification(self, text, timeout=5):
         """
         Display an in-app notification.
 
@@ -273,7 +277,7 @@ class DialectWindow(Handy.ApplicationWindow):
         )
         timer.start()
 
-    def toggle_voice_spinner(self, active=True, loading=False):
+    def toggle_voice_spinner(self, active=True):
         if active:
             self.voice_btn.set_sensitive(False)
             self.voice_btn.set_image(self.voice_spinner)
@@ -444,10 +448,16 @@ class DialectWindow(Handy.ApplicationWindow):
         # Add here code that changes voice button behavior
         if second_text != '':
             self.toggle_voice_spinner(True)
-            threading.Thread(
-                target=self.voice_download,
-                args=(second_text, second_language_voice)
-            ).start()
+            if self.lang_speech:
+                threading.Thread(
+                    target=self.voice_download,
+                    args=(second_text, second_language_voice)
+                ).start()
+            else:
+                threading.Thread(
+                    target=self.load_lang_speech,
+                    args=(True, second_text, second_language_voice)
+                ).start()
 
     def on_gst_message(self, _bus, message):
         if message.type == Gst.MessageType.EOS:
@@ -464,7 +474,7 @@ class DialectWindow(Handy.ApplicationWindow):
         except Exception as exc:
             print(exc)
             print('Audio download failed.')
-            pass
+            GLib.idle_add(self.on_listen_failed)
         else:
             with NamedTemporaryFile() as file_to_play:
                 tts.write_to_fp(file_to_play)
@@ -472,8 +482,6 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.player.set_property('uri', 'file://' + file_to_play.name)
                 self.player.set_state(Gst.State.PLAYING)
                 self.player_event.wait()
-        finally:
-            # The code to execute no matter what
             GLib.idle_add(self.toggle_voice_spinner, False)
 
     # This starts the translation if Ctrl+Enter button is pressed
@@ -507,7 +515,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.translate_btn.set_sensitive(sensitive)
         self.clear_btn.set_sensitive(sensitive)
 
-    def user_action_ended(self, buffer):
+    def user_action_ended(self, _buffer):
         if self.settings.get_boolean('live-translation'):
             self.translation(None)
 
@@ -601,14 +609,13 @@ class DialectWindow(Handy.ApplicationWindow):
                     self.trans_failed = False
                 except Exception:
                     self.trans_failed = True
-                    pass
                 GLib.idle_add(self.right_buffer.set_text, second_text)
 
                 # Finally, everything is saved in history
                 self.add_history_entry(first_language, second_language, first_text, second_text)
         if self.trans_failed:
             GLib.idle_add(self.trans_warning.show)
-            GLib.idle_add(self.notify, 'Translation failed.\n Please check for network issues.')
+            GLib.idle_add(self.send_notification, 'Translation failed.\n Please check for network issues.')
             GLib.idle_add(self.copy_btn.set_sensitive, False)
             GLib.idle_add(self.voice_btn.set_sensitive, False)
         else:
