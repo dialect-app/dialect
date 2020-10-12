@@ -36,6 +36,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
     menu_btn = Gtk.Template.Child()
 
+    char_counter = Gtk.Template.Child()
     src_text = Gtk.Template.Child()
     clear_btn = Gtk.Template.Child()
     paste_btn = Gtk.Template.Child()
@@ -547,7 +548,18 @@ class DialectWindow(Handy.ApplicationWindow):
         self.translate_btn.set_sensitive(sensitive)
         self.clear_btn.set_sensitive(sensitive)
 
-    def user_action_ended(self, _buffer):
+    def user_action_ended(self, buffer):
+        # If the text is over the highest number of characters allowed, it is truncated.
+        # This is done for avoiding exceeding the limit imposed by Google.
+        if buffer.get_char_count() >= MAX_LENGTH:
+            self.send_notification('5000 characters limit reached!')
+            src_text = self.src_buffer.get_text(
+                self.src_buffer.get_start_iter(),
+                self.src_buffer.get_end_iter(),
+                True
+            )
+            self.src_buffer.set_text(src_text[:MAX_LENGTH])
+        self.char_counter.set_text(f'{str(buffer.get_char_count())}/{MAX_LENGTH}')
         if self.settings.get_boolean('live-translation'):
             self.translation(None)
 
@@ -613,7 +625,7 @@ class DialectWindow(Handy.ApplicationWindow):
                     self.trans_spinner.start()
                     self.dest_box.set_sensitive(False)
                     self.langs_button_box.set_sensitive(False)
-                    # If there are not any active threads, create one and start it.
+                    # If there is no active thread, create one and start it.
                     self.active_thread = threading.Thread(target=self.run_translation)
                     self.active_thread.start()
 
@@ -650,10 +662,6 @@ class DialectWindow(Handy.ApplicationWindow):
             # If the two languages are the same, nothing is done
             if src_language != dest_language:
                 dest_text = ''
-                # If the text is over the highest number of characters allowed, it is truncated.
-                # This is done for avoiding exceeding the limit imposed by Google.
-                if len(src_text) > 100:
-                    src_text = src_text[:MAX_LENGTH]
                 # THIS IS WHERE THE TRANSLATION HAPPENS. The try is necessary to circumvent a bug of the used API
                 try:
                     dest_text = self.translator.translate(
@@ -667,7 +675,12 @@ class DialectWindow(Handy.ApplicationWindow):
                 GLib.idle_add(self.dest_buffer.set_text, dest_text)
 
                 # Finally, everything is saved in history
-                self.add_history_entry(src_language, dest_language, src_text, dest_text)
+                self.add_history_entry(
+                    src_language,
+                    dest_language,
+                    src_text,
+                    dest_text
+                )
         if self.trans_failed:
             GLib.idle_add(on_trans_failed)
         else:

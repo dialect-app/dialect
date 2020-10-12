@@ -6,5 +6,5 @@
 
 APP_ID = 'com.github.gi_lom.dialect'
 RES_PATH = '/com/github/gi_lom/dialect'
-MAX_LENGTH = 1000  # maximum number of characters you can translate at once
+MAX_LENGTH = 5000  # maximum number of characters you can translate at once
 TRANS_NUMBER = 10  # number of translations to save in history

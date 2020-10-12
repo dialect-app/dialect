@@ -2,6 +2,7 @@
 <!-- Generated with glade 3.38.1 -->
 <interface>
   <requires lib="gtk+" version="3.22"/>
+  <requires lib="libhandy" version="1.0"/>
   <template class="DialectWindow" parent="HdyApplicationWindow">
     <property name="can-focus">False</property>
     <property name="default-width">800</property>
@@ -346,6 +347,27 @@
                                     <property name="fill">True</property>
                                     <property name="pack-type">end</property>
                                     <property name="position">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="char_counter">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="margin-start">4</property>
+                                    <property name="margin-end">4</property>
+                                    <property name="label" translatable="yes">0/5000</property>
+                                    <attributes>
+                                      <attribute name="scale" value="0.84999999999999998"/>
+                                    </attributes>
+                                    <style>
+                                      <class name="dim-label"/>
+                                    </style>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="pack-type">end</property>
+                                    <property name="position">3</property>
                                   </packing>
                                 </child>
                                 <style>
