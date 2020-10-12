@@ -125,15 +125,29 @@ class DialectWindow(Handy.ApplicationWindow):
         self.voice_spinner.stop()
         self.voice_btn.set_tooltip_text('A network issue has occured. Retry?')
         self.send_notification('A network issue has occured.\nPlease try again.')
+        second_text = self.right_buffer.get_text(
+            self.right_buffer.get_start_iter(),
+            self.right_buffer.get_end_iter(),
+            True
+        )
+        if self.lang_speech:
+            self.voice_btn.set_sensitive(self.right_lang_selector.get_property('selected') in self.lang_speech
+                                         and second_text != '')
+        else:
+            self.voice_btn.set_sensitive(second_text != '')
 
-    def load_lang_speech(self, search_after=False, second_text=None, second_language_voice=None):
-        """Load the language list for gTTS."""
+    def load_lang_speech(self, listen=False, text=None, language=None):
+        """
+        Load the language list for gTTS.
+
+        text and language parameters are only needed with listen parameter.
+        """
         try:
             self.lang_speech = list(lang.tts_langs(tld='com').keys())
-            if not search_after:
+            if not listen:
                 GLib.idle_add(self.toggle_voice_spinner, False)
-            elif second_language_voice in self.lang_speech and second_text != '':
-                self.voice_download(second_text, second_language_voice)
+            elif language in self.lang_speech and text != '':
+                self.voice_download(text, language)
 
         except RuntimeError as exc:
             GLib.idle_add(self.on_listen_failed)
