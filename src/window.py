@@ -462,6 +462,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def ui_clear(self, _button):
         self.src_buffer.set_text('')
+        self.src_buffer.emit('end-user-action')
 
     def ui_copy(self, _button):
         dest_text = self.dest_buffer.get_text(
