@@ -471,17 +471,17 @@ class DialectWindow(Handy.ApplicationWindow):
     def voice_download(self, text, language):
         try:
             tts = gTTS(text, lang=language, lang_check=False)
-        except Exception as exc:
-            print(exc)
-            print('Audio download failed.')
-            GLib.idle_add(self.on_listen_failed)
-        else:
             with NamedTemporaryFile() as file_to_play:
                 tts.write_to_fp(file_to_play)
                 file_to_play.seek(0)
                 self.player.set_property('uri', 'file://' + file_to_play.name)
                 self.player.set_state(Gst.State.PLAYING)
                 self.player_event.wait()
+        except Exception as exc:
+            print(exc)
+            print('Audio download failed.')
+            GLib.idle_add(self.on_listen_failed)
+        else:
             GLib.idle_add(self.toggle_voice_spinner, False)
 
     # This starts the translation if Ctrl+Enter button is pressed
