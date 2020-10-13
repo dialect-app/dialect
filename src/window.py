@@ -346,6 +346,9 @@ class DialectWindow(Handy.ApplicationWindow):
         # Refresh list
         self.src_lang_selector.refresh_selected()
 
+        # Translate again
+        self.translation(None)
+
     def on_dest_lang_changed(self, _obj, _param):
         code = self.dest_lang_selector.get_property('selected')
         src_code = self.src_lang_selector.get_property('selected')
@@ -383,6 +386,9 @@ class DialectWindow(Handy.ApplicationWindow):
 
         # Refresh list
         self.dest_lang_selector.refresh_selected()
+
+        # Translate again
+        self.translation(None)
 
     """
     User interface functions
