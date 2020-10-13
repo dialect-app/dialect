@@ -123,7 +123,7 @@ class DialectWindow(Handy.ApplicationWindow):
         threading.Thread(target=self.load_lang_speech).start()
 
         # Load saved src lang
-        self.src_lang_selector.set_property('selected', self.src_langs[0])
+        self.src_lang_selector.set_property('selected', 'auto')
         # Load saved dest lang
         self.dest_lang_selector.set_property('selected', self.dest_langs[0])
 
