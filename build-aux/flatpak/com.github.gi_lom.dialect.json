@@ -1,10 +1,10 @@
 {
-    "app-id":"com.github.gi_lom.dialect",
-    "runtime":"org.gnome.Platform",
-    "runtime-version":"3.36",
-    "sdk":"org.gnome.Sdk",
-    "command":"dialect",
-    "finish-args":[
+    "app-id" : "com.github.gi_lom.dialect",
+    "runtime" : "org.gnome.Platform",
+    "runtime-version" : "3.38",
+    "sdk" : "org.gnome.Sdk",
+    "command" : "dialect",
+    "finish-args" : [
         "--share=network",
         "--share=ipc",
         "--device=dri",
@@ -12,34 +12,39 @@
         "--socket=wayland",
         "--socket=pulseaudio"
     ],
-    "modules":[
+    "modules" : [
         "pypi-dependencies.json",
         {
-            "name":"ffmpeg",
-            "cleanup":[
+            "name" : "libhandy",
+            "buildsystem" : "meson",
+            "config-opts" : [
+                "-Dgtk_doc=false",
+                "-Dtests=false",
+                "-Dexamples=false",
+                "-Dvapi=false",
+                "-Dglade_catalog=disabled"
+            ],
+            "cleanup" : [
                 "/include",
-                "/lib/pkgconfig",
-                "/share/ffmpeg/examples"
+                "/lib/pkgconfig"
             ],
-            "config-opts":[
-                "--disable-doc"
-            ],
-            "sources":[
+            "sources" : [
                 {
-                    "type":"archive",
-                    "url":"https://ffmpeg.org/releases/ffmpeg-4.2.3.tar.xz",
-                    "sha256":"9df6c90aed1337634c1fb026fb01c154c29c82a64ea71291ff2da9aacb9aad31"
+                    "type" : "git",
+                    "url" : "https://gitlab.gnome.org/GNOME/libhandy.git",
+                    "tag" : "1.0.0",
+                    "commit" : "94313c206258860b2428712e7ece1d02c5177857"
                 }
             ]
         },
         {
-            "name":"dialect",
-            "builddir":true,
-            "buildsystem":"meson",
-            "sources":[
+            "name" : "dialect",
+            "builddir" : true,
+            "buildsystem" : "meson",
+            "sources" : [
                 {
-                    "type":"git",
-                    "url":"../../."
+                    "type" : "git",
+                    "url" : "../../."
                 }
             ]
         }

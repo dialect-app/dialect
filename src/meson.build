@@ -21,6 +21,10 @@ configure_file(
 sources = [
   '__init__.py',
   'main.py',
+  'define.py',
+  'window.py',
+  'preferences.py',
+  'lang_selector.py',
 ]
 # Install sources
 install_data(sources, install_dir: moduledir)

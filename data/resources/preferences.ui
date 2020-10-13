@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.0"/>
+  <requires lib="libhandy" version="1.0"/>
+  <template class="DialectPreferencesWindow" parent="HdyPreferencesWindow">
+    <property name="default_height">400</property>
+    <property name="default_width">600</property>
+    <property name="window_position">center-on-parent</property>
+    <child>
+      <object class="HdyPreferencesPage">
+        <property name="visible">True</property>
+        <child>
+          <object class="HdyPreferencesGroup">
+            <property name="description" translatable="yes"></property>
+            <property name="title" translatable="yes">Appearance</property>
+            <property name="visible">True</property>
+            <child>
+              <object class="HdyActionRow">
+                <property name="title" translatable="yes">Dark Mode</property>
+                <property name="visible">True</property>
+                <property name="activatable_widget">dark_mode</property>
+                <child>
+                  <object class="GtkSwitch" id="dark_mode">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="HdyPreferencesGroup">
+            <property name="description" translatable="yes"></property>
+            <property name="title" translatable="yes">Behavior</property>
+            <property name="visible">True</property>
+            <child>
+              <object class="HdyActionRow">
+                <property name="title" translatable="yes">Live Translation</property>
+                <property name="subtitle" translatable="yes">Warning: You could get your IP banned by API abuse.</property>
+                <property name="visible">True</property>
+                <property name="activatable_widget">live_translation</property>
+                <child>
+                  <object class="GtkSwitch" id="live_translation">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="HdyComboRow" id="translate_accel">
+                <property name="title" translatable="yes">Translate Accel</property>
+                <property name="subtitle" translatable="yes">The opposite accel will be used for new line.</property>
+                <property name="visible">True</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

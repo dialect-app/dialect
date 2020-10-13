@@ -1,0 +1,25 @@
+.toolbox {
+  background: @theme_base_color;
+  border: 1px solid @borders;
+  border-top: 0;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  padding: 6px;
+}
+
+scrolledwindow, textview, textview text  {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.langselector {
+  border-radius: 4px;
+}
+
+.bottomlang {
+  background: @theme_base_color;
+  border: 1px solid @borders;
+  border-bottom: 0;
+  border-left: 0;
+  border-right: 0;
+}

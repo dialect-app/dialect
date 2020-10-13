@@ -4,20 +4,6 @@
     "build-commands": [],
     "modules": [
         {
-            "name": "python3-pydub",
-            "buildsystem": "simple",
-            "build-commands": [
-                "pip3 install --exists-action=i --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} \"pydub\""
-            ],
-            "sources": [
-                {
-                    "type": "file",
-                    "url": "https://files.pythonhosted.org/packages/7b/d1/fbfa79371a8cd9bb15c2e3c480d7e6e340ed5cc55005174e16f48418333a/pydub-0.24.1-py2.py3-none-any.whl",
-                    "sha256": "25fdfbbfd4c69363006a27c7bd2346c4b886a0dd3da264c14d858b71a9593284"
-                }
-            ]
-        },
-        {
             "name": "python3-googletrans",
             "buildsystem": "simple",
             "build-commands": [
