@@ -1,17 +1,15 @@
-![Dialect icon](data/com.github.gi_lom.dialect.svg?raw=true)
+<img height="128" src="data/com.github.gi_lom.dialect.svg" align="left"/>
 
 # Dialect
 
-A translation app for GTK environments based on Google Translate.
-
-## Preview
+A translation app for GNOME based on Google Translate.
 
 ![Dialect](preview.png?raw=true)
 
 ## Features
 
 - Translation based on the [googletrans](https://github.com/ssut/py-googletrans) Python API, an unofficial API for Google Translate
-- Translation history (up to 10 translations, you can open the script and easily edit such number if you prefer more)
+- Translation history
 - Automatic language detection
 - Text to speech
 - Clipboard button
@@ -24,7 +22,7 @@ Available soon on Flathub.
 
 ### AUR
 
-Arch-based distro users can install it from [AUR](https://aur.archlinux.org/packages/dialect/).
+Arch-based distro users can install the latest git revision from the [AUR](https://aur.archlinux.org/packages/dialect-git/).
 
 ## Building
 
@@ -40,7 +38,7 @@ Arch-based distro users can install it from [AUR](https://aur.archlinux.org/pack
 - Googletrans `python-googletrans`
 - gTTS `python-gtts`
 
-You can install python dependencies from pip:
+If official packages are not available for any of the python dependencies, you can install them from pip:
 
 ```bash
 pip install googletrans gtts
