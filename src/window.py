@@ -572,9 +572,9 @@ class DialectWindow(Handy.ApplicationWindow):
         # This is done for avoiding exceeding the limit imposed by Google.
         if buffer.get_char_count() >= MAX_LENGTH:
             self.send_notification('5000 characters limit reached!')
-            src_text = self.src_buffer.get_text(
-                self.src_buffer.get_start_iter(),
-                self.src_buffer.get_end_iter(),
+            src_text = buffer.get_text(
+                buffer.get_start_iter(),
+                buffer.get_end_iter(),
                 True
             )
             self.src_buffer.set_text(src_text[:MAX_LENGTH])
@@ -622,31 +622,27 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.src_buffer.get_end_iter(),
                 True
             )
-            # If the first text is empty, then everything is simply resetted and nothing is saved in history
-            if src_text == '':
-                self.dest_buffer.set_text('')
-            else:
-                src_language = self.src_lang_selector.get_property('selected')
-                dest_language = self.dest_lang_selector.get_property('selected')
+            src_language = self.src_lang_selector.get_property('selected')
+            dest_language = self.dest_lang_selector.get_property('selected')
 
-                if self.trans_queue:
-                    self.trans_queue.pop(0)
-                self.trans_queue.append({
-                    'src_text': src_text,
-                    'src_language': src_language,
-                    'dest_language': dest_language
-                })
+            if self.trans_queue:
+                self.trans_queue.pop(0)
+            self.trans_queue.append({
+                'src_text': src_text,
+                'src_language': src_language,
+                'dest_language': dest_language
+            })
 
-                # Check if there are any active threads.
-                if self.active_thread is None:
-                    # Show feedback for start of translation.
-                    self.trans_spinner.show()
-                    self.trans_spinner.start()
-                    self.dest_box.set_sensitive(False)
-                    self.langs_button_box.set_sensitive(False)
-                    # If there is no active thread, create one and start it.
-                    self.active_thread = threading.Thread(target=self.run_translation)
-                    self.active_thread.start()
+            # Check if there are any active threads.
+            if self.active_thread is None:
+                # Show feedback for start of translation.
+                self.trans_spinner.show()
+                self.trans_spinner.start()
+                self.dest_box.set_sensitive(False)
+                self.langs_button_box.set_sensitive(False)
+                # If there is no active thread, create one and start it.
+                self.active_thread = threading.Thread(target=self.run_translation)
+                self.active_thread.start()
 
     def run_translation(self):
         def on_trans_failed():
@@ -682,24 +678,28 @@ class DialectWindow(Handy.ApplicationWindow):
             if src_language != dest_language:
                 dest_text = ''
                 # THIS IS WHERE THE TRANSLATION HAPPENS. The try is necessary to circumvent a bug of the used API
-                try:
-                    dest_text = self.translator.translate(
+                if src_text != '':
+                    try:
+                        dest_text = self.translator.translate(
+                            src_text,
+                            src=src_language,
+                            dest=dest_language
+                        ).text
+                        self.trans_failed = False
+                    except Exception:
+                        self.trans_failed = True
+
+                    # Finally, everything is saved in history
+                    self.add_history_entry(
+                        src_language,
+                        dest_language,
                         src_text,
-                        src=src_language,
-                        dest=dest_language
-                    ).text
+                        dest_text
+                    )
+                else:
                     self.trans_failed = False
-                except Exception:
-                    self.trans_failed = True
                 GLib.idle_add(self.dest_buffer.set_text, dest_text)
 
-                # Finally, everything is saved in history
-                self.add_history_entry(
-                    src_language,
-                    dest_language,
-                    src_text,
-                    dest_text
-                )
         if self.trans_failed:
             GLib.idle_add(on_trans_failed)
         else:
