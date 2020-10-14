@@ -11,6 +11,8 @@ gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
 gi.require_version('Handy', '1')
+
+from gettext import gettext as _
 from gi.repository import Gdk, Gio, GLib, Gtk, Gst, Handy
 
 from dialect.define import APP_ID, RES_PATH
@@ -31,13 +33,14 @@ class Dialect(Gtk.Application):
         if not self.window:
             self.window = DialectWindow(
                 application=self,
-                title='Dialect'
+                # Translators: Do not translate the app name!
+                title=_('Dialect')
             )
         self.window.present()
 
     def do_startup(self):
         Gtk.Application.do_startup(self)
-        GLib.set_application_name('Dialect')
+        GLib.set_application_name(_('Dialect'))
         GLib.set_prgname('com.github.gi_lom.dialect')
         self.setup_actions()
 

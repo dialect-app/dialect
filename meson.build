@@ -6,6 +6,7 @@ project('dialect',
 )
 
 python = import('python')
+i18n = import('i18n')
 
 message('Looking for dependencies')
 py_installation = python.find_installation('python3')
@@ -22,5 +23,6 @@ dependency('pygobject-3.0', version: '>= 3.29.1')
 
 subdir('data')
 subdir('src')
+subdir('po')
 
 meson.add_install_script('build-aux/meson/postinstall.py')

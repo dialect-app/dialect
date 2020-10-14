@@ -1,0 +1,179 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the dialect package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: dialect\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-14 08:38-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Translators: Do not translate the app name!
+#: data/com.github.gi_lom.dialect.desktop.in:8
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:37
+#: src/main.py:43
+msgid "Dialect"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.desktop.in:9
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:7
+msgid "A translation app for GNOME"
+msgstr ""
+
+#. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
+#: data/com.github.gi_lom.dialect.desktop.in:13
+msgid "translate;translation;"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:9 data/resources/about.ui:12
+msgid "A translation app for GNOME based on Google Translate."
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:12
+msgid "Features:"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:16
+msgid "Text translation up to 5000 chars"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:17
+msgid "Text to speech"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:18
+msgid "History"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:19
+msgid "Automatic language detection"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:20
+msgid "Clipboard buttons"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:25
+msgid "gi-lom"
+msgstr ""
+
+#: data/resources/about.ui:11
+msgid "Copyright 2020 gi-lom"
+msgstr ""
+
+#: data/resources/about.ui:14
+msgid "Github page"
+msgstr ""
+
+#: data/resources/menu.ui:7
+msgid "Preferences"
+msgstr ""
+
+#: data/resources/menu.ui:11
+msgid "About Dialect"
+msgstr ""
+
+#: data/resources/preferences.ui:15
+msgid "Appearance"
+msgstr ""
+
+#: data/resources/preferences.ui:19
+msgid "Dark Mode"
+msgstr ""
+
+#: data/resources/preferences.ui:36
+msgid "Behavior"
+msgstr ""
+
+#: data/resources/preferences.ui:40
+msgid "Live Translation"
+msgstr ""
+
+#: data/resources/preferences.ui:41
+msgid "Warning: You could get your IP banned by API abuse."
+msgstr ""
+
+#: data/resources/preferences.ui:55
+msgid "Translate Accel"
+msgstr ""
+
+#: data/resources/preferences.ui:56
+msgid "The opposite accel will be used for new line."
+msgstr ""
+
+#: data/resources/window.ui:76 data/resources/window.ui:490
+msgid "Switch languages"
+msgstr ""
+
+#: data/resources/window.ui:156
+msgid "Previous translation"
+msgstr ""
+
+#: data/resources/window.ui:175
+msgid "Next translation"
+msgstr ""
+
+#: data/resources/window.ui:266
+msgid "Clear"
+msgstr ""
+
+#: data/resources/window.ui:281
+msgid "Paste"
+msgstr ""
+
+#: data/resources/window.ui:293
+msgid "Translate"
+msgstr ""
+
+#: data/resources/window.ui:367
+msgid "Translation in progress..."
+msgstr ""
+
+#: data/resources/window.ui:375
+msgid "Translation seems to have failed"
+msgstr ""
+
+#: data/resources/window.ui:386
+msgid "Listen"
+msgstr ""
+
+#: data/resources/window.ui:401
+msgid "Copy"
+msgstr ""
+
+#: data/resources/window.ui:581
+msgid "No network connection detected."
+msgstr ""
+
+#: src/window.py:134
+msgid "A network issue has occured. Retry?"
+msgstr ""
+
+#: src/window.py:135
+msgid ""
+"A network issue has occured.\n"
+"Please try again."
+msgstr ""
+
+#: src/window.py:338 src/window.py:342
+msgid "Auto"
+msgstr ""
+
+#: src/window.py:581
+msgid "5000 characters limit reached!"
+msgstr ""
+
+#: src/window.py:657
+msgid ""
+"Translation failed.\n"
+"Please check for network issues."
+msgstr ""

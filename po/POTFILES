@@ -1,0 +1,8 @@
+data/com.github.gi_lom.dialect.desktop.in
+data/com.github.gi_lom.dialect.metainfo.xml.in
+data/resources/about.ui
+data/resources/menu.ui
+data/resources/preferences.ui
+data/resources/window.ui
+src/main.py
+src/window.py

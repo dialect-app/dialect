@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.github.gi_lom.dialect</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>Dialect</name>
+  <summary>A translation app for GNOME</summary>
+  <description>
+    <p>
+      A translation app for GNOME based on Google Translate.
+    </p>
+    <p>
+      Features:
+    </p>
+    <ul>
+      <li>Text translation up to 5000 chars</li>
+      <li>Text to speech</li>
+      <li>History</li>
+      <li>Automatic language detection</li>
+      <li>Clipboard buttons</li>
+    </ul>
+  </description>
+  <url type="homepage">https://github.com/gi-lom/dialect/</url>
+  <url type="bugtracker">https://github.com/gi-lom/dialect/issues/</url>
+  <developer_name>gi-lom</developer_name>
+  <content_rating type="oars-1.1" />
+
+  <launchable type="desktop-id">com.github.gi_lom.dialect.desktop</launchable>
+  <translation type="gettext">dialect</translation>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/gi-lom/dialect/main/preview.png</image>
+    </screenshot>
+  </screenshots>
+  <releases></releases>
+</component>
