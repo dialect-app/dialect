@@ -3,7 +3,7 @@
     <id>com.github.gi_lom.dialect</id>
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>GPL-3.0-or-later</project_license>
-    <name>Gnabel</name>
+    <name>Dialect</name>
     <summary>A translation app for GTK environments based on Google Translate.</summary>
     <description>
         <p>
@@ -20,17 +20,17 @@
             <li>Clipboard button</li>
         </ul>
     </description>
-    <url type="homepage">https://github.com/gi-lom/gnabel</url>
-    <url type="bugtracker">https://github.com/gi-lom/gnabel/issues</url>
+    <url type="homepage">https://github.com/gi-lom/dialect/</url>
+    <url type="bugtracker">https://github.com/gi-lom/dialect/issues/</url>
     <developer_name>gi-lom</developer_name>
     <content_rating type="oars-1.1" />
 
     <launchable type="desktop-id">com.github.gi_lom.dialect.desktop</launchable>
-    <translation type="gettext">gnabel</translation>
+    <translation type="gettext">dialect</translation>
 
     <screenshots>
         <screenshot type="default">
-            <image>https://raw.githubusercontent.com/gi-lom/gnabel/master2/preview.png</image>
+            <image>https://raw.githubusercontent.com/gi-lom/dialect/main/preview.png</image>
         </screenshot>
     </screenshots>
     <releases></releases>

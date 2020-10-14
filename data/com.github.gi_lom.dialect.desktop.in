@@ -7,4 +7,5 @@ Exec=dialect
 Name=Dialect
 Comment=A translation app for GTK environments based on Google Translate.
 Icon=com.github.gi_lom.dialect
-Keywords=translate;translation
+# Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
+Keywords=translate;translation;

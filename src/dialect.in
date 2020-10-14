@@ -7,12 +7,21 @@
 import os
 import sys
 import signal
+import locale
+import gettext
 
 VERSION = '@VERSION@'
 pkgdatadir = '@pkgdatadir@'
+localedir = '@localedir@'
 
 sys.path.insert(1, pkgdatadir)
 signal.signal(signal.SIGINT, signal.SIG_DFL)
+gettext.install('dialect', localedir)
+
+locale.bindtextdomain('dialect', localedir)
+locale.textdomain('dialect')
+gettext.bindtextdomain('dialect', localedir)
+gettext.textdomain('dialect')
 
 if __name__ == '__main__':
     import gi

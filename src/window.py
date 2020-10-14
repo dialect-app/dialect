@@ -6,6 +6,7 @@
 import threading
 from tempfile import NamedTemporaryFile
 
+from gettext import gettext as _
 from gi.repository import Gdk, Gio, GLib, Gtk, Gst, Handy
 
 from googletrans import LANGUAGES, Translator
@@ -130,8 +131,8 @@ class DialectWindow(Handy.ApplicationWindow):
     def on_listen_failed(self):
         self.voice_btn.set_image(self.voice_warning)
         self.voice_spinner.stop()
-        self.voice_btn.set_tooltip_text('A network issue has occured. Retry?')
-        self.send_notification('A network issue has occured.\nPlease try again.')
+        self.voice_btn.set_tooltip_text(_('A network issue has occured. Retry?'))
+        self.send_notification(_('A network issue has occured.\nPlease try again.'))
         dest_text = self.dest_buffer.get_text(
             self.dest_buffer.get_start_iter(),
             self.dest_buffer.get_end_iter(),
@@ -334,11 +335,11 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.src_langs.pop()
                 self.src_langs.insert(0, code)
         else:
-            self.src_lang_label.set_label('Auto')
+            self.src_lang_label.set_label(_('Auto'))
 
         # Rewrite recent langs
         self.src_lang_selector.clear_recent()
-        self.src_lang_selector.insert_recent('auto', 'Auto')
+        self.src_lang_selector.insert_recent('auto', _('Auto'))
         for code in self.src_langs:
             name = LANGUAGES[code].capitalize()
             self.src_lang_selector.insert_recent(code, name)
@@ -577,7 +578,7 @@ class DialectWindow(Handy.ApplicationWindow):
         # If the text is over the highest number of characters allowed, it is truncated.
         # This is done for avoiding exceeding the limit imposed by Google.
         if buffer.get_char_count() >= MAX_LENGTH:
-            self.send_notification('5000 characters limit reached!')
+            self.send_notification(_('5000 characters limit reached!'))
             src_text = buffer.get_text(
                 buffer.get_start_iter(),
                 buffer.get_end_iter(),
@@ -653,7 +654,7 @@ class DialectWindow(Handy.ApplicationWindow):
     def run_translation(self):
         def on_trans_failed():
             self.trans_warning.show()
-            self.send_notification('Translation failed.\nPlease check for network issues.')
+            self.send_notification(_('Translation failed.\nPlease check for network issues.'))
             self.copy_btn.set_sensitive(False)
             self.voice_btn.set_sensitive(False)
 
