@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-    <id>com.github.gi_lom.dialect</id>
-    <metadata_license>CC0-1.0</metadata_license>
-    <project_license>GPL-3.0-or-later</project_license>
-    <name>Dialect</name>
-    <summary>A translation app for GTK environments based on Google Translate.</summary>
-    <description>
-        <p>
-            A translation app for GTK environments based on Google Translate.
-        </p>
-        <p>
-            Features:
-        </p>
-        <ul>
-            <li>Translation based on the googletrans Python API, an unofficial API for Google Translate</li>
-            <li>Translation history (up to 10 translations, you can open the script and easily edit such number if you prefer more)</li>
-            <li>Automatic language detection</li>
-            <li>Text to speech</li>
-            <li>Clipboard button</li>
-        </ul>
-    </description>
-    <url type="homepage">https://github.com/gi-lom/dialect/</url>
-    <url type="bugtracker">https://github.com/gi-lom/dialect/issues/</url>
-    <developer_name>gi-lom</developer_name>
-    <content_rating type="oars-1.1" />
+  <id>com.github.gi_lom.dialect</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>Dialect</name>
+  <summary>A translation app for GNOME</summary>
+  <description>
+    <p>
+      Dialect is a translation app for GNOME based on Google Translate.
+    </p>
+    <p>
+      Features:
+    </p>
+    <ul>
+      <li>Text translation up to 5000 chars</li>
+      <li>Text to speech</li>
+      <li>History</li>
+      <li>Automatic language detection</li>
+      <li>Clipboard buttons</li>
+    </ul>
+  </description>
+  <url type="homepage">https://github.com/gi-lom/dialect/</url>
+  <url type="bugtracker">https://github.com/gi-lom/dialect/issues/</url>
+  <developer_name>gi-lom</developer_name>
+  <content_rating type="oars-1.1" />
 
-    <launchable type="desktop-id">com.github.gi_lom.dialect.desktop</launchable>
-    <translation type="gettext">dialect</translation>
+  <launchable type="desktop-id">com.github.gi_lom.dialect.desktop</launchable>
+  <translation type="gettext">dialect</translation>
 
-    <screenshots>
-        <screenshot type="default">
-            <image>https://raw.githubusercontent.com/gi-lom/dialect/main/preview.png</image>
-        </screenshot>
-    </screenshots>
-    <releases></releases>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/gi-lom/dialect/main/preview.png</image>
+    </screenshot>
+  </screenshots>
+  <releases></releases>
 </component>
