@@ -660,9 +660,6 @@ class DialectWindow(Handy.ApplicationWindow):
 
         def on_trans_success():
             self.trans_warning.hide()
-            self.copy_btn.set_sensitive(True)
-            if not self.voice_loading:
-                self.voice_btn.set_sensitive(self.dest_lang_selector.get_property('selected') in self.lang_speech)
 
         def on_trans_done():
             self.trans_spinner.stop()
