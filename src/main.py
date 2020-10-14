@@ -22,10 +22,11 @@ from dialect.preferences import DialectPreferencesWindow
 
 class Dialect(Gtk.Application):
 
-    def __init__(self):
+    def __init__(self, version):
         Gtk.Application.__init__(self, application_id=APP_ID)
 
         # App window
+        self.version = version
         self.window = None
 
     def do_activate(self):
@@ -77,11 +78,12 @@ class Dialect(Gtk.Application):
         about = builder.get_object('about')
         about.set_transient_for(self.window)
         about.set_logo_icon_name(APP_ID)
+        about.set_version(self.version)
         about.connect('response', lambda dialog, response: dialog.destroy())
         about.present()
 
 
 def main(version):
     # Run the Application
-    app = Dialect()
+    app = Dialect(version)
     return app.run(sys.argv)
