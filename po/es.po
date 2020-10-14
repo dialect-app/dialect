@@ -1,0 +1,185 @@
+# Spanish translations for dialect package.
+# Copyright (C) 2020 THE dialect'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the dialect package.
+# Automatically generated, 2020.
+# Rafael Mardojai CM <mardojai.cardenas@gmail.com>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dialect\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-14 08:07-0500\n"
+"PO-Revision-Date: 2020-10-14 08:16-0500\n"
+"Last-Translator: Rafael Mardojai CM <mardojai.cardenas@gmail.com>\n"
+"Language-Team: Spanish; Castilian <mardojai.cardenas@gmail.com>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"X-Generator: Gtranslator 3.38.0\n"
+
+#. Trasnlators: Do not translate the app name!
+#: data/com.github.gi_lom.dialect.desktop.in:8
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:37
+#: src/main.py:43
+msgid "Dialect"
+msgstr "Dialect"
+
+#: data/com.github.gi_lom.dialect.desktop.in:9
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:7
+msgid "A translation app for GNOME"
+msgstr "Una aplicación de traducción para GNOME"
+
+#. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
+#: data/com.github.gi_lom.dialect.desktop.in:13
+msgid "translate;translation;"
+msgstr "translate;translation;traducir;traductor;"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:9 data/resources/about.ui:12
+msgid "A translation app for GNOME based on Google Translate."
+msgstr "Una aplicación de traducción para GNOME basada en Google Translate."
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:12
+msgid "Features:"
+msgstr "Características:"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:16
+msgid "Text translation up to 5000 chars"
+msgstr "Traducción de texto de hasta 5000 caracteres"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:17
+msgid "Text to speech"
+msgstr "Texto a voz"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:18
+msgid "History"
+msgstr "Historial"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:19
+msgid "Automatic language detection"
+msgstr "Detección automática de idioma"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:20
+msgid "Clipboard buttons"
+msgstr "Botones del portapapeles"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:25
+msgid "gi-lom"
+msgstr "gi-lom"
+
+#: data/resources/about.ui:11
+msgid "Copyright 2020 gi-lom"
+msgstr "Copyright 2020 gi-lom"
+
+#: data/resources/about.ui:14
+msgid "Github page"
+msgstr "Página de Github"
+
+#: data/resources/menu.ui:7
+msgid "Preferences"
+msgstr "Preferencias"
+
+#: data/resources/menu.ui:11
+msgid "About Dialect"
+msgstr "Acerca de Dialect "
+
+#: data/resources/preferences.ui:15
+msgid "Appearance"
+msgstr "Apariencia"
+
+#: data/resources/preferences.ui:19
+msgid "Dark Mode"
+msgstr "Modo Oscuro"
+
+#: data/resources/preferences.ui:36
+msgid "Behavior"
+msgstr "Comportamiento"
+
+#: data/resources/preferences.ui:40
+msgid "Live Translation"
+msgstr "Traducción en Vivo"
+
+#: data/resources/preferences.ui:41
+msgid "Warning: You could get your IP banned by API abuse."
+msgstr "Advertencia: podría hacer que su IP sea bloqueada por abuso de API."
+
+#: data/resources/preferences.ui:55
+msgid "Translate Accel"
+msgstr "Atajo de Traducción"
+
+#: data/resources/preferences.ui:56
+msgid "The opposite accel will be used for new line."
+msgstr "Se utilizará el atajo opuesto para nueva línea."
+
+#: data/resources/window.ui:76 data/resources/window.ui:490
+msgid "Switch languages"
+msgstr "Intercambiar idiomas"
+
+#: data/resources/window.ui:156
+msgid "Previous translation"
+msgstr "Traducción anterior"
+
+#: data/resources/window.ui:175
+msgid "Next translation"
+msgstr "Siguiente traducción"
+
+#: data/resources/window.ui:266
+msgid "Clear"
+msgstr "Limpiar"
+
+#: data/resources/window.ui:281
+msgid "Paste"
+msgstr "Pegar"
+
+#: data/resources/window.ui:293
+msgid "Translate"
+msgstr "Traducir"
+
+#: data/resources/window.ui:367
+msgid "Translation in progress..."
+msgstr "Traducción en progreso..."
+
+#: data/resources/window.ui:375
+msgid "Translation seems to have failed"
+msgstr "La traducción parece haber fallado"
+
+#: data/resources/window.ui:386
+msgid "Listen"
+msgstr "Escuchar"
+
+#: data/resources/window.ui:401
+msgid "Copy"
+msgstr "Copiar"
+
+#: data/resources/window.ui:581
+msgid "No network connection detected."
+msgstr "No se detectó conexión de red."
+
+#: src/window.py:134
+msgid "A network issue has occured. Retry?"
+msgstr "Ha ocurrido un problema de red. ¿Reintentar?"
+
+#: src/window.py:135
+msgid ""
+"A network issue has occured.\n"
+"Please try again."
+msgstr ""
+"Ha ocurrido un problema de red.\n"
+"Por favor inténtalo de nuevo."
+
+#: src/window.py:338 src/window.py:342
+msgid "Auto"
+msgstr "Automático"
+
+#: src/window.py:581
+msgid "5000 characters limit reached!"
+msgstr "¡Límite de 5000 caracteres alcanzado!"
+
+#: src/window.py:657
+msgid ""
+"Translation failed.\n"
+"Please check for network issues."
+msgstr ""
+"La traducción falló.\n"
+"Compruebe si hay problemas de red."
