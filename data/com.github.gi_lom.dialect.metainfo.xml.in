@@ -33,5 +33,11 @@
       <image>https://raw.githubusercontent.com/gi-lom/dialect/main/preview.png</image>
     </screenshot>
   </screenshots>
-  <releases></releases>
+  <releases>
+    <release version="1.0.0" date="2020-10-14">
+      <description>
+        <p>Initial release.</p>
+      </description>
+    </release>
+  </releases>
 </component>
