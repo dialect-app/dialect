@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-14 08:07-0500\n"
+"POT-Creation-Date: 2020-10-14 08:38-0500\n"
 "PO-Revision-Date: 2020-10-14 08:16-0500\n"
 "Last-Translator: Rafael Mardojai CM <mardojai.cardenas@gmail.com>\n"
 "Language-Team: Spanish; Castilian <mardojai.cardenas@gmail.com>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "X-Generator: Gtranslator 3.38.0\n"
 
-#. Trasnlators: Do not translate the app name!
+#. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:37
 #: src/main.py:43

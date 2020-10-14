@@ -33,7 +33,7 @@ class Dialect(Gtk.Application):
         if not self.window:
             self.window = DialectWindow(
                 application=self,
-                # Trasnlators: Do not translate the app name!
+                # Translators: Do not translate the app name!
                 title=_('Dialect')
             )
         self.window.present()
