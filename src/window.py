@@ -570,9 +570,11 @@ class DialectWindow(Handy.ApplicationWindow):
     def on_dest_text_changed(self, buffer):
         sensitive = buffer.get_char_count() != 0
         self.copy_btn.set_sensitive(sensitive)
-        if not self.voice_loading:
+        if not self.voice_loading and self.lang_speech:
             self.voice_btn.set_sensitive(self.dest_lang_selector.get_property('selected') in self.lang_speech
                                          and sensitive)
+        elif not self.voice_loading and not self.lang_speech:
+            self.voice_btn.set_sensitive(sensitive)
 
     def user_action_ended(self, buffer):
         # If the text is over the highest number of characters allowed, it is truncated.
@@ -674,10 +676,13 @@ class DialectWindow(Handy.ApplicationWindow):
             src_language = trans_dict['src_language']
             dest_language = trans_dict['dest_language']
             if src_language == 'auto' and src_text != '':
-                src_language = str(self.translator.detect(src_text).lang)
-                GLib.idle_add(self.src_lang_selector.set_property,
-                              'selected', src_language)
-                self.src_langs[0] = src_language
+                try:
+                    src_language = str(self.translator.detect(src_text).lang)
+                    GLib.idle_add(self.src_lang_selector.set_property,
+                                  'selected', src_language)
+                    self.src_langs[0] = src_language
+                except Exception:
+                    self.trans_failed = True
             # If the two languages are the same, nothing is done
             if src_language != dest_language:
                 dest_text = ''
