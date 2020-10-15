@@ -53,10 +53,6 @@ meson builddir --prefix=/usr/local
 sudo ninja -C builddir install
 ```
 
-## How to use
-
-Open Dialect directly from your menu. For starting a translation, press "Enter" or the button between the two text spaces.
-
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
