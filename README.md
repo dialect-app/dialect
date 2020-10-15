@@ -22,7 +22,7 @@ Available soon on Flathub.
 
 ### AUR
 
-Arch-based distro users can install the latest git revision from the [AUR](https://aur.archlinux.org/packages/dialect-git/).
+Arch-based distro users can install from the AUR: [`dialect`](https://aur.archlinux.org/packages/dialect) for the stable version or [`dialect-git`](https://aur.archlinux.org/packages/dialect-git/) for the latest git revision.
 
 ## Building
 
