@@ -18,7 +18,7 @@ A translation app for GNOME based on Google Translate.
 
 ### Flathub
 
-Available soon on Flathub.
+<a href='https://flathub.org/apps/details/com.github.gi_lom.dialect'><img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
 
 ### AUR
 

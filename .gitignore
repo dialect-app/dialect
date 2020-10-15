@@ -130,3 +130,6 @@ dmypy.json
 
 # Glade backup
 *.ui~
+
+# Other backup files
+*.backup
