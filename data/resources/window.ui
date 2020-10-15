@@ -236,15 +236,18 @@
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
                                 <property name="shadow-type">in</property>
+                                <style>
+                                  <class name="translation-frame"/>
+                                </style>
                                 <child>
                                   <object class="GtkTextView" id="src_text">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="wrap-mode">word-char</property>
-                                    <property name="left-margin">8</property>
-                                    <property name="right-margin">8</property>
-                                    <property name="top-margin">8</property>
-                                    <property name="bottom-margin">8</property>
+                                    <property name="margin-left">9</property>
+                                    <property name="margin-right">9</property>
+                                    <property name="top-margin">9</property>
+                                    <property name="bottom-margin">9</property>
                                   </object>
                                 </child>
                               </object>
@@ -338,16 +341,19 @@
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
                                 <property name="shadow-type">in</property>
+                                <style>
+                                  <class name="translation-frame"/>
+                                </style>
                                 <child>
                                   <object class="GtkTextView" id="dest_text">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="editable">False</property>
                                     <property name="wrap-mode">word-char</property>
-                                    <property name="left-margin">8</property>
-                                    <property name="right-margin">8</property>
-                                    <property name="top-margin">8</property>
-                                    <property name="bottom-margin">8</property>
+                                    <property name="margin-left">9</property>
+                                    <property name="margin-right">9</property>
+                                    <property name="top-margin">9</property>
+                                    <property name="bottom-margin">9</property>
                                   </object>
                                 </child>
                               </object>

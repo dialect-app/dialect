@@ -7,9 +7,16 @@
   padding: 6px;
 }
 
-scrolledwindow, textview, textview text  {
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+.translation-frame  {
+  background: @theme_base_color;
+  border-top-left-radius: 9px;
+  border-top-right-radius: 9px;
+}
+.translation-frame:disabled  {
+  background: @insensitive_bg_color;
+}
+.translation-frame:backdrop  {
+  background: @theme_unfocused_base_color;
 }
 
 .langselector {
