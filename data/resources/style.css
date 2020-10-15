@@ -19,6 +19,18 @@
   background: @theme_unfocused_base_color;
 }
 
+.translation-frame scrollbar {
+  padding-top: 3px;
+}
+
+.translation-frame scrollbar:dir(ltr) {
+  border-top-right-radius: 9px;
+}
+
+.translation-frame scrollbar:dir(rtl) {
+  border-top-left-radius: 9px;
+}
+
 .langselector {
   border-radius: 4px;
 }
