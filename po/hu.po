@@ -1,0 +1,184 @@
+# Hungarian translations for the dialect package.
+# Copyright (C) 2020 Dialect authors
+# This file is distributed under the same license as the dialect package.
+# Meskó Balázs <mesko.balazs@fsf.hu>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dialect\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-16 14:09+0200\n"
+"PO-Revision-Date: 2020-10-16 14:22+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3.1\n"
+"Last-Translator: Meskó Balázs <mesko.balazs@fsf.hu>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: hu\n"
+
+#. Translators: Do not translate the app name!
+#: data/com.github.gi_lom.dialect.desktop.in:8
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:38
+#: src/main.py:44
+msgid "Dialect"
+msgstr "Dialect"
+
+#: data/com.github.gi_lom.dialect.desktop.in:9
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:7
+msgid "A translation app for GNOME"
+msgstr "Fordítóalkalmazás a GNOME-hoz"
+
+#. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
+#: data/com.github.gi_lom.dialect.desktop.in:13
+msgid "translate;translation;"
+msgstr "fordítás;"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:9 data/resources/about.ui:12
+msgid "A translation app for GNOME based on Google Translate."
+msgstr "Egy Google Fordítón alapuló fordítóalkalmazás a GNOME-hoz."
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:12
+msgid "Features:"
+msgstr "Funkciók:"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:16
+msgid "Text translation up to 5000 chars"
+msgstr "Szövegfordítás legfeljebb 5000 karakterig"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:17
+msgid "Text to speech"
+msgstr "Szöveg felolvasása"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:18
+msgid "History"
+msgstr "Előzmények"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:19
+msgid "Automatic language detection"
+msgstr "Automatikus nyelvfelismerés"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:20
+msgid "Clipboard buttons"
+msgstr "Vágólap gombok"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:25
+msgid "gi-lom"
+msgstr "gi-lom"
+
+#: data/resources/about.ui:11
+msgid "Copyright 2020 gi-lom"
+msgstr "Copyright 2020 gi-lom"
+
+#: data/resources/about.ui:14
+msgid "Github page"
+msgstr "Github oldal"
+
+#: data/resources/menu.ui:7
+msgid "Preferences"
+msgstr "Beállítások"
+
+#: data/resources/menu.ui:11
+msgid "About Dialect"
+msgstr "A Dialect névjegye"
+
+#: data/resources/preferences.ui:15
+msgid "Appearance"
+msgstr "Megjelenés"
+
+#: data/resources/preferences.ui:19
+msgid "Dark Mode"
+msgstr "Sötét mód"
+
+#: data/resources/preferences.ui:36
+msgid "Behavior"
+msgstr "Viselkedés"
+
+#: data/resources/preferences.ui:40
+msgid "Live Translation"
+msgstr "Élő fordítás"
+
+#: data/resources/preferences.ui:41
+msgid "Warning: You could get your IP banned by API abuse."
+msgstr "Figyelmeztetés: Az IP-címe tiltólistára kerülhet az API-val visszaélés miatt."
+
+#: data/resources/preferences.ui:55
+msgid "Translate Accel"
+msgstr "Fordítás gyorsbillentyűje"
+
+#: data/resources/preferences.ui:56
+msgid "The opposite accel will be used for new line."
+msgstr "Az ellenkező gyorsbillentyű lesz az új sorhoz használva."
+
+#: data/resources/window.ui:76 data/resources/window.ui:490
+msgid "Switch languages"
+msgstr "Nyelvek felcserélése"
+
+#: data/resources/window.ui:156
+msgid "Previous translation"
+msgstr "Előző fordítás"
+
+#: data/resources/window.ui:175
+msgid "Next translation"
+msgstr "Következő fordítás"
+
+#: data/resources/window.ui:266
+msgid "Clear"
+msgstr "Törlés"
+
+#: data/resources/window.ui:281
+msgid "Paste"
+msgstr "Beillesztés"
+
+#: data/resources/window.ui:293
+msgid "Translate"
+msgstr "Fordítás"
+
+#: data/resources/window.ui:367
+msgid "Translation in progress..."
+msgstr "Fordítás folyamatban…"
+
+#: data/resources/window.ui:375
+msgid "Translation seems to have failed"
+msgstr "Úgy tűnik, hogy a fordítás sikertelen"
+
+#: data/resources/window.ui:386
+msgid "Listen"
+msgstr "Meghallgatás"
+
+#: data/resources/window.ui:401
+msgid "Copy"
+msgstr "Másolás"
+
+#: data/resources/window.ui:581
+msgid "No network connection detected."
+msgstr "Nem észlelhető hálózati kapcsolat."
+
+#: src/window.py:134
+msgid "A network issue has occured. Retry?"
+msgstr "Hálózati probléma történt. Újrapróbálja?"
+
+#: src/window.py:135
+msgid ""
+"A network issue has occured.\n"
+"Please try again."
+msgstr ""
+"Hálózati probléma történt.\n"
+"Próbálja újra."
+
+#: src/window.py:338 src/window.py:342
+msgid "Auto"
+msgstr "Automatikus"
+
+#: src/window.py:581
+msgid "5000 characters limit reached!"
+msgstr "5000 karakteres korlát elérve!"
+
+#: src/window.py:657
+msgid ""
+"Translation failed.\n"
+"Please check for network issues."
+msgstr ""
+"Fordítás sikertelen.\n"
+"Ellenőrizze, hogy nincs-e hálózati probléma."
