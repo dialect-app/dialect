@@ -31,7 +31,7 @@ msgstr "Переводчик для GNOME"
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
 msgid "translate;translation;"
-msgstr "перевести;перевод;"
+msgstr "перевести;перевод;translate;translation;"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:9 data/resources/about.ui:12
 msgid "A translation app for GNOME based on Google Translate."
