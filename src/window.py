@@ -680,7 +680,8 @@ class DialectWindow(Handy.ApplicationWindow):
                     src_language = str(self.translator.detect(src_text).lang)
                     GLib.idle_add(self.src_lang_selector.set_property,
                                   'selected', src_language)
-                    self.src_langs[0] = src_language
+                    if not src_language in src_langs:
+                        self.src_langs[0] = src_language
                 except Exception:
                     self.trans_failed = True
             # If the two languages are the same, nothing is done
