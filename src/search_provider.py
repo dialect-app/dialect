@@ -21,11 +21,12 @@ class TranslateService(dbus.service.Object):
     _object_path = '/' + bus_name.replace('.', '/')
 
     def __init__(self):
+        # init dbus
         self.session_bus = dbus.SessionBus()
         bus_name = dbus.service.BusName(self.bus_name, bus=self.session_bus)
         dbus.service.Object.__init__(self, bus_name, self._object_path)
 
-        # running translations
+        # Translations running now
         self.translations = dict()
         self.settings = Gio.Settings.new(APP_ID)
 
@@ -36,18 +37,25 @@ class TranslateService(dbus.service.Object):
 
     @dbus.service.method(in_signature='as', out_signature='as', **sbn)
     def GetInitialResultSet(self, terms):
+        """
+        Join separate terms in one ID line, start translation and send this line back
+        on start of input
+        """
         text = ' '.join(terms)
         self.translation(text)
         return [text]
 
     @dbus.service.method(in_signature='as', out_signature='aa{sv}', **sbn)
     def GetResultMetas(self, ids):
+        """Send translated text"""
         translate_id = ids[0]
 
+        # wait for the translation to finish
         if translate_id in self.translations:
             while self.translations[translate_id] == '':
                 pass
         else:
+            # if there is no translation of this text send the original text
             return [
                 dict(
                     id=id,
@@ -71,6 +79,10 @@ class TranslateService(dbus.service.Object):
 
     @dbus.service.method(in_signature='asas', out_signature='as', **sbn)
     def GetSubsearchResultSet(self, previous_results, new_terms):
+        """
+        Join separate terms in one ID line, start translation and send this line back
+        on update of text
+        """
         text = ' '.join(new_terms)
         self.translation(text)
         return [text]
@@ -84,8 +96,12 @@ class TranslateService(dbus.service.Object):
         pass
 
     def translation(self, src_text):
+        """
+        Start a new translation
+        """
         self.translations[src_text] = ''
 
+        # set dest_language to last used language and src_language to auto detection
         src_language = 'auto'
         dest_language = list(self.settings.get_value('dest-langs'))[0]
 
@@ -106,6 +122,9 @@ class TranslateService(dbus.service.Object):
         self.active_thread.start()
 
     def run_translation(self):
+        """
+        Translate all text in the queue
+        """
         while self.trans_queue:
             # If the first language is revealed automatically, let's set it
             trans_dict = self.trans_queue.pop(0)
@@ -118,7 +137,6 @@ class TranslateService(dbus.service.Object):
                     src_language = str(self.translator.detect(src_text).lang)
                 except Exception:
                     self.translations[src_text] = '_error_'
-                    # self.active_thread = None
                     return
 
             # If the two languages are the same, nothing is done
@@ -134,7 +152,6 @@ class TranslateService(dbus.service.Object):
                         ).text
                     except Exception:
                         self.translations[src_text] = '_error_'
-                        # self.active_thread = None
                         return
                 else:
                     pass
@@ -142,7 +159,6 @@ class TranslateService(dbus.service.Object):
                     self.translations[src_text] = dest_text
             else:
                 self.translations[src_text] = src_text
-        # self.active_thread = None
 
 if __name__ == "__main__":
     DBusGMainLoop(set_as_default=True)
