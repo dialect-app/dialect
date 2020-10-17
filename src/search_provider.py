@@ -54,6 +54,18 @@ class TranslateService(dbus.service.Object):
         if translate_id in self.translations:
             while self.translations[translate_id] == '':
                 pass
+
+            name = self.translations[translate_id]
+            self.translations.clear()
+
+            return [
+                dict(
+                    id=id,
+                    name=name,
+                    gicon='com.github.gi_lom.dialect',
+                )
+                for id in ids
+            ]
         else:
             # if there is no translation of this text send the original text
             return [
@@ -64,18 +76,6 @@ class TranslateService(dbus.service.Object):
                 )
                 for id in ids
             ]
-
-        name = self.translations[translate_id]
-        self.translations.clear()
-
-        return [
-            dict(
-                id=id,
-                name=name,
-                gicon='com.github.gi_lom.dialect',
-            )
-            for id in ids
-        ]
 
     @dbus.service.method(in_signature='asas', out_signature='as', **sbn)
     def GetSubsearchResultSet(self, previous_results, new_terms):
@@ -115,8 +115,7 @@ class TranslateService(dbus.service.Object):
 
         # Check if there are any active threads.
         if self.active_thread is not None:
-            while self.active_thread.isAlive():
-                pass
+            self.active_thread.join()
             del self.active_thread
         self.active_thread = threading.Thread(target=self.run_translation)
         self.active_thread.start()
@@ -132,33 +131,29 @@ class TranslateService(dbus.service.Object):
             src_language = trans_dict['src_language']
             dest_language = trans_dict['dest_language']
 
-            if src_language == 'auto' and src_text != '':
-                try:
+            try:
+                if src_language == 'auto' and src_text != '':
                     src_language = str(self.translator.detect(src_text).lang)
-                except Exception:
-                    self.translations[src_text] = '_error_'
-                    return
 
-            # If the two languages are the same, nothing is done
-            if src_language != dest_language:
-                dest_text = ''
-                # THIS IS WHERE THE TRANSLATION HAPPENS. The try is necessary to circumvent a bug of the used API
-                if src_text != '':
-                    try:
+                # If the two languages are the same, nothing is done
+                if src_language != dest_language:
+                    dest_text = ''
+                    # THIS IS WHERE THE TRANSLATION HAPPENS. The try is necessary to circumvent a bug of the used API
+                    if src_text != '':
                         dest_text = self.translator.translate(
                             src_text,
                             src=src_language,
                             dest=dest_language
                         ).text
-                    except Exception:
-                        self.translations[src_text] = '_error_'
-                        return
+                    else:
+                        pass
+                    if src_text in self.translations:
+                        self.translations[src_text] = dest_text
                 else:
-                    pass
-                if src_text in self.translations:
-                    self.translations[src_text] = dest_text
-            else:
-                self.translations[src_text] = src_text
+                    self.translations[src_text] = src_text
+            except Exception:
+                self.translations[src_text] = '_error_'
+                return
 
 if __name__ == "__main__":
     DBusGMainLoop(set_as_default=True)
