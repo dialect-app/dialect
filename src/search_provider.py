@@ -5,11 +5,15 @@
 
 import dbus
 import dbus.service
+import threading
 
 from dbus.mainloop.glib import DBusGMainLoop
-from gi.repository import GLib
+from gi.repository import GLib, Gio
+from googletrans import LANGUAGES, Translator
 
-search_bus_name = "org.gnome.Shell.SearchProvider2"
+APP_ID = 'com.github.gi_lom.dialect' #############################
+
+search_bus_name = 'org.gnome.Shell.SearchProvider2'
 sbn = dict(dbus_interface=search_bus_name)
 
 class TranslateService(dbus.service.Object):
@@ -23,6 +27,12 @@ class TranslateService(dbus.service.Object):
 
         # running translations
         self.translations = dict()
+        self.settings = Gio.Settings.new(APP_ID)
+
+        self.active_thread = None
+        self.trans_queue = []
+
+        self.translator = Translator()
 
     @dbus.service.method(in_signature='as', out_signature='as', **sbn)
     def GetInitialResultSet(self, terms):
@@ -38,10 +48,17 @@ class TranslateService(dbus.service.Object):
             while self.translations[translate_id] == '':
                 pass
         else:
-            return [dict()for id in ids]
+            return [
+                dict(
+                    id=id,
+                    name=id,
+                    gicon='com.github.gi_lom.dialect',
+                )
+                for id in ids
+            ]
 
         name = self.translations[translate_id]
-        self.translations.pop(name) #########################
+        self.translations.clear()
 
         return [
             dict(
@@ -66,8 +83,68 @@ class TranslateService(dbus.service.Object):
     def LaunchSearch(self, terms, timestamp):
         pass
 
-    def translation(self, text):
-        pass
+    def translation(self, src_text):
+        self.translations[src_text] = ''
 
-    def run_translation(self, text):
-        pass
+        src_language = 'auto'
+        dest_language = list(self.settings.get_value('dest-langs'))[0]
+
+        if self.trans_queue:
+            self.trans_queue.pop(0)
+        self.trans_queue.append({
+            'src_text': src_text,
+            'src_language': src_language,
+            'dest_language': dest_language
+        })
+
+        # Check if there are any active threads.
+        if self.active_thread is not None:
+            while self.active_thread.isAlive():
+                pass
+            del self.active_thread
+        self.active_thread = threading.Thread(target=self.run_translation)
+        self.active_thread.start()
+
+    def run_translation(self):
+        while self.trans_queue:
+            # If the first language is revealed automatically, let's set it
+            trans_dict = self.trans_queue.pop(0)
+            src_text = trans_dict['src_text']
+            src_language = trans_dict['src_language']
+            dest_language = trans_dict['dest_language']
+
+            if src_language == 'auto' and src_text != '':
+                try:
+                    src_language = str(self.translator.detect(src_text).lang)
+                except Exception:
+                    self.translations[src_text] = '_error_'
+                    # self.active_thread = None
+                    return
+
+            # If the two languages are the same, nothing is done
+            if src_language != dest_language:
+                dest_text = ''
+                # THIS IS WHERE THE TRANSLATION HAPPENS. The try is necessary to circumvent a bug of the used API
+                if src_text != '':
+                    try:
+                        dest_text = self.translator.translate(
+                            src_text,
+                            src=src_language,
+                            dest=dest_language
+                        ).text
+                    except Exception:
+                        self.translations[src_text] = '_error_'
+                        # self.active_thread = None
+                        return
+                else:
+                    pass
+                if src_text in self.translations:
+                    self.translations[src_text] = dest_text
+            else:
+                self.translations[src_text] = src_text
+        # self.active_thread = None
+
+if __name__ == "__main__":
+    DBusGMainLoop(set_as_default=True)
+    TranslateService()
+    GLib.MainLoop().run()
