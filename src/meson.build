@@ -25,7 +25,6 @@ sources = [
   'window.py',
   'preferences.py',
   'lang_selector.py',
-  'search_provider.py',
 ]
 # Install sources
 install_data(sources, install_dir: moduledir)

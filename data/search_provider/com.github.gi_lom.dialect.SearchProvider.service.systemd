@@ -1,0 +1,7 @@
+[Unit]
+Description=Search provider for Dialect
+
+[Service]
+Type=dbus
+BusName=com.github.gi_lom.dialect.SearchProvider
+ExecStart=/usr/local/share/dialect/dialect/search_provider.py
