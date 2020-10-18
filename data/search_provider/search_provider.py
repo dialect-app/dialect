@@ -11,7 +11,7 @@ from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib, Gio
 from googletrans import LANGUAGES, Translator
 
-APP_ID = 'com.github.gi_lom.dialect' #############################
+APP_ID = 'com.github.gi_lom.dialect'
 
 search_bus_name = 'org.gnome.Shell.SearchProvider2'
 sbn = dict(dbus_interface=search_bus_name)
