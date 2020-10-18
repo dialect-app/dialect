@@ -1,6 +1,5 @@
 pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
 moduledir = join_paths(pkgdatadir, 'dialect')
-
 python = import('python')
 
 conf = configuration_data()
@@ -26,6 +25,7 @@ sources = [
   'window.py',
   'preferences.py',
   'lang_selector.py',
+  'search_provider.py',
 ]
 # Install sources
 install_data(sources, install_dir: moduledir)
