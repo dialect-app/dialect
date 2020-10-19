@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!@PYTHON@
 # Copyright 2020 gi-lom
 # Copyright 2020 Nikita Kravets
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -66,16 +66,16 @@ class TranslateService(dbus.service.Object):
                 )
                 for id in ids
             ]
-        else:
-            # if there is no translation of this text send the original text
-            return [
-                dict(
-                    id=id,
-                    name=id,
-                    gicon='com.github.gi_lom.dialect',
-                )
-                for id in ids
-            ]
+        
+        # if there is no translation of this text send the original text
+        return [
+            dict(
+                id=id,
+                name=id,
+                gicon='com.github.gi_lom.dialect',
+            )
+            for id in ids
+        ]
 
     @dbus.service.method(in_signature='asas', out_signature='as', **sbn)
     def GetSubsearchResultSet(self, previous_results, new_terms):

@@ -15,4 +15,3 @@ if (APP_DESKTOP) not in disabled_providers:
     disabled_providers.append(APP_DESKTOP)
     settings.set_value('disabled', GLib.Variant('as', disabled_providers))
     settings.apply()
- 
