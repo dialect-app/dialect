@@ -26,6 +26,8 @@ class TranslateService(dbus.service.Object):
         bus_name = dbus.service.BusName(self.bus_name, bus=self.session_bus)
         dbus.service.Object.__init__(self, bus_name, self._object_path)
 
+        self.live_enabled = False
+
         # Translations running now
         self.translations = dict()
         self.settings = Gio.Settings.new(APP_ID)
@@ -41,9 +43,13 @@ class TranslateService(dbus.service.Object):
         Join separate terms in one ID line, start translation and send this line back
         on start of input
         """
-        text = ' '.join(terms)
-        self.translation(text)
-        return [text]
+        self.live_enabled = self.is_live_enabled()
+        if self.live_enabled:
+            text = ' '.join(terms)
+            self.translation(text)
+            return [text]
+
+        return None
 
     @dbus.service.method(in_signature='as', out_signature='aa{sv}', **sbn)
     def GetResultMetas(self, ids):
@@ -83,9 +89,12 @@ class TranslateService(dbus.service.Object):
         Join separate terms in one ID line, start translation and send this line back
         on update of text
         """
-        text = ' '.join(new_terms)
-        self.translation(text)
-        return [text]
+        if self.live_enabled:
+            text = ' '.join(new_terms)
+            self.translation(text)
+            return [text]
+
+        return None
 
     @dbus.service.method(in_signature='sasu', **sbn)
     def ActivateResult(self, id, terms, timestamp):
@@ -103,7 +112,7 @@ class TranslateService(dbus.service.Object):
 
         # set dest_language to last used language and src_language to auto detection
         src_language = 'auto'
-        dest_language = list(self.settings.get_value('dest-langs'))[0]
+        dest_language = self.settings.get_strv('dest-langs')[0]
 
         if self.trans_queue:
             self.trans_queue.pop(0)
@@ -154,6 +163,9 @@ class TranslateService(dbus.service.Object):
             except Exception:
                 self.translations[src_text] = '_error_'
                 return
+
+    def is_live_enabled(self):
+        return self.settings.get_boolean('live-translation')
 
 if __name__ == "__main__":
     DBusGMainLoop(set_as_default=True)

@@ -36,4 +36,4 @@ subdir('po')
 subdir('search_provider')
 
 meson.add_install_script('build-aux/meson/postinstall.py')
-meson.add_install_script('build-aux/meson/provider_postinstall.sh')
+
