@@ -66,7 +66,7 @@ class TranslateService(dbus.service.Object):
                 )
                 for id in ids
             ]
-        
+
         # if there is no translation of this text send the original text
         return [
             dict(
@@ -159,3 +159,4 @@ if __name__ == "__main__":
     DBusGMainLoop(set_as_default=True)
     TranslateService()
     GLib.MainLoop().run()
+

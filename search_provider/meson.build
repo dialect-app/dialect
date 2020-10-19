@@ -19,3 +19,4 @@ configure_file(
   configuration: conf,
   install_dir: pkgdatadir,
 )
+
