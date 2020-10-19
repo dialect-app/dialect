@@ -1,4 +1,0 @@
-[D-BUS Service]
-Name=com.github.gi_lom.dialect.SearchProvider
-Exec=/usr/local/share/dialect/dialect/search_provider.py
-SystemdService=com.github.gi_lom.dialect.SearchProvider.service

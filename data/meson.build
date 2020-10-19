@@ -1,5 +1,4 @@
 subdir('resources')
-subdir('search_provider')
 
 # Install desktop
 desktop_file = i18n.merge_file(
