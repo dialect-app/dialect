@@ -105,13 +105,12 @@ class TranslateService(dbus.service.Object):
         pass
 
     def translation(self, src_text):
-        """
-        Start a new translation
-        """
+        """Start a new translation"""
         self.translations[src_text] = ''
 
         # set dest_language to last used language and src_language to auto detection
         src_language = 'auto'
+        src_language_saved = self.settings.get_strv('src-langs')[0]
         dest_language = self.settings.get_strv('dest-langs')[0]
 
         if self.trans_queue:
@@ -119,6 +118,7 @@ class TranslateService(dbus.service.Object):
         self.trans_queue.append({
             'src_text': src_text,
             'src_language': src_language,
+            'src_language_saved': src_language_saved,
             'dest_language': dest_language
         })
 
@@ -138,13 +138,18 @@ class TranslateService(dbus.service.Object):
             trans_dict = self.trans_queue.pop(0)
             src_text = trans_dict['src_text']
             src_language = trans_dict['src_language']
+            src_language_saved = trans_dict['src_language_saved']
             dest_language = trans_dict['dest_language']
 
             try:
                 if src_language == 'auto' and src_text != '':
                     src_language = str(self.translator.detect(src_text).lang)
 
-                # If the two languages are the same, nothing is done
+                # If the two languages are the same, translate into last used source language
+                if src_language == dest_language:
+                    dest_language = src_language_saved
+
+                # If the two languages are slill the same, nothing is done
                 if src_language != dest_language:
                     dest_text = ''
                     # THIS IS WHERE THE TRANSLATION HAPPENS. The try is necessary to circumvent a bug of the used API
