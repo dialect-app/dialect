@@ -9,11 +9,11 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-14 12:34-0500\n"
 "PO-Revision-Date: 2020-10-21 16:17+0300\n"
-"Last-Translator: Bedirhan Tuhana GAYRETLİ <EMAIL@ADDRESS>\n"
+"Last-Translator: Bedirhan Tuhana GAYRETLİ <v30xythedev@gmail.com>\n"
 "Language-Team: Turkish <LL@li.org>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #. Translators: Do not translate the app name!
