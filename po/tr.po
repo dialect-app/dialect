@@ -1,0 +1,182 @@
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the dialect package.
+# Bedirhan Tuhana GAYRETLİ <v30xythedev@gmail.com>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: dialect\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-14 12:34-0500\n"
+"PO-Revision-Date: 2020-10-21 16:17+0300\n"
+"Last-Translator: Bedirhan Tuhana GAYRETLİ <v30xythedev@gmail.com>\n"
+"Language-Team: Turkish <LL@li.org>\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Translators: Do not translate the app name!
+#: data/com.github.gi_lom.dialect.desktop.in:8
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:38
+#: src/main.py:44
+msgid "Dialect"
+msgstr "Dialect"
+
+#: data/com.github.gi_lom.dialect.desktop.in:9
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:7
+msgid "A translation app for GNOME"
+msgstr "GNOME için çeviri uygulaması"
+
+#. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
+#: data/com.github.gi_lom.dialect.desktop.in:13
+msgid "translate;translation;"
+msgstr "çevir;çeviri"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:9 data/resources/about.ui:12
+msgid "A translation app for GNOME based on Google Translate."
+msgstr "GNOME için Google Çeviri tabanlı çeviri uygulaması"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:12
+msgid "Features:"
+msgstr "Özellikler:"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:16
+msgid "Text translation up to 5000 chars"
+msgstr "5000 karaktere kadar metin çevirme"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:17
+msgid "Text to speech"
+msgstr "Metinden sese"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:18
+msgid "History"
+msgstr "Geçmiş"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:19
+msgid "Automatic language detection"
+msgstr "Otomatik dil denetleme"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:20
+msgid "Clipboard buttons"
+msgstr "Pano butonları"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:25
+msgid "gi-lom"
+msgstr "gi-lom"
+
+#: data/resources/about.ui:11
+msgid "Copyright 2020 gi-lom"
+msgstr "Telif Hakkı 2020 gi-lom"
+
+#: data/resources/about.ui:14
+msgid "Github page"
+msgstr "Github sayfası"
+
+#: data/resources/menu.ui:7
+msgid "Preferences"
+msgstr "Tercihler"
+
+#: data/resources/menu.ui:11
+msgid "About Dialect"
+msgstr "Dialect hakkında"
+
+#: data/resources/preferences.ui:15
+msgid "Appearance"
+msgstr "Görünüm"
+
+#: data/resources/preferences.ui:19
+msgid "Dark Mode"
+msgstr "Koyu Mod"
+
+#: data/resources/preferences.ui:36
+msgid "Behavior"
+msgstr "Davranış"
+
+#: data/resources/preferences.ui:40
+msgid "Live Translation"
+msgstr "Anında Çeviri"
+
+#: data/resources/preferences.ui:41
+msgid "Warning: You could get your IP banned by API abuse."
+msgstr "Uyarı: IP adresiniz kötüye kullanım sebebiyle yasaklanabilir."
+
+#: data/resources/preferences.ui:55
+msgid "Translate Accel"
+msgstr "Hızlı çevir"
+
+#: data/resources/preferences.ui:56
+msgid "The opposite accel will be used for new line."
+msgstr "Seçilmemiş olan kombinasyon sonraki satır için kullanılır."
+
+#: data/resources/window.ui:76 data/resources/window.ui:490
+msgid "Switch languages"
+msgstr "Dili değiştir"
+
+#: data/resources/window.ui:156
+msgid "Previous translation"
+msgstr "Önceki çeviri"
+
+#: data/resources/window.ui:175
+msgid "Next translation"
+msgstr "Sonraki çeviri"
+
+#: data/resources/window.ui:266
+msgid "Clear"
+msgstr "Temizle"
+
+#: data/resources/window.ui:281
+msgid "Paste"
+msgstr "Yapıştır"
+
+#: data/resources/window.ui:293
+msgid "Translate"
+msgstr "Çevir"
+
+#: data/resources/window.ui:367
+msgid "Translation in progress..."
+msgstr "Çeviriliyor..."
+
+#: data/resources/window.ui:375
+msgid "Translation seems to have failed"
+msgstr "Görünüşe göre çeviri başarısız oldu"
+
+#: data/resources/window.ui:386
+msgid "Listen"
+msgstr "Dinle"
+
+#: data/resources/window.ui:401
+msgid "Copy"
+msgstr "Kopyala"
+
+#: data/resources/window.ui:581
+msgid "No network connection detected."
+msgstr "İnternet bağlantısı bulunamadı"
+
+#: src/window.py:134
+msgid "A network issue has occured. Retry?"
+msgstr "Ağ sorunu oluştu. Yeniden dene?"
+
+#: src/window.py:135
+msgid ""
+"A network issue has occured.\n"
+"Please try again."
+msgstr ""
+"Ağ sorunu oluştu.\n"
+"Lütfen tekrar deneyin."
+
+#: src/window.py:338 src/window.py:342
+msgid "Auto"
+msgstr "Otomatik"
+
+#: src/window.py:581
+msgid "5000 characters limit reached!"
+msgstr "5000 karakter limiti aşıldı!"
+
+#: src/window.py:657
+msgid ""
+"Translation failed.\n"
+"Please check for network issues."
+msgstr ""
+"Çeviri hata ile sonuçlandı.\n"
+"Lütfen ağınızı kontrol edin."
