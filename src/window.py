@@ -121,7 +121,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.toggle_mobile_mode()
 
         # Get languages available for speech
-        threading.Thread(target=self.load_lang_speech).start()
+        threading.Thread(target=self.load_lang_speech, daemon=True).start()
 
         # Load saved src lang
         self.src_lang_selector.set_property('selected', 'auto')
@@ -461,7 +461,8 @@ class DialectWindow(Handy.ApplicationWindow):
             else:
                 threading.Thread(
                     target=self.switch_auto_lang,
-                    args=(dest_language, src_text, dest_text)
+                    args=(dest_language, src_text, dest_text),
+                    daemon=True
                 ).start()
                 return
 
@@ -500,12 +501,14 @@ class DialectWindow(Handy.ApplicationWindow):
             if self.lang_speech:
                 threading.Thread(
                     target=self.voice_download,
-                    args=(dest_text, dest_language)
+                    args=(dest_text, dest_language),
+                    daemon=True
                 ).start()
             else:
                 threading.Thread(
                     target=self.load_lang_speech,
-                    args=(True, dest_text, dest_language)
+                    args=(True, dest_text, dest_language),
+                    daemon=True
                 ).start()
 
     def on_gst_message(self, _bus, message):
@@ -650,7 +653,7 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.dest_box.set_sensitive(False)
                 self.langs_button_box.set_sensitive(False)
                 # If there is no active thread, create one and start it.
-                self.active_thread = threading.Thread(target=self.run_translation)
+                self.active_thread = threading.Thread(target=self.run_translation, daemon=True)
                 self.active_thread.start()
 
     def run_translation(self):
