@@ -37,6 +37,7 @@ Arch-based distro users can install from the AUR: [`dialect`](https://aur.archli
 - Ninja `ninja`
 - Googletrans `python-googletrans`
 - gTTS `python-gtts`
+- D-Bus `python3-dbus`
 
 If official packages are not available for any of the python dependencies, you can install them from pip:
 

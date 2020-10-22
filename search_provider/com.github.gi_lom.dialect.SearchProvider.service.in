@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=com.github.gi_lom.dialect.SearchProvider
+Exec=@pkgdatadir@/search_provider
