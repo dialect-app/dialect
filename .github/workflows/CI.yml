@@ -12,9 +12,7 @@ jobs:
       options: --privileged
     steps:
     - uses: actions/checkout@master
-    - uses: bilelmoussaoui/flatpak-github-actions@master
+    - uses: bilelmoussaoui/flatpak-github-actions@v1
       with:
         bundle: "dialect-dev.flatpak"
         manifest-path: "build-aux/flatpak/com.github.gi_lom.dialect.json"
-        app-id: "com.github.gi_lom.dialect"
-        flatpak-module: "dialect"
