@@ -9,6 +9,8 @@ configure_file(
   install_dir: get_option('bindir')
 )
 
+subdir('search_provider')
+
 # Python sources
 sources = [
   '__init__.py',

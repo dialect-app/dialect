@@ -33,7 +33,6 @@ dependency('pygobject-3.0', version: '>= 3.29.1')
 subdir('data')
 subdir('src')
 subdir('po')
-subdir('search_provider')
 
 meson.add_install_script('build-aux/meson/postinstall.py')
 
