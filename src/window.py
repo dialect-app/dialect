@@ -575,7 +575,7 @@ class DialectWindow(Handy.ApplicationWindow):
     def on_mistakes_clicked(self, _button):
         self.mistakes.set_reveal_child(False)
         self.src_buffer.set_text(self.trans_mistakes[1])
-        # Run trasnlation again
+        # Run translation again
         self.translation(None)
 
     def on_src_text_changed(self, buffer):
