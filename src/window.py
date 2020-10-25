@@ -573,7 +573,7 @@ class DialectWindow(Handy.ApplicationWindow):
         return Gdk.EVENT_PROPAGATE
 
     def on_mistakes_clicked(self, _button):
-        self.mistakes.set_reveal_child(False)
+        self.mistakes.set_revealed(False)
         self.src_buffer.set_text(self.trans_mistakes[1])
         # Run translation again
         self.translation(None)
@@ -687,11 +687,10 @@ class DialectWindow(Handy.ApplicationWindow):
 
         def on_mistakes():
             if self.trans_mistakes is not None:
-                label = _('Did you mean: {}?').format(self.trans_mistakes[0])
-                self.mistakes_label.set_label(label)
-                self.mistakes.set_reveal_child(True)
-            elif self.mistakes.get_reveal_child():
-                self.mistakes.set_reveal_child(False)
+                self.mistakes_label.set_label(self.trans_mistakes[0])
+                self.mistakes.set_revealed(True)
+            elif self.mistakes.get_revealed():
+                self.mistakes.set_revealed(False)
 
         while self.trans_queue:
             # If the first language is revealed automatically, let's set it
