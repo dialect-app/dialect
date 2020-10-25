@@ -256,6 +256,49 @@
                               </packing>
                             </child>
                             <child>
+                              <object class="GtkRevealer" id="mistakes">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="reveal-child">False</property>
+                                <property name="transition-type">slide-up</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="spacing">6</property>
+                                    <child>
+                                      <object class="GtkImage">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="icon-name">help-about-symbolic</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="mistakes_btn">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="receives-default">True</property>
+                                        <style>
+                                          <class name="flat"/>
+                                        </style>
+                                        <child>
+                                          <object class="GtkLabel" id="mistakes_label">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="use-markup">True</property>
+                                            <property name="wrap">True</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <style>
+                                      <class name="toolbox"/>
+                                    </style>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
                               <object class="GtkBox">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
@@ -326,6 +369,7 @@
                                 </child>
                                 <style>
                                   <class name="toolbox"/>
+                                  <class name="toolbox-last"/>
                                 </style>
                               </object>
                             </child>
@@ -419,6 +463,7 @@
                                 </child>
                                 <style>
                                   <class name="toolbox"/>
+                                  <class name="toolbox-last"/>
                                 </style>
                               </object>
                             </child>
