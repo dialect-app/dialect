@@ -36,7 +36,7 @@
             <child>
               <object class="HdyActionRow">
                 <property name="title" translatable="yes">Live Translation</property>
-                <property name="subtitle" translatable="yes">Warning: You could get your IP banned by API abuse.</property>
+                <property name="subtitle" translatable="yes">Warning: Your IP address may get banned for API abuse.</property>
                 <property name="visible">True</property>
                 <property name="activatable_widget">live_translation</property>
                 <child>
@@ -50,8 +50,8 @@
             </child>
             <child>
               <object class="HdyComboRow" id="translate_accel">
-                <property name="title" translatable="yes">Translate Accel</property>
-                <property name="subtitle" translatable="yes">The opposite accel will be used for new line.</property>
+                <property name="title" translatable="yes">Translation Shortcut</property>
+                <property name="subtitle" translatable="yes">Unselected choice will be used for line break.</property>
                 <property name="visible">True</property>
               </object>
             </child>
@@ -60,7 +60,7 @@
         <child>
           <object class="HdyPreferencesGroup" id="search_provider">
             <property name="title" translatable="yes">Search Provider</property>
-            <property name="description" translatable="yes">Dialect has a GNOME Search Provider. For API concerns it requires the Live Translation preference to work. Also be sure it's enabled in GNOME Settings.</property>
+            <property name="description" translatable="yes">Dialect has a GNOME Search Provider. Enabling or disabling Live Translation here will also enable or disable the GNOME Search Provider. This is to reduce the possibility of API abuse. Also make sure that the feature is enabled in GNOME Settings.</property>
             <property name="visible">True</property>
           </object>
         </child>

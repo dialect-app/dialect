@@ -52,8 +52,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         self.dark_mode.connect('notify::active', self._toggle_dark_mode)
 
         # Set translate accel sensitivity by live translation state
-        self.translate_accel.set_sensitive(
-            not self.live_translation.get_active())
+        self.translate_accel.set_sensitive(not self.live_translation.get_active())
         self.live_translation.connect('notify::active', self._toggle_accel_pref)
 
         # Search Provider
