@@ -26,7 +26,8 @@ class Dialect(Gtk.Application):
         Gtk.Application.__init__(
             self,
             application_id=APP_ID,
-            flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE)
+            flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE
+        )
 
         # App window
         self.version = version

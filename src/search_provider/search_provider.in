@@ -101,17 +101,19 @@ class TranslateService(dbus.service.Object):
     def ActivateResult(self, id, terms, timestamp):
         text = ' '.join(terms)
         GLib.spawn_async_with_pipes(
-            None, ['dialect', '--text', text], None,
+            None, ['@BIN@', '--text', text], None,
             GLib.SpawnFlags.SEARCH_PATH |
-            GLib.SpawnFlags.DO_NOT_REAP_CHILD, None)
+            GLib.SpawnFlags.DO_NOT_REAP_CHILD, None
+        )
 
     @dbus.service.method(in_signature='asu', terms='as', timestamp='u', **sbn)
     def LaunchSearch(self, terms, timestamp):
         text = ' '.join(terms)
         GLib.spawn_async_with_pipes(
-            None, ['dialect', '--text', text], None,
+            None, ['@BIN@', '--text', text], None,
             GLib.SpawnFlags.SEARCH_PATH |
-            GLib.SpawnFlags.DO_NOT_REAP_CHILD, None)
+            GLib.SpawnFlags.DO_NOT_REAP_CHILD, None
+        )
 
     def translation(self, src_text):
         """Start a new translation"""
