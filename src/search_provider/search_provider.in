@@ -1,6 +1,7 @@
 #!@PYTHON@
 # Copyright 2020 gi-lom
 # Copyright 2020 Nikita Kravets
+# Copyright 2020 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import dbus
@@ -98,11 +99,19 @@ class TranslateService(dbus.service.Object):
 
     @dbus.service.method(in_signature='sasu', **sbn)
     def ActivateResult(self, id, terms, timestamp):
-        pass
+        text = ' '.join(terms)
+        GLib.spawn_async_with_pipes(
+            None, ['dialect', '--text', text], None,
+            GLib.SpawnFlags.SEARCH_PATH |
+            GLib.SpawnFlags.DO_NOT_REAP_CHILD, None)
 
     @dbus.service.method(in_signature='asu', terms='as', timestamp='u', **sbn)
     def LaunchSearch(self, terms, timestamp):
-        pass
+        text = ' '.join(terms)
+        GLib.spawn_async_with_pipes(
+            None, ['dialect', '--text', text], None,
+            GLib.SpawnFlags.SEARCH_PATH |
+            GLib.SpawnFlags.DO_NOT_REAP_CHILD, None)
 
     def translation(self, src_text):
         """Start a new translation"""
