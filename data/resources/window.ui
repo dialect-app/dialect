@@ -267,31 +267,10 @@
                                   <object class="GtkBox">
                                     <property name="can_focus">False</property>
                                     <child>
-                                      <object class="GtkLabel">
+                                      <object class="GtkLabel" id="mistakes_label">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="label" translatable="yes">Did you mean:</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                                <child internal-child="action_area">
-                                  <object class="GtkButtonBox">
-                                    <property name="can_focus">False</property>
-                                    <property name="layout_style">expand</property>
-                                    <child>
-                                      <object class="GtkButton" id="mistakes_btn">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">True</property>
-                                        <child>
-                                          <object class="GtkLabel" id="mistakes_label">
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
-                                            <property name="use-markup">True</property>
-                                            <property name="wrap">True</property>
-                                          </object>
-                                        </child>
                                       </object>
                                     </child>
                                   </object>

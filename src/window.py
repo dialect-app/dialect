@@ -38,7 +38,6 @@ class DialectWindow(Handy.ApplicationWindow):
     menu_btn = Gtk.Template.Child()
 
     mistakes = Gtk.Template.Child()
-    mistakes_btn = Gtk.Template.Child()
     mistakes_label = Gtk.Template.Child()
     char_counter = Gtk.Template.Child()
     src_text = Gtk.Template.Child()
@@ -228,8 +227,8 @@ class DialectWindow(Handy.ApplicationWindow):
         self.paste_btn.connect('clicked', self.ui_paste)
         # Translate button
         self.translate_btn.connect('clicked', self.translation)
-        # Mistakes button
-        self.mistakes_btn.connect('clicked', self.on_mistakes_clicked)
+        # "Did you mean" links
+        self.mistakes_label.connect('activate-link', self.on_mistakes_clicked)
 
         # Right buffer
         self.dest_buffer = self.dest_text.get_buffer()
@@ -572,7 +571,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
         return Gdk.EVENT_PROPAGATE
 
-    def on_mistakes_clicked(self, _button):
+    def on_mistakes_clicked(self, _button, _data):
         self.mistakes.set_revealed(False)
         self.src_buffer.set_text(self.trans_mistakes[1])
         # Run translation again
@@ -687,7 +686,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
         def on_mistakes():
             if self.trans_mistakes is not None:
-                self.mistakes_label.set_label(self.trans_mistakes[0])
+                self.mistakes_label.set_markup(_('Did you mean: ') + f'<a href="#">{self.trans_mistakes[0]}</a>')
                 self.mistakes.set_revealed(True)
             elif self.mistakes.get_revealed():
                 self.mistakes.set_revealed(False)
