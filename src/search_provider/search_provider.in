@@ -62,13 +62,14 @@ class TranslateService(dbus.service.Object):
                 pass
 
             name = self.translations[translate_id]
+            lang = LANGUAGES[self.settings.get_strv('dest-langs')[0]].capitalize()
             self.translations.clear()
 
             return [
                 dict(
                     id=id,
                     name=name,
-                    gicon='com.github.gi_lom.dialect',
+                    description=lang,
                 )
                 for id in ids
             ]
@@ -78,7 +79,6 @@ class TranslateService(dbus.service.Object):
             dict(
                 id=id,
                 name=id,
-                gicon='com.github.gi_lom.dialect',
             )
             for id in ids
         ]
