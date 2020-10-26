@@ -266,6 +266,15 @@
                                 <child internal-child="content_area">
                                   <object class="GtkBox">
                                     <property name="can_focus">False</property>
+                                    <property name="orientation">horizontal</property>
+                                    <property name="spacing">8</property>
+                                    <child>
+                                      <object class="GtkImage">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="icon-name">error-correct-symbolic</property>
+                                      </object>
+                                    </child>
                                     <child>
                                       <object class="GtkLabel" id="mistakes_label">
                                         <property name="visible">True</property>
