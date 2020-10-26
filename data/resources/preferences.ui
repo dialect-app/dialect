@@ -3,7 +3,7 @@
   <requires lib="gtk+" version="3.0"/>
   <requires lib="libhandy" version="1.0"/>
   <template class="DialectPreferencesWindow" parent="HdyPreferencesWindow">
-    <property name="default_height">400</property>
+    <property name="default_height">420</property>
     <property name="default_width">600</property>
     <property name="window_position">center-on-parent</property>
     <child>
@@ -11,7 +11,6 @@
         <property name="visible">True</property>
         <child>
           <object class="HdyPreferencesGroup">
-            <property name="description" translatable="yes"></property>
             <property name="title" translatable="yes">Appearance</property>
             <property name="visible">True</property>
             <child>
@@ -32,7 +31,6 @@
         </child>
         <child>
           <object class="HdyPreferencesGroup">
-            <property name="description" translatable="yes"></property>
             <property name="title" translatable="yes">Behavior</property>
             <property name="visible">True</property>
             <child>
@@ -57,6 +55,13 @@
                 <property name="visible">True</property>
               </object>
             </child>
+          </object>
+        </child>
+        <child>
+          <object class="HdyPreferencesGroup" id="search_provider">
+            <property name="title" translatable="yes">Search Provider</property>
+            <property name="description" translatable="yes">Dialect has a GNOME Search Provider. For API concerns it requires the Live Translation preference to work. Also be sure it's enabled in GNOME Settings.</property>
+            <property name="visible">True</property>
           </object>
         </child>
       </object>
