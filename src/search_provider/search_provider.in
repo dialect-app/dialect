@@ -1,6 +1,7 @@
 #!@PYTHON@
 # Copyright 2020 gi-lom
 # Copyright 2020 Nikita Kravets
+# Copyright 2020 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import dbus
@@ -32,6 +33,7 @@ class TranslateService(dbus.service.Object):
         self.translations = dict()
         self.settings = Gio.Settings.new(APP_ID)
 
+        self.dest_language = None
         self.active_thread = None
         self.trans_queue = []
 
@@ -68,7 +70,7 @@ class TranslateService(dbus.service.Object):
                 dict(
                     id=id,
                     name=name,
-                    gicon='com.github.gi_lom.dialect',
+                    description=self.dest_language or '',
                 )
                 for id in ids
             ]
@@ -78,7 +80,6 @@ class TranslateService(dbus.service.Object):
             dict(
                 id=id,
                 name=id,
-                gicon='com.github.gi_lom.dialect',
             )
             for id in ids
         ]
@@ -98,11 +99,21 @@ class TranslateService(dbus.service.Object):
 
     @dbus.service.method(in_signature='sasu', **sbn)
     def ActivateResult(self, id, terms, timestamp):
-        pass
+        text = ' '.join(terms)
+        GLib.spawn_async_with_pipes(
+            None, ['@BIN@', '--text', text], None,
+            GLib.SpawnFlags.SEARCH_PATH |
+            GLib.SpawnFlags.DO_NOT_REAP_CHILD, None
+        )
 
     @dbus.service.method(in_signature='asu', terms='as', timestamp='u', **sbn)
     def LaunchSearch(self, terms, timestamp):
-        pass
+        text = ' '.join(terms)
+        GLib.spawn_async_with_pipes(
+            None, ['@BIN@', '--text', text], None,
+            GLib.SpawnFlags.SEARCH_PATH |
+            GLib.SpawnFlags.DO_NOT_REAP_CHILD, None
+        )
 
     def translation(self, src_text):
         """Start a new translation"""
@@ -139,25 +150,25 @@ class TranslateService(dbus.service.Object):
             src_text = trans_dict['src_text']
             src_language = trans_dict['src_language']
             src_language_saved = trans_dict['src_language_saved']
-            dest_language = trans_dict['dest_language']
+            self.dest_language = trans_dict['dest_language']
 
             try:
                 if src_language == 'auto' and src_text != '':
                     src_language = str(self.translator.detect(src_text).lang)
 
                 # If the two languages are the same, translate into last used source language
-                if src_language == dest_language:
-                    dest_language = src_language_saved
+                if src_language == self.dest_language:
+                    self.dest_language = src_language_saved
 
                 # If the two languages are slill the same, nothing is done
-                if src_language != dest_language:
+                if src_language != self.dest_language:
                     dest_text = ''
                     # THIS IS WHERE THE TRANSLATION HAPPENS. The try is necessary to circumvent a bug of the used API
                     if src_text != '':
                         dest_text = self.translator.translate(
                             src_text,
                             src=src_language,
-                            dest=dest_language
+                            dest=self.dest_language
                         ).text
                     else:
                         pass
