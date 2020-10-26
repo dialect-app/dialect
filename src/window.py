@@ -37,6 +37,8 @@ class DialectWindow(Handy.ApplicationWindow):
 
     menu_btn = Gtk.Template.Child()
 
+    mistakes = Gtk.Template.Child()
+    mistakes_label = Gtk.Template.Child()
     char_counter = Gtk.Template.Child()
     src_text = Gtk.Template.Child()
     clear_btn = Gtk.Template.Child()
@@ -76,6 +78,8 @@ class DialectWindow(Handy.ApplicationWindow):
     # Connectivity issues monitoring
     trans_failed = False
     voice_loading = False
+    # Trans mistakes
+    trans_mistakes = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -223,6 +227,8 @@ class DialectWindow(Handy.ApplicationWindow):
         self.paste_btn.connect('clicked', self.ui_paste)
         # Translate button
         self.translate_btn.connect('clicked', self.translation)
+        # "Did you mean" links
+        self.mistakes_label.connect('activate-link', self.on_mistakes_clicked)
 
         # Right buffer
         self.dest_buffer = self.dest_text.get_buffer()
@@ -565,6 +571,12 @@ class DialectWindow(Handy.ApplicationWindow):
 
         return Gdk.EVENT_PROPAGATE
 
+    def on_mistakes_clicked(self, _button, _data):
+        self.mistakes.set_revealed(False)
+        self.src_buffer.set_text(self.trans_mistakes[1])
+        # Run translation again
+        self.translation(None)
+
     def on_src_text_changed(self, buffer):
         sensitive = buffer.get_char_count() != 0
         self.translate_btn.set_sensitive(sensitive)
@@ -672,6 +684,13 @@ class DialectWindow(Handy.ApplicationWindow):
             self.dest_box.set_sensitive(True)
             self.langs_button_box.set_sensitive(True)
 
+        def on_mistakes():
+            if self.trans_mistakes is not None:
+                self.mistakes_label.set_markup(_('Did you mean: ') + f'<a href="#">{self.trans_mistakes[0]}</a>')
+                self.mistakes.set_revealed(True)
+            elif self.mistakes.get_revealed():
+                self.mistakes.set_revealed(False)
+
         while self.trans_queue:
             # If the first language is revealed automatically, let's set it
             trans_dict = self.trans_queue.pop(0)
@@ -683,7 +702,7 @@ class DialectWindow(Handy.ApplicationWindow):
                     src_language = str(self.translator.detect(src_text).lang)
                     GLib.idle_add(self.src_lang_selector.set_property,
                                   'selected', src_language)
-                    if not src_language in src_langs:
+                    if not src_language in self.src_langs:
                         self.src_langs[0] = src_language
                 except Exception:
                     self.trans_failed = True
@@ -693,13 +712,16 @@ class DialectWindow(Handy.ApplicationWindow):
                 # THIS IS WHERE THE TRANSLATION HAPPENS. The try is necessary to circumvent a bug of the used API
                 if src_text != '':
                     try:
-                        dest_text = self.translator.translate(
+                        translation = self.translator.translate(
                             src_text,
                             src=src_language,
                             dest=dest_language
-                        ).text
+                        )
+                        dest_text = translation.text
+                        self.trans_mistakes = translation.extra_data['possible-mistakes']
                         self.trans_failed = False
                     except Exception:
+                        self.trans_mistakes = None
                         self.trans_failed = True
 
                     # Finally, everything is saved in history
@@ -711,7 +733,9 @@ class DialectWindow(Handy.ApplicationWindow):
                     )
                 else:
                     self.trans_failed = False
+                    self.trans_mistakes = None
                 GLib.idle_add(self.dest_buffer.set_text, dest_text)
+                GLib.idle_add(on_mistakes)
 
         if self.trans_failed:
             GLib.idle_add(on_trans_failed)
