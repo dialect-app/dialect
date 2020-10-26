@@ -81,8 +81,11 @@ class DialectWindow(Handy.ApplicationWindow):
     # Trans mistakes
     trans_mistakes = None
 
-    def __init__(self, **kwargs):
+    def __init__(self, text, **kwargs):
         super().__init__(**kwargs)
+
+        # Text passed to command line
+        self.launch_text = text
 
         # GSettings object
         self.settings = Gio.Settings.new(APP_ID)
@@ -217,7 +220,7 @@ class DialectWindow(Handy.ApplicationWindow):
     def setup_translation(self):
         # Left buffer
         self.src_buffer = self.src_text.get_buffer()
-        self.src_buffer.set_text('')
+        self.src_buffer.set_text(self.launch_text)
         self.src_buffer.connect('changed', self.on_src_text_changed)
         self.src_buffer.connect('end-user-action', self.user_action_ended)
         self.connect('key-press-event', self.update_trans_button)
@@ -281,6 +284,18 @@ class DialectWindow(Handy.ApplicationWindow):
             # Reset lang selectors position
             self.src_lang_selector.set_relative_to(self.src_lang_btn)
             self.dest_lang_selector.set_relative_to(self.dest_lang_btn)
+
+    def translate(self, text):
+        """
+        Translates the given text from auto detected language to last used
+        language
+        """
+        # Set src lang to Auto
+        self.src_lang_selector.set_property('selected', 'auto')
+        # Set text to src buffer
+        self.src_buffer.set_text(text)
+        # Run translation
+        self.translation(None)
 
     def on_destroy(self, _window):
         self.settings.set_value('src-langs',
