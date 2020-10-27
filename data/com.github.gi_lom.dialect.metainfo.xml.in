@@ -15,7 +15,7 @@
     <ul>
       <li>Text translation up to 5000 chars</li>
       <li>Text to speech</li>
-      <li>History</li>
+      <li>Translation history</li>
       <li>Automatic language detection</li>
       <li>Clipboard buttons</li>
     </ul>
@@ -31,6 +31,12 @@
   <screenshots>
     <screenshot type="default">
       <image>https://raw.githubusercontent.com/gi-lom/dialect/main/preview.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/gi-lom/dialect/main/preview-2.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/gi-lom/dialect/main/preview-mobile.png</image>
     </screenshot>
   </screenshots>
   <releases>

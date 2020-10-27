@@ -12,7 +12,7 @@ A translation app for GNOME based on Google Translate.
 - Translation history
 - Automatic language detection
 - Text to speech
-- Clipboard button
+- Clipboard buttons
 
 ## Installation
 
