@@ -16,3 +16,4 @@ jobs:
       with:
         bundle: "dialect-dev.flatpak"
         manifest-path: "build-aux/flatpak/com.github.gi_lom.dialect.json"
+        run-tests: "true"
