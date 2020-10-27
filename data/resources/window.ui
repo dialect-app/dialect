@@ -22,6 +22,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="show-close-button">True</property>
+                <property name="centering-policy">strict</property>
                 <child type="title">
                   <object class="GtkStack" id="title_stack">
                     <property name="visible">True</property>
