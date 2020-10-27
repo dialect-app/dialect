@@ -64,13 +64,14 @@ class TranslateService(dbus.service.Object):
                 pass
 
             name = self.translations[translate_id]
+            lang = LANGUAGES[self.dest_language].capitalize()
             self.translations.clear()
 
             return [
                 dict(
                     id=id,
                     name=name,
-                    description=self.dest_language or '',
+                    description=lang or '',
                 )
                 for id in ids
             ]
