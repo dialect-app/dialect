@@ -61,8 +61,6 @@ class DialectWindow(Handy.ApplicationWindow):
     notification_label = Gtk.Template.Child()
 
     # Language values
-    lang_codes = list(LANGUAGES.keys())
-    lang_names = list(LANGUAGES.values())
     lang_speech = None
     # Current input Text
     current_input_text = ''
