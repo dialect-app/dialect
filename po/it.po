@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-28 08:12-0500\n"
+"POT-Creation-Date: 2020-10-28 09:44-0500\n"
 "PO-Revision-Date: 2020-10-15 20:06+0100\n"
 "Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <LL@li.org>\n"
@@ -77,7 +77,7 @@ msgstr "Pagina GitHub"
 #. Replace me with your names.
 #: data/resources/about.ui:19
 #, fuzzy
-msgid "translation-credits"
+msgid "translator-credits"
 msgstr "Traduzione in corso..."
 
 #: data/resources/menu.ui:7
