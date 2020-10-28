@@ -16,7 +16,7 @@
 Mufeed Ali
 Rafael Mardojai CM
 </property>
-    <property name="translator-credits" translatable="yes" comments="Replace me with your names.">translation-credits</property>
+    <property name="translator-credits" translatable="yes" comments="Replace me with your names.">translator-credits</property>
     <property name="license_type">gpl-3-0</property>
   </object>
 </interface>
