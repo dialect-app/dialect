@@ -76,7 +76,7 @@ msgstr "Страница Github"
 #. Replace me with your names.
 #: data/resources/about.ui:19
 msgid "translator-credits"
-msgstr "Nikita Kravets"
+msgstr "Никита Кравец"
 
 #: data/resources/menu.ui:7
 msgid "Preferences"
