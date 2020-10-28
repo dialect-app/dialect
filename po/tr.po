@@ -50,9 +50,8 @@ msgid "Text to speech"
 msgstr "Metinden sese"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
-#, fuzzy
 msgid "Translation history"
-msgstr "Çeviriliyor..."
+msgstr "Çeviri geçmişi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Automatic language detection"
@@ -76,9 +75,8 @@ msgstr "Github sayfası"
 
 #. Replace me with your names.
 #: data/resources/about.ui:19
-#, fuzzy
 msgid "translator-credits"
-msgstr "Çeviriliyor..."
+msgstr "Bedirhan Tuhana"
 
 #: data/resources/menu.ui:7
 msgid "Preferences"
@@ -105,17 +103,14 @@ msgid "Live Translation"
 msgstr "Anında Çeviri"
 
 #: data/resources/preferences.ui:39
-#, fuzzy
 msgid "Warning: Your IP address may get banned for API abuse."
 msgstr "Uyarı: IP adresiniz kötüye kullanım sebebiyle yasaklanabilir."
 
 #: data/resources/preferences.ui:53
-#, fuzzy
 msgid "Translation Shortcut"
-msgstr "Anında Çeviri"
+msgstr "Hızlı çevir"
 
 #: data/resources/preferences.ui:54
-#, fuzzy
 msgid "Unselected choice will be used for line break."
 msgstr "Seçilmemiş olan kombinasyon sonraki satır için kullanılır."
 
