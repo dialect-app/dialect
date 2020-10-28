@@ -7,21 +7,21 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-14 12:34-0500\n"
+"POT-Creation-Date: 2020-10-28 08:12-0500\n"
 "PO-Revision-Date: 2020-10-19 21:17+0200\n"
+"Last-Translator: Onno Giesmann <nutzer3105@gmail.com>\n"
 "Language-Team: \n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.4.1\n"
-"Last-Translator: Onno Giesmann <nutzer3105@gmail.com>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: de\n"
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:38
-#: src/main.py:44
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:47
+#: src/main.py:67
 msgid "Dialect"
 msgstr "Dialect"
 
@@ -52,8 +52,9 @@ msgid "Text to speech"
 msgstr "Text zu Sprache"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
-msgid "History"
-msgstr "Verlauf"
+#, fuzzy
+msgid "Translation history"
+msgstr "Übersetzung läuft…"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Automatic language detection"
@@ -75,6 +76,12 @@ msgstr "Copyright 2020 gi-lom"
 msgid "Github page"
 msgstr "Github-Seite"
 
+#. Replace me with your names.
+#: data/resources/about.ui:19
+#, fuzzy
+msgid "translation-credits"
+msgstr "Übersetzung läuft…"
+
 #: data/resources/menu.ui:7
 msgid "Preferences"
 msgstr "Einstellungen"
@@ -83,83 +90,98 @@ msgstr "Einstellungen"
 msgid "About Dialect"
 msgstr "Info zu Dialect"
 
-#: data/resources/preferences.ui:15
+#: data/resources/preferences.ui:14
 msgid "Appearance"
 msgstr "Erscheinungsbild"
 
-#: data/resources/preferences.ui:19
+#: data/resources/preferences.ui:18
 msgid "Dark Mode"
 msgstr "Dunkler Modus"
 
-#: data/resources/preferences.ui:36
+#: data/resources/preferences.ui:34
 msgid "Behavior"
 msgstr "Verhalten"
 
-#: data/resources/preferences.ui:40
+#: data/resources/preferences.ui:38
 msgid "Live Translation"
 msgstr "Echtzeit-Übersetzung"
 
-#: data/resources/preferences.ui:41
-msgid "Warning: You could get your IP banned by API abuse."
+#: data/resources/preferences.ui:39
+#, fuzzy
+msgid "Warning: Your IP address may get banned for API abuse."
 msgstr "Achtung: Ihre IP-Adresse könnte wegen API-Missbrauch gesperrt werden."
 
-#: data/resources/preferences.ui:55
-msgid "Translate Accel"
-msgstr "Übersetzung beginnen"
+#: data/resources/preferences.ui:53
+#, fuzzy
+msgid "Translation Shortcut"
+msgstr "Echtzeit-Übersetzung"
 
-#: data/resources/preferences.ui:56
-msgid "The opposite accel will be used for new line."
+#: data/resources/preferences.ui:54
+#, fuzzy
+msgid "Unselected choice will be used for line break."
 msgstr "Mit jeweils der anderen Option wird eine neue Zeile erzeugt."
 
-#: data/resources/window.ui:76 data/resources/window.ui:490
+#: data/resources/preferences.ui:62
+msgid "Search Provider"
+msgstr ""
+
+#: data/resources/preferences.ui:63
+msgid ""
+"Dialect has a GNOME Search Provider. Enabling or disabling Live Translation "
+"here will also enable or disable the GNOME Search Provider. This is to "
+"reduce the possibility of API abuse. Also make sure that the feature is "
+"enabled in GNOME Settings."
+msgstr ""
+
+#: data/resources/window.ui:77 data/resources/window.ui:527
 msgid "Switch languages"
 msgstr "Sprachen tauschen"
 
-#: data/resources/window.ui:156
+#: data/resources/window.ui:157
 msgid "Previous translation"
 msgstr "Vorige Übersetzung"
 
-#: data/resources/window.ui:175
+#: data/resources/window.ui:176
 msgid "Next translation"
 msgstr "Nächste Übersetzung"
 
-#: data/resources/window.ui:266
+#: data/resources/window.ui:300
 msgid "Clear"
 msgstr "Leeren"
 
-#: data/resources/window.ui:281
+#: data/resources/window.ui:315
 msgid "Paste"
 msgstr "Einfügen"
 
-#: data/resources/window.ui:293
+#: data/resources/window.ui:327
 msgid "Translate"
 msgstr "Übersetzen"
 
-#: data/resources/window.ui:367
+#: data/resources/window.ui:404
 msgid "Translation in progress..."
 msgstr "Übersetzung läuft…"
 
-#: data/resources/window.ui:375
+#: data/resources/window.ui:412
 msgid "Translation seems to have failed"
 msgstr "Übersetzung scheint gescheitert zu sein"
 
-#: data/resources/window.ui:386
+#: data/resources/window.ui:423
 msgid "Listen"
 msgstr "Anhören"
 
-#: data/resources/window.ui:401
+#: data/resources/window.ui:438
 msgid "Copy"
 msgstr "Kopieren"
 
-#: data/resources/window.ui:581
+#: data/resources/window.ui:618
 msgid "No network connection detected."
 msgstr "Keine Netzwerkverbindung erkannt."
 
-#: src/window.py:134
+#: src/window.py:139
 msgid "A network issue has occured. Retry?"
 msgstr "Ein Netzwerkfehler ist aufgetreten. Noch mal probieren?"
 
-#: src/window.py:135
+#: src/window.py:140
 msgid ""
 "A network issue has occured.\n"
 "Please try again."
@@ -167,18 +189,28 @@ msgstr ""
 "Ein Netzwerkfehler ist aufgetreten.\n"
 "Bitte probieren Sie es noch mal."
 
-#: src/window.py:338 src/window.py:342
+#: src/window.py:357 src/window.py:361
 msgid "Auto"
 msgstr "Auto"
 
-#: src/window.py:581
+#: src/window.py:611
 msgid "5000 characters limit reached!"
 msgstr "Begrenzung von 5000 Zeichen erreicht!"
 
-#: src/window.py:657
+#: src/window.py:687
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
 msgstr ""
 "Übersetzung fehlgeschlagen.\n"
 "Bitte prüfen Sie, ob es Netzwerkprobleme gibt."
+
+#: src/window.py:702
+msgid "Did you mean: "
+msgstr ""
+
+#~ msgid "History"
+#~ msgstr "Verlauf"
+
+#~ msgid "Translate Accel"
+#~ msgstr "Übersetzung beginnen"

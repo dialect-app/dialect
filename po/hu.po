@@ -7,21 +7,21 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-16 14:09+0200\n"
+"POT-Creation-Date: 2020-10-28 08:12-0500\n"
 "PO-Revision-Date: 2020-10-16 14:22+0200\n"
+"Last-Translator: Meskó Balázs <mesko.balazs@fsf.hu>\n"
 "Language-Team: \n"
+"Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.3.1\n"
-"Last-Translator: Meskó Balázs <mesko.balazs@fsf.hu>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: hu\n"
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:38
-#: src/main.py:44
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:47
+#: src/main.py:67
 msgid "Dialect"
 msgstr "Dialect"
 
@@ -52,8 +52,9 @@ msgid "Text to speech"
 msgstr "Szöveg felolvasása"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
-msgid "History"
-msgstr "Előzmények"
+#, fuzzy
+msgid "Translation history"
+msgstr "Fordítás folyamatban…"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Automatic language detection"
@@ -75,6 +76,12 @@ msgstr "Copyright 2020 gi-lom"
 msgid "Github page"
 msgstr "Github oldal"
 
+#. Replace me with your names.
+#: data/resources/about.ui:19
+#, fuzzy
+msgid "translation-credits"
+msgstr "Fordítás folyamatban…"
+
 #: data/resources/menu.ui:7
 msgid "Preferences"
 msgstr "Beállítások"
@@ -83,83 +90,99 @@ msgstr "Beállítások"
 msgid "About Dialect"
 msgstr "A Dialect névjegye"
 
-#: data/resources/preferences.ui:15
+#: data/resources/preferences.ui:14
 msgid "Appearance"
 msgstr "Megjelenés"
 
-#: data/resources/preferences.ui:19
+#: data/resources/preferences.ui:18
 msgid "Dark Mode"
 msgstr "Sötét mód"
 
-#: data/resources/preferences.ui:36
+#: data/resources/preferences.ui:34
 msgid "Behavior"
 msgstr "Viselkedés"
 
-#: data/resources/preferences.ui:40
+#: data/resources/preferences.ui:38
 msgid "Live Translation"
 msgstr "Élő fordítás"
 
-#: data/resources/preferences.ui:41
-msgid "Warning: You could get your IP banned by API abuse."
-msgstr "Figyelmeztetés: Az IP-címe tiltólistára kerülhet az API-val visszaélés miatt."
+#: data/resources/preferences.ui:39
+#, fuzzy
+msgid "Warning: Your IP address may get banned for API abuse."
+msgstr ""
+"Figyelmeztetés: Az IP-címe tiltólistára kerülhet az API-val visszaélés miatt."
 
-#: data/resources/preferences.ui:55
-msgid "Translate Accel"
-msgstr "Fordítás gyorsbillentyűje"
+#: data/resources/preferences.ui:53
+#, fuzzy
+msgid "Translation Shortcut"
+msgstr "Élő fordítás"
 
-#: data/resources/preferences.ui:56
-msgid "The opposite accel will be used for new line."
+#: data/resources/preferences.ui:54
+#, fuzzy
+msgid "Unselected choice will be used for line break."
 msgstr "Az ellenkező gyorsbillentyű lesz az új sorhoz használva."
 
-#: data/resources/window.ui:76 data/resources/window.ui:490
+#: data/resources/preferences.ui:62
+msgid "Search Provider"
+msgstr ""
+
+#: data/resources/preferences.ui:63
+msgid ""
+"Dialect has a GNOME Search Provider. Enabling or disabling Live Translation "
+"here will also enable or disable the GNOME Search Provider. This is to "
+"reduce the possibility of API abuse. Also make sure that the feature is "
+"enabled in GNOME Settings."
+msgstr ""
+
+#: data/resources/window.ui:77 data/resources/window.ui:527
 msgid "Switch languages"
 msgstr "Nyelvek felcserélése"
 
-#: data/resources/window.ui:156
+#: data/resources/window.ui:157
 msgid "Previous translation"
 msgstr "Előző fordítás"
 
-#: data/resources/window.ui:175
+#: data/resources/window.ui:176
 msgid "Next translation"
 msgstr "Következő fordítás"
 
-#: data/resources/window.ui:266
+#: data/resources/window.ui:300
 msgid "Clear"
 msgstr "Törlés"
 
-#: data/resources/window.ui:281
+#: data/resources/window.ui:315
 msgid "Paste"
 msgstr "Beillesztés"
 
-#: data/resources/window.ui:293
+#: data/resources/window.ui:327
 msgid "Translate"
 msgstr "Fordítás"
 
-#: data/resources/window.ui:367
+#: data/resources/window.ui:404
 msgid "Translation in progress..."
 msgstr "Fordítás folyamatban…"
 
-#: data/resources/window.ui:375
+#: data/resources/window.ui:412
 msgid "Translation seems to have failed"
 msgstr "Úgy tűnik, hogy a fordítás sikertelen"
 
-#: data/resources/window.ui:386
+#: data/resources/window.ui:423
 msgid "Listen"
 msgstr "Meghallgatás"
 
-#: data/resources/window.ui:401
+#: data/resources/window.ui:438
 msgid "Copy"
 msgstr "Másolás"
 
-#: data/resources/window.ui:581
+#: data/resources/window.ui:618
 msgid "No network connection detected."
 msgstr "Nem észlelhető hálózati kapcsolat."
 
-#: src/window.py:134
+#: src/window.py:139
 msgid "A network issue has occured. Retry?"
 msgstr "Hálózati probléma történt. Újrapróbálja?"
 
-#: src/window.py:135
+#: src/window.py:140
 msgid ""
 "A network issue has occured.\n"
 "Please try again."
@@ -167,18 +190,28 @@ msgstr ""
 "Hálózati probléma történt.\n"
 "Próbálja újra."
 
-#: src/window.py:338 src/window.py:342
+#: src/window.py:357 src/window.py:361
 msgid "Auto"
 msgstr "Automatikus"
 
-#: src/window.py:581
+#: src/window.py:611
 msgid "5000 characters limit reached!"
 msgstr "5000 karakteres korlát elérve!"
 
-#: src/window.py:657
+#: src/window.py:687
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
 msgstr ""
 "Fordítás sikertelen.\n"
 "Ellenőrizze, hogy nincs-e hálózati probléma."
+
+#: src/window.py:702
+msgid "Did you mean: "
+msgstr ""
+
+#~ msgid "History"
+#~ msgstr "Előzmények"
+
+#~ msgid "Translate Accel"
+#~ msgstr "Fordítás gyorsbillentyűje"
