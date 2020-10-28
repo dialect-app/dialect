@@ -50,9 +50,8 @@ msgid "Text to speech"
 msgstr "Прослушивание текста"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
-#, fuzzy
 msgid "Translation history"
-msgstr "Перевод в процессе..."
+msgstr "История переводов"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Automatic language detection"
@@ -76,9 +75,8 @@ msgstr "Страница Github"
 
 #. Replace me with your names.
 #: data/resources/about.ui:19
-#, fuzzy
 msgid "translator-credits"
-msgstr "Перевод в процессе..."
+msgstr "Nikita Kravets"
 
 #: data/resources/menu.ui:7
 msgid "Preferences"
@@ -105,23 +103,20 @@ msgid "Live Translation"
 msgstr "Переводить по мере ввода"
 
 #: data/resources/preferences.ui:39
-#, fuzzy
 msgid "Warning: Your IP address may get banned for API abuse."
 msgstr "Внимание: ваш IP может быть заблокирован из-за злоупотребления API."
 
 #: data/resources/preferences.ui:53
-#, fuzzy
 msgid "Translation Shortcut"
-msgstr "Переводить по мере ввода"
+msgstr "Комбинация клавиш для перевода"
 
 #: data/resources/preferences.ui:54
-#, fuzzy
 msgid "Unselected choice will be used for line break."
-msgstr "Другая комбинация будет перемещать курсор на новую строку."
+msgstr "Невыбранный вариант будет перемещать курсор на новую строку."
 
 #: data/resources/preferences.ui:62
 msgid "Search Provider"
-msgstr ""
+msgstr "Провайдер поиска"
 
 #: data/resources/preferences.ui:63
 msgid ""
@@ -130,6 +125,11 @@ msgid ""
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
+"Dialect имеет функцию перевода в поиске GNOME. "
+"Включение или отключение перевода по мере ввода здесь также включает "
+"или отключает провайдер поиска. Это сделано для уменьшения возможности "
+"злоупотребления API. Также убедитесь, что эта функция "
+"включена в настройках GNOME."
 
 #: data/resources/window.ui:77 data/resources/window.ui:529
 msgid "Switch languages"
@@ -205,10 +205,4 @@ msgstr ""
 
 #: src/window.py:702
 msgid "Did you mean: "
-msgstr ""
-
-#~ msgid "History"
-#~ msgstr "История"
-
-#~ msgid "Translate Accel"
-#~ msgstr "Комбинация для перевода"
+msgstr "Возможно, вы имели в виду: "
