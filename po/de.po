@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-28 08:12-0500\n"
-"PO-Revision-Date: 2020-10-19 21:17+0200\n"
+"PO-Revision-Date: 2020-10-28 15:28+0100\n"
 "Last-Translator: Onno Giesmann <nutzer3105@gmail.com>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -52,9 +52,8 @@ msgid "Text to speech"
 msgstr "Text zu Sprache"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
-#, fuzzy
 msgid "Translation history"
-msgstr "Übersetzung läuft…"
+msgstr "Übersetzungsverlauf"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Automatic language detection"
@@ -78,9 +77,8 @@ msgstr "Github-Seite"
 
 #. Replace me with your names.
 #: data/resources/about.ui:19
-#, fuzzy
 msgid "translation-credits"
-msgstr "Übersetzung läuft…"
+msgstr "Onno Giesmann"
 
 #: data/resources/menu.ui:7
 msgid "Preferences"
@@ -107,23 +105,20 @@ msgid "Live Translation"
 msgstr "Echtzeit-Übersetzung"
 
 #: data/resources/preferences.ui:39
-#, fuzzy
 msgid "Warning: Your IP address may get banned for API abuse."
 msgstr "Achtung: Ihre IP-Adresse könnte wegen API-Missbrauch gesperrt werden."
 
 #: data/resources/preferences.ui:53
-#, fuzzy
 msgid "Translation Shortcut"
-msgstr "Echtzeit-Übersetzung"
+msgstr "Übersetzungsverknüpfung"
 
 #: data/resources/preferences.ui:54
-#, fuzzy
 msgid "Unselected choice will be used for line break."
-msgstr "Mit jeweils der anderen Option wird eine neue Zeile erzeugt."
+msgstr "Mit der jeweils anderen Option wird ein Zeilenumbruch erzeugt."
 
 #: data/resources/preferences.ui:62
 msgid "Search Provider"
-msgstr ""
+msgstr "Suchanbieter"
 
 #: data/resources/preferences.ui:63
 msgid ""
@@ -132,6 +127,11 @@ msgid ""
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
+"Dialect bringt einen GNOME-Suchanbieter mit. Das Aktivieren oder "
+"Deaktivieren der Echtzeit-Übersetzung hier wird ebenfalls den Suchanbieter "
+"in GNOME an- bzw. ausschalten. Dies soll die Möglichkeit eines API-"
+"Missbrauchs verringern. Denken Sie auch daran, dass diese Funktion in den "
+"GNOME-Einstellungen aktiviert ist."
 
 #: data/resources/window.ui:77 data/resources/window.ui:527
 msgid "Switch languages"
@@ -207,7 +207,7 @@ msgstr ""
 
 #: src/window.py:702
 msgid "Did you mean: "
-msgstr ""
+msgstr "Meinten Sie vielleicht: "
 
 #~ msgid "History"
 #~ msgstr "Verlauf"
