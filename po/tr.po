@@ -121,7 +121,7 @@ msgstr "Seçilmemiş olan kombinasyon sonraki satır için kullanılır."
 
 #: data/resources/preferences.ui:62
 msgid "Search Provider"
-msgstr ""
+msgstr "Arama sağlayıcısı"
 
 #: data/resources/preferences.ui:63
 msgid ""
@@ -130,6 +130,10 @@ msgid ""
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
+""
+""
+""
+""
 
 #: data/resources/window.ui:77 data/resources/window.ui:527
 msgid "Switch languages"
@@ -205,7 +209,7 @@ msgstr ""
 
 #: src/window.py:702
 msgid "Did you mean: "
-msgstr ""
+msgstr "Şunu mu demek istediniz:"
 
 #~ msgid "History"
 #~ msgstr "Geçmiş"
