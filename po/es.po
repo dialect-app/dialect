@@ -134,7 +134,7 @@ msgstr ""
 "de búsqueda. Esto es para reducir la posibilidad de abuso de API. También "
 "asegúrese de que la función esté habilitada en la configuración de GNOME."
 
-#: data/resources/window.ui:77 data/resources/window.ui:527
+#: data/resources/window.ui:77 data/resources/window.ui:529
 msgid "Switch languages"
 msgstr "Intercambiar idiomas"
 
@@ -146,35 +146,35 @@ msgstr "Traducción anterior"
 msgid "Next translation"
 msgstr "Siguiente traducción"
 
-#: data/resources/window.ui:300
+#: data/resources/window.ui:302
 msgid "Clear"
 msgstr "Limpiar"
 
-#: data/resources/window.ui:315
+#: data/resources/window.ui:317
 msgid "Paste"
 msgstr "Pegar"
 
-#: data/resources/window.ui:327
+#: data/resources/window.ui:329
 msgid "Translate"
 msgstr "Traducir"
 
-#: data/resources/window.ui:404
+#: data/resources/window.ui:406
 msgid "Translation in progress..."
 msgstr "Traducción en progreso..."
 
-#: data/resources/window.ui:412
+#: data/resources/window.ui:414
 msgid "Translation seems to have failed"
 msgstr "La traducción parece haber fallado"
 
-#: data/resources/window.ui:423
+#: data/resources/window.ui:425
 msgid "Listen"
 msgstr "Escuchar"
 
-#: data/resources/window.ui:438
+#: data/resources/window.ui:440
 msgid "Copy"
 msgstr "Copiar"
 
-#: data/resources/window.ui:618
+#: data/resources/window.ui:620
 msgid "No network connection detected."
 msgstr "No se detectó conexión de red."
 

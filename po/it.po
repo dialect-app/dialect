@@ -131,7 +131,7 @@ msgid ""
 "enabled in GNOME Settings."
 msgstr ""
 
-#: data/resources/window.ui:77 data/resources/window.ui:527
+#: data/resources/window.ui:77 data/resources/window.ui:529
 msgid "Switch languages"
 msgstr "Cambia lingua"
 
@@ -143,35 +143,35 @@ msgstr "Traduzione precedente"
 msgid "Next translation"
 msgstr "Prossima traduzione"
 
-#: data/resources/window.ui:300
+#: data/resources/window.ui:302
 msgid "Clear"
 msgstr "Pulisci"
 
-#: data/resources/window.ui:315
+#: data/resources/window.ui:317
 msgid "Paste"
 msgstr "Incolla"
 
-#: data/resources/window.ui:327
+#: data/resources/window.ui:329
 msgid "Translate"
 msgstr "Traduci"
 
-#: data/resources/window.ui:404
+#: data/resources/window.ui:406
 msgid "Translation in progress..."
 msgstr "Traduzione in corso..."
 
-#: data/resources/window.ui:412
+#: data/resources/window.ui:414
 msgid "Translation seems to have failed"
 msgstr "La traduzione sembra essere fallita"
 
-#: data/resources/window.ui:423
+#: data/resources/window.ui:425
 msgid "Listen"
 msgstr "Ascolta"
 
-#: data/resources/window.ui:438
+#: data/resources/window.ui:440
 msgid "Copy"
 msgstr "Copia"
 
-#: data/resources/window.ui:618
+#: data/resources/window.ui:620
 msgid "No network connection detected."
 msgstr "Nessuna connessione di rete rilevata."
 

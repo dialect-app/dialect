@@ -133,7 +133,7 @@ msgstr ""
 "kikapcsolja. Ez csökkenti az API-val való visszaélés lehetőségét. Győződjön "
 "meg arról, hogy a funkció engedélyezett a GNOME Beállításokban."
 
-#: data/resources/window.ui:77 data/resources/window.ui:527
+#: data/resources/window.ui:77 data/resources/window.ui:529
 msgid "Switch languages"
 msgstr "Nyelvek felcserélése"
 
@@ -145,35 +145,35 @@ msgstr "Előző fordítás"
 msgid "Next translation"
 msgstr "Következő fordítás"
 
-#: data/resources/window.ui:300
+#: data/resources/window.ui:302
 msgid "Clear"
 msgstr "Törlés"
 
-#: data/resources/window.ui:315
+#: data/resources/window.ui:317
 msgid "Paste"
 msgstr "Beillesztés"
 
-#: data/resources/window.ui:327
+#: data/resources/window.ui:329
 msgid "Translate"
 msgstr "Fordítás"
 
-#: data/resources/window.ui:404
+#: data/resources/window.ui:406
 msgid "Translation in progress..."
 msgstr "Fordítás folyamatban…"
 
-#: data/resources/window.ui:412
+#: data/resources/window.ui:414
 msgid "Translation seems to have failed"
 msgstr "Úgy tűnik, hogy a fordítás sikertelen"
 
-#: data/resources/window.ui:423
+#: data/resources/window.ui:425
 msgid "Listen"
 msgstr "Meghallgatás"
 
-#: data/resources/window.ui:438
+#: data/resources/window.ui:440
 msgid "Copy"
 msgstr "Másolás"
 
-#: data/resources/window.ui:618
+#: data/resources/window.ui:620
 msgid "No network connection detected."
 msgstr "Nem észlelhető hálózati kapcsolat."
 

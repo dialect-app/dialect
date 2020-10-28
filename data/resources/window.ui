@@ -280,6 +280,8 @@
                                       <object class="GtkLabel" id="mistakes_label">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="wrap">True</property>
+                                        <property name="wrap-mode">word-char</property>
                                       </object>
                                     </child>
                                   </object>
