@@ -50,9 +50,8 @@ msgid "Text to speech"
 msgstr "Metinden sese"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
-#, fuzzy
 msgid "Translation history"
-msgstr "Çeviriliyor..."
+msgstr "Çeviri geçmişi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Automatic language detection"
@@ -76,9 +75,8 @@ msgstr "Github sayfası"
 
 #. Replace me with your names.
 #: data/resources/about.ui:19
-#, fuzzy
 msgid "translator-credits"
-msgstr "Çeviriliyor..."
+msgstr "Bedirhan Tuhana"
 
 #: data/resources/menu.ui:7
 msgid "Preferences"
@@ -105,17 +103,14 @@ msgid "Live Translation"
 msgstr "Anında Çeviri"
 
 #: data/resources/preferences.ui:39
-#, fuzzy
 msgid "Warning: Your IP address may get banned for API abuse."
 msgstr "Uyarı: IP adresiniz kötüye kullanım sebebiyle yasaklanabilir."
 
 #: data/resources/preferences.ui:53
-#, fuzzy
 msgid "Translation Shortcut"
-msgstr "Anında Çeviri"
+msgstr "Hızlı çevir"
 
 #: data/resources/preferences.ui:54
-#, fuzzy
 msgid "Unselected choice will be used for line break."
 msgstr "Seçilmemiş olan kombinasyon sonraki satır için kullanılır."
 
@@ -130,12 +125,13 @@ msgid ""
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
-"Dialect'in bir GNOME Arama Sağlayıcısı vardır. Canlı Çeviri'yi burada etkinleştirmek veya devre dışı bırakmak, "
-"GNOME Arama Sağlayıcısını da etkinleştirir veya devre dışı bırakır. "
-"Bu, API kötüye kullanım olasılığını azaltmak içindir. "
-"Ayrıca, özelliğin GNOME Ayarlarında etkinleştirildiğinden emin olun."
+"Dialect'in bir GNOME Arama Sağlayıcısı vardır. Canlı Çeviri'yi burada "
+"etkinleştirmek veya devre dışı bırakmak, GNOME Arama Sağlayıcısını da "
+"etkinleştirir veya devre dışı bırakır. Bu, API kötüye kullanım olasılığını "
+"azaltmak içindir. Ayrıca, özelliğin GNOME Ayarlarında etkinleştirildiğinden "
+"emin olun."
 
-#: data/resources/window.ui:77 data/resources/window.ui:527
+#: data/resources/window.ui:77 data/resources/window.ui:529
 msgid "Switch languages"
 msgstr "Dili değiştir"
 
@@ -147,35 +143,35 @@ msgstr "Önceki çeviri"
 msgid "Next translation"
 msgstr "Sonraki çeviri"
 
-#: data/resources/window.ui:300
+#: data/resources/window.ui:302
 msgid "Clear"
 msgstr "Temizle"
 
-#: data/resources/window.ui:315
+#: data/resources/window.ui:317
 msgid "Paste"
 msgstr "Yapıştır"
 
-#: data/resources/window.ui:327
+#: data/resources/window.ui:329
 msgid "Translate"
 msgstr "Çevir"
 
-#: data/resources/window.ui:404
+#: data/resources/window.ui:406
 msgid "Translation in progress..."
 msgstr "Çeviriliyor..."
 
-#: data/resources/window.ui:412
+#: data/resources/window.ui:414
 msgid "Translation seems to have failed"
 msgstr "Görünüşe göre çeviri başarısız oldu"
 
-#: data/resources/window.ui:423
+#: data/resources/window.ui:425
 msgid "Listen"
 msgstr "Dinle"
 
-#: data/resources/window.ui:438
+#: data/resources/window.ui:440
 msgid "Copy"
 msgstr "Kopyala"
 
-#: data/resources/window.ui:618
+#: data/resources/window.ui:620
 msgid "No network connection detected."
 msgstr "İnternet bağlantısı bulunamadı"
 

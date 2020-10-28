@@ -134,7 +134,7 @@ msgstr ""
 "Missbrauchs verringern. Denken Sie auch daran, dass diese Funktion in den "
 "GNOME-Einstellungen aktiviert ist."
 
-#: data/resources/window.ui:77 data/resources/window.ui:527
+#: data/resources/window.ui:77 data/resources/window.ui:529
 msgid "Switch languages"
 msgstr "Sprachen tauschen"
 
@@ -146,35 +146,35 @@ msgstr "Vorige Übersetzung"
 msgid "Next translation"
 msgstr "Nächste Übersetzung"
 
-#: data/resources/window.ui:300
+#: data/resources/window.ui:302
 msgid "Clear"
 msgstr "Leeren"
 
-#: data/resources/window.ui:315
+#: data/resources/window.ui:317
 msgid "Paste"
 msgstr "Einfügen"
 
-#: data/resources/window.ui:327
+#: data/resources/window.ui:329
 msgid "Translate"
 msgstr "Übersetzen"
 
-#: data/resources/window.ui:404
+#: data/resources/window.ui:406
 msgid "Translation in progress..."
 msgstr "Übersetzung läuft…"
 
-#: data/resources/window.ui:412
+#: data/resources/window.ui:414
 msgid "Translation seems to have failed"
 msgstr "Übersetzung scheint gescheitert zu sein"
 
-#: data/resources/window.ui:423
+#: data/resources/window.ui:425
 msgid "Listen"
 msgstr "Anhören"
 
-#: data/resources/window.ui:438
+#: data/resources/window.ui:440
 msgid "Copy"
 msgstr "Kopieren"
 
-#: data/resources/window.ui:618
+#: data/resources/window.ui:620
 msgid "No network connection detected."
 msgstr "Keine Netzwerkverbindung erkannt."
 

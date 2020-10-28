@@ -50,9 +50,8 @@ msgid "Text to speech"
 msgstr "Прослушивание текста"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
-#, fuzzy
 msgid "Translation history"
-msgstr "Перевод в процессе..."
+msgstr "История переводов"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Automatic language detection"
@@ -76,9 +75,8 @@ msgstr "Страница Github"
 
 #. Replace me with your names.
 #: data/resources/about.ui:19
-#, fuzzy
 msgid "translator-credits"
-msgstr "Перевод в процессе..."
+msgstr "Никита Кравец"
 
 #: data/resources/menu.ui:7
 msgid "Preferences"
@@ -105,23 +103,20 @@ msgid "Live Translation"
 msgstr "Переводить по мере ввода"
 
 #: data/resources/preferences.ui:39
-#, fuzzy
 msgid "Warning: Your IP address may get banned for API abuse."
 msgstr "Внимание: ваш IP может быть заблокирован из-за злоупотребления API."
 
 #: data/resources/preferences.ui:53
-#, fuzzy
 msgid "Translation Shortcut"
-msgstr "Переводить по мере ввода"
+msgstr "Комбинация клавиш для перевода"
 
 #: data/resources/preferences.ui:54
-#, fuzzy
 msgid "Unselected choice will be used for line break."
-msgstr "Другая комбинация будет перемещать курсор на новую строку."
+msgstr "Невыбранный вариант будет перемещать курсор на новую строку."
 
 #: data/resources/preferences.ui:62
 msgid "Search Provider"
-msgstr ""
+msgstr "Провайдер поиска"
 
 #: data/resources/preferences.ui:63
 msgid ""
@@ -130,8 +125,13 @@ msgid ""
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
+"Dialect имеет функцию перевода в поиске GNOME. "
+"Включение или отключение перевода по мере ввода здесь также включает "
+"или отключает провайдер поиска. Это сделано для уменьшения возможности "
+"злоупотребления API. Также убедитесь, что эта функция "
+"включена в настройках GNOME."
 
-#: data/resources/window.ui:77 data/resources/window.ui:527
+#: data/resources/window.ui:77 data/resources/window.ui:529
 msgid "Switch languages"
 msgstr "Обратный перевод"
 
@@ -143,35 +143,35 @@ msgstr "Предыдущий перевод"
 msgid "Next translation"
 msgstr "Следующий перевод"
 
-#: data/resources/window.ui:300
+#: data/resources/window.ui:302
 msgid "Clear"
 msgstr "Очистить"
 
-#: data/resources/window.ui:315
+#: data/resources/window.ui:317
 msgid "Paste"
 msgstr "Вставить"
 
-#: data/resources/window.ui:327
+#: data/resources/window.ui:329
 msgid "Translate"
 msgstr "Перевести"
 
-#: data/resources/window.ui:404
+#: data/resources/window.ui:406
 msgid "Translation in progress..."
 msgstr "Перевод в процессе..."
 
-#: data/resources/window.ui:412
+#: data/resources/window.ui:414
 msgid "Translation seems to have failed"
 msgstr "Похоже, текст не удалось перевести"
 
-#: data/resources/window.ui:423
+#: data/resources/window.ui:425
 msgid "Listen"
 msgstr "Прослушать"
 
-#: data/resources/window.ui:438
+#: data/resources/window.ui:440
 msgid "Copy"
 msgstr "Копировать"
 
-#: data/resources/window.ui:618
+#: data/resources/window.ui:620
 msgid "No network connection detected."
 msgstr "Сетевое соединение не обнаружено."
 
@@ -205,10 +205,4 @@ msgstr ""
 
 #: src/window.py:702
 msgid "Did you mean: "
-msgstr ""
-
-#~ msgid "History"
-#~ msgstr "История"
-
-#~ msgid "Translate Accel"
-#~ msgstr "Комбинация для перевода"
+msgstr "Возможно, вы имели в виду: "
