@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-28 09:44-0500\n"
-"PO-Revision-Date: 2020-10-15 20:06+0100\n"
+"PO-Revision-Date: 2020-10-28 20:06+0100\n"
 "Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <LL@li.org>\n"
 "Language: it\n"
@@ -50,9 +50,8 @@ msgid "Text to speech"
 msgstr "Text to speech"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
-#, fuzzy
 msgid "Translation history"
-msgstr "Traduzione in corso..."
+msgstr "Cronologia traduzione"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Automatic language detection"
@@ -76,9 +75,8 @@ msgstr "Pagina GitHub"
 
 #. Replace me with your names.
 #: data/resources/about.ui:19
-#, fuzzy
 msgid "translator-credits"
-msgstr "Traduzione in corso..."
+msgstr "Albano Battistella"
 
 #: data/resources/menu.ui:7
 msgid "Preferences"
@@ -105,23 +103,20 @@ msgid "Live Translation"
 msgstr "Traduzione dal vivo"
 
 #: data/resources/preferences.ui:39
-#, fuzzy
 msgid "Warning: Your IP address may get banned for API abuse."
-msgstr "Attenzione: potresti far bandire il tuo IP dall'abuso delle API."
+msgstr "Attenzione: il tuo indirizzo IP potrebbe essere bandito per abuso di API"
 
 #: data/resources/preferences.ui:53
-#, fuzzy
 msgid "Translation Shortcut"
-msgstr "Traduzione dal vivo"
+msgstr "Scorciatoia di Traduzione"
 
 #: data/resources/preferences.ui:54
-#, fuzzy
 msgid "Unselected choice will be used for line break."
-msgstr "L'accelerazione opposta verrà utilizzata per la nuova linea."
+msgstr "La scelta non selezionata verrà utilizzata per l'interruzione di linea"
 
 #: data/resources/preferences.ui:62
 msgid "Search Provider"
-msgstr ""
+msgstr "Cerca Provider"
 
 #: data/resources/preferences.ui:63
 msgid ""
@@ -130,6 +125,10 @@ msgid ""
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
+"Dialect ha un provider di ricerca GNOME. Abilitare o disabilitare la traduzione dal vivo "
+"qui abiliterà o disabiliterà anche il provider di ricerca GNOME. Questo è per "
+"ridurre la possibilità di abuso di API. Assicurati inoltre che la funzione sia "
+"abilitato nelle impostazioni di GNOME."
 
 #: data/resources/window.ui:77 data/resources/window.ui:527
 msgid "Switch languages"
@@ -205,7 +204,7 @@ msgstr ""
 
 #: src/window.py:702
 msgid "Did you mean: "
-msgstr ""
+msgstr "Forse cercavi:"
 
 #~ msgid "History"
 #~ msgstr "Cronologia"
