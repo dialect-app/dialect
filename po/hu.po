@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-28 09:44-0500\n"
-"PO-Revision-Date: 2020-10-16 14:22+0200\n"
+"PO-Revision-Date: 2020-10-28 17:00+0100\n"
 "Last-Translator: Meskó Balázs <mesko.balazs@fsf.hu>\n"
 "Language-Team: \n"
 "Language: hu\n"
@@ -52,9 +52,8 @@ msgid "Text to speech"
 msgstr "Szöveg felolvasása"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
-#, fuzzy
 msgid "Translation history"
-msgstr "Fordítás folyamatban…"
+msgstr "Fordítási előzmények"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Automatic language detection"
@@ -78,9 +77,8 @@ msgstr "Github oldal"
 
 #. Replace me with your names.
 #: data/resources/about.ui:19
-#, fuzzy
 msgid "translator-credits"
-msgstr "Fordítás folyamatban…"
+msgstr "Meskó Balázs <mesko dot balazs at fsf dot hu>"
 
 #: data/resources/menu.ui:7
 msgid "Preferences"
@@ -107,24 +105,21 @@ msgid "Live Translation"
 msgstr "Élő fordítás"
 
 #: data/resources/preferences.ui:39
-#, fuzzy
 msgid "Warning: Your IP address may get banned for API abuse."
 msgstr ""
-"Figyelmeztetés: Az IP-címe tiltólistára kerülhet az API-val visszaélés miatt."
+"Figyelmeztetés: Az IP-címe API-val való visszaélés miatt kitiltásra kerülhet."
 
 #: data/resources/preferences.ui:53
-#, fuzzy
 msgid "Translation Shortcut"
-msgstr "Élő fordítás"
+msgstr "Fordítás gyorsbillentyűje"
 
 #: data/resources/preferences.ui:54
-#, fuzzy
 msgid "Unselected choice will be used for line break."
-msgstr "Az ellenkező gyorsbillentyű lesz az új sorhoz használva."
+msgstr "A nem kiválasztott lehetőség lesz az új sorhoz használva."
 
 #: data/resources/preferences.ui:62
 msgid "Search Provider"
-msgstr ""
+msgstr "Keresésszolgáltató"
 
 #: data/resources/preferences.ui:63
 msgid ""
@@ -133,6 +128,10 @@ msgid ""
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
+"A Dialect egy GNOME-os keresésszolgáltatóval rendelkezik. Az Élő fordítások "
+"be- vagy kikapcsolása a GNOME-os keresésszolgáltatót is be- vagy "
+"kikapcsolja. Ez csökkenti az API-val való visszaélés lehetőségét. Győződjön "
+"meg arról, hogy a funkció engedélyezett a GNOME Beállításokban."
 
 #: data/resources/window.ui:77 data/resources/window.ui:527
 msgid "Switch languages"
