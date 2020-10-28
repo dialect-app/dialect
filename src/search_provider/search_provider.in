@@ -103,8 +103,7 @@ class TranslateService(dbus.service.Object):
         text = ' '.join(terms)
         GLib.spawn_async_with_pipes(
             None, ['@BIN@', '--text', text], None,
-            GLib.SpawnFlags.SEARCH_PATH |
-            GLib.SpawnFlags.DO_NOT_REAP_CHILD, None
+            GLib.SpawnFlags.SEARCH_PATH, None
         )
 
     @dbus.service.method(in_signature='asu', terms='as', timestamp='u', **sbn)
@@ -112,8 +111,7 @@ class TranslateService(dbus.service.Object):
         text = ' '.join(terms)
         GLib.spawn_async_with_pipes(
             None, ['@BIN@', '--text', text], None,
-            GLib.SpawnFlags.SEARCH_PATH |
-            GLib.SpawnFlags.DO_NOT_REAP_CHILD, None
+            GLib.SpawnFlags.SEARCH_PATH, None
         )
 
     def translation(self, src_text):
