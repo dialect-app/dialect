@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-14 12:34-0500\n"
+"POT-Creation-Date: 2020-10-28 09:44-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,8 +19,8 @@ msgstr ""
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:38
-#: src/main.py:44
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:47
+#: src/main.py:67
 msgid "Dialect"
 msgstr ""
 
@@ -51,7 +51,7 @@ msgid "Text to speech"
 msgstr ""
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
-msgid "History"
+msgid "Translation history"
 msgstr ""
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
@@ -74,6 +74,11 @@ msgstr ""
 msgid "Github page"
 msgstr ""
 
+#. Replace me with your names.
+#: data/resources/about.ui:19
+msgid "translator-credits"
+msgstr ""
+
 #: data/resources/menu.ui:7
 msgid "Preferences"
 msgstr ""
@@ -82,98 +87,114 @@ msgstr ""
 msgid "About Dialect"
 msgstr ""
 
-#: data/resources/preferences.ui:15
+#: data/resources/preferences.ui:14
 msgid "Appearance"
 msgstr ""
 
-#: data/resources/preferences.ui:19
+#: data/resources/preferences.ui:18
 msgid "Dark Mode"
 msgstr ""
 
-#: data/resources/preferences.ui:36
+#: data/resources/preferences.ui:34
 msgid "Behavior"
 msgstr ""
 
-#: data/resources/preferences.ui:40
+#: data/resources/preferences.ui:38
 msgid "Live Translation"
 msgstr ""
 
-#: data/resources/preferences.ui:41
-msgid "Warning: You could get your IP banned by API abuse."
+#: data/resources/preferences.ui:39
+msgid "Warning: Your IP address may get banned for API abuse."
 msgstr ""
 
-#: data/resources/preferences.ui:55
-msgid "Translate Accel"
+#: data/resources/preferences.ui:53
+msgid "Translation Shortcut"
 msgstr ""
 
-#: data/resources/preferences.ui:56
-msgid "The opposite accel will be used for new line."
+#: data/resources/preferences.ui:54
+msgid "Unselected choice will be used for line break."
 msgstr ""
 
-#: data/resources/window.ui:76 data/resources/window.ui:490
+#: data/resources/preferences.ui:62
+msgid "Search Provider"
+msgstr ""
+
+#: data/resources/preferences.ui:63
+msgid ""
+"Dialect has a GNOME Search Provider. Enabling or disabling Live Translation "
+"here will also enable or disable the GNOME Search Provider. This is to "
+"reduce the possibility of API abuse. Also make sure that the feature is "
+"enabled in GNOME Settings."
+msgstr ""
+
+#: data/resources/window.ui:77 data/resources/window.ui:527
 msgid "Switch languages"
 msgstr ""
 
-#: data/resources/window.ui:156
+#: data/resources/window.ui:157
 msgid "Previous translation"
 msgstr ""
 
-#: data/resources/window.ui:175
+#: data/resources/window.ui:176
 msgid "Next translation"
 msgstr ""
 
-#: data/resources/window.ui:266
+#: data/resources/window.ui:300
 msgid "Clear"
 msgstr ""
 
-#: data/resources/window.ui:281
+#: data/resources/window.ui:315
 msgid "Paste"
 msgstr ""
 
-#: data/resources/window.ui:293
+#: data/resources/window.ui:327
 msgid "Translate"
 msgstr ""
 
-#: data/resources/window.ui:367
+#: data/resources/window.ui:404
 msgid "Translation in progress..."
 msgstr ""
 
-#: data/resources/window.ui:375
+#: data/resources/window.ui:412
 msgid "Translation seems to have failed"
 msgstr ""
 
-#: data/resources/window.ui:386
+#: data/resources/window.ui:423
 msgid "Listen"
 msgstr ""
 
-#: data/resources/window.ui:401
+#: data/resources/window.ui:438
 msgid "Copy"
 msgstr ""
 
-#: data/resources/window.ui:581
+#: data/resources/window.ui:618
 msgid "No network connection detected."
 msgstr ""
 
-#: src/window.py:134
+#: src/window.py:139
 msgid "A network issue has occured. Retry?"
 msgstr ""
 
-#: src/window.py:135
+#: src/window.py:140
 msgid ""
 "A network issue has occured.\n"
 "Please try again."
 msgstr ""
 
-#: src/window.py:338 src/window.py:342
+#: src/window.py:357 src/window.py:361
 msgid "Auto"
 msgstr ""
 
-#: src/window.py:581
+#: src/window.py:611
 msgid "5000 characters limit reached!"
 msgstr ""
 
-#: src/window.py:657
+#: src/window.py:687
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
+msgstr ""
+
+#: src/window.py:702
+msgid "Did you mean: "
 msgstr ""

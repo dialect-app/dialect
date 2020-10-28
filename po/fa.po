@@ -1,66 +1,69 @@
+# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the dialect package.
-# Bedirhan Tuhana GAYRETLİ <v30xythedev@gmail.com>, 2020.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# سهیل خانعلی‌پور <soheilkhanalipur@tutanota.com>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-28 09:44-0500\n"
-"PO-Revision-Date: 2020-10-21 16:17+0300\n"
-"Last-Translator: Bedirhan Tuhana GAYRETLİ <v30xythedev@gmail.com>\n"
-"Language-Team: Turkish <LL@li.org>\n"
-"Language: tr\n"
+"PO-Revision-Date: 2020-10-25 20:04+0330\n"
+"Last-Translator: سهیل خانعلی‌پور <soheilkhanalipur@tutanota.com>\n"
+"Language-Team: فارسی <soheilkhanalipur@tutanota.com>\n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"X-Generator: Gtranslator 3.30.1\n"
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:47
 #: src/main.py:67
 msgid "Dialect"
-msgstr "Dialect"
+msgstr "دایلکت"
 
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
 msgid "A translation app for GNOME"
-msgstr "GNOME için çeviri uygulaması"
+msgstr "یک برنامه ترجمه برای گنوم"
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
 msgid "translate;translation;"
-msgstr "çevir;çeviri"
+msgstr "ترجمه;ترجمان;"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:9 data/resources/about.ui:12
 msgid "A translation app for GNOME based on Google Translate."
-msgstr "GNOME için Google Çeviri tabanlı çeviri uygulaması"
+msgstr "یک برنامه ترجمه برای گنوم بر پایه ترجمان گوگل."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
-msgstr "Özellikler:"
+msgstr "ویژگی‌ها"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
 msgid "Text translation up to 5000 chars"
-msgstr "5000 karaktere kadar metin çevirme"
+msgstr "ترجمه نوشته تا ۵۰۰۰ واج"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid "Text to speech"
-msgstr "Metinden sese"
+msgstr "نوشتار به گفتار"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 #, fuzzy
 msgid "Translation history"
-msgstr "Çeviriliyor..."
+msgstr "ترجمه روان است..."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Automatic language detection"
-msgstr "Otomatik dil denetleme"
+msgstr "شناسایی خودکار زبان"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:20
 msgid "Clipboard buttons"
-msgstr "Pano butonları"
+msgstr "دکمه‌های بریده‌دان"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:25
 msgid "gi-lom"
@@ -68,56 +71,56 @@ msgstr "gi-lom"
 
 #: data/resources/about.ui:11
 msgid "Copyright 2020 gi-lom"
-msgstr "Telif Hakkı 2020 gi-lom"
+msgstr "کپی‌رایت ۲۰۲۰ gi-lom"
 
 #: data/resources/about.ui:14
 msgid "Github page"
-msgstr "Github sayfası"
+msgstr "صفحه گیت‌هاب"
 
 #. Replace me with your names.
 #: data/resources/about.ui:19
 #, fuzzy
 msgid "translator-credits"
-msgstr "Çeviriliyor..."
+msgstr "ترجمه روان است..."
 
 #: data/resources/menu.ui:7
 msgid "Preferences"
-msgstr "Tercihler"
+msgstr "ساماندهی"
 
 #: data/resources/menu.ui:11
 msgid "About Dialect"
-msgstr "Dialect hakkında"
+msgstr "درباره دایلکت"
 
 #: data/resources/preferences.ui:14
 msgid "Appearance"
-msgstr "Görünüm"
+msgstr "چهره"
 
 #: data/resources/preferences.ui:18
 msgid "Dark Mode"
-msgstr "Koyu Mod"
+msgstr "پوشش تیره"
 
 #: data/resources/preferences.ui:34
 msgid "Behavior"
-msgstr "Davranış"
+msgstr "رفتار"
 
 #: data/resources/preferences.ui:38
 msgid "Live Translation"
-msgstr "Anında Çeviri"
+msgstr "ترجمه زنده"
 
 #: data/resources/preferences.ui:39
 #, fuzzy
 msgid "Warning: Your IP address may get banned for API abuse."
-msgstr "Uyarı: IP adresiniz kötüye kullanım sebebiyle yasaklanabilir."
+msgstr "هشدار: شاید آی‌پی شما برای کژبکاربستن ای‌پی‌آی بسته شود."
 
 #: data/resources/preferences.ui:53
 #, fuzzy
 msgid "Translation Shortcut"
-msgstr "Anında Çeviri"
+msgstr "ترجمه زنده"
 
 #: data/resources/preferences.ui:54
 #, fuzzy
 msgid "Unselected choice will be used for line break."
-msgstr "Seçilmemiş olan kombinasyon sonraki satır için kullanılır."
+msgstr "برای خط نو میانبر وارون بکار گرفته می‌شود."
 
 #: data/resources/preferences.ui:62
 msgid "Search Provider"
@@ -133,82 +136,82 @@ msgstr ""
 
 #: data/resources/window.ui:77 data/resources/window.ui:527
 msgid "Switch languages"
-msgstr "Dili değiştir"
+msgstr "جابجا کردن زبان‌ها"
 
 #: data/resources/window.ui:157
 msgid "Previous translation"
-msgstr "Önceki çeviri"
+msgstr "ترجمه پیشین"
 
 #: data/resources/window.ui:176
 msgid "Next translation"
-msgstr "Sonraki çeviri"
+msgstr "ترجمه بعدی"
 
 #: data/resources/window.ui:300
 msgid "Clear"
-msgstr "Temizle"
+msgstr "پاک کردن"
 
 #: data/resources/window.ui:315
 msgid "Paste"
-msgstr "Yapıştır"
+msgstr "چسباندن"
 
 #: data/resources/window.ui:327
 msgid "Translate"
-msgstr "Çevir"
+msgstr "ترجمه"
 
 #: data/resources/window.ui:404
 msgid "Translation in progress..."
-msgstr "Çeviriliyor..."
+msgstr "ترجمه روان است..."
 
 #: data/resources/window.ui:412
 msgid "Translation seems to have failed"
-msgstr "Görünüşe göre çeviri başarısız oldu"
+msgstr "گویا ترجمه شکست خورده است"
 
 #: data/resources/window.ui:423
 msgid "Listen"
-msgstr "Dinle"
+msgstr "شنیدن"
 
 #: data/resources/window.ui:438
 msgid "Copy"
-msgstr "Kopyala"
+msgstr "رونوشت"
 
 #: data/resources/window.ui:618
 msgid "No network connection detected."
-msgstr "İnternet bağlantısı bulunamadı"
+msgstr "پیوند شبکه یافت نشد."
 
 #: src/window.py:139
 msgid "A network issue has occured. Retry?"
-msgstr "Ağ sorunu oluştu. Yeniden dene?"
+msgstr "یک ایراد شبکه‌ای رخ داد. باز برپا شود؟"
 
 #: src/window.py:140
 msgid ""
 "A network issue has occured.\n"
 "Please try again."
 msgstr ""
-"Ağ sorunu oluştu.\n"
-"Lütfen tekrar deneyin."
+"یک ایراد شبکه‌ای رخ داد.\n"
+"لطفا دوباره بیازمایید."
 
 #: src/window.py:357 src/window.py:361
 msgid "Auto"
-msgstr "Otomatik"
+msgstr "خودکار"
 
 #: src/window.py:611
 msgid "5000 characters limit reached!"
-msgstr "5000 karakter limiti aşıldı!"
+msgstr "به پایان ۵۰۰۰ واج رسید!"
 
 #: src/window.py:687
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
 msgstr ""
-"Çeviri hata ile sonuçlandı.\n"
-"Lütfen ağınızı kontrol edin."
+"ترجمه شکست خورد.\n"
+"لطفا ایراد شبکه را بررسی کنید."
 
 #: src/window.py:702
 msgid "Did you mean: "
 msgstr ""
 
 #~ msgid "History"
-#~ msgstr "Geçmiş"
+#~ msgstr "پیشینه"
 
 #~ msgid "Translate Accel"
-#~ msgstr "Hızlı çevir"
+#~ msgstr "میانبر ترجمه"

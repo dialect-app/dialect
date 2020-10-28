@@ -23,11 +23,20 @@ from dialect.preferences import DialectPreferencesWindow
 class Dialect(Gtk.Application):
 
     def __init__(self, version):
-        Gtk.Application.__init__(self, application_id=APP_ID)
+        Gtk.Application.__init__(
+            self,
+            application_id=APP_ID,
+            flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE
+        )
 
         # App window
         self.version = version
         self.window = None
+        self.launch_text = ''
+
+        # Add --text command line option
+        self.add_main_option('text', b't', GLib.OptionFlags.NONE,
+                             GLib.OptionArg.STRING, 'Text to translate', None)
 
     def do_activate(self):
         self.window = self.props.active_window
@@ -35,9 +44,23 @@ class Dialect(Gtk.Application):
             self.window = DialectWindow(
                 application=self,
                 # Translators: Do not translate the app name!
-                title=_('Dialect')
+                title=_('Dialect'),
+                text=self.launch_text
             )
         self.window.present()
+
+    def do_command_line(self, command_line):
+        options = command_line.get_options_dict()
+        options = options.end().unpack()
+
+        if 'text' in options:
+            if self.window is not None:
+                self.window.translate(options['text'])
+            else:
+                self.launch_text = options['text']
+
+        self.activate()
+        return 0
 
     def do_startup(self):
         Gtk.Application.do_startup(self)

@@ -1,0 +1,19 @@
+on:
+  push:
+    branches: [main]
+  pull_request:
+name: CI
+jobs:
+  flatpak-builder:
+    name: "Flatpak Builder"
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/bilelmoussaoui/flatpak-github-actions
+      options: --privileged
+    steps:
+    - uses: actions/checkout@v2
+    - uses: bilelmoussaoui/flatpak-github-actions@v2
+      with:
+        bundle: "dialect-dev.flatpak"
+        manifest-path: "build-aux/flatpak/com.github.gi_lom.dialect.json"
+        run-tests: "true"

@@ -1,13 +1,4 @@
-pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
-moduledir = join_paths(pkgdatadir, 'dialect')
-
 python = import('python')
-
-conf = configuration_data()
-conf.set('PYTHON', python.find_installation('python3').path())
-conf.set('VERSION', meson.project_version())
-conf.set('pkgdatadir', pkgdatadir)
-conf.set('localedir', join_paths(get_option('prefix'), get_option('localedir')))
 
 # Generate dialect bin
 configure_file(
@@ -17,6 +8,8 @@ configure_file(
   install: true,
   install_dir: get_option('bindir')
 )
+
+subdir('search_provider')
 
 # Python sources
 sources = [

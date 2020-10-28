@@ -8,6 +8,16 @@ project('dialect',
 python = import('python')
 i18n = import('i18n')
 
+pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
+moduledir = join_paths(pkgdatadir, 'dialect')
+
+conf = configuration_data()
+conf.set('PYTHON', python.find_installation('python3').path())
+conf.set('VERSION', meson.project_version())
+conf.set('BIN', join_paths(get_option('prefix'), get_option('bindir'), meson.project_name()))
+conf.set('pkgdatadir', pkgdatadir)
+conf.set('localedir', join_paths(get_option('prefix'), get_option('localedir')))
+
 message('Looking for dependencies')
 py_installation = python.find_installation('python3')
 if not py_installation.found()
@@ -26,3 +36,4 @@ subdir('src')
 subdir('po')
 
 meson.add_install_script('build-aux/meson/postinstall.py')
+
