@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-28 08:12-0500\n"
-"PO-Revision-Date: 2020-10-14 08:16-0500\n"
+"PO-Revision-Date: 2020-10-28 08:21-0500\n"
 "Last-Translator: Rafael Mardojai CM <mardojai.cardenas@gmail.com>\n"
 "Language-Team: Spanish; Castilian <mardojai.cardenas@gmail.com>\n"
 "Language: es\n"
@@ -53,9 +53,8 @@ msgid "Text to speech"
 msgstr "Texto a voz"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
-#, fuzzy
 msgid "Translation history"
-msgstr "Traducción en progreso..."
+msgstr "Historial de traducción"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Automatic language detection"
@@ -79,9 +78,8 @@ msgstr "Página de Github"
 
 #. Replace me with your names.
 #: data/resources/about.ui:19
-#, fuzzy
 msgid "translation-credits"
-msgstr "Traducción en progreso..."
+msgstr "Rafael Mardojai CM"
 
 #: data/resources/menu.ui:7
 msgid "Preferences"
@@ -108,23 +106,20 @@ msgid "Live Translation"
 msgstr "Traducción en Vivo"
 
 #: data/resources/preferences.ui:39
-#, fuzzy
 msgid "Warning: Your IP address may get banned for API abuse."
-msgstr "Advertencia: podría hacer que su IP sea bloqueada por abuso de API."
+msgstr "Advertencia: su IP podría ser bloqueada por abuso de API."
 
 #: data/resources/preferences.ui:53
-#, fuzzy
 msgid "Translation Shortcut"
-msgstr "Traducción en Vivo"
+msgstr "Atajo de Traducción "
 
 #: data/resources/preferences.ui:54
-#, fuzzy
 msgid "Unselected choice will be used for line break."
-msgstr "Se utilizará el atajo opuesto para nueva línea."
+msgstr "La opción no seleccionada se utilizará para nueva línea."
 
 #: data/resources/preferences.ui:62
 msgid "Search Provider"
-msgstr ""
+msgstr "Proveedor de Búsqueda"
 
 #: data/resources/preferences.ui:63
 msgid ""
@@ -133,6 +128,10 @@ msgid ""
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
+"Dialect tiene un proveedor de búsqueda para GNOME. Habilitar o deshabilitar "
+"la Traducción en Vivo aquí también habilitará o deshabilitará el proveedor "
+"de búsqueda. Esto es para reducir la posibilidad de abuso de API. También "
+"asegúrese de que la función esté habilitada en la configuración de GNOME."
 
 #: data/resources/window.ui:77 data/resources/window.ui:527
 msgid "Switch languages"
@@ -208,7 +207,7 @@ msgstr ""
 
 #: src/window.py:702
 msgid "Did you mean: "
-msgstr ""
+msgstr "Quizás quisiste decir: "
 
 #~ msgid "History"
 #~ msgstr "Historial"
