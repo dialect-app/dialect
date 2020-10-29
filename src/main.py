@@ -89,6 +89,11 @@ class Dialect(Gtk.Application):
         about_action.connect('activate', self.on_about)
         self.add_action(about_action)
 
+        quit_action = Gio.SimpleAction.new('quit', None)
+        quit_action.connect('activate', self.on_quit)
+        self.set_accels_for_action('app.quit', ['<Primary>Q'])
+        self.add_action(quit_action)
+
     def on_preferences(self, _action, _param):
         """ Show preferences window """
         window = DialectPreferencesWindow()
@@ -104,6 +109,9 @@ class Dialect(Gtk.Application):
         about.set_version(self.version)
         about.connect('response', lambda dialog, response: dialog.destroy())
         about.present()
+
+    def on_quit(self, _action, _param):
+        self.quit()
 
 
 def main(version):
