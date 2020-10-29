@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-28 09:44-0500\n"
-"PO-Revision-Date: 2020-10-25 20:04+0330\n"
+"PO-Revision-Date: 2020-10-29 08:58+0330\n"
 "Last-Translator: سهیل خانعلی‌پور <soheilkhanalipur@tutanota.com>\n"
 "Language-Team: فارسی <soheilkhanalipur@tutanota.com>\n"
 "Language: fa\n"
@@ -53,9 +53,8 @@ msgid "Text to speech"
 msgstr "نوشتار به گفتار"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
-#, fuzzy
 msgid "Translation history"
-msgstr "ترجمه روان است..."
+msgstr "پیشینه ترجمه"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Automatic language detection"
@@ -79,9 +78,8 @@ msgstr "صفحه گیت‌هاب"
 
 #. Replace me with your names.
 #: data/resources/about.ui:19
-#, fuzzy
 msgid "translator-credits"
-msgstr "ترجمه روان است..."
+msgstr "سهیل خانعلی‌پور"
 
 #: data/resources/menu.ui:7
 msgid "Preferences"
@@ -108,23 +106,20 @@ msgid "Live Translation"
 msgstr "ترجمه زنده"
 
 #: data/resources/preferences.ui:39
-#, fuzzy
 msgid "Warning: Your IP address may get banned for API abuse."
-msgstr "هشدار: شاید آی‌پی شما برای کژبکاربستن ای‌پی‌آی بسته شود."
+msgstr "هشدار: شاید نشانی آی‌پی شما برای کژبکاربستن ای‌پی‌آی بسته شود."
 
 #: data/resources/preferences.ui:53
-#, fuzzy
 msgid "Translation Shortcut"
-msgstr "ترجمه زنده"
+msgstr "میانبر ترجمه"
 
 #: data/resources/preferences.ui:54
-#, fuzzy
 msgid "Unselected choice will be used for line break."
-msgstr "برای خط نو میانبر وارون بکار گرفته می‌شود."
+msgstr "گزینه انتخاب نشده برای قطع خط بکار گرفته می‌شود."
 
 #: data/resources/preferences.ui:62
 msgid "Search Provider"
-msgstr ""
+msgstr "فراهم‌آور جستجو"
 
 #: data/resources/preferences.ui:63
 msgid ""
@@ -133,6 +128,10 @@ msgid ""
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
+"دایلکت یک فراهم‌آور جستجوی گنوم دارد. روشن یا خاموش کردن ترجمه زنده در اینجا "
+"همچنین فراهم‌آور جستجوی گنوم را روشن یا خاموش می‌کند. این برای کاهش شایش "
+"کژبکاربستن ای‌پی‌آی بکار گرفته می‌شود. همچنین بدانید این ویژگی در ساماندهی گنوم "
+"روشن باشد."
 
 #: data/resources/window.ui:77 data/resources/window.ui:529
 msgid "Switch languages"
@@ -208,7 +207,7 @@ msgstr ""
 
 #: src/window.py:702
 msgid "Did you mean: "
-msgstr ""
+msgstr "شاید این را می‌خواستید: "
 
 #~ msgid "History"
 #~ msgstr "پیشینه"
