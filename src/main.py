@@ -83,6 +83,7 @@ class Dialect(Gtk.Application):
 
         preferences_action = Gio.SimpleAction.new('preferences', None)
         preferences_action.connect('activate', self.on_preferences)
+        self.set_accels_for_action('app.preferences', ['<Primary>comma'])
         self.add_action(preferences_action)
 
         about_action = Gio.SimpleAction.new('about', None)
