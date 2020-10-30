@@ -40,6 +40,23 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="1.1.0" date="2020-10-30">
+      <description>
+        <ul>
+          <li>Added a search provider for GNOME</li>
+          <li>Added support for "Did you mean" suggestions</li>
+          <li>Added a Ctrl+Q shortcut to quit</li>
+          <li>Added Hungarian translation</li>
+          <li>Added Italian translation</li>
+          <li>Added Persian translation</li>
+          <li>Added Russian translation</li>
+          <li>Added Turkish translation</li>
+          <li>Fixed some issues with the icon</li>
+          <li>Fixed several bugs</li>
+          <li>Made some minor UI improvements</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.0" date="2020-10-14">
       <description>
         <p>Initial release.</p>
