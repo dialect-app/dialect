@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-01 14:27-0500\n"
-"PO-Revision-Date: 2020-10-28 08:21-0500\n"
+"PO-Revision-Date: 2020-11-01 15:48-0500\n"
 "Last-Translator: Rafael Mardojai CM <mardojai.cardenas@gmail.com>\n"
 "Language-Team: Spanish; Castilian <mardojai.cardenas@gmail.com>\n"
 "Language: es\n"
@@ -78,7 +78,6 @@ msgstr "Página de Github"
 
 #. Replace me with your names.
 #: data/resources/about.ui:19
-#, fuzzy
 msgid "translator-credits"
 msgstr "Rafael Mardojai CM"
 
@@ -88,7 +87,7 @@ msgstr "Preferencias"
 
 #: data/resources/menu.ui:11
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Atajos de teclado"
 
 #: data/resources/menu.ui:15
 msgid "About Dialect"
@@ -141,16 +140,14 @@ msgstr ""
 #: data/resources/shortcuts-window.ui:13
 msgctxt "shortcuts window"
 msgid "General"
-msgstr ""
+msgstr "General"
 
 #: data/resources/shortcuts-window.ui:17
-#, fuzzy
 msgctxt "shortcuts window"
 msgid "Preferences"
 msgstr "Preferencias"
 
 #: data/resources/shortcuts-window.ui:24
-#, fuzzy
 msgctxt "shortcuts window"
 msgid "Translate"
 msgstr "Traducir"
@@ -158,7 +155,7 @@ msgstr "Traducir"
 #: data/resources/shortcuts-window.ui:31
 msgctxt "shortcuts window"
 msgid "Quit"
-msgstr ""
+msgstr "Salir"
 
 #: data/resources/window.ui:77 data/resources/window.ui:529
 msgid "Switch languages"
