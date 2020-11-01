@@ -5,6 +5,7 @@
   <template class="DialectPreferencesWindow" parent="HdyPreferencesWindow">
     <property name="default_height">420</property>
     <property name="default_width">600</property>
+    <property name="modal">True</property>
     <property name="window_position">center-on-parent</property>
     <child>
       <object class="HdyPreferencesPage">

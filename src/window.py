@@ -79,14 +79,14 @@ class DialectWindow(Handy.ApplicationWindow):
     # Trans mistakes
     trans_mistakes = None
 
-    def __init__(self, text, **kwargs):
+    def __init__(self, text, settings, **kwargs):
         super().__init__(**kwargs)
 
         # Text passed to command line
         self.launch_text = text
 
         # GSettings object
-        self.settings = Gio.Settings.new(APP_ID)
+        self.settings = settings
         # Get saved languages
         self.src_langs = list(self.settings.get_value('src-langs'))
         self.dest_langs = list(self.settings.get_value('dest-langs'))

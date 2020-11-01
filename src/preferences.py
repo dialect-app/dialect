@@ -20,11 +20,11 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
     translate_accel = Gtk.Template.Child()
     search_provider = Gtk.Template.Child()
 
-    def __init__(self, **kwargs):
+    def __init__(self, settings, **kwargs):
         super().__init__(**kwargs)
 
         # Get GSettings object
-        self.settings = Gio.Settings.new(APP_ID)
+        self.settings = settings
 
         self.setup()
 
