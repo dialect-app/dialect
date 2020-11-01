@@ -6,6 +6,7 @@
     <file>about.ui</file>
     <file>preferences.ui</file>
     <file>lang-selector.ui</file>
+    <file>shortcuts-window.ui</file>
     <file>style.css</file>
   </gresource>
 </gresources>
