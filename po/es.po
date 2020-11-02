@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-28 09:44-0500\n"
-"PO-Revision-Date: 2020-10-28 08:21-0500\n"
+"POT-Creation-Date: 2020-11-01 14:27-0500\n"
+"PO-Revision-Date: 2020-11-01 15:48-0500\n"
 "Last-Translator: Rafael Mardojai CM <mardojai.cardenas@gmail.com>\n"
 "Language-Team: Spanish; Castilian <mardojai.cardenas@gmail.com>\n"
 "Language: es\n"
@@ -21,8 +21,8 @@ msgstr ""
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:47
-#: src/main.py:67
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:48
+#: src/main.py:69
 msgid "Dialect"
 msgstr "Dialect"
 
@@ -78,7 +78,6 @@ msgstr "Página de Github"
 
 #. Replace me with your names.
 #: data/resources/about.ui:19
-#, fuzzy
 msgid "translator-credits"
 msgstr "Rafael Mardojai CM"
 
@@ -87,42 +86,46 @@ msgid "Preferences"
 msgstr "Preferencias"
 
 #: data/resources/menu.ui:11
+msgid "Keyboard Shortcuts"
+msgstr "Atajos de teclado"
+
+#: data/resources/menu.ui:15
 msgid "About Dialect"
 msgstr "Acerca de Dialect "
 
-#: data/resources/preferences.ui:14
+#: data/resources/preferences.ui:15
 msgid "Appearance"
 msgstr "Apariencia"
 
-#: data/resources/preferences.ui:18
+#: data/resources/preferences.ui:19
 msgid "Dark Mode"
 msgstr "Modo Oscuro"
 
-#: data/resources/preferences.ui:34
+#: data/resources/preferences.ui:35
 msgid "Behavior"
 msgstr "Comportamiento"
 
-#: data/resources/preferences.ui:38
+#: data/resources/preferences.ui:39
 msgid "Live Translation"
 msgstr "Traducción en Vivo"
 
-#: data/resources/preferences.ui:39
+#: data/resources/preferences.ui:40
 msgid "Warning: Your IP address may get banned for API abuse."
 msgstr "Advertencia: su IP podría ser bloqueada por abuso de API."
 
-#: data/resources/preferences.ui:53
+#: data/resources/preferences.ui:54
 msgid "Translation Shortcut"
 msgstr "Atajo de Traducción "
 
-#: data/resources/preferences.ui:54
+#: data/resources/preferences.ui:55
 msgid "Unselected choice will be used for line break."
 msgstr "La opción no seleccionada se utilizará para nueva línea."
 
-#: data/resources/preferences.ui:62
+#: data/resources/preferences.ui:63
 msgid "Search Provider"
 msgstr "Proveedor de Búsqueda"
 
-#: data/resources/preferences.ui:63
+#: data/resources/preferences.ui:64
 msgid ""
 "Dialect has a GNOME Search Provider. Enabling or disabling Live Translation "
 "here will also enable or disable the GNOME Search Provider. This is to "
@@ -133,6 +136,26 @@ msgstr ""
 "la Traducción en Vivo aquí también habilitará o deshabilitará el proveedor "
 "de búsqueda. Esto es para reducir la posibilidad de abuso de API. También "
 "asegúrese de que la función esté habilitada en la configuración de GNOME."
+
+#: data/resources/shortcuts-window.ui:13
+msgctxt "shortcuts window"
+msgid "General"
+msgstr "General"
+
+#: data/resources/shortcuts-window.ui:17
+msgctxt "shortcuts window"
+msgid "Preferences"
+msgstr "Preferencias"
+
+#: data/resources/shortcuts-window.ui:24
+msgctxt "shortcuts window"
+msgid "Translate"
+msgstr "Traducir"
+
+#: data/resources/shortcuts-window.ui:31
+msgctxt "shortcuts window"
+msgid "Quit"
+msgstr "Salir"
 
 #: data/resources/window.ui:77 data/resources/window.ui:529
 msgid "Switch languages"

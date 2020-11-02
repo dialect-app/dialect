@@ -7,21 +7,21 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-28 09:44-0500\n"
+"POT-Creation-Date: 2020-11-01 14:27-0500\n"
 "PO-Revision-Date: 2020-11-01 17:00+0700\n"
+"Last-Translator: Kukuh Syafaat <kukuhsyafaat@gnome.org>\n"
 "Language-Team: \n"
+"Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.4.1\n"
-"Last-Translator: Kukuh Syafaat <kukuhsyafaat@gnome.org>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"Language: id\n"
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:47
-#: src/main.py:67
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:48
+#: src/main.py:69
 msgid "Dialect"
 msgstr "Dialect"
 
@@ -85,42 +85,46 @@ msgid "Preferences"
 msgstr "Preferensi"
 
 #: data/resources/menu.ui:11
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: data/resources/menu.ui:15
 msgid "About Dialect"
 msgstr "Tentang Dialek"
 
-#: data/resources/preferences.ui:14
+#: data/resources/preferences.ui:15
 msgid "Appearance"
 msgstr "Penampilan"
 
-#: data/resources/preferences.ui:18
+#: data/resources/preferences.ui:19
 msgid "Dark Mode"
 msgstr "Mode Gelap"
 
-#: data/resources/preferences.ui:34
+#: data/resources/preferences.ui:35
 msgid "Behavior"
 msgstr "Perilaku"
 
-#: data/resources/preferences.ui:38
+#: data/resources/preferences.ui:39
 msgid "Live Translation"
 msgstr "Terjemahan Langsung"
 
-#: data/resources/preferences.ui:39
+#: data/resources/preferences.ui:40
 msgid "Warning: Your IP address may get banned for API abuse."
 msgstr "Peringatan: Alamat IP Anda mungkin dilarang untuk penyalahgunaan API."
 
-#: data/resources/preferences.ui:53
+#: data/resources/preferences.ui:54
 msgid "Translation Shortcut"
 msgstr "Pintasan Terjemahan"
 
-#: data/resources/preferences.ui:54
+#: data/resources/preferences.ui:55
 msgid "Unselected choice will be used for line break."
 msgstr "Pilihan yang tidak dipilih akan digunakan untuk hentian baris."
 
-#: data/resources/preferences.ui:62
+#: data/resources/preferences.ui:63
 msgid "Search Provider"
 msgstr "Penyedia Pencarian"
 
-#: data/resources/preferences.ui:63
+#: data/resources/preferences.ui:64
 msgid ""
 "Dialect has a GNOME Search Provider. Enabling or disabling Live Translation "
 "here will also enable or disable the GNOME Search Provider. This is to "
@@ -132,6 +136,28 @@ msgstr ""
 "Penyedia Pencarian GNOME. Hal ini untuk mengurangi kemungkinan "
 "penyalahgunaan API. Pastikan juga bahwa fitur ini diaktifkan di Pengaturan "
 "GNOME."
+
+#: data/resources/shortcuts-window.ui:13
+msgctxt "shortcuts window"
+msgid "General"
+msgstr ""
+
+#: data/resources/shortcuts-window.ui:17
+#, fuzzy
+msgctxt "shortcuts window"
+msgid "Preferences"
+msgstr "Preferensi"
+
+#: data/resources/shortcuts-window.ui:24
+#, fuzzy
+msgctxt "shortcuts window"
+msgid "Translate"
+msgstr "Terjemahkan"
+
+#: data/resources/shortcuts-window.ui:31
+msgctxt "shortcuts window"
+msgid "Quit"
+msgstr ""
 
 #: data/resources/window.ui:77 data/resources/window.ui:529
 msgid "Switch languages"

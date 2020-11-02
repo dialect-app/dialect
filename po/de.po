@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-28 09:44-0500\n"
+"POT-Creation-Date: 2020-11-01 14:27-0500\n"
 "PO-Revision-Date: 2020-10-28 15:28+0100\n"
 "Last-Translator: Onno Giesmann <nutzer3105@gmail.com>\n"
 "Language-Team: \n"
@@ -20,8 +20,8 @@ msgstr ""
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:47
-#: src/main.py:67
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:48
+#: src/main.py:69
 msgid "Dialect"
 msgstr "Dialect"
 
@@ -86,42 +86,46 @@ msgid "Preferences"
 msgstr "Einstellungen"
 
 #: data/resources/menu.ui:11
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: data/resources/menu.ui:15
 msgid "About Dialect"
 msgstr "Info zu Dialect"
 
-#: data/resources/preferences.ui:14
+#: data/resources/preferences.ui:15
 msgid "Appearance"
 msgstr "Erscheinungsbild"
 
-#: data/resources/preferences.ui:18
+#: data/resources/preferences.ui:19
 msgid "Dark Mode"
 msgstr "Dunkler Modus"
 
-#: data/resources/preferences.ui:34
+#: data/resources/preferences.ui:35
 msgid "Behavior"
 msgstr "Verhalten"
 
-#: data/resources/preferences.ui:38
+#: data/resources/preferences.ui:39
 msgid "Live Translation"
 msgstr "Echtzeit-Übersetzung"
 
-#: data/resources/preferences.ui:39
+#: data/resources/preferences.ui:40
 msgid "Warning: Your IP address may get banned for API abuse."
 msgstr "Achtung: Ihre IP-Adresse könnte wegen API-Missbrauch gesperrt werden."
 
-#: data/resources/preferences.ui:53
+#: data/resources/preferences.ui:54
 msgid "Translation Shortcut"
 msgstr "Übersetzungsverknüpfung"
 
-#: data/resources/preferences.ui:54
+#: data/resources/preferences.ui:55
 msgid "Unselected choice will be used for line break."
 msgstr "Mit der jeweils anderen Option wird ein Zeilenumbruch erzeugt."
 
-#: data/resources/preferences.ui:62
+#: data/resources/preferences.ui:63
 msgid "Search Provider"
 msgstr "Suchanbieter"
 
-#: data/resources/preferences.ui:63
+#: data/resources/preferences.ui:64
 msgid ""
 "Dialect has a GNOME Search Provider. Enabling or disabling Live Translation "
 "here will also enable or disable the GNOME Search Provider. This is to "
@@ -133,6 +137,28 @@ msgstr ""
 "in GNOME an- bzw. ausschalten. Dies soll die Möglichkeit eines API-"
 "Missbrauchs verringern. Denken Sie auch daran, dass diese Funktion in den "
 "GNOME-Einstellungen aktiviert ist."
+
+#: data/resources/shortcuts-window.ui:13
+msgctxt "shortcuts window"
+msgid "General"
+msgstr ""
+
+#: data/resources/shortcuts-window.ui:17
+#, fuzzy
+msgctxt "shortcuts window"
+msgid "Preferences"
+msgstr "Einstellungen"
+
+#: data/resources/shortcuts-window.ui:24
+#, fuzzy
+msgctxt "shortcuts window"
+msgid "Translate"
+msgstr "Übersetzen"
+
+#: data/resources/shortcuts-window.ui:31
+msgctxt "shortcuts window"
+msgid "Quit"
+msgstr ""
 
 #: data/resources/window.ui:77 data/resources/window.ui:529
 msgid "Switch languages"
