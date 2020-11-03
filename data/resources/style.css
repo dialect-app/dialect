@@ -1,10 +1,15 @@
 .toolbox {
   background: @theme_base_color;
   border: 1px solid @borders;
+  border-bottom-left-radius: 9px;
+  border-bottom-right-radius: 9px;
   border-top: 0;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
   padding: 6px;
+}
+
+.mistakes {
+  border-left: 1px solid @borders;
+  border-right: 1px solid @borders;
 }
 
 .translation-frame  {

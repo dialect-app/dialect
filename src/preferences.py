@@ -3,6 +3,8 @@
 # Copyright 2020 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+import os
+
 from gi.repository import Gio, Gtk, Handy
 
 from dialect.define import APP_ID, RES_PATH
@@ -16,12 +18,13 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
     dark_mode = Gtk.Template.Child()
     live_translation = Gtk.Template.Child()
     translate_accel = Gtk.Template.Child()
+    search_provider = Gtk.Template.Child()
 
-    def __init__(self, **kwargs):
+    def __init__(self, settings, **kwargs):
         super().__init__(**kwargs)
 
         # Get GSettings object
-        self.settings = Gio.Settings.new(APP_ID)
+        self.settings = settings
 
         self.setup()
 
@@ -49,9 +52,12 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         self.dark_mode.connect('notify::active', self._toggle_dark_mode)
 
         # Set translate accel sensitivity by live translation state
-        self.translate_accel.set_sensitive(
-            not self.live_translation.get_active())
+        self.translate_accel.set_sensitive(not self.live_translation.get_active())
         self.live_translation.connect('notify::active', self._toggle_accel_pref)
+
+        # Search Provider
+        if os.getenv('XDG_CURRENT_DESKTOP') != 'GNOME':
+            self.search_provider.hide()
 
     def _toggle_dark_mode(self, switch, active):
         gtk_settings = Gtk.Settings.get_default()

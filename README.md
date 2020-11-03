@@ -12,7 +12,7 @@ A translation app for GNOME based on Google Translate.
 - Translation history
 - Automatic language detection
 - Text to speech
-- Clipboard button
+- Clipboard buttons
 
 ## Installation
 
@@ -23,6 +23,13 @@ A translation app for GNOME based on Google Translate.
 ### AUR
 
 Arch-based distro users can install from the AUR: [`dialect`](https://aur.archlinux.org/packages/dialect) for the stable version or [`dialect-git`](https://aur.archlinux.org/packages/dialect-git/) for the latest git revision.
+
+### Fedora
+
+Dialect is available for Fedora 33 and later:
+```
+sudo dnf install dialect
+```
 
 ## Building
 
@@ -37,7 +44,7 @@ Arch-based distro users can install from the AUR: [`dialect`](https://aur.archli
 - Ninja `ninja`
 - Googletrans `python-googletrans`
 - gTTS `python-gtts`
-- D-Bus `python3-dbus`
+- D-Bus `python-dbus`
 
 If official packages are not available for any of the python dependencies, you can install them from pip:
 

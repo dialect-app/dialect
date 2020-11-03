@@ -15,7 +15,7 @@
     <ul>
       <li>Text translation up to 5000 chars</li>
       <li>Text to speech</li>
-      <li>History</li>
+      <li>Translation history</li>
       <li>Automatic language detection</li>
       <li>Clipboard buttons</li>
     </ul>
@@ -32,8 +32,31 @@
     <screenshot type="default">
       <image>https://raw.githubusercontent.com/gi-lom/dialect/main/preview.png</image>
     </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/gi-lom/dialect/main/preview-2.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/gi-lom/dialect/main/preview-mobile.png</image>
+    </screenshot>
   </screenshots>
   <releases>
+    <release version="1.1.0" date="2020-10-30">
+      <description>
+        <ul>
+          <li>Added a search provider for GNOME</li>
+          <li>Added support for "Did you mean" suggestions</li>
+          <li>Added a Ctrl+Q shortcut to quit</li>
+          <li>Added Hungarian translation</li>
+          <li>Added Italian translation</li>
+          <li>Added Persian translation</li>
+          <li>Added Russian translation</li>
+          <li>Added Turkish translation</li>
+          <li>Fixed some issues with the icon</li>
+          <li>Fixed several bugs</li>
+          <li>Made some minor UI improvements</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.0" date="2020-10-14">
       <description>
         <p>Initial release.</p>

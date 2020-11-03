@@ -22,6 +22,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="show-close-button">True</property>
+                <property name="centering-policy">strict</property>
                 <child type="title">
                   <object class="GtkStack" id="title_stack">
                     <property name="visible">True</property>
@@ -254,6 +255,38 @@
                               <packing>
                                 <property name="expand">True</property>
                               </packing>
+                            </child>
+                            <child>
+                              <object class="GtkInfoBar" id="mistakes">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="revealed">False</property>
+                                <style>
+                                  <class name="mistakes"/>
+                                </style>
+                                <child internal-child="content_area">
+                                  <object class="GtkBox">
+                                    <property name="can_focus">False</property>
+                                    <property name="orientation">horizontal</property>
+                                    <property name="spacing">8</property>
+                                    <child>
+                                      <object class="GtkImage">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="icon-name">error-correct-symbolic</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="mistakes_label">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="wrap">True</property>
+                                        <property name="wrap-mode">word-char</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
                             </child>
                             <child>
                               <object class="GtkBox">

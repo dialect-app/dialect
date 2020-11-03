@@ -10,7 +10,8 @@
         "--device=dri",
         "--socket=fallback-x11",
         "--socket=wayland",
-        "--socket=pulseaudio"
+        "--socket=pulseaudio",
+        "--own-name=com.github.gi_lom.dialect.SearchProvider"
     ],
     "modules" : [
         "pypi-dependencies.json",
@@ -43,8 +44,8 @@
             "buildsystem" : "meson",
             "sources" : [
                 {
-                    "type" : "git",
-                    "url" : "../../."
+                    "type" : "dir",
+                    "path" : "../../."
                 }
             ]
         }

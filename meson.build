@@ -1,5 +1,5 @@
 project('dialect',
-          version: '1.0.0',
+          version: '1.1.0',
     meson_version: '>= 0.50.0',
   default_options: [ 'warning_level=2',
                    ],
@@ -14,6 +14,7 @@ moduledir = join_paths(pkgdatadir, 'dialect')
 conf = configuration_data()
 conf.set('PYTHON', python.find_installation('python3').path())
 conf.set('VERSION', meson.project_version())
+conf.set('BIN', join_paths(get_option('prefix'), get_option('bindir'), meson.project_name()))
 conf.set('pkgdatadir', pkgdatadir)
 conf.set('localedir', join_paths(get_option('prefix'), get_option('localedir')))
 

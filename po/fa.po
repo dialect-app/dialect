@@ -10,6 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-01 14:27-0500\n"
 "PO-Revision-Date: 2020-11-03 17:45+0330\n"
+"PO-Revision-Date: 2020-10-29 08:58+0330\n"
 "Last-Translator: سهیل خانعلی‌پور <soheilkhanalipur@tutanota.com>\n"
 "Language-Team: Persian <soheilkhanalipur@tutanota.com>\n"
 "Language: fa\n"
@@ -88,6 +89,7 @@ msgstr "ساماندهی"
 #: data/resources/menu.ui:11
 msgid "Keyboard Shortcuts"
 msgstr "میانبرهای صفحه‌کلید"
+msgstr ""
 
 #: data/resources/menu.ui:15
 msgid "About Dialect"
@@ -143,11 +145,32 @@ msgid "General"
 msgstr "فراگیر"
 
 #: data/resources/shortcuts-window.ui:17
+
+#: data/resources/preferences.ui:64
+msgid ""
+"Dialect has a GNOME Search Provider. Enabling or disabling Live Translation "
+"here will also enable or disable the GNOME Search Provider. This is to "
+"reduce the possibility of API abuse. Also make sure that the feature is "
+"enabled in GNOME Settings."
+msgstr ""
+"دایلکت یک فراهم‌آور جستجوی گنوم دارد. روشن یا خاموش کردن ترجمه زنده در اینجا "
+"همچنین فراهم‌آور جستجوی گنوم را روشن یا خاموش می‌کند. این برای کاهش شایش "
+"کژبکاربستن ای‌پی‌آی بکار گرفته می‌شود. همچنین بدانید این ویژگی در ساماندهی گنوم "
+"روشن باشد."
+
+#: data/resources/shortcuts-window.ui:13
+msgctxt "shortcuts window"
+msgid "General"
+msgstr ""
+
+#: data/resources/shortcuts-window.ui:17
+#, fuzzy
 msgctxt "shortcuts window"
 msgid "Preferences"
 msgstr "ساماندهی"
 
 #: data/resources/shortcuts-window.ui:24
+#, fuzzy
 msgctxt "shortcuts window"
 msgid "Translate"
 msgstr "ترجمه"
@@ -156,6 +179,7 @@ msgstr "ترجمه"
 msgctxt "shortcuts window"
 msgid "Quit"
 msgstr "برونرفت"
+msgstr ""
 
 #: data/resources/window.ui:77 data/resources/window.ui:529
 msgid "Switch languages"
