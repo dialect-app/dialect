@@ -8,21 +8,21 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-28 09:44-0500\n"
-"PO-Revision-Date: 2020-10-28 23:52+0330\n"
+"POT-Creation-Date: 2020-11-01 14:27-0500\n"
+"PO-Revision-Date: 2020-11-03 17:19+0330\n"
 "Last-Translator: سهیل خانعلی‌پور <soheilkhanalipur@tutanota.com>\n"
-"Language-Team: فارسی <soheilkhanalipur@tutanota.com>\n"
+"Language-Team: Persian <soheilkhanalipur@tutanota.com>\n"
 "Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0\n"
-"X-Generator: Gtranslator 3.30.1\n"
+"X-Generator: Gtranslator 3.36.0\n"
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:47
-#: src/main.py:67
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:48
+#: src/main.py:69
 msgid "Dialect"
 msgstr "دایلکت"
 
@@ -86,42 +86,46 @@ msgid "Preferences"
 msgstr "ساماندهی"
 
 #: data/resources/menu.ui:11
+msgid "Keyboard Shortcuts"
+msgstr "میانبرهای صفحه‌کلید"
+
+#: data/resources/menu.ui:15
 msgid "About Dialect"
 msgstr "درباره دایلکت"
 
-#: data/resources/preferences.ui:14
+#: data/resources/preferences.ui:15
 msgid "Appearance"
 msgstr "چهره"
 
-#: data/resources/preferences.ui:18
+#: data/resources/preferences.ui:19
 msgid "Dark Mode"
 msgstr "پوشش تیره"
 
-#: data/resources/preferences.ui:34
+#: data/resources/preferences.ui:35
 msgid "Behavior"
 msgstr "رفتار"
 
-#: data/resources/preferences.ui:38
+#: data/resources/preferences.ui:39
 msgid "Live Translation"
 msgstr "ترجمه زنده"
 
-#: data/resources/preferences.ui:39
+#: data/resources/preferences.ui:40
 msgid "Warning: Your IP address may get banned for API abuse."
 msgstr "هشدار: شاید نشانی آی‌پی شما برای کژبکاربستن ای‌پی‌آی بسته شود."
 
-#: data/resources/preferences.ui:53
+#: data/resources/preferences.ui:54
 msgid "Translation Shortcut"
 msgstr "میانبر ترجمه"
 
-#: data/resources/preferences.ui:54
+#: data/resources/preferences.ui:55
 msgid "Unselected choice will be used for line break."
 msgstr "گزینه انتخاب نشده برای قطع خط بکار گرفته می‌شود."
 
-#: data/resources/preferences.ui:62
+#: data/resources/preferences.ui:63
 msgid "Search Provider"
 msgstr "فراهم‌آور جستجو"
 
-#: data/resources/preferences.ui:63
+#: data/resources/preferences.ui:64
 msgid ""
 "Dialect has a GNOME Search Provider. Enabling or disabling Live Translation "
 "here will also enable or disable the GNOME Search Provider. This is to "
@@ -132,6 +136,26 @@ msgstr ""
 "همچنین فراهم‌آور جستجوی گنوم را روشن یا خاموش می‌کند. این برای کاهش شایش "
 "کژبکاربستن ای‌پی‌آی بکار گرفته می‌شود. همچنین بدانید این ویژگی در ساماندهی گنوم "
 "روشن باشد."
+
+#: data/resources/shortcuts-window.ui:13
+msgctxt "shortcuts window"
+msgid "General"
+msgstr "فراگیر"
+
+#: data/resources/shortcuts-window.ui:17
+msgctxt "shortcuts window"
+msgid "Preferences"
+msgstr "ساماندهی"
+
+#: data/resources/shortcuts-window.ui:24
+msgctxt "shortcuts window"
+msgid "Translate"
+msgstr "ترجمه"
+
+#: data/resources/shortcuts-window.ui:31
+msgctxt "shortcuts window"
+msgid "Quit"
+msgstr "برونرفت"
 
 #: data/resources/window.ui:77 data/resources/window.ui:529
 msgid "Switch languages"
