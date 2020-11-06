@@ -453,7 +453,9 @@ class DialectWindow(Handy.ApplicationWindow):
         self.translate_btn.set_sensitive(self.src_buffer.get_char_count() != 0)
 
     def switch_auto_lang(self, dest_language, src_text, dest_text):
-        src_language = str(self.translator.detect(src_text).lang)
+        src_language = self.translator.detect(src_text).lang
+        if isinstance(src_language, list):
+            src_language = src_language[0]
 
         # Switch all
         GLib.idle_add(self.switch_all, src_language, dest_language, src_text, dest_text)
@@ -712,7 +714,9 @@ class DialectWindow(Handy.ApplicationWindow):
             dest_language = trans_dict['dest_language']
             if src_language == 'auto' and src_text != '':
                 try:
-                    src_language = str(self.translator.detect(src_text).lang)
+                    src_language = self.translator.detect(src_text).lang
+                    if isinstance(src_language, list):
+                        src_language = src_language[0]
                     GLib.idle_add(self.src_lang_selector.set_property,
                                   'selected', src_language)
                     if not src_language in self.src_langs:
