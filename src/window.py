@@ -157,7 +157,7 @@ class DialectWindow(Handy.ApplicationWindow):
         """
         try:
             self.voice_loading = True
-            self.lang_speech = list(lang.tts_langs(tld='com').keys())
+            self.lang_speech = list(lang.tts_langs().keys())
             if not listen:
                 GLib.idle_add(self.toggle_voice_spinner, False)
             elif language in self.lang_speech and text != '':
