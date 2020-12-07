@@ -737,7 +737,8 @@ class DialectWindow(Handy.ApplicationWindow):
                         dest_text = translation.text
                         self.trans_mistakes = translation.extra_data['possible-mistakes']
                         self.trans_failed = False
-                    except Exception:
+                    except Exception as exc:
+                        print(exc)
                         self.trans_mistakes = None
                         self.trans_failed = True
 
