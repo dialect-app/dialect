@@ -153,7 +153,9 @@ class TranslateService(dbus.service.Object):
 
             try:
                 if src_language == 'auto' and src_text != '':
-                    src_language = str(self.translator.detect(src_text).lang)
+                    src_language = self.translator.detect(src_text).lang
+                    if isinstance(src_language, list):
+                        src_language = src_language[0]
 
                 # If the two languages are the same, translate into last used source language
                 if src_language == self.dest_language:
