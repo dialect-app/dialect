@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-01 14:27-0500\n"
+"POT-Creation-Date: 2020-12-08 02:54+0530\n"
 "PO-Revision-Date: 2020-10-28 20:06+0100\n"
 "Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <LL@li.org>\n"
@@ -64,6 +64,59 @@ msgstr "Pulsanti degli appunti"
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:25
 msgid "gi-lom"
 msgstr "gi-lom"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:46
+msgid "Added a search provider for GNOME"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:47
+msgid "Added support for \"Did you mean\" suggestions"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:48
+msgid "Added a Ctrl+Q shortcut to quit"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:49
+#, fuzzy
+msgid "Added Hungarian translation"
+msgstr "Prossima traduzione"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:50
+#, fuzzy
+msgid "Added Italian translation"
+msgstr "Prossima traduzione"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:51
+#, fuzzy
+msgid "Added Persian translation"
+msgstr "Traduzione precedente"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:52
+#, fuzzy
+msgid "Added Russian translation"
+msgstr "Traduzione precedente"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:53
+#, fuzzy
+msgid "Added Turkish translation"
+msgstr "Traduzione precedente"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:54
+msgid "Fixed some issues with the icon"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:55
+msgid "Fixed several bugs"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:56
+msgid "Made some minor UI improvements"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:62
+msgid "Initial release."
+msgstr ""
 
 #: data/resources/about.ui:11
 msgid "Copyright 2020 gi-lom"
@@ -217,11 +270,11 @@ msgstr ""
 msgid "Auto"
 msgstr "Automatico"
 
-#: src/window.py:611
+#: src/window.py:613
 msgid "5000 characters limit reached!"
 msgstr "Limite di 5000 caratteri raggiunto!"
 
-#: src/window.py:687
+#: src/window.py:689
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
@@ -229,7 +282,7 @@ msgstr ""
 "Traduzione non riuscita.\n"
 "Verifica la presenza di problemi di rete."
 
-#: src/window.py:702
+#: src/window.py:704
 msgid "Did you mean: "
 msgstr "Forse cercavi:"
 

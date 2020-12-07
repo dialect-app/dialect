@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-01 14:27-0500\n"
+"POT-Creation-Date: 2020-12-08 02:54+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -64,6 +64,54 @@ msgstr ""
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:25
 msgid "gi-lom"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:46
+msgid "Added a search provider for GNOME"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:47
+msgid "Added support for \"Did you mean\" suggestions"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:48
+msgid "Added a Ctrl+Q shortcut to quit"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:49
+msgid "Added Hungarian translation"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:50
+msgid "Added Italian translation"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:51
+msgid "Added Persian translation"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:52
+msgid "Added Russian translation"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:53
+msgid "Added Turkish translation"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:54
+msgid "Fixed some issues with the icon"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:55
+msgid "Fixed several bugs"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:56
+msgid "Made some minor UI improvements"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:62
+msgid "Initial release."
 msgstr ""
 
 #: data/resources/about.ui:11
@@ -209,16 +257,16 @@ msgstr ""
 msgid "Auto"
 msgstr ""
 
-#: src/window.py:611
+#: src/window.py:613
 msgid "5000 characters limit reached!"
 msgstr ""
 
-#: src/window.py:687
+#: src/window.py:689
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
 msgstr ""
 
-#: src/window.py:702
+#: src/window.py:704
 msgid "Did you mean: "
 msgstr ""
