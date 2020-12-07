@@ -40,6 +40,16 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="1.1.1" date="2020-12-08">
+      <description>
+        <ul>
+          <li>Added a shortcuts window</li>
+          <li>Added Indonesian translation</li>
+          <li>Added Portugese (BR) translation</li>
+          <li>Fixed several bugs</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.1.0" date="2020-10-30">
       <description>
         <ul>
