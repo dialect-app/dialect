@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-12-08 02:54+0530\n"
-"PO-Revision-Date: 2020-11-03 19:56+0330\n"
+"PO-Revision-Date: 2020-12-08 22:40+0330\n"
 "Last-Translator: سهیل خانعلی‌پور <soheilkhanalipur@tutanota.com>\n"
 "Language-Team: Persian <soheilkhanalipur@tutanota.com>\n"
 "Language: fa\n"
@@ -29,16 +29,16 @@ msgstr "دایلکت"
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
 msgid "A translation app for GNOME"
-msgstr "یک برنامه ترجمه برای گنوم"
+msgstr "یک برنامه ترگمان برای گنوم"
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
 msgid "translate;translation;"
-msgstr "ترجمه;ترجمان;"
+msgstr "ترگومه;ترگمان;"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:9 data/resources/about.ui:12
 msgid "A translation app for GNOME based on Google Translate."
-msgstr "یک برنامه ترجمه برای گنوم بر پایه ترجمان گوگل."
+msgstr "یک برنامه ترگمان برای گنوم بر پایه ترگومه گوگل."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
@@ -46,7 +46,7 @@ msgstr "ویژگی‌ها"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
 msgid "Text translation up to 5000 chars"
-msgstr "ترجمه نوشته تا ۵۰۰۰ واج"
+msgstr "ترگومه نوشتار تا ۵۰۰۰ واج"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid "Text to speech"
@@ -54,7 +54,7 @@ msgstr "نوشتار به گفتار"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Translation history"
-msgstr "پیشینه ترجمه"
+msgstr "پیشینه ترگمان"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Automatic language detection"
@@ -70,56 +70,51 @@ msgstr "gi-lom"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:46
 msgid "Added a search provider for GNOME"
-msgstr ""
+msgstr "یک فراهم‌آور جستجوی گنوم افزوده شد"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:47
 msgid "Added support for \"Did you mean\" suggestions"
-msgstr ""
+msgstr "پشتیبانی از پیشنهاد «شاید این را می‌خواستید» افزوده شد"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:48
 msgid "Added a Ctrl+Q shortcut to quit"
-msgstr ""
+msgstr "یک پایندان پایش+ض برای برونرفت افزوده شد"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:49
-#, fuzzy
 msgid "Added Hungarian translation"
-msgstr "ترجمه بعدی"
+msgstr "برگردان مجارستانی افزوده شد"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:50
-#, fuzzy
 msgid "Added Italian translation"
-msgstr "ترجمه بعدی"
+msgstr "برگردان ایتالیایی افزوده شد"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:51
-#, fuzzy
 msgid "Added Persian translation"
-msgstr "ترجمه پیشین"
+msgstr "برگردان پارسی افزوده شد"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:52
-#, fuzzy
 msgid "Added Russian translation"
-msgstr "ترجمه پیشین"
+msgstr "برگردان روسی افزوده شد"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:53
-#, fuzzy
 msgid "Added Turkish translation"
-msgstr "ترجمه پیشین"
+msgstr "برگردان ترکی افزوده شد"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:54
 msgid "Fixed some issues with the icon"
-msgstr ""
+msgstr "برخی از ایرادهای نماد درست شد"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:55
 msgid "Fixed several bugs"
-msgstr ""
+msgstr "چند ایراد درست شد"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:56
 msgid "Made some minor UI improvements"
-msgstr ""
+msgstr "گشایش برخی از اندک پیشرفت‌های یوآی"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:62
 msgid "Initial release."
-msgstr ""
+msgstr "پخش یکم."
 
 #: data/resources/about.ui:11
 msgid "Copyright 2020 gi-lom"
@@ -127,7 +122,7 @@ msgstr "کپی‌رایت ۲۰۲۰ gi-lom"
 
 #: data/resources/about.ui:14
 msgid "Github page"
-msgstr "صفحه گیت‌هاب"
+msgstr "برگه گیت‌هاب"
 
 #. Replace me with your names.
 #: data/resources/about.ui:19
@@ -140,7 +135,7 @@ msgstr "ساماندهی"
 
 #: data/resources/menu.ui:11
 msgid "Keyboard Shortcuts"
-msgstr "میانبرهای صفحه‌کلید"
+msgstr "پایندان کلیدبرگ"
 
 #: data/resources/menu.ui:15
 msgid "About Dialect"
@@ -152,7 +147,7 @@ msgstr "چهره"
 
 #: data/resources/preferences.ui:19
 msgid "Dark Mode"
-msgstr "پوشش تیره"
+msgstr "روش تیره"
 
 #: data/resources/preferences.ui:35
 msgid "Behavior"
@@ -160,7 +155,7 @@ msgstr "رفتار"
 
 #: data/resources/preferences.ui:39
 msgid "Live Translation"
-msgstr "ترجمه زنده"
+msgstr "ترگمان زنده"
 
 #: data/resources/preferences.ui:40
 msgid "Warning: Your IP address may get banned for API abuse."
@@ -168,7 +163,7 @@ msgstr "هشدار: شاید نشانی آی‌پی شما برای کژبکار
 
 #: data/resources/preferences.ui:54
 msgid "Translation Shortcut"
-msgstr "میانبر ترجمه"
+msgstr "پایندان ترگمان"
 
 #: data/resources/preferences.ui:55
 msgid "Unselected choice will be used for line break."
@@ -185,7 +180,7 @@ msgid ""
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
-"دایلکت یک فراهم‌آور جستجوی گنوم دارد. روشن یا خاموش کردن ترجمه زنده در اینجا "
+"دایلکت یک فراهم‌آور جستجوی گنوم دارد. روشن یا خاموش کردن ترگمان زنده در اینجا "
 "همچنین فراهم‌آور جستجوی گنوم را روشن یا خاموش می‌کند. این برای کاهش شایش "
 "کژبکاربستن ای‌پی‌آی بکار گرفته می‌شود. همچنین بدانید این ویژگی در ساماندهی گنوم "
 "روشن باشد."
@@ -203,7 +198,7 @@ msgstr "ساماندهی"
 #: data/resources/shortcuts-window.ui:24
 msgctxt "shortcuts window"
 msgid "Translate"
-msgstr "ترجمه"
+msgstr "ترگومه"
 
 #: data/resources/shortcuts-window.ui:31
 msgctxt "shortcuts window"
@@ -216,11 +211,11 @@ msgstr "جابجا کردن زبان‌ها"
 
 #: data/resources/window.ui:157
 msgid "Previous translation"
-msgstr "ترجمه پیشین"
+msgstr "ترگمان پیشین"
 
 #: data/resources/window.ui:176
 msgid "Next translation"
-msgstr "ترجمه بعدی"
+msgstr "ترگمان پسین"
 
 #: data/resources/window.ui:302
 msgid "Clear"
@@ -232,15 +227,15 @@ msgstr "چسباندن"
 
 #: data/resources/window.ui:329
 msgid "Translate"
-msgstr "ترجمه"
+msgstr "ترگومه"
 
 #: data/resources/window.ui:406
 msgid "Translation in progress..."
-msgstr "ترجمه روان است..."
+msgstr "ترگومه روان است..."
 
 #: data/resources/window.ui:414
 msgid "Translation seems to have failed"
-msgstr "گویا ترجمه شکست خورده است"
+msgstr "گویا ترگمان شکست خورده است"
 
 #: data/resources/window.ui:425
 msgid "Listen"
@@ -264,7 +259,7 @@ msgid ""
 "Please try again."
 msgstr ""
 "یک ایراد شبکه‌ای رخ داد.\n"
-"لطفا دوباره بیازمایید."
+"خواهشمند است دوباره بیازمایید."
 
 #: src/window.py:357 src/window.py:361
 msgid "Auto"
@@ -279,8 +274,8 @@ msgid ""
 "Translation failed.\n"
 "Please check for network issues."
 msgstr ""
-"ترجمه شکست خورد.\n"
-"لطفا ایراد شبکه را بررسی کنید."
+"ترگمان شکست خورد.\n"
+"خواهشمند است ایراد شبکه را بررسی کنید."
 
 #: src/window.py:704
 msgid "Did you mean: "
