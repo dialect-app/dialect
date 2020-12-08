@@ -132,7 +132,7 @@ msgstr "Preferenze"
 
 #: data/resources/menu.ui:11
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Scorciatoie da Tastiera"
 
 #: data/resources/menu.ui:15
 msgid "About Dialect"
@@ -194,10 +194,9 @@ msgid "Preferences"
 msgstr "Preferenze"
 
 #: data/resources/shortcuts-window.ui:24
-#, fuzzy
 msgctxt "shortcuts window"
 msgid "Translate"
-msgstr "Tradotto"
+msgstr "Traduci"
 
 #: data/resources/shortcuts-window.ui:31
 msgctxt "shortcuts window"
