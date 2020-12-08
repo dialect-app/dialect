@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-12-08 02:54+0530\n"
-"PO-Revision-Date: 2020-10-28 20:06+0100\n"
+"PO-Revision-Date: 2020-12-08 10:06+0100\n"
 "Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <LL@li.org>\n"
 "Language: it\n"
@@ -67,56 +67,51 @@ msgstr "gi-lom"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:46
 msgid "Added a search provider for GNOME"
-msgstr ""
+msgstr "Aggiunto un provider di ricerca per GNOME"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:47
 msgid "Added support for \"Did you mean\" suggestions"
-msgstr ""
+msgstr "Aggiunto supporto per i suggerimenti di \"Forse cercavi\""
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:48
 msgid "Added a Ctrl+Q shortcut to quit"
-msgstr ""
+msgstr "Aggiunta una scorciatoia Ctrl + Q per uscire"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:49
-#, fuzzy
 msgid "Added Hungarian translation"
-msgstr "Prossima traduzione"
+msgstr "Aggiunta traduzione in Ungherese"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:50
-#, fuzzy
 msgid "Added Italian translation"
-msgstr "Prossima traduzione"
+msgstr "Aggiunta traduzione in Italiano"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:51
-#, fuzzy
 msgid "Added Persian translation"
-msgstr "Traduzione precedente"
+msgstr "Aggiunta traduzione in Persiano"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:52
-#, fuzzy
 msgid "Added Russian translation"
-msgstr "Traduzione precedente"
+msgstr "Aggiunta traduzione in Russo"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:53
-#, fuzzy
 msgid "Added Turkish translation"
-msgstr "Traduzione precedente"
+msgstr "Aggiunta traduzione in Turco"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:54
 msgid "Fixed some issues with the icon"
-msgstr ""
+msgstr "Risolti alcuni problemi con l'icona"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:55
 msgid "Fixed several bugs"
-msgstr ""
+msgstr "Risolti diversi bug"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:56
 msgid "Made some minor UI improvements"
-msgstr ""
+msgstr "Sono stati apportati alcuni miglioramenti minori all'interfaccia utente"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:62
 msgid "Initial release."
-msgstr ""
+msgstr "Versione iniziale."
 
 #: data/resources/about.ui:11
 msgid "Copyright 2020 gi-lom"
@@ -191,10 +186,9 @@ msgstr ""
 #: data/resources/shortcuts-window.ui:13
 msgctxt "shortcuts window"
 msgid "General"
-msgstr ""
+msgstr "Generale"
 
 #: data/resources/shortcuts-window.ui:17
-#, fuzzy
 msgctxt "shortcuts window"
 msgid "Preferences"
 msgstr "Preferenze"
@@ -203,12 +197,12 @@ msgstr "Preferenze"
 #, fuzzy
 msgctxt "shortcuts window"
 msgid "Translate"
-msgstr "Traduci"
+msgstr "Tradotto"
 
 #: data/resources/shortcuts-window.ui:31
 msgctxt "shortcuts window"
 msgid "Quit"
-msgstr ""
+msgstr "Esci"
 
 #: data/resources/window.ui:77 data/resources/window.ui:529
 msgid "Switch languages"
