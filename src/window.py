@@ -37,6 +37,8 @@ class DialectWindow(Handy.ApplicationWindow):
 
     menu_btn = Gtk.Template.Child()
 
+    pronunciation_revealer = Gtk.Template.Child()
+    pronunciation_label = Gtk.Template.Child()
     mistakes = Gtk.Template.Child()
     mistakes_label = Gtk.Template.Child()
     char_counter = Gtk.Template.Child()
@@ -78,6 +80,8 @@ class DialectWindow(Handy.ApplicationWindow):
     voice_loading = False
     # Trans mistakes
     trans_mistakes = None
+    # Pronunciations
+    trans_pronunciation = None
 
     def __init__(self, text, settings, **kwargs):
         super().__init__(**kwargs)
@@ -706,6 +710,13 @@ class DialectWindow(Handy.ApplicationWindow):
             elif self.mistakes.get_revealed():
                 self.mistakes.set_revealed(False)
 
+        def on_pronunciation():
+            if self.trans_pronunciation is not None:
+                self.pronunciation_label.set_text(self.trans_pronunciation)
+                self.pronunciation_revealer.set_reveal_child(True)
+            elif self.pronunciation_revealer.get_reveal_child():
+                self.pronunciation_revealer.set_reveal_child(False)
+
         while self.trans_queue:
             # If the first language is revealed automatically, let's set it
             trans_dict = self.trans_queue.pop(0)
@@ -736,10 +747,15 @@ class DialectWindow(Handy.ApplicationWindow):
                         )
                         dest_text = translation.text
                         self.trans_mistakes = translation.extra_data['possible-mistakes']
+                        try:
+                            self.trans_pronunciation = translation.extra_data['translation'][1][3]
+                        except IndexError:
+                            self.trans_pronunciation = None
                         self.trans_failed = False
                     except Exception as exc:
                         print(exc)
                         self.trans_mistakes = None
+                        self.trans_pronunciation = None
                         self.trans_failed = True
 
                     # Finally, everything is saved in history
@@ -752,8 +768,10 @@ class DialectWindow(Handy.ApplicationWindow):
                 else:
                     self.trans_failed = False
                     self.trans_mistakes = None
+                    self.trans_pronunciation = None
                 GLib.idle_add(self.dest_buffer.set_text, dest_text)
                 GLib.idle_add(on_mistakes)
+                GLib.idle_add(on_pronunciation)
 
         if self.trans_failed:
             GLib.idle_add(on_trans_failed)
