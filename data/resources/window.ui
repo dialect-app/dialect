@@ -260,7 +260,7 @@
                               <object class="GtkRevealer" id="pronunciation_revealer">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="transition-type">none</property>
+                                <property name="transition-type">slide-down</property>
                                 <property name="reveal-child">False</property>
                                 <child>
                                   <object class="GtkScrolledWindow">
@@ -290,9 +290,6 @@
                                   </object>
                                 </child>
                               </object>
-                              <packing>
-                                <property name="expand">False</property>
-                              </packing>
                             </child>
                             <child>
                               <object class="GtkInfoBar" id="mistakes">
