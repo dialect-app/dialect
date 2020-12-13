@@ -711,9 +711,10 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.mistakes.set_revealed(False)
 
         def on_pronunciation():
+            reveal = self.settings.get_boolean('show-pronunciation')
             if self.trans_pronunciation is not None:
                 self.pronunciation_label.set_text(self.trans_pronunciation)
-                self.pronunciation_revealer.set_reveal_child(True)
+                self.pronunciation_revealer.set_reveal_child(reveal)
             elif self.pronunciation_revealer.get_reveal_child():
                 self.pronunciation_revealer.set_reveal_child(False)
 

@@ -83,6 +83,11 @@ class Dialect(Gtk.Application):
     def setup_actions(self):
         """ Setup menu actions """
 
+        pronunciation_action = Gio.SimpleAction.new_stateful(
+            'pronunciation', None, self.settings.get_value('show-pronunciation'))
+        pronunciation_action.connect('change-state', self.on_pronunciation)
+        self.add_action(pronunciation_action)
+
         preferences_action = Gio.SimpleAction.new('preferences', None)
         preferences_action.connect('activate', self.on_preferences)
         self.set_accels_for_action('app.preferences', ['<Primary>comma'])
@@ -100,6 +105,15 @@ class Dialect(Gtk.Application):
         quit_action.connect('activate', self.on_quit)
         self.set_accels_for_action('app.quit', ['<Primary>Q'])
         self.add_action(quit_action)
+
+    def on_pronunciation(self, action, value):
+        """ Update show pronunciation setting """
+        action.set_state(value)
+        self.settings.set_boolean('show-pronunciation', value)
+
+        # Update UI
+        if self.window.trans_pronunciation is not None:
+            self.window.pronunciation_revealer.set_reveal_child(value)
 
     def on_preferences(self, _action, _param):
         """ Show preferences window """
