@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-08 02:54+0530\n"
+"POT-Creation-Date: 2020-12-15 13:20+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -67,50 +67,63 @@ msgid "gi-lom"
 msgstr ""
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:46
-msgid "Added a search provider for GNOME"
+msgid "Added a shortcuts window"
 msgstr ""
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:47
-msgid "Added support for \"Did you mean\" suggestions"
+msgid "Added Indonesian translation"
 msgstr ""
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:48
-msgid "Added a Ctrl+Q shortcut to quit"
+msgid "Added Portugese (BR) translation"
 msgstr ""
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:49
-msgid "Added Hungarian translation"
-msgstr ""
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:50
-msgid "Added Italian translation"
-msgstr ""
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:51
-msgid "Added Persian translation"
-msgstr ""
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:52
-msgid "Added Russian translation"
-msgstr ""
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:53
-msgid "Added Turkish translation"
-msgstr ""
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:54
-msgid "Fixed some issues with the icon"
-msgstr ""
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:55
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:65
 msgid "Fixed several bugs"
 msgstr ""
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:56
-msgid "Made some minor UI improvements"
+msgid "Added a search provider for GNOME"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:57
+msgid "Added support for \"Did you mean\" suggestions"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:58
+msgid "Added a Ctrl+Q shortcut to quit"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:59
+msgid "Added Hungarian translation"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:60
+msgid "Added Italian translation"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:61
+msgid "Added Persian translation"
 msgstr ""
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:62
+msgid "Added Russian translation"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:63
+msgid "Added Turkish translation"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:64
+msgid "Fixed some issues with the icon"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:66
+msgid "Made some minor UI improvements"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:72
 msgid "Initial release."
 msgstr ""
 
@@ -128,14 +141,18 @@ msgid "translator-credits"
 msgstr ""
 
 #: data/resources/menu.ui:7
+msgid "Show Pronunciation"
+msgstr ""
+
+#: data/resources/menu.ui:14
 msgid "Preferences"
 msgstr ""
 
-#: data/resources/menu.ui:11
+#: data/resources/menu.ui:18
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: data/resources/menu.ui:15
+#: data/resources/menu.ui:22
 msgid "About Dialect"
 msgstr ""
 
@@ -199,7 +216,7 @@ msgctxt "shortcuts window"
 msgid "Quit"
 msgstr ""
 
-#: data/resources/window.ui:77 data/resources/window.ui:529
+#: data/resources/window.ui:77 data/resources/window.ui:563
 msgid "Switch languages"
 msgstr ""
 
@@ -211,62 +228,62 @@ msgstr ""
 msgid "Next translation"
 msgstr ""
 
-#: data/resources/window.ui:302
+#: data/resources/window.ui:336
 msgid "Clear"
 msgstr ""
 
-#: data/resources/window.ui:317
+#: data/resources/window.ui:351
 msgid "Paste"
 msgstr ""
 
-#: data/resources/window.ui:329
+#: data/resources/window.ui:363
 msgid "Translate"
 msgstr ""
 
-#: data/resources/window.ui:406
+#: data/resources/window.ui:440
 msgid "Translation in progress..."
 msgstr ""
 
-#: data/resources/window.ui:414
+#: data/resources/window.ui:448
 msgid "Translation seems to have failed"
 msgstr ""
 
-#: data/resources/window.ui:425
+#: data/resources/window.ui:459
 msgid "Listen"
 msgstr ""
 
-#: data/resources/window.ui:440
+#: data/resources/window.ui:474
 msgid "Copy"
 msgstr ""
 
-#: data/resources/window.ui:620
+#: data/resources/window.ui:654
 msgid "No network connection detected."
 msgstr ""
 
-#: src/window.py:139
+#: src/window.py:143
 msgid "A network issue has occured. Retry?"
 msgstr ""
 
-#: src/window.py:140
+#: src/window.py:144
 msgid ""
 "A network issue has occured.\n"
 "Please try again."
 msgstr ""
 
-#: src/window.py:357 src/window.py:361
+#: src/window.py:361 src/window.py:365
 msgid "Auto"
 msgstr ""
 
-#: src/window.py:613
+#: src/window.py:617
 msgid "5000 characters limit reached!"
 msgstr ""
 
-#: src/window.py:689
+#: src/window.py:693
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
 msgstr ""
 
-#: src/window.py:704
+#: src/window.py:708
 msgid "Did you mean: "
 msgstr ""
