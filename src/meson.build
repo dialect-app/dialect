@@ -9,6 +9,11 @@ configure_file(
   install_dir: get_option('bindir')
 )
 
+launcher = join_paths(meson.build_root(), 'src', meson.project_name())
+run_target('run',
+  command: [launcher]
+)
+
 subdir('search_provider')
 
 # Python sources

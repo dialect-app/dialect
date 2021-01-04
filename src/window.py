@@ -4,10 +4,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import threading
+from gettext import gettext as _
 from tempfile import NamedTemporaryFile
 
-from gettext import gettext as _
-from gi.repository import Gdk, Gio, GLib, Gtk, Gst, Handy
+from gi.repository import Gdk, GLib, Gtk, Gst, Handy
 
 from googletrans import LANGUAGES, Translator
 from gtts import gTTS, lang
@@ -148,8 +148,10 @@ class DialectWindow(Handy.ApplicationWindow):
             True
         )
         if self.lang_speech:
-            self.voice_btn.set_sensitive(self.dest_lang_selector.get_property('selected') in self.lang_speech
-                                         and dest_text != '')
+            self.voice_btn.set_sensitive(
+                self.dest_lang_selector.get_property('selected') in self.lang_speech
+                and dest_text != ''
+            )
         else:
             self.voice_btn.set_sensitive(dest_text != '')
 
@@ -182,7 +184,7 @@ class DialectWindow(Handy.ApplicationWindow):
         # Left lang selector
         self.src_lang_selector = DialectLangSelector()
         self.src_lang_selector.connect('notify::selected',
-                                        self.on_src_lang_changed)
+                                       self.on_src_lang_changed)
         # Set popover selector to button
         self.src_lang_btn.set_popover(self.src_lang_selector)
         self.src_lang_selector.set_relative_to(self.src_lang_btn)
@@ -190,7 +192,7 @@ class DialectWindow(Handy.ApplicationWindow):
         # Right lang selector
         self.dest_lang_selector = DialectLangSelector()
         self.dest_lang_selector.connect('notify::selected',
-                                         self.on_dest_lang_changed)
+                                        self.on_dest_lang_changed)
         # Set popover selector to button
         self.dest_lang_btn.set_popover(self.dest_lang_selector)
         self.dest_lang_selector.set_relative_to(self.dest_lang_btn)
@@ -334,8 +336,10 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.dest_buffer.get_end_iter(),
                 True
             )
-            self.voice_btn.set_sensitive(self.dest_lang_selector.get_property('selected') in self.lang_speech
-                                         and dest_text != '')
+            self.voice_btn.set_sensitive(
+                self.dest_lang_selector.get_property('selected') in self.lang_speech
+                and dest_text != ''
+            )
             self.voice_btn.set_image(self.voice_image)
             self.voice_spinner.stop()
 
@@ -436,7 +440,7 @@ class DialectWindow(Handy.ApplicationWindow):
             'Text': [src_text, dest_text]
         }
         if self.current_history > 0:
-            del self.history[:self.current_history]
+            del self.history[: self.current_history]
             self.current_history = 0
         if len(self.history) > 0:
             self.return_btn.set_sensitive(True)
@@ -605,8 +609,10 @@ class DialectWindow(Handy.ApplicationWindow):
         sensitive = buffer.get_char_count() != 0
         self.copy_btn.set_sensitive(sensitive)
         if not self.voice_loading and self.lang_speech:
-            self.voice_btn.set_sensitive(self.dest_lang_selector.get_property('selected') in self.lang_speech
-                                         and sensitive)
+            self.voice_btn.set_sensitive(
+                self.dest_lang_selector.get_property('selected') in self.lang_speech
+                and sensitive
+            )
         elif not self.voice_loading and not self.lang_speech:
             self.voice_btn.set_sensitive(sensitive)
 
@@ -635,9 +641,9 @@ class DialectWindow(Handy.ApplicationWindow):
         self.reset_return_forward_btns()
         lang_hist = self.history[self.current_history]
         self.src_lang_selector.set_property('selected',
-                                             lang_hist['Languages'][0])
+                                            lang_hist['Languages'][0])
         self.dest_lang_selector.set_property('selected',
-                                              lang_hist['Languages'][1])
+                                             lang_hist['Languages'][1])
         self.src_buffer.set_text(lang_hist['Text'][0])
         self.dest_buffer.set_text(lang_hist['Text'][1])
 
@@ -650,10 +656,12 @@ class DialectWindow(Handy.ApplicationWindow):
             self.src_buffer.get_end_iter(),
             True
         )
-        if (self.history[self.current_history]['Languages'][0] == src_language and
-                self.history[self.current_history]['Languages'][1] == dest_language and
-                self.history[self.current_history]['Text'][0] == src_text and
-                not self.trans_failed):
+        if (
+            self.history[self.current_history]['Languages'][0] == src_language
+            and self.history[self.current_history]['Languages'][1] == dest_language
+            and self.history[self.current_history]['Text'][0] == src_text
+            and not self.trans_failed
+        ):
             return True
         return False
 
@@ -731,7 +739,7 @@ class DialectWindow(Handy.ApplicationWindow):
                         src_language = src_language[0]
                     GLib.idle_add(self.src_lang_selector.set_property,
                                   'selected', src_language)
-                    if not src_language in self.src_langs:
+                    if src_language not in self.src_langs:
                         self.src_langs[0] = src_language
                 except Exception:
                     self.trans_failed = True

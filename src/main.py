@@ -5,6 +5,7 @@
 
 # Initial setup
 import sys
+from gettext import gettext as _
 
 import gi
 gi.require_version('Gdk', '3.0')
@@ -12,7 +13,6 @@ gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
 gi.require_version('Handy', '1')
 
-from gettext import gettext as _
 from gi.repository import Gdk, Gio, GLib, Gtk, Gst, Handy
 
 from dialect.define import APP_ID, RES_PATH
@@ -21,7 +21,6 @@ from dialect.preferences import DialectPreferencesWindow
 
 
 class Dialect(Gtk.Application):
-
     def __init__(self, version):
         Gtk.Application.__init__(
             self,
@@ -84,7 +83,8 @@ class Dialect(Gtk.Application):
         """ Setup menu actions """
 
         pronunciation_action = Gio.SimpleAction.new_stateful(
-            'pronunciation', None, self.settings.get_value('show-pronunciation'))
+            'pronunciation', None, self.settings.get_value('show-pronunciation')
+        )
         pronunciation_action.connect('change-state', self.on_pronunciation)
         self.add_action(pronunciation_action)
 
