@@ -1,17 +1,17 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the dialect package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# سهیل خانعلی‌پور <soheilkhanalipur@tutanota.com>, 2020.
+# Soheil Khanalipur <soheil@disroot.org>, 2020.
+# Soheil Khanalipur <soheil@disroot.org>, 2020.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-12-15 13:20+0530\n"
-"PO-Revision-Date: 2020-12-08 22:40+0330\n"
-"Last-Translator: سهیل خانعلی‌پور <soheilkhanalipur@tutanota.com>\n"
-"Language-Team: Persian <soheilkhanalipur@tutanota.com>\n"
+"PO-Revision-Date: 2020-12-17 14:01+0330\n"
+"Last-Translator: Soheil Khanalipur <soheil@disroot.org>\n"
+"Language-Team: Persian <soheil@disroot.org>\n"
 "Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -69,19 +69,16 @@ msgid "gi-lom"
 msgstr "gi-lom"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:46
-#, fuzzy
 msgid "Added a shortcuts window"
-msgstr "یک پایندان پایش+ض برای برونرفت افزوده شد"
+msgstr "یک پنجره پایندان افزوده شد"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:47
-#, fuzzy
 msgid "Added Indonesian translation"
-msgstr "برگردان پارسی افزوده شد"
+msgstr "برگردان اندونزیایی افزوده شد"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:48
-#, fuzzy
 msgid "Added Portugese (BR) translation"
-msgstr "برگردان پارسی افزوده شد"
+msgstr "برگردان پرتغالی افزوده شد"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:49
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:65
@@ -147,7 +144,7 @@ msgstr "سهیل خانعلی‌پور"
 
 #: data/resources/menu.ui:7
 msgid "Show Pronunciation"
-msgstr ""
+msgstr "نمایش آوایش"
 
 #: data/resources/menu.ui:14
 msgid "Preferences"
