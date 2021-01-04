@@ -61,6 +61,17 @@ meson builddir --prefix=/usr/local
 sudo ninja -C builddir install
 ```
 
+For testing and development purposes, you may run a local build:
+
+```bash
+git clone https://github.com/gi-lom/dialect.git
+cd dialect
+meson builddir
+meson configure _build -Dprefix=$(pwd)/builddir/testdir
+ninja -C builddir install
+ninja -C builddir run
+```
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
