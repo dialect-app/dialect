@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-15 13:20+0530\n"
+"POT-Creation-Date: 2021-01-04 18:12+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,8 +19,8 @@ msgstr ""
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:48
-#: src/main.py:69
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:47
+#: src/main.py:68
 msgid "Dialect"
 msgstr ""
 
@@ -270,20 +270,20 @@ msgid ""
 "Please try again."
 msgstr ""
 
-#: src/window.py:361 src/window.py:365
+#: src/window.py:365 src/window.py:369
 msgid "Auto"
 msgstr ""
 
-#: src/window.py:617
+#: src/window.py:623
 msgid "5000 characters limit reached!"
 msgstr ""
 
-#: src/window.py:693
+#: src/window.py:701
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
 msgstr ""
 
-#: src/window.py:708
+#: src/window.py:716
 msgid "Did you mean: "
 msgstr ""
