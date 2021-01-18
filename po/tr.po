@@ -2,13 +2,12 @@
 # This file is distributed under the same license as the dialect package.
 # Bedirhan Tuhana GAYRETLİ <v30xythedev@gmail.com>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-04 18:12+0530\n"
-"PO-Revision-Date: 2020-10-21 16:17+0300\n"
+"PO-Revision-Date: 2021-01-18 16:01+0300\n"
 "Last-Translator: Bedirhan Tuhana GAYRETLİ <v30xythedev@gmail.com>\n"
 "Language-Team: Turkish <LL@li.org>\n"
 "Language: tr\n"
@@ -31,11 +30,11 @@ msgstr "GNOME için çeviri uygulaması"
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
 msgid "translate;translation;"
-msgstr "çevir;çeviri"
+msgstr "çevir;çeviri;"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:9 data/resources/about.ui:12
 msgid "A translation app for GNOME based on Google Translate."
-msgstr "GNOME için Google Çeviri tabanlı çeviri uygulaması"
+msgstr "GNOME için Google Çeviri tabanlı çeviri uygulaması."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
@@ -67,71 +66,64 @@ msgstr "gi-lom"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:46
 msgid "Added a shortcuts window"
-msgstr ""
+msgstr "Kısayollar penceresi eklendi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:47
-#, fuzzy
 msgid "Added Indonesian translation"
-msgstr "Önceki çeviri"
+msgstr "Endonezce çeviri eklendi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:48
-#, fuzzy
 msgid "Added Portugese (BR) translation"
-msgstr "Önceki çeviri"
+msgstr "Portekizce (BR) çeviri eklendi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:49
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:65
 msgid "Fixed several bugs"
-msgstr ""
+msgstr "Bazı hatalar düzeltildi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:56
 msgid "Added a search provider for GNOME"
-msgstr ""
+msgstr "GNOME için arama sağlayıcısı eklendi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:57
 msgid "Added support for \"Did you mean\" suggestions"
-msgstr ""
+msgstr "\"Şunu mu demek istediniz\" için öneri desteği eklendi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:58
 msgid "Added a Ctrl+Q shortcut to quit"
-msgstr ""
+msgstr "Çıkmak için Ctrl+Q kısayolu eklendş"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:59
-#, fuzzy
 msgid "Added Hungarian translation"
-msgstr "Sonraki çeviri"
+msgstr "Macarca çeviri eklendi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:60
-#, fuzzy
 msgid "Added Italian translation"
-msgstr "Sonraki çeviri"
+msgstr "İtalyanca çeviri eklendi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:61
-#, fuzzy
 msgid "Added Persian translation"
-msgstr "Önceki çeviri"
+msgstr "Farsça çeviri eklendi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:62
-#, fuzzy
 msgid "Added Russian translation"
-msgstr "Önceki çeviri"
+msgstr "Rusya çeviri eklendi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:63
-#, fuzzy
 msgid "Added Turkish translation"
-msgstr "Önceki çeviri"
+msgstr "Türkçe çeviri eklendi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:64
 msgid "Fixed some issues with the icon"
-msgstr ""
+msgstr "İcon ile ilgili sorunlar düzeltildi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:66
 msgid "Made some minor UI improvements"
-msgstr ""
+msgstr "Bazı arayüz iyileştirmeleri yapıldı"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:72
 msgid "Initial release."
-msgstr ""
+msgstr "İlk sürüm."
 
 #: data/resources/about.ui:11
 msgid "Copyright 2020 gi-lom"
@@ -148,7 +140,7 @@ msgstr "Bedirhan Tuhana"
 
 #: data/resources/menu.ui:7
 msgid "Show Pronunciation"
-msgstr ""
+msgstr "Telaffuzunu göster"
 
 #: data/resources/menu.ui:14
 msgid "Preferences"
@@ -156,11 +148,11 @@ msgstr "Tercihler"
 
 #: data/resources/menu.ui:18
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Klavye Kısayolları"
 
 #: data/resources/menu.ui:22
 msgid "About Dialect"
-msgstr "Dialect hakkında"
+msgstr "Dialect Hakkında"
 
 #: data/resources/preferences.ui:15
 msgid "Appearance"
@@ -184,7 +176,7 @@ msgstr "Uyarı: IP adresiniz kötüye kullanım sebebiyle yasaklanabilir."
 
 #: data/resources/preferences.ui:54
 msgid "Translation Shortcut"
-msgstr "Hızlı çevir"
+msgstr "Çeviri Kısayolu"
 
 #: data/resources/preferences.ui:55
 msgid "Unselected choice will be used for line break."
@@ -210,16 +202,14 @@ msgstr ""
 #: data/resources/shortcuts-window.ui:13
 msgctxt "shortcuts window"
 msgid "General"
-msgstr ""
+msgstr "Genel"
 
 #: data/resources/shortcuts-window.ui:17
-#, fuzzy
 msgctxt "shortcuts window"
 msgid "Preferences"
 msgstr "Tercihler"
 
 #: data/resources/shortcuts-window.ui:24
-#, fuzzy
 msgctxt "shortcuts window"
 msgid "Translate"
 msgstr "Çevir"
@@ -227,7 +217,7 @@ msgstr "Çevir"
 #: data/resources/shortcuts-window.ui:31
 msgctxt "shortcuts window"
 msgid "Quit"
-msgstr ""
+msgstr "Çıkış"
 
 #: data/resources/window.ui:77 data/resources/window.ui:563
 msgid "Switch languages"
@@ -271,7 +261,7 @@ msgstr "Kopyala"
 
 #: data/resources/window.ui:654
 msgid "No network connection detected."
-msgstr "İnternet bağlantısı bulunamadı"
+msgstr "Ağ bağlantısı algılanmadı."
 
 #: src/window.py:143
 msgid "A network issue has occured. Retry?"
