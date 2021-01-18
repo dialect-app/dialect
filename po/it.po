@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-28 09:44-0500\n"
-"PO-Revision-Date: 2020-10-28 20:06+0100\n"
+"POT-Creation-Date: 2021-01-04 18:12+0530\n"
+"PO-Revision-Date: 2020-12-08 10:06+0100\n"
 "Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <LL@li.org>\n"
 "Language: it\n"
@@ -19,7 +19,7 @@ msgstr ""
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:47
-#: src/main.py:67
+#: src/main.py:68
 msgid "Dialect"
 msgstr "Dialect"
 
@@ -65,6 +65,71 @@ msgstr "Pulsanti degli appunti"
 msgid "gi-lom"
 msgstr "gi-lom"
 
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:46
+#, fuzzy
+msgid "Added a shortcuts window"
+msgstr "Aggiunta una scorciatoia Ctrl + Q per uscire"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:47
+#, fuzzy
+msgid "Added Indonesian translation"
+msgstr "Aggiunta traduzione in Persiano"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:48
+#, fuzzy
+msgid "Added Portugese (BR) translation"
+msgstr "Aggiunta traduzione in Persiano"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:49
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:65
+msgid "Fixed several bugs"
+msgstr "Risolti diversi bug"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:56
+msgid "Added a search provider for GNOME"
+msgstr "Aggiunto un provider di ricerca per GNOME"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:57
+msgid "Added support for \"Did you mean\" suggestions"
+msgstr "Aggiunto supporto per i suggerimenti di \"Forse cercavi\""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:58
+msgid "Added a Ctrl+Q shortcut to quit"
+msgstr "Aggiunta una scorciatoia Ctrl + Q per uscire"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:59
+msgid "Added Hungarian translation"
+msgstr "Aggiunta traduzione in Ungherese"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:60
+msgid "Added Italian translation"
+msgstr "Aggiunta traduzione in Italiano"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:61
+msgid "Added Persian translation"
+msgstr "Aggiunta traduzione in Persiano"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:62
+msgid "Added Russian translation"
+msgstr "Aggiunta traduzione in Russo"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:63
+msgid "Added Turkish translation"
+msgstr "Aggiunta traduzione in Turco"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:64
+msgid "Fixed some issues with the icon"
+msgstr "Risolti alcuni problemi con l'icona"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:66
+msgid "Made some minor UI improvements"
+msgstr ""
+"Sono stati apportati alcuni miglioramenti minori all'interfaccia utente"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:72
+msgid "Initial release."
+msgstr "Versione iniziale."
+
 #: data/resources/about.ui:11
 msgid "Copyright 2020 gi-lom"
 msgstr "Copyright 2020 gi-lom"
@@ -79,58 +144,87 @@ msgid "translator-credits"
 msgstr "Albano Battistella"
 
 #: data/resources/menu.ui:7
+msgid "Show Pronunciation"
+msgstr ""
+
+#: data/resources/menu.ui:14
 msgid "Preferences"
 msgstr "Preferenze"
 
-#: data/resources/menu.ui:11
+#: data/resources/menu.ui:18
+msgid "Keyboard Shortcuts"
+msgstr "Scorciatoie da Tastiera"
+
+#: data/resources/menu.ui:22
 msgid "About Dialect"
 msgstr "Informazioni su Dialect"
 
-#: data/resources/preferences.ui:14
+#: data/resources/preferences.ui:15
 msgid "Appearance"
 msgstr "Aspetto"
 
-#: data/resources/preferences.ui:18
+#: data/resources/preferences.ui:19
 msgid "Dark Mode"
 msgstr "Modalità Scura"
 
-#: data/resources/preferences.ui:34
+#: data/resources/preferences.ui:35
 msgid "Behavior"
 msgstr "Comportamento"
 
-#: data/resources/preferences.ui:38
+#: data/resources/preferences.ui:39
 msgid "Live Translation"
 msgstr "Traduzione dal vivo"
 
-#: data/resources/preferences.ui:39
+#: data/resources/preferences.ui:40
 msgid "Warning: Your IP address may get banned for API abuse."
-msgstr "Attenzione: il tuo indirizzo IP potrebbe essere bandito per abuso di API"
+msgstr ""
+"Attenzione: il tuo indirizzo IP potrebbe essere bandito per abuso di API"
 
-#: data/resources/preferences.ui:53
+#: data/resources/preferences.ui:54
 msgid "Translation Shortcut"
 msgstr "Scorciatoia di Traduzione"
 
-#: data/resources/preferences.ui:54
+#: data/resources/preferences.ui:55
 msgid "Unselected choice will be used for line break."
 msgstr "La scelta non selezionata verrà utilizzata per l'interruzione di linea"
 
-#: data/resources/preferences.ui:62
+#: data/resources/preferences.ui:63
 msgid "Search Provider"
 msgstr "Cerca Provider"
 
-#: data/resources/preferences.ui:63
+#: data/resources/preferences.ui:64
 msgid ""
 "Dialect has a GNOME Search Provider. Enabling or disabling Live Translation "
 "here will also enable or disable the GNOME Search Provider. This is to "
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
-"Dialect ha un provider di ricerca GNOME. Abilitare o disabilitare la traduzione dal vivo "
-"qui abiliterà o disabiliterà anche il provider di ricerca GNOME. Questo è per "
-"ridurre la possibilità di abuso di API. Assicurati inoltre che la funzione sia "
-"abilitato nelle impostazioni di GNOME."
+"Dialect ha un provider di ricerca GNOME. Abilitare o disabilitare la "
+"traduzione dal vivo qui abiliterà o disabiliterà anche il provider di "
+"ricerca GNOME. Questo è per ridurre la possibilità di abuso di API. "
+"Assicurati inoltre che la funzione sia abilitato nelle impostazioni di GNOME."
 
-#: data/resources/window.ui:77 data/resources/window.ui:529
+#: data/resources/shortcuts-window.ui:13
+msgctxt "shortcuts window"
+msgid "General"
+msgstr "Generale"
+
+#: data/resources/shortcuts-window.ui:17
+msgctxt "shortcuts window"
+msgid "Preferences"
+msgstr "Preferenze"
+
+#: data/resources/shortcuts-window.ui:24
+msgctxt "shortcuts window"
+msgid "Translate"
+msgstr "Traduci"
+
+#: data/resources/shortcuts-window.ui:31
+msgctxt "shortcuts window"
+msgid "Quit"
+msgstr "Esci"
+
+#: data/resources/window.ui:77 data/resources/window.ui:563
 msgid "Switch languages"
 msgstr "Cambia lingua"
 
@@ -142,43 +236,43 @@ msgstr "Traduzione precedente"
 msgid "Next translation"
 msgstr "Prossima traduzione"
 
-#: data/resources/window.ui:302
+#: data/resources/window.ui:336
 msgid "Clear"
 msgstr "Pulisci"
 
-#: data/resources/window.ui:317
+#: data/resources/window.ui:351
 msgid "Paste"
 msgstr "Incolla"
 
-#: data/resources/window.ui:329
+#: data/resources/window.ui:363
 msgid "Translate"
 msgstr "Traduci"
 
-#: data/resources/window.ui:406
+#: data/resources/window.ui:440
 msgid "Translation in progress..."
 msgstr "Traduzione in corso..."
 
-#: data/resources/window.ui:414
+#: data/resources/window.ui:448
 msgid "Translation seems to have failed"
 msgstr "La traduzione sembra essere fallita"
 
-#: data/resources/window.ui:425
+#: data/resources/window.ui:459
 msgid "Listen"
 msgstr "Ascolta"
 
-#: data/resources/window.ui:440
+#: data/resources/window.ui:474
 msgid "Copy"
 msgstr "Copia"
 
-#: data/resources/window.ui:620
+#: data/resources/window.ui:654
 msgid "No network connection detected."
 msgstr "Nessuna connessione di rete rilevata."
 
-#: src/window.py:139
+#: src/window.py:143
 msgid "A network issue has occured. Retry?"
 msgstr "Si è verificato un problema di rete. Riprovare?"
 
-#: src/window.py:140
+#: src/window.py:144
 msgid ""
 "A network issue has occured.\n"
 "Please try again."
@@ -186,15 +280,15 @@ msgstr ""
 "Si è verificato un problema di rete.\n"
 "Per favore riprova."
 
-#: src/window.py:357 src/window.py:361
+#: src/window.py:365 src/window.py:369
 msgid "Auto"
 msgstr "Automatico"
 
-#: src/window.py:611
+#: src/window.py:623
 msgid "5000 characters limit reached!"
 msgstr "Limite di 5000 caratteri raggiunto!"
 
-#: src/window.py:687
+#: src/window.py:701
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
@@ -202,7 +296,7 @@ msgstr ""
 "Traduzione non riuscita.\n"
 "Verifica la presenza di problemi di rete."
 
-#: src/window.py:702
+#: src/window.py:716
 msgid "Did you mean: "
 msgstr "Forse cercavi:"
 

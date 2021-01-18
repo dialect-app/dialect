@@ -10,7 +10,8 @@
         "--device=dri",
         "--socket=fallback-x11",
         "--socket=wayland",
-        "--socket=pulseaudio"
+        "--socket=pulseaudio",
+        "--own-name=com.github.gi_lom.dialect.SearchProvider"
     ],
     "modules" : [
         "pypi-dependencies.json",
@@ -32,8 +33,8 @@
                 {
                     "type" : "git",
                     "url" : "https://gitlab.gnome.org/GNOME/libhandy.git",
-                    "tag" : "1.0.0",
-                    "commit" : "94313c206258860b2428712e7ece1d02c5177857"
+                    "tag" : "1.0.2",
+                    "commit" : "465c00f8f80c27330be494ed7c0ba2ffe26321c4"
                 }
             ]
         },

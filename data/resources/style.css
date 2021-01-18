@@ -12,6 +12,11 @@
   border-right: 1px solid @borders;
 }
 
+.pronunciation {
+  border: 1px solid @borders;
+  border-top: 0;
+}
+
 .translation-frame  {
   background: @theme_base_color;
   border-top-left-radius: 9px;

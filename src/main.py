@@ -5,6 +5,7 @@
 
 # Initial setup
 import sys
+from gettext import gettext as _
 
 import gi
 gi.require_version('Gdk', '3.0')
@@ -12,7 +13,6 @@ gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
 gi.require_version('Handy', '1')
 
-from gettext import gettext as _
 from gi.repository import Gdk, Gio, GLib, Gtk, Gst, Handy
 
 from dialect.define import APP_ID, RES_PATH
@@ -21,7 +21,6 @@ from dialect.preferences import DialectPreferencesWindow
 
 
 class Dialect(Gtk.Application):
-
     def __init__(self, version):
         Gtk.Application.__init__(
             self,
@@ -33,6 +32,7 @@ class Dialect(Gtk.Application):
         self.version = version
         self.window = None
         self.launch_text = ''
+        self.settings = Gio.Settings.new(APP_ID)
 
         # Add --text command line option
         self.add_main_option('text', b't', GLib.OptionFlags.NONE,
@@ -45,7 +45,8 @@ class Dialect(Gtk.Application):
                 application=self,
                 # Translators: Do not translate the app name!
                 title=_('Dialect'),
-                text=self.launch_text
+                text=self.launch_text,
+                settings=self.settings
             )
         self.window.present()
 
@@ -81,19 +82,57 @@ class Dialect(Gtk.Application):
     def setup_actions(self):
         """ Setup menu actions """
 
+        pronunciation_action = Gio.SimpleAction.new_stateful(
+            'pronunciation', None, self.settings.get_value('show-pronunciation')
+        )
+        pronunciation_action.connect('change-state', self.on_pronunciation)
+        self.add_action(pronunciation_action)
+
         preferences_action = Gio.SimpleAction.new('preferences', None)
         preferences_action.connect('activate', self.on_preferences)
+        self.set_accels_for_action('app.preferences', ['<Primary>comma'])
         self.add_action(preferences_action)
+
+        shortcuts_action = Gio.SimpleAction.new('shortcuts', None)
+        shortcuts_action.connect('activate', self.on_shortcuts)
+        self.add_action(shortcuts_action)
 
         about_action = Gio.SimpleAction.new('about', None)
         about_action.connect('activate', self.on_about)
         self.add_action(about_action)
 
+        quit_action = Gio.SimpleAction.new('quit', None)
+        quit_action.connect('activate', self.on_quit)
+        self.set_accels_for_action('app.quit', ['<Primary>Q'])
+        self.add_action(quit_action)
+
+    def on_pronunciation(self, action, value):
+        """ Update show pronunciation setting """
+        action.set_state(value)
+        self.settings.set_boolean('show-pronunciation', value)
+
+        # Update UI
+        if self.window.trans_pronunciation is not None:
+            self.window.pronunciation_revealer.set_reveal_child(value)
+
     def on_preferences(self, _action, _param):
         """ Show preferences window """
-        window = DialectPreferencesWindow()
+        window = DialectPreferencesWindow(settings=self.settings)
         window.set_transient_for(self.window)
         window.present()
+
+    def on_shortcuts(self, _action, _param):
+        """Launch the Keyboard Shortcuts window."""
+        builder = Gtk.Builder.new_from_resource(f'{RES_PATH}/shortcuts-window.ui')
+        translate_shortcut = builder.get_object('translate_shortcut')
+        translate_shortcut.set_visible(not self.settings.get_boolean('live-translation'))
+        if self.settings.get_value('translate-accel'):
+            translate_shortcut.set_property('accelerator', 'Return')
+        else:
+            translate_shortcut.set_property('accelerator', '<Primary>Return')
+        shortcuts_window = builder.get_object('shortcuts')
+        shortcuts_window.set_transient_for(self.window)
+        shortcuts_window.show()
 
     def on_about(self, _action, _param):
         """ Show about dialog """
@@ -104,6 +143,9 @@ class Dialect(Gtk.Application):
         about.set_version(self.version)
         about.connect('response', lambda dialog, response: dialog.destroy())
         about.present()
+
+    def on_quit(self, _action, _param):
+        self.quit()
 
 
 def main(version):

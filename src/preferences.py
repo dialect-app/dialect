@@ -7,7 +7,7 @@ import os
 
 from gi.repository import Gio, Gtk, Handy
 
-from dialect.define import APP_ID, RES_PATH
+from dialect.define import RES_PATH
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/preferences.ui')
@@ -20,11 +20,11 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
     translate_accel = Gtk.Template.Child()
     search_provider = Gtk.Template.Child()
 
-    def __init__(self, **kwargs):
+    def __init__(self, settings, **kwargs):
         super().__init__(**kwargs)
 
         # Get GSettings object
-        self.settings = Gio.Settings.new(APP_ID)
+        self.settings = settings
 
         self.setup()
 
@@ -35,8 +35,8 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         # Setup translate accel combo row
         model = Gio.ListStore.new(Handy.ValueObject)
         options = ['Ctrl + Enter', 'Enter']
-        for i, o in enumerate(options):
-            model.insert(i, Handy.ValueObject.new(o))
+        for count, value in enumerate(options):
+            model.insert(count, Handy.ValueObject.new(value))
         self.translate_accel.bind_name_model(model,
                                              Handy.ValueObject.dup_string)
 
@@ -59,10 +59,10 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         if os.getenv('XDG_CURRENT_DESKTOP') != 'GNOME':
             self.search_provider.hide()
 
-    def _toggle_dark_mode(self, switch, active):
+    def _toggle_dark_mode(self, switch, _active):
         gtk_settings = Gtk.Settings.get_default()
         active = switch.get_active()
         gtk_settings.set_property('gtk-application-prefer-dark-theme', active)
 
-    def _toggle_accel_pref(self, switch, active):
+    def _toggle_accel_pref(self, switch, _active):
         self.translate_accel.set_sensitive(not switch.get_active())

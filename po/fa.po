@@ -1,44 +1,44 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the dialect package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# سهیل خانعلی‌پور <soheilkhanalipur@tutanota.com>, 2020.
+# Soheil Khanalipur <soheil@disroot.org>, 2020.
+# Soheil Khanalipur <soheil@disroot.org>, 2020.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-28 09:44-0500\n"
-"PO-Revision-Date: 2020-10-25 20:04+0330\n"
-"Last-Translator: سهیل خانعلی‌پور <soheilkhanalipur@tutanota.com>\n"
-"Language-Team: فارسی <soheilkhanalipur@tutanota.com>\n"
+"POT-Creation-Date: 2021-01-04 18:12+0530\n"
+"PO-Revision-Date: 2020-12-17 14:01+0330\n"
+"Last-Translator: Soheil Khanalipur <soheil@disroot.org>\n"
+"Language-Team: Persian <soheil@disroot.org>\n"
 "Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0\n"
-"X-Generator: Gtranslator 3.30.1\n"
+"X-Generator: Gtranslator 3.36.0\n"
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:47
-#: src/main.py:67
+#: src/main.py:68
 msgid "Dialect"
 msgstr "دایلکت"
 
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
 msgid "A translation app for GNOME"
-msgstr "یک برنامه ترجمه برای گنوم"
+msgstr "یک برنامه ترگمان برای گنوم"
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
 msgid "translate;translation;"
-msgstr "ترجمه;ترجمان;"
+msgstr "ترگومه;ترگمان;"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:9 data/resources/about.ui:12
 msgid "A translation app for GNOME based on Google Translate."
-msgstr "یک برنامه ترجمه برای گنوم بر پایه ترجمان گوگل."
+msgstr "یک برنامه ترگمان برای گنوم بر پایه ترگومه گوگل."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
@@ -46,16 +46,15 @@ msgstr "ویژگی‌ها"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
 msgid "Text translation up to 5000 chars"
-msgstr "ترجمه نوشته تا ۵۰۰۰ واج"
+msgstr "ترگومه نوشتار تا ۵۰۰۰ واج"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid "Text to speech"
 msgstr "نوشتار به گفتار"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
-#, fuzzy
 msgid "Translation history"
-msgstr "ترجمه روان است..."
+msgstr "پیشینه ترگمان"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Automatic language detection"
@@ -69,149 +68,235 @@ msgstr "دکمه‌های بریده‌دان"
 msgid "gi-lom"
 msgstr "gi-lom"
 
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:46
+msgid "Added a shortcuts window"
+msgstr "یک پنجره پایندان افزوده شد"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:47
+msgid "Added Indonesian translation"
+msgstr "برگردان اندونزیایی افزوده شد"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:48
+msgid "Added Portugese (BR) translation"
+msgstr "برگردان پرتغالی افزوده شد"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:49
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:65
+msgid "Fixed several bugs"
+msgstr "چند ایراد درست شد"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:56
+msgid "Added a search provider for GNOME"
+msgstr "یک فراهم‌آور جستجوی گنوم افزوده شد"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:57
+msgid "Added support for \"Did you mean\" suggestions"
+msgstr "پشتیبانی از پیشنهاد «شاید این را می‌خواستید» افزوده شد"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:58
+msgid "Added a Ctrl+Q shortcut to quit"
+msgstr "یک پایندان پایش+ض برای برونرفت افزوده شد"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:59
+msgid "Added Hungarian translation"
+msgstr "برگردان مجارستانی افزوده شد"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:60
+msgid "Added Italian translation"
+msgstr "برگردان ایتالیایی افزوده شد"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:61
+msgid "Added Persian translation"
+msgstr "برگردان پارسی افزوده شد"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:62
+msgid "Added Russian translation"
+msgstr "برگردان روسی افزوده شد"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:63
+msgid "Added Turkish translation"
+msgstr "برگردان ترکی افزوده شد"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:64
+msgid "Fixed some issues with the icon"
+msgstr "برخی از ایرادهای نماد درست شد"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:66
+msgid "Made some minor UI improvements"
+msgstr "گشایش برخی از اندک پیشرفت‌های یوآی"
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:72
+msgid "Initial release."
+msgstr "پخش یکم."
+
 #: data/resources/about.ui:11
 msgid "Copyright 2020 gi-lom"
 msgstr "کپی‌رایت ۲۰۲۰ gi-lom"
 
 #: data/resources/about.ui:14
 msgid "Github page"
-msgstr "صفحه گیت‌هاب"
+msgstr "برگه گیت‌هاب"
 
 #. Replace me with your names.
 #: data/resources/about.ui:19
-#, fuzzy
 msgid "translator-credits"
-msgstr "ترجمه روان است..."
+msgstr "سهیل خانعلی‌پور"
 
 #: data/resources/menu.ui:7
+msgid "Show Pronunciation"
+msgstr "نمایش آوایش"
+
+#: data/resources/menu.ui:14
 msgid "Preferences"
 msgstr "ساماندهی"
 
-#: data/resources/menu.ui:11
+#: data/resources/menu.ui:18
+msgid "Keyboard Shortcuts"
+msgstr "پایندان کلیدبرگ"
+
+#: data/resources/menu.ui:22
 msgid "About Dialect"
 msgstr "درباره دایلکت"
 
-#: data/resources/preferences.ui:14
+#: data/resources/preferences.ui:15
 msgid "Appearance"
 msgstr "چهره"
 
-#: data/resources/preferences.ui:18
+#: data/resources/preferences.ui:19
 msgid "Dark Mode"
-msgstr "پوشش تیره"
+msgstr "روش تیره"
 
-#: data/resources/preferences.ui:34
+#: data/resources/preferences.ui:35
 msgid "Behavior"
 msgstr "رفتار"
 
-#: data/resources/preferences.ui:38
-msgid "Live Translation"
-msgstr "ترجمه زنده"
-
 #: data/resources/preferences.ui:39
-#, fuzzy
-msgid "Warning: Your IP address may get banned for API abuse."
-msgstr "هشدار: شاید آی‌پی شما برای کژبکاربستن ای‌پی‌آی بسته شود."
+msgid "Live Translation"
+msgstr "ترگمان زنده"
 
-#: data/resources/preferences.ui:53
-#, fuzzy
-msgid "Translation Shortcut"
-msgstr "ترجمه زنده"
+#: data/resources/preferences.ui:40
+msgid "Warning: Your IP address may get banned for API abuse."
+msgstr "هشدار: شاید نشانی آی‌پی شما برای کژبکاربستن ای‌پی‌آی بسته شود."
 
 #: data/resources/preferences.ui:54
-#, fuzzy
-msgid "Unselected choice will be used for line break."
-msgstr "برای خط نو میانبر وارون بکار گرفته می‌شود."
+msgid "Translation Shortcut"
+msgstr "پایندان ترگمان"
 
-#: data/resources/preferences.ui:62
-msgid "Search Provider"
-msgstr ""
+#: data/resources/preferences.ui:55
+msgid "Unselected choice will be used for line break."
+msgstr "گزینه انتخاب نشده برای قطع خط بکار گرفته می‌شود."
 
 #: data/resources/preferences.ui:63
+msgid "Search Provider"
+msgstr "فراهم‌آور جستجو"
+
+#: data/resources/preferences.ui:64
 msgid ""
 "Dialect has a GNOME Search Provider. Enabling or disabling Live Translation "
 "here will also enable or disable the GNOME Search Provider. This is to "
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
+"دایلکت یک فراهم‌آور جستجوی گنوم دارد. روشن یا خاموش کردن ترگمان زنده در اینجا "
+"همچنین فراهم‌آور جستجوی گنوم را روشن یا خاموش می‌کند. این برای کاهش شایش "
+"کژبکاربستن ای‌پی‌آی بکار گرفته می‌شود. همچنین بدانید این ویژگی در ساماندهی گنوم "
+"روشن باشد."
 
-#: data/resources/window.ui:77 data/resources/window.ui:529
+#: data/resources/shortcuts-window.ui:13
+msgctxt "shortcuts window"
+msgid "General"
+msgstr "فراگیر"
+
+#: data/resources/shortcuts-window.ui:17
+msgctxt "shortcuts window"
+msgid "Preferences"
+msgstr "ساماندهی"
+
+#: data/resources/shortcuts-window.ui:24
+msgctxt "shortcuts window"
+msgid "Translate"
+msgstr "ترگومه"
+
+#: data/resources/shortcuts-window.ui:31
+msgctxt "shortcuts window"
+msgid "Quit"
+msgstr "برونرفت"
+
+#: data/resources/window.ui:77 data/resources/window.ui:563
 msgid "Switch languages"
 msgstr "جابجا کردن زبان‌ها"
 
 #: data/resources/window.ui:157
 msgid "Previous translation"
-msgstr "ترجمه پیشین"
+msgstr "ترگمان پیشین"
 
 #: data/resources/window.ui:176
 msgid "Next translation"
-msgstr "ترجمه بعدی"
+msgstr "ترگمان پسین"
 
-#: data/resources/window.ui:302
+#: data/resources/window.ui:336
 msgid "Clear"
 msgstr "پاک کردن"
 
-#: data/resources/window.ui:317
+#: data/resources/window.ui:351
 msgid "Paste"
 msgstr "چسباندن"
 
-#: data/resources/window.ui:329
+#: data/resources/window.ui:363
 msgid "Translate"
-msgstr "ترجمه"
+msgstr "ترگومه"
 
-#: data/resources/window.ui:406
+#: data/resources/window.ui:440
 msgid "Translation in progress..."
-msgstr "ترجمه روان است..."
+msgstr "ترگومه روان است..."
 
-#: data/resources/window.ui:414
+#: data/resources/window.ui:448
 msgid "Translation seems to have failed"
-msgstr "گویا ترجمه شکست خورده است"
+msgstr "گویا ترگمان شکست خورده است"
 
-#: data/resources/window.ui:425
+#: data/resources/window.ui:459
 msgid "Listen"
 msgstr "شنیدن"
 
-#: data/resources/window.ui:440
+#: data/resources/window.ui:474
 msgid "Copy"
 msgstr "رونوشت"
 
-#: data/resources/window.ui:620
+#: data/resources/window.ui:654
 msgid "No network connection detected."
 msgstr "پیوند شبکه یافت نشد."
 
-#: src/window.py:139
+#: src/window.py:143
 msgid "A network issue has occured. Retry?"
 msgstr "یک ایراد شبکه‌ای رخ داد. باز برپا شود؟"
 
-#: src/window.py:140
+#: src/window.py:144
 msgid ""
 "A network issue has occured.\n"
 "Please try again."
 msgstr ""
 "یک ایراد شبکه‌ای رخ داد.\n"
-"لطفا دوباره بیازمایید."
+"خواهشمند است دوباره بیازمایید."
 
-#: src/window.py:357 src/window.py:361
+#: src/window.py:365 src/window.py:369
 msgid "Auto"
 msgstr "خودکار"
 
-#: src/window.py:611
+#: src/window.py:623
 msgid "5000 characters limit reached!"
 msgstr "به پایان ۵۰۰۰ واج رسید!"
 
-#: src/window.py:687
+#: src/window.py:701
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
 msgstr ""
-"ترجمه شکست خورد.\n"
-"لطفا ایراد شبکه را بررسی کنید."
+"ترگمان شکست خورد.\n"
+"خواهشمند است ایراد شبکه را بررسی کنید."
 
-#: src/window.py:702
+#: src/window.py:716
 msgid "Did you mean: "
-msgstr ""
+msgstr "شاید این را می‌خواستید: "
 
 #~ msgid "History"
 #~ msgstr "پیشینه"
-
-#~ msgid "Translate Accel"
-#~ msgstr "میانبر ترجمه"

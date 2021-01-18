@@ -245,8 +245,8 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="wrap-mode">word-char</property>
-                                    <property name="margin-left">9</property>
-                                    <property name="margin-right">9</property>
+                                    <property name="margin-start">9</property>
+                                    <property name="margin-end">9</property>
                                     <property name="top-margin">9</property>
                                     <property name="bottom-margin">9</property>
                                   </object>
@@ -255,6 +255,40 @@
                               <packing>
                                 <property name="expand">True</property>
                               </packing>
+                            </child>
+                            <child>
+                              <object class="GtkRevealer" id="pronunciation_revealer">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="transition-type">slide-down</property>
+                                <property name="reveal-child">False</property>
+                                <child>
+                                  <object class="GtkScrolledWindow">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="shadow-type">in</property>
+                                    <child>
+                                      <object class="GtkLabel" id="pronunciation_label">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="margin-top">4</property>
+                                        <property name="margin-bottom">4</property>
+                                        <property name="margin-start">9</property>
+                                        <property name="margin-end">9</property>
+                                        <property name="xalign">0</property>
+                                        <property name="wrap">True</property>
+                                        <property name="wrap-mode">word-char</property>
+                                        <style>
+                                          <class name="dim-label"/>
+                                        </style>
+                                      </object>
+                                    </child>
+                                    <style>
+                                      <class name="pronunciation"/>
+                                    </style>
+                                  </object>
+                                </child>
+                              </object>
                             </child>
                             <child>
                               <object class="GtkInfoBar" id="mistakes">
@@ -383,8 +417,8 @@
                                     <property name="can-focus">True</property>
                                     <property name="editable">False</property>
                                     <property name="wrap-mode">word-char</property>
-                                    <property name="margin-left">9</property>
-                                    <property name="margin-right">9</property>
+                                    <property name="margin-start">9</property>
+                                    <property name="margin-end">9</property>
                                     <property name="top-margin">9</property>
                                     <property name="bottom-margin">9</property>
                                   </object>
