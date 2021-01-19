@@ -91,7 +91,7 @@ msgstr "\"Şunu mu demek istediniz\" için öneri desteği eklendi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:58
 msgid "Added a Ctrl+Q shortcut to quit"
-msgstr "Çıkmak için Ctrl+Q kısayolu eklendş"
+msgstr "Çıkmak için Ctrl+Q kısayolu eklendi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:59
 msgid "Added Hungarian translation"
@@ -107,7 +107,7 @@ msgstr "Farsça çeviri eklendi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:62
 msgid "Added Russian translation"
-msgstr "Rusya çeviri eklendi"
+msgstr "Rusça çeviri eklendi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:63
 msgid "Added Turkish translation"
@@ -115,7 +115,7 @@ msgstr "Türkçe çeviri eklendi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:64
 msgid "Fixed some issues with the icon"
-msgstr "İcon ile ilgili sorunlar düzeltildi"
+msgstr "İkon ile ilgili sorunlar düzeltildi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:66
 msgid "Made some minor UI improvements"
