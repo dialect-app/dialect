@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-04 18:12+0530\n"
+"POT-Creation-Date: 2021-01-24 14:12+0530\n"
 "PO-Revision-Date: 2020-11-01 15:48-0500\n"
 "Last-Translator: Rafael Mardojai CM <mardojai.cardenas@gmail.com>\n"
 "Language-Team: Spanish; Castilian <mardojai.cardenas@gmail.com>\n"
@@ -28,8 +28,8 @@ msgstr "Dialect"
 
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
-msgid "A translation app for GNOME"
-msgstr "Una aplicación de traducción para GNOME"
+msgid "Translate between languages"
+msgstr ""
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
@@ -304,6 +304,9 @@ msgstr ""
 #: src/window.py:716
 msgid "Did you mean: "
 msgstr "Quizás quisiste decir: "
+
+#~ msgid "A translation app for GNOME"
+#~ msgstr "Una aplicación de traducción para GNOME"
 
 #~ msgid "History"
 #~ msgstr "Historial"

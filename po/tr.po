@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-04 18:12+0530\n"
+"POT-Creation-Date: 2021-01-24 14:12+0530\n"
 "PO-Revision-Date: 2021-01-18 16:01+0300\n"
 "Last-Translator: Bedirhan Tuhana GAYRETLİ <v30xythedev@gmail.com>\n"
 "Language-Team: Turkish <LL@li.org>\n"
@@ -24,8 +24,8 @@ msgstr "Dialect"
 
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
-msgid "A translation app for GNOME"
-msgstr "GNOME için çeviri uygulaması"
+msgid "Translate between languages"
+msgstr ""
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
@@ -294,6 +294,9 @@ msgstr ""
 #: src/window.py:716
 msgid "Did you mean: "
 msgstr "Şunu mu demek istediniz:"
+
+#~ msgid "A translation app for GNOME"
+#~ msgstr "GNOME için çeviri uygulaması"
 
 #~ msgid "History"
 #~ msgstr "Geçmiş"
