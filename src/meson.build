@@ -15,6 +15,7 @@ run_target('run',
 )
 
 subdir('search_provider')
+subdir('translators')
 
 # Python sources
 sources = [

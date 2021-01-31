@@ -9,11 +9,11 @@ from tempfile import NamedTemporaryFile
 
 from gi.repository import Gdk, GLib, Gtk, Gst, Handy
 
-from googletrans import LANGUAGES, Translator
 from gtts import gTTS, lang
 
 from dialect.define import APP_ID, RES_PATH, MAX_LENGTH, TRANS_NUMBER
 from dialect.lang_selector import DialectLangSelector
+from dialect.translators.gtrans import GTranslator, LANGUAGES
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/window.ui')
@@ -67,7 +67,6 @@ class DialectWindow(Handy.ApplicationWindow):
     # Current input Text
     current_input_text = ''
     current_history = 0
-    history = []
     history_change = False
     type_time = 0
     trans_queue = []
@@ -97,7 +96,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.dest_langs = list(self.settings.get_value('dest-langs'))
 
         # Google Translate object
-        self.translator = Translator()
+        self.translator = GTranslator()
 
         # GStreamer playbin object and related setup
         self.player = Gst.ElementFactory.make('playbin', 'player')
@@ -443,13 +442,13 @@ class DialectWindow(Handy.ApplicationWindow):
             'Text': [src_text, dest_text]
         }
         if self.current_history > 0:
-            del self.history[: self.current_history]
+            del self.translator.history[: self.current_history]
             self.current_history = 0
-        if len(self.history) > 0:
+        if len(self.translator.history) > 0:
             self.return_btn.set_sensitive(True)
-        if len(self.history) == TRANS_NUMBER:
-            self.history.pop()
-        self.history.insert(0, new_history_trans)
+        if len(self.translator.history) == TRANS_NUMBER:
+            self.translator.history.pop()
+        self.translator.history.insert(0, new_history_trans)
         GLib.idle_add(self.reset_return_forward_btns)
 
     def switch_all(self, src_language, dest_language, src_text, dest_text):
@@ -636,13 +635,13 @@ class DialectWindow(Handy.ApplicationWindow):
 
     # The history part
     def reset_return_forward_btns(self):
-        self.return_btn.set_sensitive(self.current_history < len(self.history) - 1)
+        self.return_btn.set_sensitive(self.current_history < len(self.translator.history) - 1)
         self.forward_btn.set_sensitive(self.current_history > 0)
 
     # Retrieve translation history
     def history_update(self):
         self.reset_return_forward_btns()
-        lang_hist = self.history[self.current_history]
+        lang_hist = self.translator.history[self.current_history]
         self.history_change = True
         self.src_lang_selector.set_property('selected',
                                             lang_hist['Languages'][0])
@@ -662,9 +661,9 @@ class DialectWindow(Handy.ApplicationWindow):
             True
         )
         if (
-            self.history[self.current_history]['Languages'][0] == src_language
-            and self.history[self.current_history]['Languages'][1] == dest_language
-            and self.history[self.current_history]['Text'][0] == src_text
+            self.translator.history[self.current_history]['Languages'][0] == src_language
+            and self.translator.history[self.current_history]['Languages'][1] == dest_language
+            and self.translator.history[self.current_history]['Text'][0] == src_text
             and not self.trans_failed
         ):
             return True
@@ -672,7 +671,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def translation(self, _button):
         # If it's like the last translation then it's useless to continue
-        if len(self.history) == 0 or not self.appeared_before():
+        if len(self.translator.history) == 0 or not self.appeared_before():
             src_text = self.src_buffer.get_text(
                 self.src_buffer.get_start_iter(),
                 self.src_buffer.get_end_iter(),
