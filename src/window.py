@@ -68,6 +68,7 @@ class DialectWindow(Handy.ApplicationWindow):
     current_input_text = ''
     current_history = 0
     history = []
+    history_change = False
     type_time = 0
     trans_queue = []
     active_thread = None
@@ -375,7 +376,8 @@ class DialectWindow(Handy.ApplicationWindow):
         self.src_lang_selector.refresh_selected()
 
         # Translate again
-        self.translation(None)
+        if not self.history_change:
+            self.translation(None)
 
     def on_dest_lang_changed(self, _obj, _param):
         code = self.dest_lang_selector.get_property('selected')
@@ -416,7 +418,8 @@ class DialectWindow(Handy.ApplicationWindow):
         self.dest_lang_selector.refresh_selected()
 
         # Translate again
-        self.translation(None)
+        if not self.history_change:
+            self.translation(None)
 
     """
     User interface functions
@@ -640,10 +643,12 @@ class DialectWindow(Handy.ApplicationWindow):
     def history_update(self):
         self.reset_return_forward_btns()
         lang_hist = self.history[self.current_history]
+        self.history_change = True
         self.src_lang_selector.set_property('selected',
                                             lang_hist['Languages'][0])
         self.dest_lang_selector.set_property('selected',
                                              lang_hist['Languages'][1])
+        self.history_change = False
         self.src_buffer.set_text(lang_hist['Text'][0])
         self.dest_buffer.set_text(lang_hist['Text'][1])
 
