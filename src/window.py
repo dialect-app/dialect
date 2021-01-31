@@ -326,7 +326,11 @@ class DialectWindow(Handy.ApplicationWindow):
         timer.start()
 
     def toggle_voice_spinner(self, active=True):
-        if active:
+        if self.translator.supported_features['voice'] == False:
+            self.voice_btn.set_image(self.voice_image)
+            self.voice_btn.set_visible(False)
+            self.voice_spinner.stop()
+        elif active:
             self.voice_btn.set_sensitive(False)
             self.voice_btn.set_image(self.voice_spinner)
             self.voice_spinner.start()
@@ -716,7 +720,7 @@ class DialectWindow(Handy.ApplicationWindow):
             self.langs_button_box.set_sensitive(True)
 
         def on_mistakes():
-            if self.trans_mistakes is not None:
+            if self.trans_mistakes is not None and self.translator.supported_features['mistakes']:
                 self.mistakes_label.set_markup(_('Did you mean: ') + f'<a href="#">{self.trans_mistakes[0]}</a>')
                 self.mistakes.set_revealed(True)
             elif self.mistakes.get_revealed():
@@ -724,7 +728,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
         def on_pronunciation():
             reveal = self.settings.get_boolean('show-pronunciation')
-            if self.trans_pronunciation is not None:
+            if self.trans_pronunciation is not None and self.translator.supported_features['pronunciation']:
                 self.pronunciation_label.set_text(self.trans_pronunciation)
                 self.pronunciation_revealer.set_reveal_child(reveal)
             elif self.pronunciation_revealer.get_reveal_child():
@@ -759,7 +763,10 @@ class DialectWindow(Handy.ApplicationWindow):
                             dest=dest_language
                         )
                         dest_text = translation.text
-                        self.trans_mistakes = translation.extra_data['possible-mistakes']
+                        try:
+                            self.trans_mistakes = translation.extra_data['possible-mistakes']
+                        except IndexError:
+                            self.trans_mistakes = None
                         try:
                             self.trans_pronunciation = translation.extra_data['translation'][1][3]
                         except IndexError:

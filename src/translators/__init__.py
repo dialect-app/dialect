@@ -1,4 +1,11 @@
 class TranslatorBase:
+    history = []
+    supported_features = {
+        "mistakes": False,
+        "pronunciation": False,
+        "voice": False,
+    }
+
     def detect(self, src_text):
         pass
 
@@ -13,3 +20,12 @@ class TranslationError(Exception):
         self.cause = cause
         self.message = message
         super().__init__(self.message)
+
+
+class Translation:
+    text = None
+    extra_data = {}
+
+    def __init__(self, text, extra_data):
+        self.text = text
+        self.extra_data = extra_data
