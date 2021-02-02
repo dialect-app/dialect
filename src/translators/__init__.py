@@ -1,3 +1,7 @@
+LANGUAGES = {
+    "en": "ENGLISH"
+}
+
 class TranslatorBase:
     history = []
     supported_features = {
@@ -29,3 +33,6 @@ class Translation:
     def __init__(self, text, extra_data):
         self.text = text
         self.extra_data = extra_data
+
+def get_translators():
+    pass
