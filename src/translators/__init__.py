@@ -1,9 +1,8 @@
-LANGUAGES = {
-    "en": "ENGLISH"
-}
-
 class TranslatorBase:
     history = []
+    languages = {
+        "en": "ENGLISH"
+    }
     supported_features = {
         "mistakes": False,
         "pronunciation": False,
@@ -33,6 +32,16 @@ class Translation:
     def __init__(self, text, extra_data):
         self.text = text
         self.extra_data = extra_data
+
+
+class Detected:
+    lang = ''
+    confidence = 0.0
+
+    def __init__(self, lang, confidence):
+        self.lang = lang
+        self.confidence = confidence
+
 
 def get_translators():
     pass

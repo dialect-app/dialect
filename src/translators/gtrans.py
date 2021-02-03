@@ -5,6 +5,7 @@ from dialect.translators import TranslatorBase, TranslationError
 
 class GTranslator(TranslatorBase):
     history = []
+    languages = LANGUAGES
     supported_features = {
         'mistakes': True,
         'pronunciation': True,

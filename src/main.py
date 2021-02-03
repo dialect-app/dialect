@@ -86,6 +86,7 @@ class Dialect(Gtk.Application):
             'pronunciation', None, self.settings.get_value('show-pronunciation')
         )
         pronunciation_action.connect('change-state', self.on_pronunciation)
+        pronunciation_action.set_enabled(False)
         self.add_action(pronunciation_action)
 
         preferences_action = Gio.SimpleAction.new('preferences', None)

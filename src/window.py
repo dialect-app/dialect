@@ -13,7 +13,7 @@ from gtts import gTTS, lang
 
 from dialect.define import APP_ID, RES_PATH, MAX_LENGTH, TRANS_NUMBER
 from dialect.lang_selector import DialectLangSelector
-from dialect.translators.gtrans import GTranslator, LANGUAGES
+from dialect.translators.libretrans import LibreTranslator
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/window.ui')
@@ -67,7 +67,7 @@ class DialectWindow(Handy.ApplicationWindow):
     # Current input Text
     current_input_text = ''
     current_history = 0
-    history_change = False
+    no_retranslate = False
     type_time = 0
     trans_queue = []
     active_thread = None
@@ -96,7 +96,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.dest_langs = list(self.settings.get_value('dest-langs'))
 
         # Google Translate object
-        self.translator = GTranslator()
+        self.translator = LibreTranslator()
 
         # GStreamer playbin object and related setup
         self.player = Gst.ElementFactory.make('playbin', 'player')
@@ -198,7 +198,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.dest_lang_selector.set_relative_to(self.dest_lang_btn)
 
         # Add languages to both list
-        for code, name in LANGUAGES.items():
+        for code, name in self.translator.languages.items():
             self.src_lang_selector.insert(code, name.capitalize())
             self.dest_lang_selector.insert(code, name.capitalize())
 
@@ -355,8 +355,8 @@ class DialectWindow(Handy.ApplicationWindow):
             code = self.dest_langs[1] if code == self.src_langs[0] else dest_code
             self.dest_lang_selector.set_property('selected', self.src_langs[0])
 
-        if code in LANGUAGES:
-            self.src_lang_label.set_label(LANGUAGES[code].capitalize())
+        if code in self.translator.languages:
+            self.src_lang_label.set_label(self.translator.languages[code].capitalize())
             # Updated saved left langs list
             if code in self.src_langs:
                 # Bring lang to the top
@@ -372,14 +372,14 @@ class DialectWindow(Handy.ApplicationWindow):
         self.src_lang_selector.clear_recent()
         self.src_lang_selector.insert_recent('auto', _('Auto'))
         for code in self.src_langs:
-            name = LANGUAGES[code].capitalize()
+            name = self.translator.languages[code].capitalize()
             self.src_lang_selector.insert_recent(code, name)
 
         # Refresh list
         self.src_lang_selector.refresh_selected()
 
         # Translate again
-        if not self.history_change:
+        if not self.no_retranslate:
             self.translation(None)
 
     def on_dest_lang_changed(self, _obj, _param):
@@ -400,7 +400,7 @@ class DialectWindow(Handy.ApplicationWindow):
             self.voice_btn.set_sensitive(code in self.lang_speech
                                          and dest_text != '')
 
-        name = LANGUAGES[code].capitalize()
+        name = self.translator.languages[code].capitalize()
         self.dest_lang_label.set_label(name)
         # Updated saved right langs list
         if code in self.dest_langs:
@@ -414,14 +414,14 @@ class DialectWindow(Handy.ApplicationWindow):
         # Rewrite recent langs
         self.dest_lang_selector.clear_recent()
         for code in self.dest_langs:
-            name = LANGUAGES[code].capitalize()
+            name = self.translator.languages[code].capitalize()
             self.dest_lang_selector.insert_recent(code, name)
 
         # Refresh list
         self.dest_lang_selector.refresh_selected()
 
         # Translate again
-        if not self.history_change:
+        if not self.no_retranslate:
             self.translation(None)
 
     """
@@ -646,12 +646,12 @@ class DialectWindow(Handy.ApplicationWindow):
     def history_update(self):
         self.reset_return_forward_btns()
         lang_hist = self.translator.history[self.current_history]
-        self.history_change = True
+        self.no_retranslate = True
         self.src_lang_selector.set_property('selected',
                                             lang_hist['Languages'][0])
         self.dest_lang_selector.set_property('selected',
                                              lang_hist['Languages'][1])
-        self.history_change = False
+        self.no_retranslate = False
         self.src_buffer.set_text(lang_hist['Text'][0])
         self.dest_buffer.set_text(lang_hist['Text'][1])
 
@@ -745,10 +745,15 @@ class DialectWindow(Handy.ApplicationWindow):
                     src_language = self.translator.detect(src_text).lang
                     if isinstance(src_language, list):
                         src_language = src_language[0]
-                    GLib.idle_add(self.src_lang_selector.set_property,
-                                  'selected', src_language)
-                    if src_language not in self.src_langs:
-                        self.src_langs[0] = src_language
+                    if src_language in self.translator.languages.keys():
+                        self.no_retranslate = True
+                        GLib.idle_add(self.src_lang_selector.set_property,
+                                    'selected', src_language)
+                        self.no_retranslate = False
+                        if src_language not in self.src_langs:
+                            self.src_langs[0] = src_language
+                    else:
+                        src_language = 'auto'
                 except Exception:
                     self.trans_failed = True
             # If the two languages are the same, nothing is done
@@ -763,10 +768,7 @@ class DialectWindow(Handy.ApplicationWindow):
                             dest=dest_language
                         )
                         dest_text = translation.text
-                        try:
-                            self.trans_mistakes = translation.extra_data['possible-mistakes']
-                        except IndexError:
-                            self.trans_mistakes = None
+                        self.trans_mistakes = translation.extra_data['possible-mistakes']
                         try:
                             self.trans_pronunciation = translation.extra_data['translation'][1][3]
                         except IndexError:
