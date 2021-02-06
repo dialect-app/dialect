@@ -1,7 +1,7 @@
 import httpx
 from langdetect import detect_langs, DetectorFactory
 
-from dialect.translators import Detected, TranslatorBase, TranslationError, Translation
+from dialect.translators.basetrans import Detected, TranslatorBase, TranslationError, Translation
 
 DetectorFactory.seed = 0
 

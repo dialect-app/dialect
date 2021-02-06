@@ -1,6 +1,6 @@
 from googletrans import LANGUAGES, Translator
 
-from dialect.translators import TranslatorBase, TranslationError
+from dialect.translators.basetrans import TranslatorBase, TranslationError
 
 
 class GTranslator(TranslatorBase):

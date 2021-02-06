@@ -13,7 +13,7 @@ from gtts import gTTS, lang
 
 from dialect.define import APP_ID, RES_PATH, MAX_LENGTH, TRANS_NUMBER
 from dialect.lang_selector import DialectLangSelector
-from dialect.translators.libretrans import LibreTranslator
+from dialect.translators import TRANSLATORS
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/window.ui')
@@ -96,7 +96,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.dest_langs = list(self.settings.get_value('dest-langs'))
 
         # Google Translate object
-        self.translator = LibreTranslator()
+        self.translator = TRANSLATORS['libretrans']()
 
         # GStreamer playbin object and related setup
         self.player = Gst.ElementFactory.make('playbin', 'player')

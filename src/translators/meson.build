@@ -1,6 +1,7 @@
 # Python sources
 sources = [
   '__init__.py',
+  'basetrans.py',
   'gtrans.py',
   'libretrans.py',
 ]
