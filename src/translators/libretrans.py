@@ -15,8 +15,8 @@ class LibreTranslator(TranslatorBase):
         'pronunciation': False,
         'voice': False,
     }
-    url = 'https://libretranslate.com/translate'
-    lang_url = 'https://libretranslate.com/languages'
+    url = 'https://translate.astian.org/translate'
+    lang_url = 'https://translate.astian.org/languages'
 
     def __init__(self):
         self.client = httpx.Client()
