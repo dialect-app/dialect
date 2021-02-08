@@ -8,7 +8,6 @@ import os
 from gi.repository import Gio, Gtk, Handy
 
 from dialect.define import RES_PATH
-from dialect.translators import TRANSLATORS
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/preferences.ui')
