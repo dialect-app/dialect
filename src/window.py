@@ -91,12 +91,15 @@ class DialectWindow(Handy.ApplicationWindow):
 
         # GSettings object
         self.settings = settings
+        # Application object
+        self.app = kwargs['application']
         # Get saved languages
         self.src_langs = list(self.settings.get_value('src-langs'))
         self.dest_langs = list(self.settings.get_value('dest-langs'))
 
-        # Google Translate object
-        self.translator = TRANSLATORS['libretrans']()
+        # Translator object
+        self.translator = TRANSLATORS[self.settings.get_int('backend')]()
+        self.app.pronunciation_action.set_enabled(self.translator.supported_features['pronunciation'])
 
         # GStreamer playbin object and related setup
         self.player = Gst.ElementFactory.make('playbin', 'player')
@@ -254,6 +257,7 @@ class DialectWindow(Handy.ApplicationWindow):
             'audio-speakers-symbolic', Gtk.IconSize.BUTTON)
         self.voice_spinner = Gtk.Spinner()  # For use while audio is running or still loading.
         self.toggle_voice_spinner(True)
+        self.voice_btn.set_visible(self.translator.supported_features['voice'])
 
     def responsive_listener(self, _window):
         size = self.get_size()
@@ -326,11 +330,7 @@ class DialectWindow(Handy.ApplicationWindow):
         timer.start()
 
     def toggle_voice_spinner(self, active=True):
-        if self.translator.supported_features['voice'] == False:
-            self.voice_btn.set_image(self.voice_image)
-            self.voice_btn.set_visible(False)
-            self.voice_spinner.stop()
-        elif active:
+        if active:
             self.voice_btn.set_sensitive(False)
             self.voice_btn.set_image(self.voice_spinner)
             self.voice_spinner.start()
@@ -396,7 +396,7 @@ class DialectWindow(Handy.ApplicationWindow):
             self.src_lang_selector.set_property('selected', self.dest_langs[0])
 
         # Disable or enable listen function.
-        if self.lang_speech:
+        if self.lang_speech and self.translator.supported_features['voice']:
             self.voice_btn.set_sensitive(code in self.lang_speech
                                          and dest_text != '')
 
@@ -702,6 +702,49 @@ class DialectWindow(Handy.ApplicationWindow):
                 # If there is no active thread, create one and start it.
                 self.active_thread = threading.Thread(target=self.run_translation, daemon=True)
                 self.active_thread.start()
+
+    def _change_backends(self, index, window):
+        def _threader():
+            self.translator = TRANSLATORS[index]()
+
+            # Supported features
+            GLib.idle_add(
+                self.voice_btn.set_visible,
+                self.translator.supported_features['voice']
+            )
+            if not self.translator.supported_features['mistakes']:
+                GLib.idle_add(
+                    self.mistakes.set_revealed,
+                    False
+                )
+            if not self.translator.supported_features['pronunciation']:
+                GLib.idle_add(
+                    self.pronunciation_revealer.set_reveal_child,
+                    False
+                )
+                GLib.idle_add(
+                    self.app.pronunciation_action.set_enabled,
+                    False
+                )
+
+            # Switch languages
+            self.src_langs = ['en', 'fr', 'es', 'de']
+            self.dest_langs = ['fr', 'es', 'de', 'en']
+            self.no_retranslate = True
+            GLib.idle_add(self.src_lang_selector.set_property,
+                          'selected', self.src_langs[0])
+            GLib.idle_add(self.dest_lang_selector.set_property,
+                          'selected', self.dest_langs[0])
+            self.no_retranslate = False
+
+            GLib.idle_add(window.set_sensitive, True)
+            GLib.idle_add(self.set_sensitive, True)
+
+        window.set_sensitive(False)
+        self.set_sensitive(False)
+
+        # Send it to a thread to prevent GUI freezing in case translator init takes too long.
+        threading.Thread(target=_threader).start()
 
     def run_translation(self):
         def on_trans_failed():

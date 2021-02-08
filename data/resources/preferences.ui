@@ -56,6 +56,13 @@
                 <property name="visible">True</property>
               </object>
             </child>
+            <child>
+              <object class="HdyComboRow" id="backend">
+                <property name="title" translatable="yes">Select Translator</property>
+                <property name="subtitle" translatable="yes">Choose between the available translation backends.</property>
+                <property name="visible">True</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
