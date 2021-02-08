@@ -18,13 +18,11 @@ class LibreTranslator(TranslatorBase):
     url = 'https://libretranslate.com/translate'
     lang_url = 'https://libretranslate.com/languages'
 
-    def __init__(self) -> None:
-        super().__init__()
-        if self.client is None:
-            self.client = httpx.Client()
-            r = self.client.get(self.lang_url)
-            for lang in r.json():
-                self.languages[lang['code']] = lang['name']
+    def __init__(self):
+        self.client = httpx.Client()
+        r = self.client.get(self.lang_url)
+        for lang in r.json():
+            self.languages[lang['code']] = lang['name']
 
     def detect(self, src_text):
         """Detect the language using the same mechanisms that LibreTranslate uses but locally."""

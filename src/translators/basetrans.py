@@ -1,12 +1,12 @@
 class TranslatorBase:
     history = []
     languages = {
-        "en": "ENGLISH"
+        'en': 'ENGLISH'
     }
     supported_features = {
-        "mistakes": False,
-        "pronunciation": False,
-        "voice": False,
+        'mistakes': False,
+        'pronunciation': False,
+        'voice': False,
     }
 
     def detect(self, src_text):
