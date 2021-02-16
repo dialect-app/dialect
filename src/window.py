@@ -176,7 +176,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.src_langs = list(self.settings.get_value(f'{self.translator.name}-src-langs'))
         self.dest_langs = list(self.settings.get_value(f'{self.translator.name}-dest-langs'))
 
-        # Update IU
+        # Update UI
         GLib.idle_add(update_ui)
 
 
@@ -340,7 +340,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.translation(None)
 
     def save_translator_settings(self, *args, **kwargs):
-        if self.translator.name is not None:
+        if self.translator is not None:
             self.settings.set_value(f'{self.translator.name}-src-langs',
                                     GLib.Variant('as', self.src_langs))
             self.settings.set_value(f'{self.translator.name}-dest-langs',
