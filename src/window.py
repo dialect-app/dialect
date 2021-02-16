@@ -62,8 +62,12 @@ class DialectWindow(Handy.ApplicationWindow):
     notification_revealer = Gtk.Template.Child()
     notification_label = Gtk.Template.Child()
 
+    # Translator
+    translator = None
     # Language values
     lang_speech = None
+    src_langs = []
+    dest_langs = []
     # Current input Text
     current_input_text = ''
     current_history = 0
@@ -93,14 +97,6 @@ class DialectWindow(Handy.ApplicationWindow):
         self.settings = settings
         # Application object
         self.app = kwargs['application']
-
-        # Translator object
-        self.translator = TRANSLATORS[self.settings.get_int('backend')]()
-        self.app.pronunciation_action.set_enabled(self.translator.supported_features['pronunciation'])
-
-        # Get saved languages
-        self.src_langs = list(self.settings.get_value(f'{self.translator.name}-src-langs'))
-        self.dest_langs = list(self.settings.get_value(f'{self.translator.name}-dest-langs'))
 
         # GStreamer playbin object and related setup
         self.player = Gst.ElementFactory.make('playbin', 'player')
@@ -133,13 +129,52 @@ class DialectWindow(Handy.ApplicationWindow):
         self.setup_translation()
         self.toggle_mobile_mode()
 
+        # Load translator
+        threading.Thread(target=self.load_translator,
+                         args=[self.settings.get_int('backend')],
+                         daemon=True
+        ).start()
         # Get languages available for speech
         threading.Thread(target=self.load_lang_speech, daemon=True).start()
 
-        # Load saved src lang
-        self.src_lang_selector.set_property('selected', 'auto')
-        # Load saved dest lang
-        self.dest_lang_selector.set_property('selected', self.dest_langs[0])
+
+    def load_translator(self, backend):
+        def update_ui():
+            # Supported features
+            self.voice_btn.set_visible(self.translator.supported_features['voice'])
+
+            if not self.translator.supported_features['mistakes']:
+                self.mistakes.set_revealed(False)
+
+            if not self.translator.supported_features['pronunciation']:
+                self.pronunciation_revealer.set_reveal_child(False)
+                self.app.pronunciation_action.set_enabled(False)
+
+            self.no_retranslate = True
+            # Update langs list
+            self.src_lang_selector.set_languages(self.translator.languages)
+            self.dest_lang_selector.set_languages(self.translator.languages)
+            # Update selected langs
+            self.src_lang_selector.set_property('selected', 'auto')
+            self.dest_lang_selector.set_property('selected', self.dest_langs[0])
+
+            self.no_retranslate = False
+
+            self.main_stack.set_visible_child_name('translate')
+
+        # Show loading view
+        GLib.idle_add(self.main_stack.set_visible_child_name, 'loading')
+
+        # Translator object
+        self.translator = TRANSLATORS[backend]()
+
+        # Get saved languages
+        self.src_langs = list(self.settings.get_value(f'{self.translator.name}-src-langs'))
+        self.dest_langs = list(self.settings.get_value(f'{self.translator.name}-dest-langs'))
+
+        # Update IU
+        GLib.idle_add(update_ui)
+
 
     def on_listen_failed(self):
         self.voice_btn.set_image(self.voice_warning)
@@ -201,10 +236,6 @@ class DialectWindow(Handy.ApplicationWindow):
         self.dest_lang_btn.set_popover(self.dest_lang_selector)
         self.dest_lang_selector.set_relative_to(self.dest_lang_btn)
 
-        # Add languages to both list
-        self.src_lang_selector.set_languages(self.translator.languages)
-        self.dest_lang_selector.set_languages(self.translator.languages)
-
         self.langs_button_box.set_homogeneous(False)
 
         # Switch button
@@ -257,7 +288,6 @@ class DialectWindow(Handy.ApplicationWindow):
             'audio-speakers-symbolic', Gtk.IconSize.BUTTON)
         self.voice_spinner = Gtk.Spinner()  # For use while audio is running or still loading.
         self.toggle_voice_spinner(True)
-        self.voice_btn.set_visible(self.translator.supported_features['voice'])
 
     def responsive_listener(self, _window):
         size = self.get_size()
@@ -306,10 +336,11 @@ class DialectWindow(Handy.ApplicationWindow):
         self.translation(None)
 
     def save_translator_settings(self, *args, **kwargs):
-        self.settings.set_value(f'{self.translator.name}-src-langs',
-                                GLib.Variant('as', self.src_langs))
-        self.settings.set_value(f'{self.translator.name}-dest-langs',
-                                GLib.Variant('as', self.dest_langs))
+        if self.translator.name is not None:
+            self.settings.set_value(f'{self.translator.name}-src-langs',
+                                    GLib.Variant('as', self.src_langs))
+            self.settings.set_value(f'{self.translator.name}-dest-langs',
+                                    GLib.Variant('as', self.dest_langs))
 
     def send_notification(self, text, timeout=5):
         """
@@ -704,56 +735,14 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.active_thread.start()
 
     def _change_backends(self, index, window):
-        def _threader():
-            # Save previous backend settings
-            self.save_translator_settings()
-            # New translator object
-            self.translator = TRANSLATORS[index]()
+        # Save previous backend settings
+        self.save_translator_settings()
 
-            # Supported features
-            GLib.idle_add(
-                self.voice_btn.set_visible,
-                self.translator.supported_features['voice']
-            )
-            if not self.translator.supported_features['mistakes']:
-                GLib.idle_add(
-                    self.mistakes.set_revealed,
-                    False
-                )
-            if not self.translator.supported_features['pronunciation']:
-                GLib.idle_add(
-                    self.pronunciation_revealer.set_reveal_child,
-                    False
-                )
-                GLib.idle_add(
-                    self.app.pronunciation_action.set_enabled,
-                    False
-                )
-
-            self.no_retranslate = True
-            # Load recent langs
-            self.src_langs = list(self.settings.get_value(f'{self.translator.name}-src-langs'))
-            self.dest_langs = list(self.settings.get_value(f'{self.translator.name}-dest-langs'))
-            # Update langs list
-            GLib.idle_add(self.src_lang_selector.set_languages,
-                          self.translator.languages)
-            GLib.idle_add(self.dest_lang_selector.set_languages,
-                          self.translator.languages)
-            # Update selected langs
-            GLib.idle_add(self.src_lang_selector.set_property,
-                          'selected', self.src_langs[0])
-            GLib.idle_add(self.dest_lang_selector.set_property,
-                          'selected', self.dest_langs[0])
-            self.no_retranslate = False
-
-            GLib.idle_add(window.set_sensitive, True)
-            GLib.idle_add(self.set_sensitive, True)
-
-        window.set_sensitive(False)
-        self.set_sensitive(False)
-
-        # Send it to a thread to prevent GUI freezing in case translator init takes too long.
-        threading.Thread(target=_threader).start()
+        # Load translator
+        threading.Thread(target=self.load_translator,
+                         args=[index],
+                         daemon=True
+        ).start()
 
     def run_translation(self):
         def on_trans_failed():
