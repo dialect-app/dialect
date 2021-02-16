@@ -1,6 +1,6 @@
 # Copyright 2020 gi-lom
-# Copyright 2020 Mufeed Ali
-# Copyright 2020 Rafael Mardojai CM
+# Copyright 2020-2021 Mufeed Ali
+# Copyright 2020-2021 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import threading

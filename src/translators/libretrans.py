@@ -1,3 +1,7 @@
+# Copyright 2021 Mufeed Ali
+# Copyright 2021 Rafael Mardojai CM
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 import httpx
 from langdetect import detect_langs, DetectorFactory
 

@@ -15,6 +15,7 @@
         <default>0</default>
     </key>
     <key type="i" name="backend">
+        <!-- 0 = Google Translate | 1 = LibreTranslate -->
         <default>0</default>
     </key>
     <key type="as" name="google-src-langs">

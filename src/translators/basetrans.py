@@ -1,3 +1,7 @@
+# Copyright 2021 Mufeed Ali
+# Copyright 2021 Rafael Mardojai CM
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 class TranslatorBase:
     name = ''
     history = []
