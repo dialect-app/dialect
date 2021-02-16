@@ -201,9 +201,8 @@ class DialectWindow(Handy.ApplicationWindow):
         self.dest_lang_selector.set_relative_to(self.dest_lang_btn)
 
         # Add languages to both list
-        for code, name in self.translator.languages.items():
-            self.src_lang_selector.insert(code, name.capitalize())
-            self.dest_lang_selector.insert(code, name.capitalize())
+        self.src_lang_selector.set_languages(self.translator.languages)
+        self.dest_lang_selector.set_languages(self.translator.languages)
 
         self.langs_button_box.set_homogeneous(False)
 
@@ -731,6 +730,12 @@ class DialectWindow(Handy.ApplicationWindow):
             self.src_langs = ['en', 'fr', 'es', 'de']
             self.dest_langs = ['fr', 'es', 'de', 'en']
             self.no_retranslate = True
+            # Update langs list
+            GLib.idle_add(self.src_lang_selector.set_languages,
+                          self.translator.languages)
+            GLib.idle_add(self.dest_lang_selector.set_languages,
+                          self.translator.languages)
+            # Update selected langs
             GLib.idle_add(self.src_lang_selector.set_property,
                           'selected', self.src_langs[0])
             GLib.idle_add(self.dest_lang_selector.set_property,
