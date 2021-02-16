@@ -7,7 +7,7 @@ import threading
 from gettext import gettext as _
 from tempfile import NamedTemporaryFile
 
-from gi.repository import Gdk, GLib, Gtk, Gst, Handy
+from gi.repository import Gdk, GLib, GObject, Gtk, Gst, Handy
 
 from gtts import gTTS, lang
 
@@ -87,6 +87,9 @@ class DialectWindow(Handy.ApplicationWindow):
     # Pronunciations
     trans_pronunciation = None
 
+    # Propeties
+    backend_loading = GObject.Property(type=bool, default=False)
+
     def __init__(self, text, settings, **kwargs):
         super().__init__(**kwargs)
 
@@ -161,6 +164,7 @@ class DialectWindow(Handy.ApplicationWindow):
             self.no_retranslate = False
 
             self.main_stack.set_visible_child_name('translate')
+            self.set_property('backend-loading', False)
 
         # Show loading view
         GLib.idle_add(self.main_stack.set_visible_child_name, 'loading')
@@ -734,13 +738,15 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.active_thread = threading.Thread(target=self.run_translation, daemon=True)
                 self.active_thread.start()
 
-    def _change_backends(self, index, window):
+    def _change_backends(self, backend):
+        self.set_property('backend-loading', True)
+
         # Save previous backend settings
         self.save_translator_settings()
 
         # Load translator
         threading.Thread(target=self.load_translator,
-                         args=[index],
+                         args=[backend],
                          daemon=True
         ).start()
 

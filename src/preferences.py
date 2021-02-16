@@ -72,6 +72,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
 
         # Switch backends
         self.backend.connect('notify::selected-index', self._switch_backends)
+        self.parent.connect('notify::backend-loading', self._on_backend_loading)
 
         # Search Provider
         if os.getenv('XDG_CURRENT_DESKTOP') != 'GNOME':
@@ -87,4 +88,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
 
     def _switch_backends(self, row, _value):
         value = row.get_selected_index()
-        self.parent._change_backends(value, self)
+        self.parent._change_backends(value)
+
+    def _on_backend_loading(self, window, _value):
+        self.backend.set_sensitive(not window.get_property('backend-loading'))
