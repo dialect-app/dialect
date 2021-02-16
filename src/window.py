@@ -93,13 +93,14 @@ class DialectWindow(Handy.ApplicationWindow):
         self.settings = settings
         # Application object
         self.app = kwargs['application']
-        # Get saved languages
-        self.src_langs = list(self.settings.get_value('src-langs'))
-        self.dest_langs = list(self.settings.get_value('dest-langs'))
 
         # Translator object
         self.translator = TRANSLATORS[self.settings.get_int('backend')]()
         self.app.pronunciation_action.set_enabled(self.translator.supported_features['pronunciation'])
+
+        # Get saved languages
+        self.src_langs = list(self.settings.get_value(f'{self.translator.name}-src-langs'))
+        self.dest_langs = list(self.settings.get_value(f'{self.translator.name}-dest-langs'))
 
         # GStreamer playbin object and related setup
         self.player = Gst.ElementFactory.make('playbin', 'player')
@@ -125,7 +126,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
         # Connect responsive design function
         self.connect('check-resize', self.responsive_listener)
-        self.connect('destroy', self.on_destroy)
+        self.connect('destroy', self.save_translator_settings)
 
         self.setup_headerbar()
         self.setup_actionbar()
@@ -304,10 +305,10 @@ class DialectWindow(Handy.ApplicationWindow):
         # Run translation
         self.translation(None)
 
-    def on_destroy(self, _window):
-        self.settings.set_value('src-langs',
+    def save_translator_settings(self, *args, **kwargs):
+        self.settings.set_value(f'{self.translator.name}-src-langs',
                                 GLib.Variant('as', self.src_langs))
-        self.settings.set_value('dest-langs',
+        self.settings.set_value(f'{self.translator.name}-dest-langs',
                                 GLib.Variant('as', self.dest_langs))
 
     def send_notification(self, text, timeout=5):
@@ -704,6 +705,9 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def _change_backends(self, index, window):
         def _threader():
+            # Save previous backend settings
+            self.save_translator_settings()
+            # New translator object
             self.translator = TRANSLATORS[index]()
 
             # Supported features
@@ -726,10 +730,10 @@ class DialectWindow(Handy.ApplicationWindow):
                     False
                 )
 
-            # Switch languages
-            self.src_langs = ['en', 'fr', 'es', 'de']
-            self.dest_langs = ['fr', 'es', 'de', 'en']
             self.no_retranslate = True
+            # Load recent langs
+            self.src_langs = list(self.settings.get_value(f'{self.translator.name}-src-langs'))
+            self.dest_langs = list(self.settings.get_value(f'{self.translator.name}-dest-langs'))
             # Update langs list
             GLib.idle_add(self.src_lang_selector.set_languages,
                           self.translator.languages)

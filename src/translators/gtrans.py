@@ -4,6 +4,7 @@ from dialect.translators.basetrans import TranslatorBase, TranslationError
 
 
 class GTranslator(TranslatorBase):
+    name = 'google'
     history = []
     languages = LANGUAGES
     supported_features = {

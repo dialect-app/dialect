@@ -17,10 +17,16 @@
     <key type="i" name="backend">
         <default>0</default>
     </key>
-    <key type="as" name="src-langs">
+    <key type="as" name="google-src-langs">
         <default>["en", "fr", "es", "de"]</default>
     </key>
-    <key type="as" name="dest-langs">
+    <key type="as" name="google-dest-langs">
+        <default>["fr", "es", "de", "en"]</default>
+    </key>
+    <key type="as" name="libretranslate-src-langs">
+        <default>["en", "fr", "es", "de"]</default>
+    </key>
+    <key type="as" name="libretranslate-dest-langs">
         <default>["fr", "es", "de", "en"]</default>
     </key>
   </schema>
