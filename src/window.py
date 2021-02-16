@@ -170,7 +170,12 @@ class DialectWindow(Handy.ApplicationWindow):
         GLib.idle_add(self.main_stack.set_visible_child_name, 'loading')
 
         # Translator object
-        self.translator = TRANSLATORS[backend]()
+        if TRANSLATORS[backend].supported_features['change-instance']:
+            self.translator = TRANSLATORS[backend](
+                base_url=self.settings.get_string(f'{TRANSLATORS[backend].name}-instance')
+            )
+        else:
+            self.translator = TRANSLATORS[backend]()
 
         # Get saved languages
         self.src_langs = list(self.settings.get_value(f'{self.translator.name}-src-langs'))
@@ -795,7 +800,7 @@ class DialectWindow(Handy.ApplicationWindow):
                     if src_language in self.translator.languages.keys():
                         self.no_retranslate = True
                         GLib.idle_add(self.src_lang_selector.set_property,
-                                    'selected', src_language)
+                                      'selected', src_language)
                         self.no_retranslate = False
                         if src_language not in self.src_langs:
                             self.src_langs[0] = src_language

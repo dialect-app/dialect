@@ -19,15 +19,29 @@ class LibreTranslator(TranslatorBase):
         'mistakes': False,
         'pronunciation': False,
         'voice': False,
+        'change-instance': True,
     }
-    url = 'https://translate.astian.org/translate'
-    lang_url = 'https://translate.astian.org/languages'
+    base_url = ''
 
-    def __init__(self):
+    def __init__(self, base_url=None, **kwargs):
+        if base_url is not None:
+            self.base_url = base_url
+
         self.client = httpx.Client()
-        r = self.client.get(self.lang_url)
+        try:
+            r = self.client.get(self.lang_url)
+        except:
+            r = self.client.get('https://translate.astian.org/languages')
         for lang in r.json():
             self.languages[lang['code']] = lang['name']
+
+    @property
+    def translate_url(self):
+        return 'https://' + self.base_url + '/translate'
+
+    @property
+    def lang_url(self):
+        return 'https://' + self.base_url + '/languages'
 
     def detect(self, src_text):
         """Detect the language using the same mechanisms that LibreTranslate uses but locally."""
@@ -62,7 +76,7 @@ class LibreTranslator(TranslatorBase):
     def translate(self, src_text, src, dest):
         try:
             r = self.client.post(
-                self.url,
+                self.translate_url,
                 data={
                     'q': src_text,
                     'source': src,

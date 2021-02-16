@@ -63,6 +63,20 @@
                 <property name="visible">True</property>
               </object>
             </child>
+            <child>
+              <object class="HdyActionRow" id="backend_instance_row">
+                <property name="title" translatable="yes">Specify translator instance</property>
+                <property name="subtitle" translatable="yes">Give URL for a specific instance</property>
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkEntry" id="backend_instance">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
           </object>
         </child>
         <child>

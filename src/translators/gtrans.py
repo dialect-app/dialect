@@ -15,9 +15,10 @@ class GTranslator(TranslatorBase):
         'mistakes': True,
         'pronunciation': True,
         'voice': True,
+        'change-instance': False,
     }
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self._translator = Translator()
 
     def detect(self, src_text):

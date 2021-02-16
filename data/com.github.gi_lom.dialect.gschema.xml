@@ -30,5 +30,8 @@
     <key type="as" name="libretranslate-dest-langs">
         <default>["fr", "es", "de", "en"]</default>
     </key>
+    <key type="s" name="libretranslate-instance">
+        <default>"translate.astian.org"</default>
+    </key>
   </schema>
 </schemalist>

@@ -12,6 +12,7 @@ class TranslatorBase:
         'mistakes': False,
         'pronunciation': False,
         'voice': False,
+        'change-instance': False,
     }
 
     def detect(self, src_text):
