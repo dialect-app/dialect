@@ -103,6 +103,8 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         if key == f'{TRANSLATORS[backend].name}-instance':
             if TRANSLATORS[backend].supported_features['change-instance']:
                 # Update backend
+                self.settings.reset(f'{TRANSLATORS[backend].name}-src-langs')
+                self.settings.reset(f'{TRANSLATORS[backend].name}-dest-langs')
                 self.parent._change_backends(backend)
 
     def _toggle_dark_mode(self, switch, _active):
@@ -143,7 +145,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         backend = self.backend.get_selected_index()
         self.settings.reset(f'{TRANSLATORS[backend].name}-instance')
         self.backend_instance_stack.set_visible_child_name('view')
-        Gtk.StyleContext.add_class(self.backend_instance.get_style_context(), 'error')
+        Gtk.StyleContext.remove_class(self.backend_instance.get_style_context(), 'error')
 
     def __check_instance_support(self):
         backend = self.backend.get_selected_index()

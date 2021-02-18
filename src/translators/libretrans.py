@@ -35,6 +35,10 @@ class LibreTranslator(TranslatorBase):
             self.languages[lang['code']] = lang['name']
 
     @property
+    def detect_url(self):
+        return 'https://' + self.base_url + '/detect'
+
+    @property
     def translate_url(self):
         return 'https://' + self.base_url + '/translate'
 
@@ -57,30 +61,39 @@ class LibreTranslator(TranslatorBase):
     def detect(self, src_text):
         """Detect the language using the same mechanisms that LibreTranslate uses but locally."""
         try:
-            candidate_langs = list(
-                filter(lambda l: l.lang in self.languages, detect_langs(src_text))
-            )
-
-            if len(candidate_langs) > 0:
-                candidate_langs.sort(key=lambda l: l.prob, reverse=True)
-
-                source_lang = next(
-                    iter(
-                        [
-                            l
-                            for l in self.languages.keys()
-                            if l == candidate_langs[0].lang
-                        ]
-                    ),
-                    None,
+            try:
+                r = self.client.post(
+                    self.detect_url,
+                    data={
+                        'q': src_text,
+                    },
                 )
-                if not source_lang:
-                    source_lang = 'en'
-            else:
-                source_lang = 'en'
+                return Detected(r.json()[0]['language'], r.json()[0]['confidence'])
+            except:
+                candidate_langs = list(
+                    filter(lambda l: l.lang in self.languages, detect_langs(src_text))
+                )
 
-            detected_object = Detected(source_lang, 1.0)
-            return detected_object
+                if len(candidate_langs) > 0:
+                    candidate_langs.sort(key=lambda l: l.prob, reverse=True)
+
+                    source_lang = next(
+                        iter(
+                            [
+                                l
+                                for l in self.languages.keys()
+                                if l == candidate_langs[0].lang
+                            ]
+                        ),
+                        None,
+                    )
+                    if not source_lang:
+                        source_lang = 'en'
+                else:
+                    source_lang = 'en'
+
+                detected_object = Detected(source_lang, 1.0)
+                return detected_object
         except Exception as e:
             raise TranslationError(e)
 
