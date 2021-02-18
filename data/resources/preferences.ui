@@ -58,15 +58,15 @@
             </child>
             <child>
               <object class="HdyComboRow" id="backend">
-                <property name="title" translatable="yes">Select Translator</property>
-                <property name="subtitle" translatable="yes">Choose between the available translation backends.</property>
+                <property name="title" translatable="yes">Translator</property>
+                <property name="subtitle" translatable="yes">Choose from the available translation services.</property>
                 <property name="visible">True</property>
               </object>
             </child>
             <child>
               <object class="HdyActionRow" id="backend_instance_row">
-                <property name="title" translatable="yes">Specify translator instance</property>
-                <property name="subtitle" translatable="yes">Give URL for a specific instance</property>
+                <property name="title" translatable="yes">Translator Instance</property>
+                <property name="subtitle" translatable="yes">Specify URL of translation service.</property>
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkStack" id="backend_instance_stack">
