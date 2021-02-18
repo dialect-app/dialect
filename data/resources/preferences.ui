@@ -147,13 +147,6 @@
                             <style>
                               <class name="suggested-action"/>
                             </style>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="icon-name">emblem-ok-symbolic</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                       </object>

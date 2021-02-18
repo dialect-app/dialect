@@ -3,8 +3,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import os
+import threading
 
-from gi.repository import Gio, Gtk, Handy
+from gi.repository import Gio, GLib, Gtk, Handy
 
 from dialect.define import RES_PATH
 from dialect.translators import TRANSLATORS
@@ -88,6 +89,11 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         self.backend_instance_reset.connect('clicked', self._on_reset_backend_instance)
         self.__check_instance_support()
 
+        self.instance_save_image = Gtk.Image.new_from_icon_name(
+            'emblem-ok-symbolic', Gtk.IconSize.BUTTON)
+        self.backend_instance_save.set_image(self.instance_save_image)
+        self.instance_save_spinner = Gtk.Spinner()
+
         # Search Provider
         if os.getenv('XDG_CURRENT_DESKTOP') != 'GNOME':
             self.search_provider.hide()
@@ -125,16 +131,19 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         old_value = self.settings.get_string(f'{TRANSLATORS[backend].name}-instance')
         new_value = self.backend_instance.get_text()
         if new_value != old_value:
-            # TODO: Valdiate new value
-
-            self.settings.set_string(f'{TRANSLATORS[backend].name}-instance', new_value)
-
-        self.backend_instance_stack.set_visible_child_name('view')
+            # Validate
+            threading.Thread(target=self.__validate_new_backend_instance,
+                             args=[new_value],
+                             daemon=True
+            ).start()
+        else:
+            self.backend_instance_stack.set_visible_child_name('view')
 
     def _on_reset_backend_instance(self, _button):
         backend = self.backend.get_selected_index()
         self.settings.reset(f'{TRANSLATORS[backend].name}-instance')
         self.backend_instance_stack.set_visible_child_name('view')
+        Gtk.StyleContext.add_class(self.backend_instance.get_style_context(), 'error')
 
     def __check_instance_support(self):
         backend = self.backend.get_selected_index()
@@ -145,3 +154,28 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
 
         else:
             self.backend_instance_row.set_visible(False)
+
+    def __validate_new_backend_instance(self, url):
+        def spinner_start():
+            self.backend_instance_save.set_sensitive(False)
+            self.backend_instance_save.set_image(self.instance_save_spinner)
+            self.instance_save_spinner.start()
+
+        def spinner_end():
+            self.backend_instance_save.set_sensitive(True)
+            self.backend_instance_save.set_image(self.instance_save_image)
+            self.instance_save_spinner.stop()
+
+        GLib.idle_add(spinner_start)
+        backend = self.backend.get_selected_index()
+        validate = TRANSLATORS[backend].validate_instance_url(url)
+        if validate:
+            self.settings.set_string(f'{TRANSLATORS[backend].name}-instance', url)
+            GLib.idle_add(Gtk.StyleContext.remove_class, self.backend_instance.get_style_context(), 'error')
+            GLib.idle_add(self.backend_instance_stack.set_visible_child_name, 'view')
+        else:
+            # TODO: inprove error display
+            GLib.idle_add(Gtk.StyleContext.add_class, self.backend_instance.get_style_context(), 'error')
+
+        GLib.idle_add(spinner_end)
+
