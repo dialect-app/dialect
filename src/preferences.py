@@ -5,6 +5,7 @@
 import os
 import re
 import threading
+from gettext import gettext as _
 
 from gi.repository import Gio, GLib, Gtk, Handy
 
@@ -204,7 +205,9 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
             GLib.idle_add(self.error_popover.popdown)
         else:
             GLib.idle_add(Gtk.StyleContext.add_class, self.backend_instance.get_style_context(), 'error')
-            GLib.idle_add(self.error_label.set_label, f'Not a valid {TRANSLATORS[backend].prettyname} instance')
+            error_text = _('Not a valid {backend} instance')
+            error_text = error_text.format(backend=TRANSLATORS[backend].prettyname)
+            GLib.idle_add(self.error_label.set_label, error_text)
             GLib.idle_add(self.error_popover.popup)
 
         GLib.idle_add(spinner_end)
