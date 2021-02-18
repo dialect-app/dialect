@@ -96,6 +96,20 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         self.instance_save_image.show()
         self.instance_save_spinner.show()
 
+        self.error_popover = Gtk.Popover(
+            relative_to=self.backend_instance, can_focus=False, modal=False)
+        self.error_label = Gtk.Label(label='Not a valid instance')
+        error_icon = Gtk.Image.new_from_icon_name(
+            'dialog-error-symbolic', Gtk.IconSize.LARGE_TOOLBAR)
+        error_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, margin=8, spacing=8)
+        error_box.pack_start(error_icon, False, False, 0)
+        error_box.pack_start(self.error_label, False, False, 0)
+        self.error_popover.add(error_box)
+        self.error_popover.set_position(Gtk.PositionType.BOTTOM)
+        Gtk.StyleContext.add_class(self.error_popover.get_style_context(), 'error-borders')
+        error_box.show_all()
+        self.error_popover.hide()
+
         # Search Provider
         if os.getenv('XDG_CURRENT_DESKTOP') != 'GNOME':
             self.search_provider.hide()
@@ -148,6 +162,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         self.settings.reset(f'{TRANSLATORS[backend].name}-instance')
         self.backend_instance_stack.set_visible_child_name('view')
         Gtk.StyleContext.remove_class(self.backend_instance.get_style_context(), 'error')
+        self.error_popover.popdown()
 
     def __check_instance_support(self):
         backend = self.backend.get_selected_index()
@@ -179,8 +194,11 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
             self.settings.set_string(f'{TRANSLATORS[backend].name}-instance', url)
             GLib.idle_add(Gtk.StyleContext.remove_class, self.backend_instance.get_style_context(), 'error')
             GLib.idle_add(self.backend_instance_stack.set_visible_child_name, 'view')
+            GLib.idle_add(self.error_popover.popdown)
         else:
             # TODO: inprove error display
             GLib.idle_add(Gtk.StyleContext.add_class, self.backend_instance.get_style_context(), 'error')
+            GLib.idle_add(self.error_label.set_label, f'Not a valid {TRANSLATORS[backend].prettyname} instance')
+            GLib.idle_add(self.error_popover.popup)
 
         GLib.idle_add(spinner_end)

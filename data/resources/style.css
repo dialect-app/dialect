@@ -52,3 +52,7 @@
   border-left: 0;
   border-right: 0;
 }
+
+.error-borders {
+  border-color: @error_color;
+}

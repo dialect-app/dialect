@@ -12,6 +12,7 @@ DetectorFactory.seed = 0
 
 class LibreTranslator(TranslatorBase):
     name = 'libretranslate'
+    prettyname = 'LibreTranslate'
     client = None
     history = []
     languages = {}

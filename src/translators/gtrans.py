@@ -9,6 +9,7 @@ from dialect.translators.basetrans import TranslatorBase, TranslationError
 
 class GTranslator(TranslatorBase):
     name = 'google'
+    prettyname = 'Google Translate'
     history = []
     languages = LANGUAGES
     supported_features = {

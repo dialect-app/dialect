@@ -4,6 +4,7 @@
 
 class TranslatorBase:
     name = ''
+    prettyname = ''
     history = []
     languages = {
         'en': 'ENGLISH'
