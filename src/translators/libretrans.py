@@ -57,7 +57,9 @@ class LibreTranslator(TranslatorBase):
 
             if data['info']['title'] == 'LibreTranslate':
                 return True
-        except Exception as exc:
+
+            return False
+        except Exception:
             return False
 
     def detect(self, src_text):
@@ -71,7 +73,7 @@ class LibreTranslator(TranslatorBase):
                     },
                 )
                 return Detected(r.json()[0]['language'], r.json()[0]['confidence'])
-            except:
+            except Exception:
                 candidate_langs = list(
                     filter(lambda l: l.lang in self.languages, detect_langs(src_text))
                 )
@@ -83,7 +85,7 @@ class LibreTranslator(TranslatorBase):
                         iter(
                             [
                                 l
-                                for l in self.languages.keys()
+                                for l in self.languages
                                 if l == candidate_langs[0].lang
                             ]
                         ),
@@ -96,8 +98,8 @@ class LibreTranslator(TranslatorBase):
 
                 detected_object = Detected(source_lang, 1.0)
                 return detected_object
-        except Exception as e:
-            raise TranslationError(e)
+        except Exception as exc:
+            raise TranslationError(exc) from exc
 
     def translate(self, src_text, src, dest):
         try:
@@ -116,5 +118,5 @@ class LibreTranslator(TranslatorBase):
                     'translation': [],
                 },
             )
-        except Exception as e:
-            raise TranslationError(e)
+        except Exception as exc:
+            raise TranslationError(exc) from exc

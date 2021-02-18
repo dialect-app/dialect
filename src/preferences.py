@@ -123,7 +123,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
                 # Update backend
                 self.settings.reset(f'{TRANSLATORS[backend].name}-src-langs')
                 self.settings.reset(f'{TRANSLATORS[backend].name}-dest-langs')
-                self.parent._change_backends(backend)
+                self.parent.change_backends(backend)
 
     def _toggle_dark_mode(self, switch, _active):
         gtk_settings = Gtk.Settings.get_default()
@@ -135,7 +135,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
 
     def _switch_backends(self, row, _value):
         self.__check_instance_support()
-        self.parent._change_backends(row.get_selected_index())
+        self.parent.change_backends(row.get_selected_index())
 
     def _on_backend_loading(self, window, _value):
         self.backend.set_sensitive(not window.get_property('backend-loading'))

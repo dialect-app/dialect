@@ -759,7 +759,7 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.active_thread = threading.Thread(target=self.run_translation, daemon=True)
                 self.active_thread.start()
 
-    def _change_backends(self, backend):
+    def change_backends(self, backend):
         self.set_property('backend-loading', True)
 
         # Save previous backend settings

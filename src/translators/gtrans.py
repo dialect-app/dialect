@@ -25,11 +25,11 @@ class GTranslator(TranslatorBase):
     def detect(self, src_text):
         try:
             return self._translator.detect(src_text)
-        except Exception as e:
-            raise TranslationError(e)
+        except Exception as exc:
+            raise TranslationError(exc) from exc
 
     def translate(self, src_text, src, dest):
         try:
             return self._translator.translate(src_text, src=src, dest=dest)
-        except Exception as e:
-            raise TranslationError(e)
+        except Exception as exc:
+            raise TranslationError(exc) from exc

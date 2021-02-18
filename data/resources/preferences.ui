@@ -92,9 +92,6 @@
                             <property name="can-focus">True</property>
                             <property name="receives-default">True</property>
                             <property name="tooltip-text" translatable="yes">Edit</property>
-                            <style>
-                              <class name="image-button"/>
-                            </style>
                             <child>
                               <object class="GtkImage">
                                 <property name="visible">True</property>
