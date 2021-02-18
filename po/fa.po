@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-24 14:12+0530\n"
+"POT-Creation-Date: 2021-02-19 00:42+0530\n"
 "PO-Revision-Date: 2020-12-17 14:01+0330\n"
 "Last-Translator: Soheil Khanalipur <soheil@disroot.org>\n"
 "Language-Team: Persian <soheil@disroot.org>\n"
@@ -21,8 +21,8 @@ msgstr ""
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 src/main.py:47
-#: src/main.py:68
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 data/resources/window.ui:51
+#: src/main.py:47 src/main.py:68
 msgid "Dialect"
 msgstr "دایلکت"
 
@@ -186,11 +186,41 @@ msgstr "پایندان ترگمان"
 msgid "Unselected choice will be used for line break."
 msgstr "گزینه انتخاب نشده برای قطع خط بکار گرفته می‌شود."
 
-#: data/resources/preferences.ui:63
+#: data/resources/preferences.ui:61
+#, fuzzy
+msgid "Translator"
+msgstr "ترگومه"
+
+#: data/resources/preferences.ui:62
+msgid "Choose from the available translation services."
+msgstr ""
+
+#: data/resources/preferences.ui:68
+#, fuzzy
+msgid "Translator Instance"
+msgstr "ترگومه"
+
+#: data/resources/preferences.ui:69
+msgid "Specify URL of translation service."
+msgstr ""
+
+#: data/resources/preferences.ui:94
+msgid "Edit"
+msgstr ""
+
+#: data/resources/preferences.ui:128
+msgid "Reset to default"
+msgstr ""
+
+#: data/resources/preferences.ui:143
+msgid "Save"
+msgstr ""
+
+#: data/resources/preferences.ui:162
 msgid "Search Provider"
 msgstr "فراهم‌آور جستجو"
 
-#: data/resources/preferences.ui:64
+#: data/resources/preferences.ui:163
 msgid ""
 "Dialect has a GNOME Search Provider. Enabling or disabling Live Translation "
 "here will also enable or disable the GNOME Search Provider. This is to "
@@ -222,55 +252,73 @@ msgctxt "shortcuts window"
 msgid "Quit"
 msgstr "برونرفت"
 
-#: data/resources/window.ui:77 data/resources/window.ui:563
+#: data/resources/window.ui:68
+msgid "Failed loading translator backend"
+msgstr ""
+
+#: data/resources/window.ui:93
+msgid "Retry"
+msgstr ""
+
+#: data/resources/window.ui:100
+#, fuzzy
+msgid "Open preferences"
+msgstr "ساماندهی"
+
+#: data/resources/window.ui:178 data/resources/window.ui:664
 msgid "Switch languages"
 msgstr "جابجا کردن زبان‌ها"
 
-#: data/resources/window.ui:157
+#: data/resources/window.ui:258
 msgid "Previous translation"
 msgstr "ترگمان پیشین"
 
-#: data/resources/window.ui:176
+#: data/resources/window.ui:277
 msgid "Next translation"
 msgstr "ترگمان پسین"
 
-#: data/resources/window.ui:336
+#: data/resources/window.ui:437
 msgid "Clear"
 msgstr "پاک کردن"
 
-#: data/resources/window.ui:351
+#: data/resources/window.ui:452
 msgid "Paste"
 msgstr "چسباندن"
 
-#: data/resources/window.ui:363
+#: data/resources/window.ui:464
 msgid "Translate"
 msgstr "ترگومه"
 
-#: data/resources/window.ui:440
+#: data/resources/window.ui:541
 msgid "Translation in progress..."
 msgstr "ترگومه روان است..."
 
-#: data/resources/window.ui:448
+#: data/resources/window.ui:549
 msgid "Translation seems to have failed"
 msgstr "گویا ترگمان شکست خورده است"
 
-#: data/resources/window.ui:459
+#: data/resources/window.ui:560
 msgid "Listen"
 msgstr "شنیدن"
 
-#: data/resources/window.ui:474
+#: data/resources/window.ui:575
 msgid "Copy"
 msgstr "رونوشت"
 
-#: data/resources/window.ui:654
+#: data/resources/window.ui:755
 msgid "No network connection detected."
 msgstr "پیوند شبکه یافت نشد."
 
-#: src/window.py:143
+#: src/preferences.py:208
+#, python-brace-format
+msgid "Not a valid {backend} instance"
+msgstr ""
+
+#: src/window.py:207
 msgid "A network issue has occured. Retry?"
 msgstr "یک ایراد شبکه‌ای رخ داد. باز برپا شود؟"
 
-#: src/window.py:144
+#: src/window.py:208
 msgid ""
 "A network issue has occured.\n"
 "Please try again."
@@ -278,15 +326,15 @@ msgstr ""
 "یک ایراد شبکه‌ای رخ داد.\n"
 "خواهشمند است دوباره بیازمایید."
 
-#: src/window.py:365 src/window.py:369
+#: src/window.py:425 src/window.py:429
 msgid "Auto"
 msgstr "خودکار"
 
-#: src/window.py:623
+#: src/window.py:685
 msgid "5000 characters limit reached!"
 msgstr "به پایان ۵۰۰۰ واج رسید!"
 
-#: src/window.py:701
+#: src/window.py:777
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
@@ -294,7 +342,7 @@ msgstr ""
 "ترگمان شکست خورد.\n"
 "خواهشمند است ایراد شبکه را بررسی کنید."
 
-#: src/window.py:716
+#: src/window.py:792
 msgid "Did you mean: "
 msgstr "شاید این را می‌خواستید: "
 
