@@ -24,6 +24,7 @@ class DialectWindow(Handy.ApplicationWindow):
     main_stack = Gtk.Template.Child()
     error_message = Gtk.Template.Child()
     translator_box = Gtk.Template.Child()
+    retry_backend_btn = Gtk.Template.Child()
 
     title_stack = Gtk.Template.Child()
     langs_button_box = Gtk.Template.Child()
@@ -134,6 +135,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.toggle_mobile_mode()
 
         # Load translator
+        self.retry_backend_btn.connect('clicked', self.retry_load_translator)
         threading.Thread(target=self.load_translator,
                          args=[self.settings.get_int('backend')],
                          daemon=True
@@ -192,6 +194,12 @@ class DialectWindow(Handy.ApplicationWindow):
 
             self.error_message.set_label(str(exc))
             print('Error: ' + str(exc))
+
+    def retry_load_translator(self, _button):
+        threading.Thread(target=self.load_translator,
+                         args=[self.settings.get_int('backend')],
+                         daemon=True
+        ).start()
 
     def on_listen_failed(self):
         self.voice_btn.set_image(self.voice_warning)
