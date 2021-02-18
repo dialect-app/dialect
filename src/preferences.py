@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import os
+import re
 import threading
 
 from gi.repository import Gio, GLib, Gtk, Handy
@@ -148,6 +149,10 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         backend = self.backend.get_selected_index()
         old_value = self.settings.get_string(f'{TRANSLATORS[backend].name}-instance')
         new_value = self.backend_instance.get_text()
+
+        url = re.compile(r"https?://(www\.)?")
+        new_value = url.sub('', new_value).strip().strip('/')
+
         if new_value != old_value:
             # Validate
             threading.Thread(target=self.__validate_new_backend_instance,
