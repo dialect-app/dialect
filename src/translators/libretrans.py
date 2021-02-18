@@ -47,6 +47,7 @@ class LibreTranslator(TranslatorBase):
     def lang_url(self):
         return 'https://' + self.base_url + '/languages'
 
+    @staticmethod
     def validate_instance_url(url):
         url = 'https://' + url + '/spec'
         client = httpx.Client()

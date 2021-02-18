@@ -16,7 +16,8 @@ class TranslatorBase:
         'change-instance': False,
     }
 
-    def validate_instance_url(self, url):
+    @staticmethod
+    def validate_instance_url(url):
         pass
 
     def detect(self, src_text):
