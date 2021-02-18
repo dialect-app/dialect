@@ -127,6 +127,8 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         if new_value != old_value:
             # TODO: Valdiate new value
 
+            self.settings.reset(f'{TRANSLATORS[backend].name}-src-langs')
+            self.settings.reset(f'{TRANSLATORS[backend].name}-dest-langs')
             self.settings.set_string(f'{TRANSLATORS[backend].name}-instance', new_value)
 
         self.backend_instance_stack.set_visible_child_name('view')
