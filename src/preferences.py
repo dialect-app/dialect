@@ -106,7 +106,6 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         error_box.pack_start(self.error_label, False, False, 0)
         self.error_popover.add(error_box)
         self.error_popover.set_position(Gtk.PositionType.BOTTOM)
-        Gtk.StyleContext.add_class(self.error_popover.get_style_context(), 'error-borders')
         error_box.show_all()
         self.error_popover.hide()
 
@@ -196,7 +195,6 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
             GLib.idle_add(self.backend_instance_stack.set_visible_child_name, 'view')
             GLib.idle_add(self.error_popover.popdown)
         else:
-            # TODO: inprove error display
             GLib.idle_add(Gtk.StyleContext.add_class, self.backend_instance.get_style_context(), 'error')
             GLib.idle_add(self.error_label.set_label, f'Not a valid {TRANSLATORS[backend].prettyname} instance')
             GLib.idle_add(self.error_popover.popup)
