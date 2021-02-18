@@ -134,3 +134,6 @@ dmypy.json
 
 # Other backup files
 *.backup
+
+# VSCode Workspace settings
+.vscode/

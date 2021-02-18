@@ -56,6 +56,105 @@
                 <property name="visible">True</property>
               </object>
             </child>
+            <child>
+              <object class="HdyComboRow" id="backend">
+                <property name="title" translatable="yes">Translator</property>
+                <property name="subtitle" translatable="yes">Choose from the available translation services.</property>
+                <property name="visible">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="HdyActionRow" id="backend_instance_row">
+                <property name="title" translatable="yes">Translator Instance</property>
+                <property name="subtitle" translatable="yes">Specify URL of translation service.</property>
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkStack" id="backend_instance_stack">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="transition-type">crossfade</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="spacing">6</property>
+                        <property name="valign">center</property>
+                        <property name="halign">end</property>
+                        <child>
+                          <object class="GtkLabel" id="backend_instance_label">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="backend_instance_edit">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <property name="tooltip-text" translatable="yes">Edit</property>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="icon-name">document-edit-symbolic</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="name">view</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="backend_instance_edit_box">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="valign">center</property>
+                        <style>
+                          <class name="linked"/>
+                        </style>
+                        <child>
+                          <object class="GtkEntry" id="backend_instance">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="backend_instance_reset">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <property name="tooltip-text" translatable="yes">Reset to default</property>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="icon-name">view-refresh-symbolic</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="backend_instance_save">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <property name="tooltip-text" translatable="yes">Save</property>
+                            <style>
+                              <class name="suggested-action"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="name">edit</property>
+                      </packing>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
           </object>
         </child>
         <child>

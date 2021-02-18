@@ -1,6 +1,5 @@
-# Copyright 2020 gi-lom
-# Copyright 2020 Mufeed Ali
-# Copyright 2020 Rafael Mardojai CM
+# Copyright 2020-2021 Mufeed Ali
+# Copyright 2020-2021 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import re
@@ -42,9 +41,16 @@ class DialectLangSelector(Gtk.Popover):
         search = self.search.get_text()
         return bool(re.search(search, row.name, re.IGNORECASE))
 
-    def insert(self, code, name, position=-1):
-        row_selected = (code == self.selected)
-        self.lang_list.insert(LangRow(code, name, row_selected), position)
+    def set_languages(self, languages):
+        # Clear list
+        children = self.lang_list.get_children()
+        for child in children:
+            self.lang_list.remove(child)
+
+        # Load langs list
+        for code, name in languages.items():
+            row_selected = (code == self.selected)
+            self.lang_list.insert(LangRow(code, name.capitalize(), row_selected), -1)
 
     def insert_recent(self, code, name, position=-1):
         row_selected = (code == self.selected)

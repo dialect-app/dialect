@@ -10,7 +10,7 @@ import threading
 
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib, Gio
-from googletrans import LANGUAGES, Translator
+from dialect.translators import TRANSLATORS
 
 APP_ID = 'com.github.gi_lom.dialect'
 
@@ -32,12 +32,13 @@ class TranslateService(dbus.service.Object):
         # Translations running now
         self.translations = dict()
         self.settings = Gio.Settings.new(APP_ID)
+        self.settings.connect('changed', self._on_settings_changed)
 
         self.dest_language = None
         self.active_thread = None
         self.trans_queue = []
 
-        self.translator = Translator()
+        self.translator = self._get_translator()
 
     @dbus.service.method(in_signature='as', out_signature='as', **sbn)
     def GetInitialResultSet(self, terms):
@@ -64,7 +65,7 @@ class TranslateService(dbus.service.Object):
                 pass
 
             name = self.translations[translate_id]
-            lang = LANGUAGES[self.dest_language].capitalize()
+            lang = self.translator.languages[self.dest_language].capitalize()
             self.translations.clear()
 
             return [
@@ -120,8 +121,8 @@ class TranslateService(dbus.service.Object):
 
         # set dest_language to last used language and src_language to auto detection
         src_language = 'auto'
-        src_language_saved = self.settings.get_strv('src-langs')[0]
-        dest_language = self.settings.get_strv('dest-langs')[0]
+        src_language_saved = self.settings.get_strv(f'{self.translator.name}-src-langs')[0]
+        dest_language = self.settings.get_strv(f'{self.translator.name}-dest-langs')[0]
 
         if self.trans_queue:
             self.trans_queue.pop(0)
@@ -183,6 +184,22 @@ class TranslateService(dbus.service.Object):
 
     def is_live_enabled(self):
         return self.settings.get_boolean('live-translation')
+
+    def _get_translator(self):
+        backend = self.settings.get_int('backend')
+        if TRANSLATORS[backend].supported_features['change-instance']:
+            translator = TRANSLATORS[backend](
+                base_url=self.settings.get_string(f'{TRANSLATORS[backend].name}-instance')
+            )
+        else:
+            translator = TRANSLATORS[backend]()
+        return translator
+
+    def _on_settings_changed(self, _settings, key):
+        backend = self.settings.get_int('backend')
+        if key == 'backend' or key == f'{TRANSLATORS[backend].name}-instance':
+            self.translator = self._get_translator()
+
 
 if __name__ == "__main__":
     DBusGMainLoop(set_as_default=True)

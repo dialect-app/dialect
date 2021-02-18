@@ -1,19 +1,19 @@
 # Copyright 2020 gi-lom
-# Copyright 2020 Mufeed Ali
-# Copyright 2020 Rafael Mardojai CM
+# Copyright 2020-2021 Mufeed Ali
+# Copyright 2020-2021 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import threading
 from gettext import gettext as _
 from tempfile import NamedTemporaryFile
 
-from gi.repository import Gdk, GLib, Gtk, Gst, Handy
+from gi.repository import Gdk, GLib, GObject, Gtk, Gst, Handy
 
-from googletrans import LANGUAGES, Translator
 from gtts import gTTS, lang
 
 from dialect.define import APP_ID, RES_PATH, MAX_LENGTH, TRANS_NUMBER
 from dialect.lang_selector import DialectLangSelector
+from dialect.translators import TRANSLATORS
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/window.ui')
@@ -22,7 +22,9 @@ class DialectWindow(Handy.ApplicationWindow):
 
     # Get widgets
     main_stack = Gtk.Template.Child()
+    error_message = Gtk.Template.Child()
     translator_box = Gtk.Template.Child()
+    retry_backend_btn = Gtk.Template.Child()
 
     title_stack = Gtk.Template.Child()
     langs_button_box = Gtk.Template.Child()
@@ -62,13 +64,16 @@ class DialectWindow(Handy.ApplicationWindow):
     notification_revealer = Gtk.Template.Child()
     notification_label = Gtk.Template.Child()
 
+    # Translator
+    translator = None
     # Language values
     lang_speech = None
+    src_langs = []
+    dest_langs = []
     # Current input Text
     current_input_text = ''
     current_history = 0
-    history = []
-    history_change = False
+    no_retranslate = False
     type_time = 0
     trans_queue = []
     active_thread = None
@@ -84,6 +89,9 @@ class DialectWindow(Handy.ApplicationWindow):
     # Pronunciations
     trans_pronunciation = None
 
+    # Propeties
+    backend_loading = GObject.Property(type=bool, default=False)
+
     def __init__(self, text, settings, **kwargs):
         super().__init__(**kwargs)
 
@@ -92,12 +100,8 @@ class DialectWindow(Handy.ApplicationWindow):
 
         # GSettings object
         self.settings = settings
-        # Get saved languages
-        self.src_langs = list(self.settings.get_value('src-langs'))
-        self.dest_langs = list(self.settings.get_value('dest-langs'))
-
-        # Google Translate object
-        self.translator = Translator()
+        # Application object
+        self.app = kwargs['application']
 
         # GStreamer playbin object and related setup
         self.player = Gst.ElementFactory.make('playbin', 'player')
@@ -123,20 +127,79 @@ class DialectWindow(Handy.ApplicationWindow):
 
         # Connect responsive design function
         self.connect('check-resize', self.responsive_listener)
-        self.connect('destroy', self.on_destroy)
+        self.connect('destroy', self.save_translator_settings)
 
         self.setup_headerbar()
         self.setup_actionbar()
         self.setup_translation()
         self.toggle_mobile_mode()
 
+        # Load translator
+        self.retry_backend_btn.connect('clicked', self.retry_load_translator)
+        threading.Thread(target=self.load_translator,
+                         args=[self.settings.get_int('backend')],
+                         daemon=True
+        ).start()
         # Get languages available for speech
         threading.Thread(target=self.load_lang_speech, daemon=True).start()
 
-        # Load saved src lang
-        self.src_lang_selector.set_property('selected', 'auto')
-        # Load saved dest lang
-        self.dest_lang_selector.set_property('selected', self.dest_langs[0])
+    def load_translator(self, backend):
+        def update_ui():
+            # Supported features
+            self.voice_btn.set_visible(self.translator.supported_features['voice'])
+
+            if not self.translator.supported_features['mistakes']:
+                self.mistakes.set_revealed(False)
+
+            if not self.translator.supported_features['pronunciation']:
+                self.pronunciation_revealer.set_reveal_child(False)
+                self.app.pronunciation_action.set_enabled(False)
+
+            self.no_retranslate = True
+            # Update langs list
+            self.src_lang_selector.set_languages(self.translator.languages)
+            self.dest_lang_selector.set_languages(self.translator.languages)
+            # Update selected langs
+            self.src_lang_selector.set_property('selected', 'auto')
+            self.dest_lang_selector.set_property('selected', self.dest_langs[0])
+
+            self.no_retranslate = False
+
+            self.main_stack.set_visible_child_name('translate')
+            self.set_property('backend-loading', False)
+
+        # Show loading view
+        GLib.idle_add(self.main_stack.set_visible_child_name, 'loading')
+
+        try:
+            # Translator object
+            if TRANSLATORS[backend].supported_features['change-instance']:
+                self.translator = TRANSLATORS[backend](
+                    base_url=self.settings.get_string(f'{TRANSLATORS[backend].name}-instance')
+                )
+            else:
+                self.translator = TRANSLATORS[backend]()
+
+            # Get saved languages
+            self.src_langs = list(self.settings.get_value(f'{self.translator.name}-src-langs'))
+            self.dest_langs = list(self.settings.get_value(f'{self.translator.name}-dest-langs'))
+
+            # Update UI
+            GLib.idle_add(update_ui)
+
+        except Exception as exc:
+            # Show error view
+            GLib.idle_add(self.main_stack.set_visible_child_name, 'error')
+            GLib.idle_add(self.set_property, 'backend-loading', False)
+
+            self.error_message.set_label(str(exc))
+            print('Error: ' + str(exc))
+
+    def retry_load_translator(self, _button):
+        threading.Thread(target=self.load_translator,
+                         args=[self.settings.get_int('backend')],
+                         daemon=True
+        ).start()
 
     def on_listen_failed(self):
         self.voice_btn.set_image(self.voice_warning)
@@ -197,11 +260,6 @@ class DialectWindow(Handy.ApplicationWindow):
         # Set popover selector to button
         self.dest_lang_btn.set_popover(self.dest_lang_selector)
         self.dest_lang_selector.set_relative_to(self.dest_lang_btn)
-
-        # Add languages to both list
-        for code, name in LANGUAGES.items():
-            self.src_lang_selector.insert(code, name.capitalize())
-            self.dest_lang_selector.insert(code, name.capitalize())
 
         self.langs_button_box.set_homogeneous(False)
 
@@ -302,11 +360,12 @@ class DialectWindow(Handy.ApplicationWindow):
         # Run translation
         self.translation(None)
 
-    def on_destroy(self, _window):
-        self.settings.set_value('src-langs',
-                                GLib.Variant('as', self.src_langs))
-        self.settings.set_value('dest-langs',
-                                GLib.Variant('as', self.dest_langs))
+    def save_translator_settings(self, *args, **kwargs):
+        if self.translator is not None:
+            self.settings.set_value(f'{self.translator.name}-src-langs',
+                                    GLib.Variant('as', self.src_langs))
+            self.settings.set_value(f'{self.translator.name}-dest-langs',
+                                    GLib.Variant('as', self.dest_langs))
 
     def send_notification(self, text, timeout=5):
         """
@@ -352,8 +411,8 @@ class DialectWindow(Handy.ApplicationWindow):
             code = self.dest_langs[1] if code == self.src_langs[0] else dest_code
             self.dest_lang_selector.set_property('selected', self.src_langs[0])
 
-        if code in LANGUAGES:
-            self.src_lang_label.set_label(LANGUAGES[code].capitalize())
+        if code in self.translator.languages:
+            self.src_lang_label.set_label(self.translator.languages[code].capitalize())
             # Updated saved left langs list
             if code in self.src_langs:
                 # Bring lang to the top
@@ -369,14 +428,14 @@ class DialectWindow(Handy.ApplicationWindow):
         self.src_lang_selector.clear_recent()
         self.src_lang_selector.insert_recent('auto', _('Auto'))
         for code in self.src_langs:
-            name = LANGUAGES[code].capitalize()
+            name = self.translator.languages[code].capitalize()
             self.src_lang_selector.insert_recent(code, name)
 
         # Refresh list
         self.src_lang_selector.refresh_selected()
 
         # Translate again
-        if not self.history_change:
+        if not self.no_retranslate:
             self.translation(None)
 
     def on_dest_lang_changed(self, _obj, _param):
@@ -393,11 +452,11 @@ class DialectWindow(Handy.ApplicationWindow):
             self.src_lang_selector.set_property('selected', self.dest_langs[0])
 
         # Disable or enable listen function.
-        if self.lang_speech:
+        if self.lang_speech and self.translator.supported_features['voice']:
             self.voice_btn.set_sensitive(code in self.lang_speech
                                          and dest_text != '')
 
-        name = LANGUAGES[code].capitalize()
+        name = self.translator.languages[code].capitalize()
         self.dest_lang_label.set_label(name)
         # Updated saved right langs list
         if code in self.dest_langs:
@@ -411,14 +470,14 @@ class DialectWindow(Handy.ApplicationWindow):
         # Rewrite recent langs
         self.dest_lang_selector.clear_recent()
         for code in self.dest_langs:
-            name = LANGUAGES[code].capitalize()
+            name = self.translator.languages[code].capitalize()
             self.dest_lang_selector.insert_recent(code, name)
 
         # Refresh list
         self.dest_lang_selector.refresh_selected()
 
         # Translate again
-        if not self.history_change:
+        if not self.no_retranslate:
             self.translation(None)
 
     """
@@ -443,13 +502,13 @@ class DialectWindow(Handy.ApplicationWindow):
             'Text': [src_text, dest_text]
         }
         if self.current_history > 0:
-            del self.history[: self.current_history]
+            del self.translator.history[: self.current_history]
             self.current_history = 0
-        if len(self.history) > 0:
+        if len(self.translator.history) > 0:
             self.return_btn.set_sensitive(True)
-        if len(self.history) == TRANS_NUMBER:
-            self.history.pop()
-        self.history.insert(0, new_history_trans)
+        if len(self.translator.history) == TRANS_NUMBER:
+            self.translator.history.pop()
+        self.translator.history.insert(0, new_history_trans)
         GLib.idle_add(self.reset_return_forward_btns)
 
     def switch_all(self, src_language, dest_language, src_text, dest_text):
@@ -636,19 +695,19 @@ class DialectWindow(Handy.ApplicationWindow):
 
     # The history part
     def reset_return_forward_btns(self):
-        self.return_btn.set_sensitive(self.current_history < len(self.history) - 1)
+        self.return_btn.set_sensitive(self.current_history < len(self.translator.history) - 1)
         self.forward_btn.set_sensitive(self.current_history > 0)
 
     # Retrieve translation history
     def history_update(self):
         self.reset_return_forward_btns()
-        lang_hist = self.history[self.current_history]
-        self.history_change = True
+        lang_hist = self.translator.history[self.current_history]
+        self.no_retranslate = True
         self.src_lang_selector.set_property('selected',
                                             lang_hist['Languages'][0])
         self.dest_lang_selector.set_property('selected',
                                              lang_hist['Languages'][1])
-        self.history_change = False
+        self.no_retranslate = False
         self.src_buffer.set_text(lang_hist['Text'][0])
         self.dest_buffer.set_text(lang_hist['Text'][1])
 
@@ -662,9 +721,9 @@ class DialectWindow(Handy.ApplicationWindow):
             True
         )
         if (
-            self.history[self.current_history]['Languages'][0] == src_language
-            and self.history[self.current_history]['Languages'][1] == dest_language
-            and self.history[self.current_history]['Text'][0] == src_text
+            self.translator.history[self.current_history]['Languages'][0] == src_language
+            and self.translator.history[self.current_history]['Languages'][1] == dest_language
+            and self.translator.history[self.current_history]['Text'][0] == src_text
             and not self.trans_failed
         ):
             return True
@@ -672,7 +731,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def translation(self, _button):
         # If it's like the last translation then it's useless to continue
-        if len(self.history) == 0 or not self.appeared_before():
+        if len(self.translator.history) == 0 or not self.appeared_before():
             src_text = self.src_buffer.get_text(
                 self.src_buffer.get_start_iter(),
                 self.src_buffer.get_end_iter(),
@@ -700,6 +759,18 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.active_thread = threading.Thread(target=self.run_translation, daemon=True)
                 self.active_thread.start()
 
+    def change_backends(self, backend):
+        self.set_property('backend-loading', True)
+
+        # Save previous backend settings
+        self.save_translator_settings()
+
+        # Load translator
+        threading.Thread(target=self.load_translator,
+                         args=[backend],
+                         daemon=True
+        ).start()
+
     def run_translation(self):
         def on_trans_failed():
             self.trans_warning.show()
@@ -717,7 +788,7 @@ class DialectWindow(Handy.ApplicationWindow):
             self.langs_button_box.set_sensitive(True)
 
         def on_mistakes():
-            if self.trans_mistakes is not None:
+            if self.trans_mistakes is not None and self.translator.supported_features['mistakes']:
                 self.mistakes_label.set_markup(_('Did you mean: ') + f'<a href="#">{self.trans_mistakes[0]}</a>')
                 self.mistakes.set_revealed(True)
             elif self.mistakes.get_revealed():
@@ -725,7 +796,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
         def on_pronunciation():
             reveal = self.settings.get_boolean('show-pronunciation')
-            if self.trans_pronunciation is not None:
+            if self.trans_pronunciation is not None and self.translator.supported_features['pronunciation']:
                 self.pronunciation_label.set_text(self.trans_pronunciation)
                 self.pronunciation_revealer.set_reveal_child(reveal)
             elif self.pronunciation_revealer.get_reveal_child():
@@ -742,10 +813,15 @@ class DialectWindow(Handy.ApplicationWindow):
                     src_language = self.translator.detect(src_text).lang
                     if isinstance(src_language, list):
                         src_language = src_language[0]
-                    GLib.idle_add(self.src_lang_selector.set_property,
-                                  'selected', src_language)
-                    if src_language not in self.src_langs:
-                        self.src_langs[0] = src_language
+                    if src_language in self.translator.languages.keys():
+                        self.no_retranslate = True
+                        GLib.idle_add(self.src_lang_selector.set_property,
+                                      'selected', src_language)
+                        self.no_retranslate = False
+                        if src_language not in self.src_langs:
+                            self.src_langs[0] = src_language
+                    else:
+                        src_language = 'auto'
                 except Exception:
                     self.trans_failed = True
             # If the two languages are the same, nothing is done
