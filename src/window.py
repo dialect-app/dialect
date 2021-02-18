@@ -22,6 +22,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
     # Get widgets
     main_stack = Gtk.Template.Child()
+    error_message = Gtk.Template.Child()
     translator_box = Gtk.Template.Child()
 
     title_stack = Gtk.Template.Child()
@@ -140,7 +141,6 @@ class DialectWindow(Handy.ApplicationWindow):
         # Get languages available for speech
         threading.Thread(target=self.load_lang_speech, daemon=True).start()
 
-
     def load_translator(self, backend):
         def update_ui():
             # Supported features
@@ -169,21 +169,29 @@ class DialectWindow(Handy.ApplicationWindow):
         # Show loading view
         GLib.idle_add(self.main_stack.set_visible_child_name, 'loading')
 
-        # Translator object
-        if TRANSLATORS[backend].supported_features['change-instance']:
-            self.translator = TRANSLATORS[backend](
-                base_url=self.settings.get_string(f'{TRANSLATORS[backend].name}-instance')
-            )
-        else:
-            self.translator = TRANSLATORS[backend]()
+        try:
+            # Translator object
+            if TRANSLATORS[backend].supported_features['change-instance']:
+                self.translator = TRANSLATORS[backend](
+                    base_url=self.settings.get_string(f'{TRANSLATORS[backend].name}-instance')
+                )
+            else:
+                self.translator = TRANSLATORS[backend]()
 
-        # Get saved languages
-        self.src_langs = list(self.settings.get_value(f'{self.translator.name}-src-langs'))
-        self.dest_langs = list(self.settings.get_value(f'{self.translator.name}-dest-langs'))
+            # Get saved languages
+            self.src_langs = list(self.settings.get_value(f'{self.translator.name}-src-langs'))
+            self.dest_langs = list(self.settings.get_value(f'{self.translator.name}-dest-langs'))
 
-        # Update UI
-        GLib.idle_add(update_ui)
+            # Update UI
+            GLib.idle_add(update_ui)
 
+        except Exception as exc:
+            # Show error view
+            GLib.idle_add(self.main_stack.set_visible_child_name, 'error')
+            GLib.idle_add(self.set_property, 'backend-loading', False)
+
+            self.error_message.set_label(str(exc))
+            print('Error: ' + str(exc))
 
     def on_listen_failed(self):
         self.voice_btn.set_image(self.voice_warning)
