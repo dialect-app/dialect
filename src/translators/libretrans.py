@@ -28,10 +28,9 @@ class LibreTranslator(TranslatorBase):
             self.base_url = base_url
 
         self.client = httpx.Client()
-        try:
-            r = self.client.get(self.lang_url)
-        except:
-            r = self.client.get('https://translate.astian.org/languages')
+
+        r = self.client.get(self.lang_url)
+
         for lang in r.json():
             self.languages[lang['code']] = lang['name']
 

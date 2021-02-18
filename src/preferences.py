@@ -24,6 +24,11 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
     backend = Gtk.Template.Child()
     backend_instance = Gtk.Template.Child()
     backend_instance_row = Gtk.Template.Child()
+    backend_instance_stack = Gtk.Template.Child()
+    backend_instance_label = Gtk.Template.Child()
+    backend_instance_edit = Gtk.Template.Child()
+    backend_instance_save = Gtk.Template.Child()
+    backend_instance_reset = Gtk.Template.Child()
     search_provider = Gtk.Template.Child()
 
     def __init__(self, parent, settings, **kwargs):
@@ -77,18 +82,22 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         self.parent.connect('notify::backend-loading', self._on_backend_loading)
 
         # Change translator instance
-        self.backend_instance.connect('changed', self._change_backend_instance)
+        self.settings.connect('changed', self._on_settings_changed)
+        self.backend_instance_edit.connect('clicked', self._on_edit_backend_instance)
+        self.backend_instance_save.connect('clicked', self._on_save_backend_instance)
+        self.backend_instance_reset.connect('clicked', self._on_reset_backend_instance)
         self.__check_instance_support()
 
         # Search Provider
         if os.getenv('XDG_CURRENT_DESKTOP') != 'GNOME':
             self.search_provider.hide()
 
-    def _change_backend_instance(self, _entry):
-        if self.parent.translator.supported_features['change-instance']:
-            self.parent.translator.base_url = self.settings.get_string(
-                f'{self.parent.translator.name}-instance'
-            )
+    def _on_settings_changed(self, _settings, key):
+        backend = self.backend.get_selected_index()
+        if key == f'{TRANSLATORS[backend].name}-instance':
+            if TRANSLATORS[backend].supported_features['change-instance']:
+                # Update backend
+                self.parent._change_backends(backend)
 
     def _toggle_dark_mode(self, switch, _active):
         gtk_settings = Gtk.Settings.get_default()
@@ -106,11 +115,33 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         self.backend.set_sensitive(not window.get_property('backend-loading'))
         self.backend_instance_row.set_sensitive(not window.get_property('backend-loading'))
 
+    def _on_edit_backend_instance(self, _button):
+        backend = self.backend.get_selected_index()
+        self.backend_instance_stack.set_visible_child_name('edit')
+        self.backend_instance.set_text(self.settings.get_string(f'{TRANSLATORS[backend].name}-instance'))
+
+    def _on_save_backend_instance(self, _button):
+        backend = self.backend.get_selected_index()
+        old_value = self.settings.get_string(f'{TRANSLATORS[backend].name}-instance')
+        new_value = self.backend_instance.get_text()
+        if new_value != old_value:
+            # TODO: Valdiate new value
+
+            self.settings.set_string(f'{TRANSLATORS[backend].name}-instance', new_value)
+
+        self.backend_instance_stack.set_visible_child_name('view')
+
+    def _on_reset_backend_instance(self, _button):
+        backend = self.backend.get_selected_index()
+        self.settings.reset(f'{TRANSLATORS[backend].name}-instance')
+        self.backend_instance_stack.set_visible_child_name('view')
+
     def __check_instance_support(self):
-        value = self.backend.get_selected_index()
-        if TRANSLATORS[value].supported_features['change-instance']:
+        backend = self.backend.get_selected_index()
+        if TRANSLATORS[backend].supported_features['change-instance']:
             self.backend_instance_row.set_visible(True)
-            self.settings.bind(f'{TRANSLATORS[value].name}-instance', self.backend_instance,
-                               'text', Gio.SettingsBindFlags.DEFAULT)
+            self.settings.bind(f'{TRANSLATORS[backend].name}-instance', self.backend_instance_label,
+                               'label', Gio.SettingsBindFlags.DEFAULT)
+
         else:
             self.backend_instance_row.set_visible(False)
