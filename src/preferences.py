@@ -91,8 +91,10 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
 
         self.instance_save_image = Gtk.Image.new_from_icon_name(
             'emblem-ok-symbolic', Gtk.IconSize.BUTTON)
-        self.backend_instance_save.set_image(self.instance_save_image)
+        self.backend_instance_save.add(self.instance_save_image)
         self.instance_save_spinner = Gtk.Spinner()
+        self.instance_save_image.show()
+        self.instance_save_spinner.show()
 
         # Search Provider
         if os.getenv('XDG_CURRENT_DESKTOP') != 'GNOME':
@@ -160,12 +162,14 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
     def __validate_new_backend_instance(self, url):
         def spinner_start():
             self.backend_instance_save.set_sensitive(False)
-            self.backend_instance_save.set_image(self.instance_save_spinner)
+            self.backend_instance_save.remove(self.instance_save_image)
+            self.backend_instance_save.add(self.instance_save_spinner)
             self.instance_save_spinner.start()
 
         def spinner_end():
             self.backend_instance_save.set_sensitive(True)
-            self.backend_instance_save.set_image(self.instance_save_image)
+            self.backend_instance_save.remove(self.instance_save_spinner)
+            self.backend_instance_save.add(self.instance_save_image)
             self.instance_save_spinner.stop()
 
         GLib.idle_add(spinner_start)
@@ -180,4 +184,3 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
             GLib.idle_add(Gtk.StyleContext.add_class, self.backend_instance.get_style_context(), 'error')
 
         GLib.idle_add(spinner_end)
-
