@@ -181,12 +181,14 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
 
     def __validate_new_backend_instance(self, url):
         def spinner_start():
+            self.backend.set_sensitive(False)
             self.backend_instance_edit_box.set_sensitive(False)
             self.backend_instance_save.remove(self.instance_save_image)
             self.backend_instance_save.add(self.instance_save_spinner)
             self.instance_save_spinner.start()
 
         def spinner_end():
+            self.backend.set_sensitive(True)
             self.backend_instance_edit_box.set_sensitive(True)
             self.backend_instance_save.remove(self.instance_save_spinner)
             self.backend_instance_save.add(self.instance_save_image)
