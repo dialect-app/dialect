@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-19 10:50-0500\n"
-"PO-Revision-Date: 2021-02-19 10:59-0500\n"
+"PO-Revision-Date: 2021-02-19 11:11-0500\n"
 "Last-Translator: Rafael Mardojai CM <mardojai.cardenas@gmail.com>\n"
 "Language-Team: Spanish; Castilian <mardojai.cardenas@gmail.com>\n"
 "Language: es\n"
@@ -29,7 +29,7 @@ msgstr "Dialect"
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
 msgid "Translate between languages"
-msgstr ""
+msgstr "Traduce entre idiomas"
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
