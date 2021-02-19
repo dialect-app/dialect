@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-19 10:50-0500\n"
-"PO-Revision-Date: 2021-02-19 20:54+0300\n"
+"PO-Revision-Date: 2021-02-19 21:01+0300\n"
 "Last-Translator: Nikita Kravets <k.qovekt@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -141,7 +141,7 @@ msgstr "Переводчик"
 
 #: data/resources/preferences.ui:62
 msgid "Choose from the available translation services."
-msgstr "Выберите один из доступных сервисов перевода."
+msgstr "Выберите один из доступных сервисов."
 
 #: data/resources/preferences.ui:68
 msgid "Translator Instance"
