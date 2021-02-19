@@ -2,14 +2,14 @@
 # Copyright (C) 2020 THE dialect'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the dialect package.
 # Automatically generated, 2020.
-# Rafael Mardojai CM <mardojai.cardenas@gmail.com>, 2020.
+# Rafael Mardojai CM <mardojai.cardenas@gmail.com>, 2020-2021.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-19 10:50-0500\n"
-"PO-Revision-Date: 2020-11-01 15:48-0500\n"
+"PO-Revision-Date: 2021-02-19 10:59-0500\n"
 "Last-Translator: Rafael Mardojai CM <mardojai.cardenas@gmail.com>\n"
 "Language-Team: Spanish; Castilian <mardojai.cardenas@gmail.com>\n"
 "Language: es\n"
@@ -37,24 +37,24 @@ msgid "translate;translation;"
 msgstr "translate;translation;traducir;traductor;"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:9
-#, fuzzy
 msgid "A translation app for GNOME."
-msgstr "Una aplicación de traducción para GNOME"
+msgstr "Una aplicación de traducción para GNOME."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
 msgstr "Características:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
-#, fuzzy
 msgid "Translation based on an unofficial API for Google Translate"
-msgstr "Una aplicación de traducción para GNOME basada en Google Translate."
+msgstr "Traducción basada en una API no oficial de Google Translate."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid ""
 "Translation based on the LibreTranslate API, allowing you use any instance "
 "available online"
 msgstr ""
+"Traducción basada en la API de LibreTranslate, permitiendo el uso de "
+"cualquier instancia disponible en linea"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
@@ -95,7 +95,7 @@ msgstr "Rafael Mardojai CM"
 
 #: data/resources/menu.ui:7
 msgid "Show Pronunciation"
-msgstr ""
+msgstr "Mostrar pronunciación"
 
 #: data/resources/menu.ui:14
 msgid "Preferences"
@@ -138,34 +138,32 @@ msgid "Unselected choice will be used for line break."
 msgstr "La opción no seleccionada se utilizará para nueva línea."
 
 #: data/resources/preferences.ui:61
-#, fuzzy
 msgid "Translator"
-msgstr "Traducir"
+msgstr "Traductor"
 
 #: data/resources/preferences.ui:62
 msgid "Choose from the available translation services."
-msgstr ""
+msgstr "Elige entre los servicios de traducción disponibles."
 
 #: data/resources/preferences.ui:68
-#, fuzzy
 msgid "Translator Instance"
-msgstr "Atajo de Traducción"
+msgstr "Instancia de traductor"
 
 #: data/resources/preferences.ui:69
 msgid "Specify URL of translation service."
-msgstr ""
+msgstr "Establece una URL del servicio de traducción."
 
 #: data/resources/preferences.ui:94
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
 #: data/resources/preferences.ui:128
 msgid "Reset to default"
-msgstr ""
+msgstr "Restablecer al valor por defecto"
 
 #: data/resources/preferences.ui:143
 msgid "Save"
-msgstr ""
+msgstr "Guardar"
 
 #: data/resources/preferences.ui:162
 msgid "Search Provider"
@@ -205,20 +203,19 @@ msgstr "Salir"
 
 #: data/resources/window.ui:42
 msgid "Loading..."
-msgstr ""
+msgstr "Cargando..."
 
 #: data/resources/window.ui:83
 msgid "Failed loading translator backend"
-msgstr ""
+msgstr "Falló la carga del traductor"
 
 #: data/resources/window.ui:108
 msgid "Retry"
-msgstr ""
+msgstr "Reintentar"
 
 #: data/resources/window.ui:115
-#, fuzzy
 msgid "Open preferences"
-msgstr "Preferencias"
+msgstr "Abrir preferencias"
 
 #: data/resources/window.ui:193 data/resources/window.ui:679
 msgid "Switch languages"
@@ -267,7 +264,7 @@ msgstr "No se detectó conexión de red."
 #: src/preferences.py:208
 #, python-brace-format
 msgid "Not a valid {backend} instance"
-msgstr ""
+msgstr "No es una instancia valida de {backend}"
 
 #: src/window.py:207
 msgid "A network issue has occured. Retry?"
