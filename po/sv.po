@@ -1,21 +1,21 @@
 # Swedish translation for Dialect.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the dialect package.
-# Åke Engelbrektson <eson@svenskasprakfiler.se>, 2020
+# Åke Engelbrektson <eson@svenskasprakfiler.se>, 2020, 2021
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-19 10:50-0500\n"
-"PO-Revision-Date: 2020-12-15 11:26+0100\n"
+"PO-Revision-Date: 2021-02-19 17:42+0100\n"
 "Last-Translator: Åke Engelbrektson <eson@svenskasprakfiler.se>\n"
 "Language-Team: Svenska Språkfiler <contactform@svenskasprakfiler.se>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.3\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Translators: Do not translate the app name!
@@ -28,7 +28,7 @@ msgstr "Dialect"
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
 msgid "Translate between languages"
-msgstr ""
+msgstr "Översätt mellan olika språk"
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
@@ -36,24 +36,24 @@ msgid "translate;translation;"
 msgstr "översätt;översättning;"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:9
-#, fuzzy
 msgid "A translation app for GNOME."
-msgstr "Ett översättningsprogram för GNOME"
+msgstr "Ett översättningsprogram för GNOME."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
 msgstr "Funktioner:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
-#, fuzzy
 msgid "Translation based on an unofficial API for Google Translate"
-msgstr "Ett översättningsprogram för GNOME baserat på Google Translate."
+msgstr "Översättning baserad på en inofficiell API för Google Translate"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid ""
 "Translation based on the LibreTranslate API, allowing you use any instance "
 "available online"
 msgstr ""
+"Översättning baserat på LibreTranslate API, låter dig använda valfri instans "
+"tillgänglig på nätet."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
@@ -137,34 +137,32 @@ msgid "Unselected choice will be used for line break."
 msgstr "Oanvänt alternativ kommer att användas för radbrytning."
 
 #: data/resources/preferences.ui:61
-#, fuzzy
 msgid "Translator"
-msgstr "Översätt"
+msgstr "Översättare"
 
 #: data/resources/preferences.ui:62
 msgid "Choose from the available translation services."
-msgstr ""
+msgstr "Välj mellan tillgängliga översättningstjänster."
 
 #: data/resources/preferences.ui:68
-#, fuzzy
 msgid "Translator Instance"
-msgstr "Översätt"
+msgstr "Översättarinstans"
 
 #: data/resources/preferences.ui:69
 msgid "Specify URL of translation service."
-msgstr ""
+msgstr "Ange URL till översättningstjänst."
 
 #: data/resources/preferences.ui:94
 msgid "Edit"
-msgstr ""
+msgstr "Redigera"
 
 #: data/resources/preferences.ui:128
 msgid "Reset to default"
-msgstr ""
+msgstr "Återställ till standard"
 
 #: data/resources/preferences.ui:143
 msgid "Save"
-msgstr ""
+msgstr "Spara"
 
 #: data/resources/preferences.ui:162
 msgid "Search Provider"
@@ -204,20 +202,19 @@ msgstr "Avsluta"
 
 #: data/resources/window.ui:42
 msgid "Loading..."
-msgstr ""
+msgstr "Läser in..."
 
 #: data/resources/window.ui:83
 msgid "Failed loading translator backend"
-msgstr ""
+msgstr "Kunde inte läsa in översättarens serverdel"
 
 #: data/resources/window.ui:108
 msgid "Retry"
-msgstr ""
+msgstr "Försök igen"
 
 #: data/resources/window.ui:115
-#, fuzzy
 msgid "Open preferences"
-msgstr "Inställningar"
+msgstr "Öppna inställningarna"
 
 #: data/resources/window.ui:193 data/resources/window.ui:679
 msgid "Switch languages"
@@ -266,7 +263,7 @@ msgstr "Ingen nätverksanslutning identifierad."
 #: src/preferences.py:208
 #, python-brace-format
 msgid "Not a valid {backend} instance"
-msgstr ""
+msgstr "Ingen giltig {backend}-instans"
 
 #: src/window.py:207
 msgid "A network issue has occured. Retry?"
