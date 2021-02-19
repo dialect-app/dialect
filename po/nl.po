@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-19 10:50-0500\n"
-"PO-Revision-Date: 2021-02-11 19:15+0100\n"
+"PO-Revision-Date: 2021-02-19 19:19+0100\n"
 "Last-Translator: Heimen Stoffels <vistausss@outlook.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -36,24 +36,24 @@ msgid "translate;translation;"
 msgstr "vertaal;vertalen;vertaling;"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:9
-#, fuzzy
 msgid "A translation app for GNOME."
-msgstr "Een vertaaltoepassing voor GNOME, gebaseerd op Google Vertalen."
+msgstr "Een vertaaltoepassing voor GNOME."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
 msgstr "Kenmerken:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
-#, fuzzy
 msgid "Translation based on an unofficial API for Google Translate"
-msgstr "Een vertaaltoepassing voor GNOME, gebaseerd op Google Vertalen."
+msgstr "Vertaling op basis van een onofficiële Google Vertalen-api"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid ""
 "Translation based on the LibreTranslate API, allowing you use any instance "
 "available online"
 msgstr ""
+"Vertaling op basis van de LibreTranslate-api, welke je elke beschikbare "
+"online-dienst laat gebruiken"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
@@ -138,34 +138,32 @@ msgid "Unselected choice will be used for line break."
 msgstr "De niet-geselecteerde keuze wordt gebruikt voor regelafbreking."
 
 #: data/resources/preferences.ui:61
-#, fuzzy
 msgid "Translator"
-msgstr "Vertalen"
+msgstr "Vertaler"
 
 #: data/resources/preferences.ui:62
 msgid "Choose from the available translation services."
-msgstr ""
+msgstr "Kies één van de beschikbare taaldiensten."
 
 #: data/resources/preferences.ui:68
-#, fuzzy
 msgid "Translator Instance"
-msgstr "Vertalen"
+msgstr "Vertaalproces"
 
 #: data/resources/preferences.ui:69
 msgid "Specify URL of translation service."
-msgstr ""
+msgstr "Voer de url van de vertaaldienst in."
 
 #: data/resources/preferences.ui:94
 msgid "Edit"
-msgstr ""
+msgstr "Bewerken"
 
 #: data/resources/preferences.ui:128
 msgid "Reset to default"
-msgstr ""
+msgstr "Standaardwaarden herstellen"
 
 #: data/resources/preferences.ui:143
 msgid "Save"
-msgstr ""
+msgstr "Opslaan"
 
 #: data/resources/preferences.ui:162
 msgid "Search Provider"
@@ -205,20 +203,19 @@ msgstr "Afsluiten"
 
 #: data/resources/window.ui:42
 msgid "Loading..."
-msgstr ""
+msgstr "Bezig met laden..."
 
 #: data/resources/window.ui:83
 msgid "Failed loading translator backend"
-msgstr ""
+msgstr "Het vertaalbackend kan niet worden geladen"
 
 #: data/resources/window.ui:108
 msgid "Retry"
-msgstr ""
+msgstr "Opnieuw proberen"
 
 #: data/resources/window.ui:115
-#, fuzzy
 msgid "Open preferences"
-msgstr "Voorkeuren"
+msgstr "Voorkeuren openen"
 
 #: data/resources/window.ui:193 data/resources/window.ui:679
 msgid "Switch languages"
@@ -267,7 +264,7 @@ msgstr "Je bent niet verbonden met het internet."
 #: src/preferences.py:208
 #, python-brace-format
 msgid "Not a valid {backend} instance"
-msgstr ""
+msgstr "Geen geldig {backend}-proces"
 
 #: src/window.py:207
 msgid "A network issue has occured. Retry?"
