@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-19 00:42+0530\n"
+"POT-Creation-Date: 2021-02-19 10:50-0500\n"
 "PO-Revision-Date: 2020-10-28 17:00+0100\n"
 "Last-Translator: Meskó Balázs <mesko.balazs@fsf.hu>\n"
 "Language-Team: \n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 data/resources/window.ui:51
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 data/resources/window.ui:66
 #: src/main.py:47 src/main.py:68
 msgid "Dialect"
 msgstr "Dialect"
@@ -35,109 +35,53 @@ msgstr ""
 msgid "translate;translation;"
 msgstr "fordítás;"
 
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:9 data/resources/about.ui:12
-msgid "A translation app for GNOME based on Google Translate."
-msgstr "Egy Google Fordítón alapuló fordítóalkalmazás a GNOME-hoz."
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:9
+#, fuzzy
+msgid "A translation app for GNOME."
+msgstr "Fordítóalkalmazás a GNOME-hoz"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
 msgstr "Funkciók:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
-msgid "Text translation up to 5000 chars"
-msgstr "Szövegfordítás legfeljebb 5000 karakterig"
+#, fuzzy
+msgid "Translation based on an unofficial API for Google Translate"
+msgstr "Egy Google Fordítón alapuló fordítóalkalmazás a GNOME-hoz."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
+msgid ""
+"Translation based on the LibreTranslate API, allowing you use any instance "
+"available online"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
 msgstr "Szöveg felolvasása"
 
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:18
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Translation history"
 msgstr "Fordítási előzmények"
 
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:19
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:20
 msgid "Automatic language detection"
 msgstr "Automatikus nyelvfelismerés"
 
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:20
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:21
 msgid "Clipboard buttons"
 msgstr "Vágólap gombok"
 
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:25
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:26
 msgid "gi-lom"
 msgstr "gi-lom"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:46
-msgid "Added a shortcuts window"
-msgstr ""
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:47
-#, fuzzy
-msgid "Added Indonesian translation"
-msgstr "Előző fordítás"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:48
-#, fuzzy
-msgid "Added Portugese (BR) translation"
-msgstr "Előző fordítás"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:49
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:65
-msgid "Fixed several bugs"
-msgstr ""
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:56
-msgid "Added a search provider for GNOME"
-msgstr ""
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:57
-msgid "Added support for \"Did you mean\" suggestions"
-msgstr ""
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:58
-msgid "Added a Ctrl+Q shortcut to quit"
-msgstr ""
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:59
-#, fuzzy
-msgid "Added Hungarian translation"
-msgstr "Következő fordítás"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:60
-#, fuzzy
-msgid "Added Italian translation"
-msgstr "Következő fordítás"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:61
-#, fuzzy
-msgid "Added Persian translation"
-msgstr "Előző fordítás"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:62
-#, fuzzy
-msgid "Added Russian translation"
-msgstr "Előző fordítás"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:63
-#, fuzzy
-msgid "Added Turkish translation"
-msgstr "Előző fordítás"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:64
-msgid "Fixed some issues with the icon"
-msgstr ""
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:66
-msgid "Made some minor UI improvements"
-msgstr ""
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:72
-msgid "Initial release."
-msgstr ""
 
 #: data/resources/about.ui:11
 msgid "Copyright 2020 gi-lom"
 msgstr "Copyright 2020 gi-lom"
+
+#: data/resources/about.ui:12
+msgid "A translation app for GNOME based on Google Translate."
+msgstr "Egy Google Fordítón alapuló fordítóalkalmazás a GNOME-hoz."
 
 #: data/resources/about.ui:14
 msgid "Github page"
@@ -261,60 +205,64 @@ msgctxt "shortcuts window"
 msgid "Quit"
 msgstr ""
 
-#: data/resources/window.ui:68
+#: data/resources/window.ui:42
+msgid "Loading..."
+msgstr ""
+
+#: data/resources/window.ui:83
 msgid "Failed loading translator backend"
 msgstr ""
 
-#: data/resources/window.ui:93
+#: data/resources/window.ui:108
 msgid "Retry"
 msgstr ""
 
-#: data/resources/window.ui:100
+#: data/resources/window.ui:115
 #, fuzzy
 msgid "Open preferences"
 msgstr "Beállítások"
 
-#: data/resources/window.ui:178 data/resources/window.ui:664
+#: data/resources/window.ui:193 data/resources/window.ui:679
 msgid "Switch languages"
 msgstr "Nyelvek felcserélése"
 
-#: data/resources/window.ui:258
+#: data/resources/window.ui:273
 msgid "Previous translation"
 msgstr "Előző fordítás"
 
-#: data/resources/window.ui:277
+#: data/resources/window.ui:292
 msgid "Next translation"
 msgstr "Következő fordítás"
 
-#: data/resources/window.ui:437
+#: data/resources/window.ui:452
 msgid "Clear"
 msgstr "Törlés"
 
-#: data/resources/window.ui:452
+#: data/resources/window.ui:467
 msgid "Paste"
 msgstr "Beillesztés"
 
-#: data/resources/window.ui:464
+#: data/resources/window.ui:479
 msgid "Translate"
 msgstr "Fordítás"
 
-#: data/resources/window.ui:541
+#: data/resources/window.ui:556
 msgid "Translation in progress..."
 msgstr "Fordítás folyamatban…"
 
-#: data/resources/window.ui:549
+#: data/resources/window.ui:564
 msgid "Translation seems to have failed"
 msgstr "Úgy tűnik, hogy a fordítás sikertelen"
 
-#: data/resources/window.ui:560
+#: data/resources/window.ui:575
 msgid "Listen"
 msgstr "Meghallgatás"
 
-#: data/resources/window.ui:575
+#: data/resources/window.ui:590
 msgid "Copy"
 msgstr "Másolás"
 
-#: data/resources/window.ui:755
+#: data/resources/window.ui:770
 msgid "No network connection detected."
 msgstr "Nem észlelhető hálózati kapcsolat."
 
@@ -355,8 +303,36 @@ msgstr ""
 msgid "Did you mean: "
 msgstr ""
 
-#~ msgid "A translation app for GNOME"
-#~ msgstr "Fordítóalkalmazás a GNOME-hoz"
+#~ msgid "Text translation up to 5000 chars"
+#~ msgstr "Szövegfordítás legfeljebb 5000 karakterig"
+
+#, fuzzy
+#~ msgid "Added Indonesian translation"
+#~ msgstr "Előző fordítás"
+
+#, fuzzy
+#~ msgid "Added Portugese (BR) translation"
+#~ msgstr "Előző fordítás"
+
+#, fuzzy
+#~ msgid "Added Hungarian translation"
+#~ msgstr "Következő fordítás"
+
+#, fuzzy
+#~ msgid "Added Italian translation"
+#~ msgstr "Következő fordítás"
+
+#, fuzzy
+#~ msgid "Added Persian translation"
+#~ msgstr "Előző fordítás"
+
+#, fuzzy
+#~ msgid "Added Russian translation"
+#~ msgstr "Előző fordítás"
+
+#, fuzzy
+#~ msgid "Added Turkish translation"
+#~ msgstr "Előző fordítás"
 
 #~ msgid "History"
 #~ msgstr "Előzmények"

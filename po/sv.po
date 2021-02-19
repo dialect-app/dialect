@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-19 00:42+0530\n"
+"POT-Creation-Date: 2021-02-19 10:50-0500\n"
 "PO-Revision-Date: 2020-12-15 11:26+0100\n"
 "Last-Translator: Åke Engelbrektson <eson@svenskasprakfiler.se>\n"
 "Language-Team: Svenska Språkfiler <contactform@svenskasprakfiler.se>\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 data/resources/window.ui:51
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 data/resources/window.ui:66
 #: src/main.py:47 src/main.py:68
 msgid "Dialect"
 msgstr "Dialect"
@@ -35,102 +35,53 @@ msgstr ""
 msgid "translate;translation;"
 msgstr "översätt;översättning;"
 
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:9 data/resources/about.ui:12
-msgid "A translation app for GNOME based on Google Translate."
-msgstr "Ett översättningsprogram för GNOME baserat på Google Translate."
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:9
+#, fuzzy
+msgid "A translation app for GNOME."
+msgstr "Ett översättningsprogram för GNOME"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
 msgstr "Funktioner:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
-msgid "Text translation up to 5000 chars"
-msgstr "Textöversättning upp till 5000 tecken"
+#, fuzzy
+msgid "Translation based on an unofficial API for Google Translate"
+msgstr "Ett översättningsprogram för GNOME baserat på Google Translate."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
+msgid ""
+"Translation based on the LibreTranslate API, allowing you use any instance "
+"available online"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
 msgstr "Text till tal"
 
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:18
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Translation history"
 msgstr "Översättningshistorik"
 
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:19
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:20
 msgid "Automatic language detection"
 msgstr "Automatisk språkidentifiering"
 
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:20
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:21
 msgid "Clipboard buttons"
 msgstr "Urklippsknappar"
 
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:25
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:26
 msgid "gi-lom"
 msgstr "gi-lom"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:46
-msgid "Added a shortcuts window"
-msgstr "Lade till ett genvägsfönster"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:47
-msgid "Added Indonesian translation"
-msgstr "Lade till Indonesisk översättning"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:48
-msgid "Added Portugese (BR) translation"
-msgstr "Lade till Portugisisk (BR) översättning"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:49
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:65
-msgid "Fixed several bugs"
-msgstr "Fixade flertal kodfel"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:56
-msgid "Added a search provider for GNOME"
-msgstr "Lade till en sökmotorleverantör för GNOME"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:57
-msgid "Added support for \"Did you mean\" suggestions"
-msgstr "Lade till stöd för \"Menade du\"-förslag"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:58
-msgid "Added a Ctrl+Q shortcut to quit"
-msgstr "Lade till en Ctrl + Q snabbtangent för att avsluta"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:59
-msgid "Added Hungarian translation"
-msgstr "Lade till Ungersk översättning"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:60
-msgid "Added Italian translation"
-msgstr "Lade till Italiensk översättning"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:61
-msgid "Added Persian translation"
-msgstr "Lade till Persisk översättning"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:62
-msgid "Added Russian translation"
-msgstr "Lade till Rysk översättning"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:63
-msgid "Added Turkish translation"
-msgstr "Lade till Turkisk översättning"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:64
-msgid "Fixed some issues with the icon"
-msgstr "Fixade lite problem med ikonen"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:66
-msgid "Made some minor UI improvements"
-msgstr "Gjorde några mindre UI-förbättringar"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:72
-msgid "Initial release."
-msgstr "Första utgåvan."
 
 #: data/resources/about.ui:11
 msgid "Copyright 2020 gi-lom"
 msgstr "Copyright 2020 gi-lom"
+
+#: data/resources/about.ui:12
+msgid "A translation app for GNOME based on Google Translate."
+msgstr "Ett översättningsprogram för GNOME baserat på Google Translate."
 
 #: data/resources/about.ui:14
 msgid "Github page"
@@ -251,60 +202,64 @@ msgctxt "shortcuts window"
 msgid "Quit"
 msgstr "Avsluta"
 
-#: data/resources/window.ui:68
+#: data/resources/window.ui:42
+msgid "Loading..."
+msgstr ""
+
+#: data/resources/window.ui:83
 msgid "Failed loading translator backend"
 msgstr ""
 
-#: data/resources/window.ui:93
+#: data/resources/window.ui:108
 msgid "Retry"
 msgstr ""
 
-#: data/resources/window.ui:100
+#: data/resources/window.ui:115
 #, fuzzy
 msgid "Open preferences"
 msgstr "Inställningar"
 
-#: data/resources/window.ui:178 data/resources/window.ui:664
+#: data/resources/window.ui:193 data/resources/window.ui:679
 msgid "Switch languages"
 msgstr "Växla språk"
 
-#: data/resources/window.ui:258
+#: data/resources/window.ui:273
 msgid "Previous translation"
 msgstr "Föregående översättning"
 
-#: data/resources/window.ui:277
+#: data/resources/window.ui:292
 msgid "Next translation"
 msgstr "Nästa översättning"
 
-#: data/resources/window.ui:437
+#: data/resources/window.ui:452
 msgid "Clear"
 msgstr "Rensa"
 
-#: data/resources/window.ui:452
+#: data/resources/window.ui:467
 msgid "Paste"
 msgstr "Klistra in"
 
-#: data/resources/window.ui:464
+#: data/resources/window.ui:479
 msgid "Translate"
 msgstr "Översätt"
 
-#: data/resources/window.ui:541
+#: data/resources/window.ui:556
 msgid "Translation in progress..."
 msgstr "Översättning pågår..."
 
-#: data/resources/window.ui:549
+#: data/resources/window.ui:564
 msgid "Translation seems to have failed"
 msgstr "Översättningen verkar ha misslyckats"
 
-#: data/resources/window.ui:560
+#: data/resources/window.ui:575
 msgid "Listen"
 msgstr "Lyssna"
 
-#: data/resources/window.ui:575
+#: data/resources/window.ui:590
 msgid "Copy"
 msgstr "Kopiera"
 
-#: data/resources/window.ui:755
+#: data/resources/window.ui:770
 msgid "No network connection detected."
 msgstr "Ingen nätverksanslutning identifierad."
 
@@ -345,5 +300,50 @@ msgstr ""
 msgid "Did you mean: "
 msgstr "Menade du: "
 
-#~ msgid "A translation app for GNOME"
-#~ msgstr "Ett översättningsprogram för GNOME"
+#~ msgid "Text translation up to 5000 chars"
+#~ msgstr "Textöversättning upp till 5000 tecken"
+
+#~ msgid "Added a shortcuts window"
+#~ msgstr "Lade till ett genvägsfönster"
+
+#~ msgid "Added Indonesian translation"
+#~ msgstr "Lade till Indonesisk översättning"
+
+#~ msgid "Added Portugese (BR) translation"
+#~ msgstr "Lade till Portugisisk (BR) översättning"
+
+#~ msgid "Fixed several bugs"
+#~ msgstr "Fixade flertal kodfel"
+
+#~ msgid "Added a search provider for GNOME"
+#~ msgstr "Lade till en sökmotorleverantör för GNOME"
+
+#~ msgid "Added support for \"Did you mean\" suggestions"
+#~ msgstr "Lade till stöd för \"Menade du\"-förslag"
+
+#~ msgid "Added a Ctrl+Q shortcut to quit"
+#~ msgstr "Lade till en Ctrl + Q snabbtangent för att avsluta"
+
+#~ msgid "Added Hungarian translation"
+#~ msgstr "Lade till Ungersk översättning"
+
+#~ msgid "Added Italian translation"
+#~ msgstr "Lade till Italiensk översättning"
+
+#~ msgid "Added Persian translation"
+#~ msgstr "Lade till Persisk översättning"
+
+#~ msgid "Added Russian translation"
+#~ msgstr "Lade till Rysk översättning"
+
+#~ msgid "Added Turkish translation"
+#~ msgstr "Lade till Turkisk översättning"
+
+#~ msgid "Fixed some issues with the icon"
+#~ msgstr "Fixade lite problem med ikonen"
+
+#~ msgid "Made some minor UI improvements"
+#~ msgstr "Gjorde några mindre UI-förbättringar"
+
+#~ msgid "Initial release."
+#~ msgstr "Första utgåvan."

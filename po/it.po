@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-19 00:42+0530\n"
+"POT-Creation-Date: 2021-02-19 10:50-0500\n"
 "PO-Revision-Date: 2020-12-08 10:06+0100\n"
 "Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 data/resources/window.ui:51
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:6 data/resources/window.ui:66
 #: src/main.py:47 src/main.py:68
 msgid "Dialect"
 msgstr "Dialect"
@@ -33,106 +33,53 @@ msgstr ""
 msgid "translate;translation;"
 msgstr "tradurre; traduzione;"
 
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:9 data/resources/about.ui:12
-msgid "A translation app for GNOME based on Google Translate."
-msgstr "Un'app di traduzione per GNOME basata su Google Translate."
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:9
+#, fuzzy
+msgid "A translation app for GNOME."
+msgstr "Un'app di traduzione per GNOME"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
 msgstr "Caratteristiche:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
-msgid "Text translation up to 5000 chars"
-msgstr "Traduzione del testo fino a 5000 caratteri"
+#, fuzzy
+msgid "Translation based on an unofficial API for Google Translate"
+msgstr "Un'app di traduzione per GNOME basata su Google Translate."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
+msgid ""
+"Translation based on the LibreTranslate API, allowing you use any instance "
+"available online"
+msgstr ""
+
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
 msgstr "Text to speech"
 
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:18
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Translation history"
 msgstr "Cronologia traduzione"
 
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:19
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:20
 msgid "Automatic language detection"
 msgstr "Rilevamento automatico della lingua"
 
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:20
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:21
 msgid "Clipboard buttons"
 msgstr "Pulsanti degli appunti"
 
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:25
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:26
 msgid "gi-lom"
 msgstr "gi-lom"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:46
-#, fuzzy
-msgid "Added a shortcuts window"
-msgstr "Aggiunta una scorciatoia Ctrl + Q per uscire"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:47
-#, fuzzy
-msgid "Added Indonesian translation"
-msgstr "Aggiunta traduzione in Persiano"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:48
-#, fuzzy
-msgid "Added Portugese (BR) translation"
-msgstr "Aggiunta traduzione in Persiano"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:49
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:65
-msgid "Fixed several bugs"
-msgstr "Risolti diversi bug"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:56
-msgid "Added a search provider for GNOME"
-msgstr "Aggiunto un provider di ricerca per GNOME"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:57
-msgid "Added support for \"Did you mean\" suggestions"
-msgstr "Aggiunto supporto per i suggerimenti di \"Forse cercavi\""
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:58
-msgid "Added a Ctrl+Q shortcut to quit"
-msgstr "Aggiunta una scorciatoia Ctrl + Q per uscire"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:59
-msgid "Added Hungarian translation"
-msgstr "Aggiunta traduzione in Ungherese"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:60
-msgid "Added Italian translation"
-msgstr "Aggiunta traduzione in Italiano"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:61
-msgid "Added Persian translation"
-msgstr "Aggiunta traduzione in Persiano"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:62
-msgid "Added Russian translation"
-msgstr "Aggiunta traduzione in Russo"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:63
-msgid "Added Turkish translation"
-msgstr "Aggiunta traduzione in Turco"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:64
-msgid "Fixed some issues with the icon"
-msgstr "Risolti alcuni problemi con l'icona"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:66
-msgid "Made some minor UI improvements"
-msgstr ""
-"Sono stati apportati alcuni miglioramenti minori all'interfaccia utente"
-
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:72
-msgid "Initial release."
-msgstr "Versione iniziale."
 
 #: data/resources/about.ui:11
 msgid "Copyright 2020 gi-lom"
 msgstr "Copyright 2020 gi-lom"
+
+#: data/resources/about.ui:12
+msgid "A translation app for GNOME based on Google Translate."
+msgstr "Un'app di traduzione per GNOME basata su Google Translate."
 
 #: data/resources/about.ui:14
 msgid "Github page"
@@ -254,60 +201,64 @@ msgctxt "shortcuts window"
 msgid "Quit"
 msgstr "Esci"
 
-#: data/resources/window.ui:68
+#: data/resources/window.ui:42
+msgid "Loading..."
+msgstr ""
+
+#: data/resources/window.ui:83
 msgid "Failed loading translator backend"
 msgstr ""
 
-#: data/resources/window.ui:93
+#: data/resources/window.ui:108
 msgid "Retry"
 msgstr ""
 
-#: data/resources/window.ui:100
+#: data/resources/window.ui:115
 #, fuzzy
 msgid "Open preferences"
 msgstr "Preferenze"
 
-#: data/resources/window.ui:178 data/resources/window.ui:664
+#: data/resources/window.ui:193 data/resources/window.ui:679
 msgid "Switch languages"
 msgstr "Cambia lingua"
 
-#: data/resources/window.ui:258
+#: data/resources/window.ui:273
 msgid "Previous translation"
 msgstr "Traduzione precedente"
 
-#: data/resources/window.ui:277
+#: data/resources/window.ui:292
 msgid "Next translation"
 msgstr "Prossima traduzione"
 
-#: data/resources/window.ui:437
+#: data/resources/window.ui:452
 msgid "Clear"
 msgstr "Pulisci"
 
-#: data/resources/window.ui:452
+#: data/resources/window.ui:467
 msgid "Paste"
 msgstr "Incolla"
 
-#: data/resources/window.ui:464
+#: data/resources/window.ui:479
 msgid "Translate"
 msgstr "Traduci"
 
-#: data/resources/window.ui:541
+#: data/resources/window.ui:556
 msgid "Translation in progress..."
 msgstr "Traduzione in corso..."
 
-#: data/resources/window.ui:549
+#: data/resources/window.ui:564
 msgid "Translation seems to have failed"
 msgstr "La traduzione sembra essere fallita"
 
-#: data/resources/window.ui:560
+#: data/resources/window.ui:575
 msgid "Listen"
 msgstr "Ascolta"
 
-#: data/resources/window.ui:575
+#: data/resources/window.ui:590
 msgid "Copy"
 msgstr "Copia"
 
-#: data/resources/window.ui:755
+#: data/resources/window.ui:770
 msgid "No network connection detected."
 msgstr "Nessuna connessione di rete rilevata."
 
@@ -348,8 +299,57 @@ msgstr ""
 msgid "Did you mean: "
 msgstr "Forse cercavi:"
 
-#~ msgid "A translation app for GNOME"
-#~ msgstr "Un'app di traduzione per GNOME"
+#~ msgid "Text translation up to 5000 chars"
+#~ msgstr "Traduzione del testo fino a 5000 caratteri"
+
+#, fuzzy
+#~ msgid "Added a shortcuts window"
+#~ msgstr "Aggiunta una scorciatoia Ctrl + Q per uscire"
+
+#, fuzzy
+#~ msgid "Added Indonesian translation"
+#~ msgstr "Aggiunta traduzione in Persiano"
+
+#, fuzzy
+#~ msgid "Added Portugese (BR) translation"
+#~ msgstr "Aggiunta traduzione in Persiano"
+
+#~ msgid "Fixed several bugs"
+#~ msgstr "Risolti diversi bug"
+
+#~ msgid "Added a search provider for GNOME"
+#~ msgstr "Aggiunto un provider di ricerca per GNOME"
+
+#~ msgid "Added support for \"Did you mean\" suggestions"
+#~ msgstr "Aggiunto supporto per i suggerimenti di \"Forse cercavi\""
+
+#~ msgid "Added a Ctrl+Q shortcut to quit"
+#~ msgstr "Aggiunta una scorciatoia Ctrl + Q per uscire"
+
+#~ msgid "Added Hungarian translation"
+#~ msgstr "Aggiunta traduzione in Ungherese"
+
+#~ msgid "Added Italian translation"
+#~ msgstr "Aggiunta traduzione in Italiano"
+
+#~ msgid "Added Persian translation"
+#~ msgstr "Aggiunta traduzione in Persiano"
+
+#~ msgid "Added Russian translation"
+#~ msgstr "Aggiunta traduzione in Russo"
+
+#~ msgid "Added Turkish translation"
+#~ msgstr "Aggiunta traduzione in Turco"
+
+#~ msgid "Fixed some issues with the icon"
+#~ msgstr "Risolti alcuni problemi con l'icona"
+
+#~ msgid "Made some minor UI improvements"
+#~ msgstr ""
+#~ "Sono stati apportati alcuni miglioramenti minori all'interfaccia utente"
+
+#~ msgid "Initial release."
+#~ msgstr "Versione iniziale."
 
 #~ msgid "History"
 #~ msgstr "Cronologia"
