@@ -21,15 +21,30 @@
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="orientation">vertical</property>
+                <property name="spacing">12</property>
+                <property name="margin">12</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
                 <child>
                   <object class="GtkSpinner">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="active">True</property>
+                    <property name="width_request">32</property>
+                    <property name="height_request">32</property>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="wrap">True</property>
+                    <property name="label" translatable="yes">Loading...</property>
+                    <attributes>
+                      <attribute name="scale" value="2"/>
+                      <attribute name="weight" value="bold"/>
+                    </attributes>
+                  </object>
                 </child>
               </object>
             </child>
