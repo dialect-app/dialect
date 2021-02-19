@@ -7,13 +7,14 @@
   <summary>Translate between languages</summary>
   <description>
     <p>
-      A translation app for GNOME based on Google Translate.
+      A translation app for GNOME.
     </p>
     <p>
       Features:
     </p>
     <ul>
-      <li>Text translation up to 5000 chars</li>
+      <li>Translation based on an unofficial API for Google Translate</li>
+      <li>Translation based on the LibreTranslate API, allowing you use any instance available online</li>
       <li>Text to speech</li>
       <li>Translation history</li>
       <li>Automatic language detection</li>

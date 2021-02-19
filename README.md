@@ -2,13 +2,14 @@
 
 # Dialect
 
-A translation app for GNOME based on Google Translate.
+A translation app for GNOME.
 
 ![Dialect](preview.png?raw=true)
 
 ## Features
 
 - Translation based on the [googletrans](https://github.com/ssut/py-googletrans) Python API, an unofficial API for Google Translate
+- Translation based on the LibreTranslate API, allowing you use any instance available online
 - Translation history
 - Automatic language detection
 - Text to speech
