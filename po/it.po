@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the dialect package.
-# ALBANO BATTISTELLA <albano_battistella@hotmail.com>, 2020.
+# ALBANO BATTISTELLA <albano_battistella@hotmail.com>, 2020,2021.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-19 10:50-0500\n"
-"PO-Revision-Date: 2020-12-08 10:06+0100\n"
+"PO-Revision-Date: 2021-02-19 19:06+0100\n"
 "Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <LL@li.org>\n"
 "Language: it\n"
@@ -26,7 +26,7 @@ msgstr "Dialect"
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
 msgid "Translate between languages"
-msgstr ""
+msgstr "Traduci tra le lingue"
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
@@ -34,24 +34,24 @@ msgid "translate;translation;"
 msgstr "tradurre; traduzione;"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:9
-#, fuzzy
 msgid "A translation app for GNOME."
-msgstr "Un'app di traduzione per GNOME"
+msgstr "Un'app di traduzione per GNOME."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
 msgstr "Caratteristiche:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
-#, fuzzy
 msgid "Translation based on an unofficial API for Google Translate"
-msgstr "Un'app di traduzione per GNOME basata su Google Translate."
+msgstr "Traduzione basata su un'API non ufficiale per Google Translate"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid ""
 "Translation based on the LibreTranslate API, allowing you use any instance "
 "available online"
 msgstr ""
+"Traduzione basata sull'API LibreTranslate, che ti consente di utilizzare qualsiasi istanza "
+"disponibile online"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
@@ -92,7 +92,7 @@ msgstr "Albano Battistella"
 
 #: data/resources/menu.ui:7
 msgid "Show Pronunciation"
-msgstr ""
+msgstr "Mostra pronuncia"
 
 #: data/resources/menu.ui:14
 msgid "Preferences"
@@ -136,34 +136,32 @@ msgid "Unselected choice will be used for line break."
 msgstr "La scelta non selezionata verrà utilizzata per l'interruzione di linea"
 
 #: data/resources/preferences.ui:61
-#, fuzzy
 msgid "Translator"
-msgstr "Traduci"
+msgstr "Albano Battistella"
 
 #: data/resources/preferences.ui:62
 msgid "Choose from the available translation services."
-msgstr ""
+msgstr "Scegli tra i servizi di traduzione disponibili."
 
 #: data/resources/preferences.ui:68
-#, fuzzy
 msgid "Translator Instance"
-msgstr "Accellera Traduzione"
+msgstr "Istanza del traduttore"
 
 #: data/resources/preferences.ui:69
 msgid "Specify URL of translation service."
-msgstr ""
+msgstr "Specifica l'URL del servizio di traduzione."
 
 #: data/resources/preferences.ui:94
 msgid "Edit"
-msgstr ""
+msgstr "Modifica"
 
 #: data/resources/preferences.ui:128
 msgid "Reset to default"
-msgstr ""
+msgstr "Ripristina le impostazioni predefinite"
 
 #: data/resources/preferences.ui:143
 msgid "Save"
-msgstr ""
+msgstr "Salva"
 
 #: data/resources/preferences.ui:162
 msgid "Search Provider"
@@ -203,20 +201,19 @@ msgstr "Esci"
 
 #: data/resources/window.ui:42
 msgid "Loading..."
-msgstr ""
+msgstr "Caricamento in corso..."
 
 #: data/resources/window.ui:83
 msgid "Failed loading translator backend"
-msgstr ""
+msgstr "Impossibile caricare il backend del traduttore"
 
 #: data/resources/window.ui:108
 msgid "Retry"
-msgstr ""
+msgstr "Riprova"
 
 #: data/resources/window.ui:115
-#, fuzzy
 msgid "Open preferences"
-msgstr "Preferenze"
+msgstr "Apri preferenze"
 
 #: data/resources/window.ui:193 data/resources/window.ui:679
 msgid "Switch languages"
@@ -265,7 +262,7 @@ msgstr "Nessuna connessione di rete rilevata."
 #: src/preferences.py:208
 #, python-brace-format
 msgid "Not a valid {backend} instance"
-msgstr ""
+msgstr "Non è un'istanza {backend} valida"
 
 #: src/window.py:207
 msgid "A network issue has occured. Retry?"
@@ -302,17 +299,14 @@ msgstr "Forse cercavi:"
 #~ msgid "Text translation up to 5000 chars"
 #~ msgstr "Traduzione del testo fino a 5000 caratteri"
 
-#, fuzzy
 #~ msgid "Added a shortcuts window"
-#~ msgstr "Aggiunta una scorciatoia Ctrl + Q per uscire"
+#~ msgstr "Aggiunta una finestra di scorciatoie"
 
-#, fuzzy
 #~ msgid "Added Indonesian translation"
-#~ msgstr "Aggiunta traduzione in Persiano"
+#~ msgstr "Aggiunta la traduzione indonesiana"
 
-#, fuzzy
 #~ msgid "Added Portugese (BR) translation"
-#~ msgstr "Aggiunta traduzione in Persiano"
+#~ msgstr "Aggiunta traduzione in Portoghese (BR)"
 
 #~ msgid "Fixed several bugs"
 #~ msgstr "Risolti diversi bug"
