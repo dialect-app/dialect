@@ -1,21 +1,21 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the dialect package.
-# Kukuh Syafaat <kukuhsyafaat@gnome.org>, 2020.
+# Kukuh Syafaat <kukuhsyafaat@gnome.org>, 2020-2021.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-19 10:50-0500\n"
-"PO-Revision-Date: 2020-11-01 17:00+0700\n"
+"PO-Revision-Date: 2021-02-20 00:26+0700\n"
 "Last-Translator: Kukuh Syafaat <kukuhsyafaat@gnome.org>\n"
 "Language-Team: \n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 2.4.2\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. Translators: Do not translate the app name!
@@ -28,7 +28,7 @@ msgstr "Dialect"
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
 msgid "Translate between languages"
-msgstr ""
+msgstr "Terjemahkan antar bahasa"
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
@@ -36,24 +36,24 @@ msgid "translate;translation;"
 msgstr "menerjemahkan;menerjemahkan;"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:9
-#, fuzzy
 msgid "A translation app for GNOME."
-msgstr "Aplikasi terjemahan untuk GNOME"
+msgstr "Aplikasi terjemahan untuk GNOME."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
 msgstr "Fitur:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
-#, fuzzy
 msgid "Translation based on an unofficial API for Google Translate"
-msgstr "Aplikasi terjemahan untuk GNOME berdasarkan Google Terjemahan."
+msgstr "Terjemahan berdasarkan API tidak resmi untuk Google Terjemahan"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid ""
 "Translation based on the LibreTranslate API, allowing you use any instance "
 "available online"
 msgstr ""
+"Terjemahan berdasarkan LibreTranslate API, memungkinkan Anda menggunakan "
+"instance apa pun yang tersedia secara daring"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
@@ -90,11 +90,11 @@ msgstr "Halaman Github"
 #. Replace me with your names.
 #: data/resources/about.ui:19
 msgid "translator-credits"
-msgstr "Kukuh Syafaat <kukuhsyafaat@gnome.org>, 2020."
+msgstr "Kukuh Syafaat <kukuhsyafaat@gnome.org>, 2020-2021."
 
 #: data/resources/menu.ui:7
 msgid "Show Pronunciation"
-msgstr ""
+msgstr "Perlihatkan Pengucapan"
 
 #: data/resources/menu.ui:14
 msgid "Preferences"
@@ -102,7 +102,7 @@ msgstr "Preferensi"
 
 #: data/resources/menu.ui:18
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Pintasan Papan Tik"
 
 #: data/resources/menu.ui:22
 msgid "About Dialect"
@@ -137,34 +137,32 @@ msgid "Unselected choice will be used for line break."
 msgstr "Pilihan yang tidak dipilih akan digunakan untuk hentian baris."
 
 #: data/resources/preferences.ui:61
-#, fuzzy
 msgid "Translator"
-msgstr "Terjemahkan"
+msgstr "Penerjemah"
 
 #: data/resources/preferences.ui:62
 msgid "Choose from the available translation services."
-msgstr ""
+msgstr "Pilih dari layanan terjemahan yang tersedia."
 
 #: data/resources/preferences.ui:68
-#, fuzzy
 msgid "Translator Instance"
-msgstr "Terjemahkan"
+msgstr "Instance Penerjemah"
 
 #: data/resources/preferences.ui:69
 msgid "Specify URL of translation service."
-msgstr ""
+msgstr "Tentukan URL layanan penerjemahan."
 
 #: data/resources/preferences.ui:94
 msgid "Edit"
-msgstr ""
+msgstr "Sunting"
 
 #: data/resources/preferences.ui:128
 msgid "Reset to default"
-msgstr ""
+msgstr "Kembalikan ke bawaan"
 
 #: data/resources/preferences.ui:143
 msgid "Save"
-msgstr ""
+msgstr "Simpan"
 
 #: data/resources/preferences.ui:162
 msgid "Search Provider"
@@ -186,16 +184,14 @@ msgstr ""
 #: data/resources/shortcuts-window.ui:13
 msgctxt "shortcuts window"
 msgid "General"
-msgstr ""
+msgstr "Umum"
 
 #: data/resources/shortcuts-window.ui:17
-#, fuzzy
 msgctxt "shortcuts window"
 msgid "Preferences"
 msgstr "Preferensi"
 
 #: data/resources/shortcuts-window.ui:24
-#, fuzzy
 msgctxt "shortcuts window"
 msgid "Translate"
 msgstr "Terjemahkan"
@@ -203,24 +199,23 @@ msgstr "Terjemahkan"
 #: data/resources/shortcuts-window.ui:31
 msgctxt "shortcuts window"
 msgid "Quit"
-msgstr ""
+msgstr "Keluar"
 
 #: data/resources/window.ui:42
 msgid "Loading..."
-msgstr ""
+msgstr "Memuat..."
 
 #: data/resources/window.ui:83
 msgid "Failed loading translator backend"
-msgstr ""
+msgstr "Gagal memuat backend penerjemah"
 
 #: data/resources/window.ui:108
 msgid "Retry"
-msgstr ""
+msgstr "Coba lagi"
 
 #: data/resources/window.ui:115
-#, fuzzy
 msgid "Open preferences"
-msgstr "Preferensi"
+msgstr "Buka preferensi"
 
 #: data/resources/window.ui:193 data/resources/window.ui:679
 msgid "Switch languages"
@@ -269,7 +264,7 @@ msgstr "Tidak tersedia sambungan jaringan."
 #: src/preferences.py:208
 #, python-brace-format
 msgid "Not a valid {backend} instance"
-msgstr ""
+msgstr "Bukan instance {backend} yang valid"
 
 #: src/window.py:207
 msgid "A network issue has occured. Retry?"
