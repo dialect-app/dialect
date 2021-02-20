@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the dialect package.
-# Onno Giesmann <nutzer3105@gmail.com>, 2020.
+# Onno Giesmann <nutzer3105@gmail.com>, 2020-2021.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-19 10:50-0500\n"
-"PO-Revision-Date: 2020-12-09 22:16+0100\n"
+"PO-Revision-Date: 2021-02-20 14:25+0100\n"
 "Last-Translator: Onno Giesmann <nutzer3105@gmail.com>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -28,7 +28,7 @@ msgstr "Dialect"
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
 msgid "Translate between languages"
-msgstr ""
+msgstr "Zwischen Sprachen übersetzen"
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
@@ -36,24 +36,25 @@ msgid "translate;translation;"
 msgstr "translate;translation;übersetzen;übersetzer;translator;übersetzung;"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:9
-#, fuzzy
 msgid "A translation app for GNOME."
-msgstr "Eine Übersetzungsanwendung für GNOME"
+msgstr "Eine Übersetzungsanwendung für GNOME."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
 msgstr "Merkmale:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
-#, fuzzy
 msgid "Translation based on an unofficial API for Google Translate"
-msgstr "Eine Übersetzungsanwendung für GNOME basierend auf Google Übersetzer."
+msgstr ""
+"Die Übersetzung basiert auf einer inoffiziellen API für Google Übersetzer"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid ""
 "Translation based on the LibreTranslate API, allowing you use any instance "
 "available online"
 msgstr ""
+"Übersetzung basierend auf der LibreTranslate API, sodass Sie jede online "
+"verfügbare Instanz verwenden können"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
@@ -94,7 +95,7 @@ msgstr "Onno Giesmann"
 
 #: data/resources/menu.ui:7
 msgid "Show Pronunciation"
-msgstr ""
+msgstr "Aussprache anzeigen"
 
 #: data/resources/menu.ui:14
 msgid "Preferences"
@@ -137,34 +138,32 @@ msgid "Unselected choice will be used for line break."
 msgstr "Mit der jeweils anderen Option wird ein Zeilenumbruch erzeugt."
 
 #: data/resources/preferences.ui:61
-#, fuzzy
 msgid "Translator"
-msgstr "Übersetzen"
+msgstr "Übersetzer"
 
 #: data/resources/preferences.ui:62
 msgid "Choose from the available translation services."
-msgstr ""
+msgstr "Wählen Sie aus den verfügbaren Übersetzungsdiensten aus."
 
 #: data/resources/preferences.ui:68
-#, fuzzy
 msgid "Translator Instance"
-msgstr "Übersetzung beginnen"
+msgstr "Übersetzungsinstanz"
 
 #: data/resources/preferences.ui:69
 msgid "Specify URL of translation service."
-msgstr ""
+msgstr "Geben Sie die URL des Übersetzungsdienstes an."
 
 #: data/resources/preferences.ui:94
 msgid "Edit"
-msgstr ""
+msgstr "Bearbeiten"
 
 #: data/resources/preferences.ui:128
 msgid "Reset to default"
-msgstr ""
+msgstr "Auf Standard zurücksetzen"
 
 #: data/resources/preferences.ui:143
 msgid "Save"
-msgstr ""
+msgstr "Speichern"
 
 #: data/resources/preferences.ui:162
 msgid "Search Provider"
@@ -205,20 +204,19 @@ msgstr "Beenden"
 
 #: data/resources/window.ui:42
 msgid "Loading..."
-msgstr ""
+msgstr "Wird geladen…"
 
 #: data/resources/window.ui:83
 msgid "Failed loading translator backend"
-msgstr ""
+msgstr "Fehler beim Laden des Übersetzer-Backends"
 
 #: data/resources/window.ui:108
 msgid "Retry"
-msgstr ""
+msgstr "Wiederholen"
 
 #: data/resources/window.ui:115
-#, fuzzy
 msgid "Open preferences"
-msgstr "Einstellungen"
+msgstr "Einstellungen öffnen"
 
 #: data/resources/window.ui:193 data/resources/window.ui:679
 msgid "Switch languages"
@@ -267,7 +265,7 @@ msgstr "Keine Netzwerkverbindung erkannt."
 #: src/preferences.py:208
 #, python-brace-format
 msgid "Not a valid {backend} instance"
-msgstr ""
+msgstr "Keine gültige {backend}-Instanz"
 
 #: src/window.py:207
 msgid "A network issue has occured. Retry?"
