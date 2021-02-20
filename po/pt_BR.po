@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-19 10:50-0500\n"
-"PO-Revision-Date: 2020-11-02 11:51-0300\n"
-"Last-Translator: Gustavo Costa <gusta@null.net>\n"
+"PO-Revision-Date: 2021-02-20 02:51-0300\n"
+"Last-Translator: Gustavo Costa <xfgusta@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 2.4.2\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #. Translators: Do not translate the app name!
@@ -28,7 +28,7 @@ msgstr "Dialect"
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
 msgid "Translate between languages"
-msgstr ""
+msgstr "Traduzir entre idiomas"
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
@@ -36,24 +36,24 @@ msgid "translate;translation;"
 msgstr "traduzir;tradução;tradutor;"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:9
-#, fuzzy
 msgid "A translation app for GNOME."
-msgstr "Um aplicativo de tradução para GNOME"
+msgstr "Um aplicativo de tradução para GNOME."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
 msgstr "Características:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
-#, fuzzy
 msgid "Translation based on an unofficial API for Google Translate"
-msgstr "Um aplicativo de tradução para GNOME baseado no Google Tradutor."
+msgstr "Tradução baseada em uma API não oficial do Google Tradutor"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid ""
 "Translation based on the LibreTranslate API, allowing you use any instance "
 "available online"
 msgstr ""
+"Tradução baseada na API LibreTranslate, permitindo que você use qualquer "
+"instância disponível online"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
@@ -94,7 +94,7 @@ msgstr "Gustavo Costa"
 
 #: data/resources/menu.ui:7
 msgid "Show Pronunciation"
-msgstr ""
+msgstr "Mostrar pronúncia"
 
 #: data/resources/menu.ui:14
 msgid "Preferences"
@@ -137,34 +137,32 @@ msgid "Unselected choice will be used for line break."
 msgstr "A escolha não selecionada será usada para quebra de linha."
 
 #: data/resources/preferences.ui:61
-#, fuzzy
 msgid "Translator"
-msgstr "Traduzir"
+msgstr "Tradutor"
 
 #: data/resources/preferences.ui:62
 msgid "Choose from the available translation services."
-msgstr ""
+msgstr "Escolha um dos serviços de tradução disponíveis."
 
 #: data/resources/preferences.ui:68
-#, fuzzy
 msgid "Translator Instance"
-msgstr "Traduzir"
+msgstr "Instância do tradutor"
 
 #: data/resources/preferences.ui:69
 msgid "Specify URL of translation service."
-msgstr ""
+msgstr "Especifique o URL do serviço de tradução."
 
 #: data/resources/preferences.ui:94
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
 #: data/resources/preferences.ui:128
 msgid "Reset to default"
-msgstr ""
+msgstr "Restaurar ao padrão"
 
 #: data/resources/preferences.ui:143
 msgid "Save"
-msgstr ""
+msgstr "Salvar"
 
 #: data/resources/preferences.ui:162
 msgid "Search Provider"
@@ -204,20 +202,19 @@ msgstr "Sair"
 
 #: data/resources/window.ui:42
 msgid "Loading..."
-msgstr ""
+msgstr "Carregando..."
 
 #: data/resources/window.ui:83
 msgid "Failed loading translator backend"
-msgstr ""
+msgstr "Falha ao carregar back-end do tradutor"
 
 #: data/resources/window.ui:108
 msgid "Retry"
-msgstr ""
+msgstr "Tentar novamente"
 
 #: data/resources/window.ui:115
-#, fuzzy
 msgid "Open preferences"
-msgstr "Preferências"
+msgstr "Abrir preferências"
 
 #: data/resources/window.ui:193 data/resources/window.ui:679
 msgid "Switch languages"
@@ -266,7 +263,7 @@ msgstr "Nenhuma conexão de rede detectada."
 #: src/preferences.py:208
 #, python-brace-format
 msgid "Not a valid {backend} instance"
-msgstr ""
+msgstr "Não é uma instância {backend} válida"
 
 #: src/window.py:207
 msgid "A network issue has occured. Retry?"
