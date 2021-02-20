@@ -28,7 +28,7 @@ msgstr "Dialect"
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
 msgid "Translate between languages"
-msgstr "Traduz entre idiomas"
+msgstr "Traduzir entre idiomas"
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
@@ -45,7 +45,7 @@ msgstr "Características:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
 msgid "Translation based on an unofficial API for Google Translate"
-msgstr "Tradução baseada em uma API não oficial do Google Translate"
+msgstr "Tradução baseada em uma API não oficial do Google Tradutor"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid ""
