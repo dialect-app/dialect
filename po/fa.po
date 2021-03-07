@@ -1,15 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the dialect package.
-# Soheil Khanalipur <soheil@disroot.org>, 2020.
-# Soheil Khanalipur <soheil@disroot.org>, 2020.
+# Soheil Khanalipur <soheil@disroot.org>, 2020-2021.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-02-19 10:50-0500\n"
-"PO-Revision-Date: 2020-12-17 14:01+0330\n"
+"PO-Revision-Date: 2021-03-08 00:07+0330\n"
 "Last-Translator: Soheil Khanalipur <soheil@disroot.org>\n"
 "Language-Team: Persian <soheil@disroot.org>\n"
 "Language: fa\n"
@@ -29,26 +28,24 @@ msgstr "دایلکت"
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
 msgid "Translate between languages"
-msgstr ""
+msgstr "گردانش میان زبان‌ها"
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
 msgid "translate;translation;"
-msgstr "ترگومه;ترگمان;"
+msgstr "گردانش;گرداندن;"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:9
-#, fuzzy
 msgid "A translation app for GNOME."
-msgstr "یک برنامه ترگمان برای گنوم"
+msgstr "یک برنامه گردانش برای گنوم."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
-msgstr "ویژگی‌ها"
+msgstr "ویژگی‌ها:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
-#, fuzzy
 msgid "Translation based on an unofficial API for Google Translate"
-msgstr "یک برنامه ترگمان برای گنوم بر پایه ترگومه گوگل."
+msgstr ""
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid ""
@@ -62,7 +59,7 @@ msgstr "نوشتار به گفتار"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Translation history"
-msgstr "پیشینه ترگمان"
+msgstr "پیشینه گردانش"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:20
 msgid "Automatic language detection"
@@ -82,16 +79,16 @@ msgstr "کپی‌رایت ۲۰۲۰ gi-lom"
 
 #: data/resources/about.ui:12
 msgid "A translation app for GNOME based on Google Translate."
-msgstr "یک برنامه ترگمان برای گنوم بر پایه ترگومه گوگل."
+msgstr "یک برنامه گردانش برای گنوم بر پایه گردانش گوگل."
 
 #: data/resources/about.ui:14
 msgid "Github page"
-msgstr "برگه گیت‌هاب"
+msgstr "تاربرگ گیت‌هاب"
 
 #. Replace me with your names.
 #: data/resources/about.ui:19
 msgid "translator-credits"
-msgstr "سهیل خانعلی‌پور"
+msgstr "موسیک"
 
 #: data/resources/menu.ui:7
 msgid "Show Pronunciation"
@@ -103,7 +100,7 @@ msgstr "ساماندهی"
 
 #: data/resources/menu.ui:18
 msgid "Keyboard Shortcuts"
-msgstr "پایندان کلیدبرگ"
+msgstr "پایندان تخته‌کلید"
 
 #: data/resources/menu.ui:22
 msgid "About Dialect"
@@ -123,33 +120,31 @@ msgstr "رفتار"
 
 #: data/resources/preferences.ui:39
 msgid "Live Translation"
-msgstr "ترگمان زنده"
+msgstr "گردانش زنده"
 
 #: data/resources/preferences.ui:40
 msgid "Warning: Your IP address may get banned for API abuse."
-msgstr "هشدار: شاید نشانی آی‌پی شما برای کژبکاربستن ای‌پی‌آی بسته شود."
+msgstr "هشدار: شاید نشانی آی‌پی شما برای کژبکاربستن اِی‌پی‌آی بسته شود."
 
 #: data/resources/preferences.ui:54
 msgid "Translation Shortcut"
-msgstr "پایندان ترگمان"
+msgstr "پایندان گردانش"
 
 #: data/resources/preferences.ui:55
 msgid "Unselected choice will be used for line break."
-msgstr "گزینه انتخاب نشده برای قطع خط بکار گرفته می‌شود."
+msgstr "گزینه ناگزیده برای جدایی خط بکار گرفته می‌شود."
 
 #: data/resources/preferences.ui:61
-#, fuzzy
 msgid "Translator"
-msgstr "ترگومه"
+msgstr "گردانشگر"
 
 #: data/resources/preferences.ui:62
 msgid "Choose from the available translation services."
 msgstr ""
 
 #: data/resources/preferences.ui:68
-#, fuzzy
 msgid "Translator Instance"
-msgstr "ترگومه"
+msgstr "نمونه گردانشگر"
 
 #: data/resources/preferences.ui:69
 msgid "Specify URL of translation service."
@@ -157,15 +152,15 @@ msgstr ""
 
 #: data/resources/preferences.ui:94
 msgid "Edit"
-msgstr ""
+msgstr "ویرایش"
 
 #: data/resources/preferences.ui:128
 msgid "Reset to default"
-msgstr ""
+msgstr "بازنشانی به پیشـگزیده"
 
 #: data/resources/preferences.ui:143
 msgid "Save"
-msgstr ""
+msgstr "اندوختن"
 
 #: data/resources/preferences.ui:162
 msgid "Search Provider"
@@ -178,9 +173,9 @@ msgid ""
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
-"دایلکت یک فراهم‌آور جستجوی گنوم دارد. روشن یا خاموش کردن ترگمان زنده در اینجا "
-"همچنین فراهم‌آور جستجوی گنوم را روشن یا خاموش می‌کند. این برای کاهش شایش "
-"کژبکاربستن ای‌پی‌آی بکار گرفته می‌شود. همچنین بدانید این ویژگی در ساماندهی گنوم "
+"دایلکت یک فراهم‌آور جستجوی گنوم دارد. روشن یا خاموش کردن گردانش زنده اینجا، "
+"فراهم‌آور جستجوی گنوم را هم روشن یا خاموش می‌کند. این برای کاهش شایش "
+"کژبکاربستن اِی‌پی‌آی بکار گرفته می‌شود. همچنین بدانید این ویژگی در ساماندهی گنوم "
 "روشن باشد."
 
 #: data/resources/shortcuts-window.ui:13
@@ -196,7 +191,7 @@ msgstr "ساماندهی"
 #: data/resources/shortcuts-window.ui:24
 msgctxt "shortcuts window"
 msgid "Translate"
-msgstr "ترگومه"
+msgstr "گرداندن"
 
 #: data/resources/shortcuts-window.ui:31
 msgctxt "shortcuts window"
@@ -213,28 +208,27 @@ msgstr ""
 
 #: data/resources/window.ui:108
 msgid "Retry"
-msgstr ""
+msgstr "بازکوشش"
 
 #: data/resources/window.ui:115
-#, fuzzy
 msgid "Open preferences"
-msgstr "ساماندهی"
+msgstr "گشودن ساماندهی"
 
 #: data/resources/window.ui:193 data/resources/window.ui:679
 msgid "Switch languages"
-msgstr "جابجا کردن زبان‌ها"
+msgstr "جابجایی زبان‌ها"
 
 #: data/resources/window.ui:273
 msgid "Previous translation"
-msgstr "ترگمان پیشین"
+msgstr "گردانش پیشین"
 
 #: data/resources/window.ui:292
 msgid "Next translation"
-msgstr "ترگمان پسین"
+msgstr "گردانش پسین"
 
 #: data/resources/window.ui:452
 msgid "Clear"
-msgstr "پاک کردن"
+msgstr "پاکیدن"
 
 #: data/resources/window.ui:467
 msgid "Paste"
@@ -242,15 +236,15 @@ msgstr "چسباندن"
 
 #: data/resources/window.ui:479
 msgid "Translate"
-msgstr "ترگومه"
+msgstr "گرداندن"
 
 #: data/resources/window.ui:556
 msgid "Translation in progress..."
-msgstr "ترگومه روان است..."
+msgstr "گردانش روان است..."
 
 #: data/resources/window.ui:564
 msgid "Translation seems to have failed"
-msgstr "گویا ترگمان شکست خورده است"
+msgstr "گویا گردانش شکست خورده است"
 
 #: data/resources/window.ui:575
 msgid "Listen"
@@ -262,7 +256,7 @@ msgstr "رونوشت"
 
 #: data/resources/window.ui:770
 msgid "No network connection detected."
-msgstr "پیوند شبکه یافت نشد."
+msgstr "پیوند به تارگان یافت نشد."
 
 #: src/preferences.py:208
 #, python-brace-format
@@ -271,15 +265,15 @@ msgstr ""
 
 #: src/window.py:207
 msgid "A network issue has occured. Retry?"
-msgstr "یک ایراد شبکه‌ای رخ داد. باز برپا شود؟"
+msgstr "ایراد تارگان رخ داد. بازکوشش شود؟"
 
 #: src/window.py:208
 msgid ""
 "A network issue has occured.\n"
 "Please try again."
 msgstr ""
-"یک ایراد شبکه‌ای رخ داد.\n"
-"خواهشمند است دوباره بیازمایید."
+"ایراد تارگان رخ داد.\n"
+"خواهشمند است دوباره بکوشید."
 
 #: src/window.py:425 src/window.py:429
 msgid "Auto"
@@ -287,15 +281,15 @@ msgstr "خودکار"
 
 #: src/window.py:685
 msgid "5000 characters limit reached!"
-msgstr "به پایان ۵۰۰۰ واج رسید!"
+msgstr "به پایان ۵۰۰۰ وات رسید!"
 
 #: src/window.py:777
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
 msgstr ""
-"ترگمان شکست خورد.\n"
-"خواهشمند است ایراد شبکه را بررسی کنید."
+"گردانش شکست خورد.\n"
+"خواهشمند است ایراد تارگان را بررسی کنید."
 
 #: src/window.py:792
 msgid "Did you mean: "
