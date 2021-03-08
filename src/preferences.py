@@ -58,7 +58,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
 
         # Setup backends combo row
         model = Gio.ListStore.new(Handy.ValueObject)
-        options = ['Google Translate', 'LibreTranslate']
+        options = [translator.prettyname for translator in TRANSLATORS]
         for count, value in enumerate(options):
             model.insert(count, Handy.ValueObject.new(value))
         self.backend.bind_name_model(model,
