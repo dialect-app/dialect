@@ -41,6 +41,18 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="1.2.0" date="2021-03-08">
+      <description>
+        <ul>
+          <li>Switch to a new icon</li>
+          <li>Added LibreTranslate backend</li>
+          <li>Added Pronunciations support in Google Translate</li>
+          <li>Added Swedish translation</li>
+          <li>Added Croatian translation</li>
+          <li>Fixed several minor bugs</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.1.1" date="2020-12-08">
       <description>
         <ul>
