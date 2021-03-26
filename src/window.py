@@ -137,13 +137,13 @@ class DialectWindow(Handy.ApplicationWindow):
         # Load translator
         self.retry_backend_btn.connect('clicked', self.retry_load_translator)
         threading.Thread(target=self.load_translator,
-                         args=[self.settings.get_int('backend')],
+                         args=[self.settings.get_int('backend'), True],
                          daemon=True
         ).start()
         # Get languages available for speech
         threading.Thread(target=self.load_lang_speech, daemon=True).start()
 
-    def load_translator(self, backend):
+    def load_translator(self, backend, launch=False):
         def update_ui():
             # Supported features
             self.voice_btn.set_visible(self.translator.supported_features['voice'])
@@ -186,6 +186,9 @@ class DialectWindow(Handy.ApplicationWindow):
 
             # Update UI
             GLib.idle_add(update_ui)
+
+            if launch and self.launch_text:
+                GLib.idle_add(self.translate, self.launch_text)
 
         except Exception as exc:
             # Show error view
