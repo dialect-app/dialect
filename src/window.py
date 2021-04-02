@@ -9,11 +9,10 @@ from tempfile import NamedTemporaryFile
 
 from gi.repository import Gdk, GLib, GObject, Gtk, Gst, Handy
 
-from gtts import gTTS, lang
-
 from dialect.define import APP_ID, RES_PATH, MAX_LENGTH, TRANS_NUMBER
 from dialect.lang_selector import DialectLangSelector
 from dialect.translators import TRANSLATORS
+from dialect.tts import TTS
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/window.ui')
@@ -66,8 +65,10 @@ class DialectWindow(Handy.ApplicationWindow):
 
     # Translator
     translator = None
+    # Text to speech
+    tts = None
+    tts_langs = None
     # Language values
-    lang_speech = None
     src_langs = []
     dest_langs = []
     # Current input Text
@@ -141,13 +142,12 @@ class DialectWindow(Handy.ApplicationWindow):
                          daemon=True
         ).start()
         # Get languages available for speech
-        threading.Thread(target=self.load_lang_speech, daemon=True).start()
+        if bool(self.settings.get_int('tts')):
+            threading.Thread(target=self.load_lang_speech, daemon=True).start()
 
     def load_translator(self, backend, launch=False):
         def update_ui():
             # Supported features
-            self.voice_btn.set_visible(self.translator.supported_features['voice'])
-
             if not self.translator.supported_features['mistakes']:
                 self.mistakes.set_revealed(False)
 
@@ -214,9 +214,9 @@ class DialectWindow(Handy.ApplicationWindow):
             self.dest_buffer.get_end_iter(),
             True
         )
-        if self.lang_speech:
+        if self.tts_langs:
             self.voice_btn.set_sensitive(
-                self.dest_lang_selector.get_property('selected') in self.lang_speech
+                self.dest_lang_selector.get_property('selected') in self.tts_langs
                 and dest_text != ''
             )
         else:
@@ -224,16 +224,17 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def load_lang_speech(self, listen=False, text=None, language=None):
         """
-        Load the language list for gTTS.
+        Load the language list for TTS.
 
         text and language parameters are only needed with listen parameter.
         """
         try:
             self.voice_loading = True
-            self.lang_speech = list(lang.tts_langs().keys())
+            self.tts = TTS[0]()
+            self.tts_langs = self.tts.languages
             if not listen:
                 GLib.idle_add(self.toggle_voice_spinner, False)
-            elif language in self.lang_speech and text != '':
+            elif language in self.tts_langs and text != '':
                 self.voice_download(text, language)
 
         except RuntimeError as exc:
@@ -316,6 +317,8 @@ class DialectWindow(Handy.ApplicationWindow):
             'audio-speakers-symbolic', Gtk.IconSize.BUTTON)
         self.voice_spinner = Gtk.Spinner()  # For use while audio is running or still loading.
         self.toggle_voice_spinner(True)
+
+        self.voice_btn.set_visible(bool(self.settings.get_int('tts')))
 
     def responsive_listener(self, _window):
         size = self.get_size()
@@ -400,7 +403,7 @@ class DialectWindow(Handy.ApplicationWindow):
                 True
             )
             self.voice_btn.set_sensitive(
-                self.dest_lang_selector.get_property('selected') in self.lang_speech
+                self.dest_lang_selector.get_property('selected') in self.tts_langs
                 and dest_text != ''
             )
             self.voice_btn.set_image(self.voice_image)
@@ -455,8 +458,8 @@ class DialectWindow(Handy.ApplicationWindow):
             self.src_lang_selector.set_property('selected', self.dest_langs[0])
 
         # Disable or enable listen function.
-        if self.lang_speech and self.translator.supported_features['voice']:
-            self.voice_btn.set_sensitive(code in self.lang_speech
+        if self.tts_langs and bool(self.settings.get_int('tts')):
+            self.voice_btn.set_sensitive(code in self.tts_langs
                                          and dest_text != '')
 
         name = self.translator.languages[code].capitalize()
@@ -592,7 +595,7 @@ class DialectWindow(Handy.ApplicationWindow):
         # Add here code that changes voice button behavior
         if dest_text != '':
             self.toggle_voice_spinner(True)
-            if self.lang_speech:
+            if self.tts_langs:
                 threading.Thread(
                     target=self.voice_download,
                     args=(dest_text, dest_language),
@@ -617,10 +620,9 @@ class DialectWindow(Handy.ApplicationWindow):
     def voice_download(self, text, language):
         try:
             self.voice_loading = True
-            tts = gTTS(text, lang=language, lang_check=False)
+
             with NamedTemporaryFile() as file_to_play:
-                tts.write_to_fp(file_to_play)
-                file_to_play.seek(0)
+                self.tts.download_voice(text, language, file_to_play)
                 self.player.set_property('uri', 'file://' + file_to_play.name)
                 self.player.set_state(Gst.State.PLAYING)
                 self.player_event.wait()
@@ -673,12 +675,12 @@ class DialectWindow(Handy.ApplicationWindow):
     def on_dest_text_changed(self, buffer):
         sensitive = buffer.get_char_count() != 0
         self.copy_btn.set_sensitive(sensitive)
-        if not self.voice_loading and self.lang_speech:
+        if not self.voice_loading and self.tts_langs:
             self.voice_btn.set_sensitive(
-                self.dest_lang_selector.get_property('selected') in self.lang_speech
+                self.dest_lang_selector.get_property('selected') in self.tts_langs
                 and sensitive
             )
-        elif not self.voice_loading and not self.lang_speech:
+        elif not self.voice_loading and not self.tts_langs:
             self.voice_btn.set_sensitive(sensitive)
 
     def user_action_ended(self, buffer):

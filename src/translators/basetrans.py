@@ -12,7 +12,6 @@ class TranslatorBase:
     supported_features = {
         'mistakes': False,
         'pronunciation': False,
-        'voice': False,
         'change-instance': False,
     }
 

@@ -18,6 +18,10 @@
         <!-- 0 = Google Translate | 1 = LibreTranslate -->
         <default>0</default>
     </key>
+    <key type="i" name="tts">
+        <!-- 0 = Disabled | 1 = Google TTS -->
+        <default>1</default>
+    </key>
     <key type="as" name="google-src-langs">
         <default>["en", "fr", "es", "de"]</default>
     </key>
