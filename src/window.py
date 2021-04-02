@@ -147,8 +147,6 @@ class DialectWindow(Handy.ApplicationWindow):
     def load_translator(self, backend, launch=False):
         def update_ui():
             # Supported features
-            self.voice_btn.set_visible(self.translator.supported_features['voice'])
-
             if not self.translator.supported_features['mistakes']:
                 self.mistakes.set_revealed(False)
 
@@ -319,6 +317,8 @@ class DialectWindow(Handy.ApplicationWindow):
         self.voice_spinner = Gtk.Spinner()  # For use while audio is running or still loading.
         self.toggle_voice_spinner(True)
 
+        self.voice_btn.set_visible(bool(self.settings.get_int('tts')))
+
     def responsive_listener(self, _window):
         size = self.get_size()
 
@@ -457,7 +457,7 @@ class DialectWindow(Handy.ApplicationWindow):
             self.src_lang_selector.set_property('selected', self.dest_langs[0])
 
         # Disable or enable listen function.
-        if self.tts_langs and self.translator.supported_features['voice']:
+        if self.tts_langs and bool(self.settings.get_int('tts')):
             self.voice_btn.set_sensitive(code in self.tts_langs
                                          and dest_text != '')
 

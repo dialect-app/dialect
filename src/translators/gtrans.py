@@ -15,7 +15,6 @@ class GTranslator(TranslatorBase):
     supported_features = {
         'mistakes': True,
         'pronunciation': True,
-        'voice': True,
         'change-instance': False,
     }
 
