@@ -33,6 +33,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
     backend_instance_save = Gtk.Template.Child()
     backend_instance_reset = Gtk.Template.Child()
     backend_instance_edit_box = Gtk.Template.Child()
+    tts = Gtk.Template.Child()
     search_provider = Gtk.Template.Child()
 
     def __init__(self, parent, settings, **kwargs):
@@ -74,6 +75,9 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         self.settings.bind('backend', self.backend,
                            'selected-index', Gio.SettingsBindFlags.DEFAULT)
 
+        # Setup TTS
+        self.tts.set_active(bool(self.settings.get_int('tts')))
+
         # Toggle dark mode
         self.dark_mode.connect('notify::active', self._toggle_dark_mode)
 
@@ -84,6 +88,9 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         # Switch backends
         self.backend.connect('notify::selected-index', self._switch_backends)
         self.parent.connect('notify::backend-loading', self._on_backend_loading)
+
+        # Toggle TTS
+        self.tts.connect('notify::active', self._toggle_tts)
 
         # Change translator instance
         self.settings.connect('changed', self._on_settings_changed)
@@ -132,6 +139,10 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
 
     def _toggle_accel_pref(self, switch, _active):
         self.translate_accel.set_sensitive(not switch.get_active())
+
+    def _toggle_tts(self, switch, _active):
+        value = int(switch.get_active())
+        self.settings.set_int('tts', value)
 
     def _switch_backends(self, row, _value):
         self.__check_instance_support()

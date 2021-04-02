@@ -155,6 +155,21 @@
                 </child>
               </object>
             </child>
+            <child>
+              <object class="HdyActionRow">
+                <property name="title" translatable="yes">Text to Speech</property>
+                <property name="subtitle" translatable="yes">Use Google for Text to Speech functionality.</property>
+                <property name="visible">True</property>
+                <property name="activatable_widget">tts</property>
+                <child>
+                  <object class="GtkSwitch" id="tts">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
           </object>
         </child>
         <child>
