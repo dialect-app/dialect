@@ -142,7 +142,8 @@ class DialectWindow(Handy.ApplicationWindow):
                          daemon=True
         ).start()
         # Get languages available for speech
-        threading.Thread(target=self.load_lang_speech, daemon=True).start()
+        if bool(self.settings.get_int('tts')):
+            threading.Thread(target=self.load_lang_speech, daemon=True).start()
 
     def load_translator(self, backend, launch=False):
         def update_ui():

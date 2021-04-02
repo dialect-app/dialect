@@ -143,6 +143,11 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
     def _toggle_tts(self, switch, _active):
         value = int(switch.get_active())
         self.parent.voice_btn.set_visible(switch.get_active())
+        if switch.get_active():
+            threading.Thread(
+                target=self.parent.load_lang_speech,
+                daemon=True
+            ).start()
         self.settings.set_int('tts', value)
 
     def _switch_backends(self, row, _value):
