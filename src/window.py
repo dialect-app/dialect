@@ -38,8 +38,8 @@ class DialectWindow(Handy.ApplicationWindow):
 
     menu_btn = Gtk.Template.Child()
 
-    pronunciation_revealer = Gtk.Template.Child()
-    pronunciation_label = Gtk.Template.Child()
+    src_pron_revealer = Gtk.Template.Child()
+    src_pron_label = Gtk.Template.Child()
     mistakes = Gtk.Template.Child()
     mistakes_label = Gtk.Template.Child()
     char_counter = Gtk.Template.Child()
@@ -50,6 +50,8 @@ class DialectWindow(Handy.ApplicationWindow):
     translate_btn = Gtk.Template.Child()
 
     dest_box = Gtk.Template.Child()
+    dest_pron_revealer = Gtk.Template.Child()
+    dest_pron_label = Gtk.Template.Child()
     dest_text = Gtk.Template.Child()
     trans_spinner = Gtk.Template.Child()
     trans_warning = Gtk.Template.Child()
@@ -89,7 +91,8 @@ class DialectWindow(Handy.ApplicationWindow):
     # Trans mistakes
     trans_mistakes = None
     # Pronunciations
-    trans_pronunciation = None
+    trans_src_pron = None
+    trans_dest_pron = None
 
     # Propeties
     backend_loading = GObject.Property(type=bool, default=False)
@@ -153,7 +156,8 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.mistakes.set_revealed(False)
 
             if not self.translator.supported_features['pronunciation']:
-                self.pronunciation_revealer.set_reveal_child(False)
+                self.src_pron_revealer.set_reveal_child(False)
+                self.dest_pron_revealer.set_reveal_child(False)
                 self.app.pronunciation_action.set_enabled(False)
 
             self.no_retranslate = True
@@ -876,11 +880,18 @@ class DialectWindow(Handy.ApplicationWindow):
 
         def on_pronunciation():
             reveal = self.settings.get_boolean('show-pronunciation')
-            if self.trans_pronunciation is not None and self.translator.supported_features['pronunciation']:
-                self.pronunciation_label.set_text(self.trans_pronunciation)
-                self.pronunciation_revealer.set_reveal_child(reveal)
-            elif self.pronunciation_revealer.get_reveal_child():
-                self.pronunciation_revealer.set_reveal_child(False)
+            if self.translator.supported_features['pronunciation']:
+                if self.trans_src_pron is not None:
+                    self.src_pron_label.set_text(self.trans_src_pron)
+                    self.src_pron_revealer.set_reveal_child(reveal)
+                elif self.src_pron_revealer.get_reveal_child():
+                    self.src_pron_revealer.set_reveal_child(False)
+
+                if self.trans_dest_pron is not None:
+                    self.dest_pron_label.set_text(self.trans_dest_pron)
+                    self.dest_pron_revealer.set_reveal_child(reveal)
+                elif self.dest_pron_revealer.get_reveal_child():
+                    self.dest_pron_revealer.set_reveal_child(False)
 
         while self.trans_queue:
             # If the first language is revealed automatically, let's set it
@@ -917,10 +928,8 @@ class DialectWindow(Handy.ApplicationWindow):
                         )
                         dest_text = translation.text
                         self.trans_mistakes = translation.extra_data['possible-mistakes']
-                        try:
-                            self.trans_pronunciation = translation.extra_data['translation'][1][3]
-                        except IndexError:
-                            self.trans_pronunciation = None
+                        self.trans_src_pron = translation.extra_data['src-pronunciation']
+                        self.trans_dest_pron = translation.extra_data['dest-pronunciation']
                         self.trans_failed = False
                     except Exception as exc:
                         print(exc)
@@ -938,7 +947,8 @@ class DialectWindow(Handy.ApplicationWindow):
                 else:
                     self.trans_failed = False
                     self.trans_mistakes = None
-                    self.trans_pronunciation = None
+                    self.trans_src_pron = None
+                    self.trans_dest_pron = None
                 GLib.idle_add(self.dest_buffer.set_text, dest_text)
                 GLib.idle_add(on_mistakes)
                 GLib.idle_add(on_pronunciation)

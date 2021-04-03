@@ -33,19 +33,28 @@ class LibreTranslator(TranslatorBase):
 
     @property
     def detect_url(self):
+        if self.base_url.startswith('localhost:'):
+            return 'http://' + self.base_url + '/detect'
         return 'https://' + self.base_url + '/detect'
 
     @property
     def translate_url(self):
+        if self.base_url.startswith('localhost:'):
+            return 'http://' + self.base_url + '/translate'
         return 'https://' + self.base_url + '/translate'
 
     @property
     def lang_url(self):
+        if self.base_url.startswith('localhost:'):
+            return 'http://' + self.base_url + '/languages'
         return 'https://' + self.base_url + '/languages'
 
     @staticmethod
     def validate_instance_url(url):
-        url = 'https://' + url + '/spec'
+        if url.startswith('localhost:'):
+            url = 'http://' + url + '/spec'
+        else:
+            url = 'https://' + url + '/spec'
         client = httpx.Client()
         try:
             r = client.get(url)
@@ -85,7 +94,8 @@ class LibreTranslator(TranslatorBase):
                 r.json()['translatedText'],
                 {
                     'possible-mistakes': None,
-                    'translation': [],
+                    'src-pronunciation': None,
+                    'dest-pronunciation': None,
                 },
             )
         except Exception as exc:
