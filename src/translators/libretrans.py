@@ -3,11 +3,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import httpx
-from langdetect import detect_langs, DetectorFactory
 
 from dialect.translators.basetrans import Detected, TranslatorBase, TranslationError, Translation
-
-DetectorFactory.seed = 0
 
 
 class LibreTranslator(TranslatorBase):
@@ -64,39 +61,13 @@ class LibreTranslator(TranslatorBase):
     def detect(self, src_text):
         """Detect the language using the same mechanisms that LibreTranslate uses but locally."""
         try:
-            try:
-                r = self.client.post(
-                    self.detect_url,
-                    data={
-                        'q': src_text,
-                    },
-                )
-                return Detected(r.json()[0]['language'], r.json()[0]['confidence'])
-            except Exception:
-                candidate_langs = list(
-                    filter(lambda l: l.lang in self.languages, detect_langs(src_text))
-                )
-
-                if len(candidate_langs) > 0:
-                    candidate_langs.sort(key=lambda l: l.prob, reverse=True)
-
-                    source_lang = next(
-                        iter(
-                            [
-                                l
-                                for l in self.languages
-                                if l == candidate_langs[0].lang
-                            ]
-                        ),
-                        None,
-                    )
-                    if not source_lang:
-                        source_lang = 'en'
-                else:
-                    source_lang = 'en'
-
-                detected_object = Detected(source_lang, 1.0)
-                return detected_object
+            r = self.client.post(
+                self.detect_url,
+                data={
+                    'q': src_text,
+                },
+            )
+            return Detected(r.json()[0]['language'], r.json()[0]['confidence'])
         except Exception as exc:
             raise TranslationError(exc) from exc
 

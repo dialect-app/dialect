@@ -198,20 +198,6 @@
                     "sha256": "1a4995114262bffbc2413b159f2a1a480c969de6e6eb13ee966d470af86af59c"
                 }
             ]
-        },
-        {
-            "name": "python3-langdetect",
-            "buildsystem": "simple",
-            "build-commands": [
-                "pip3 install --exists-action=i --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} \"langdetect\""
-            ],
-            "sources": [
-                {
-                    "type": "file",
-                    "url": "https://files.pythonhosted.org/packages/56/a3/8407c1e62d5980188b4acc45ef3d94b933d14a2ebc9ef3505f22cf772570/langdetect-1.0.8.tar.gz",
-                    "sha256": "363795ea005f1243c958e953245dac5d814fabdc025c9afa91588c5fa6b2fa83"
-                }
-            ]
         }
     ]
 }

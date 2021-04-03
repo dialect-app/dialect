@@ -47,7 +47,6 @@ sudo dnf install dialect
 - gTTS `python-gtts`
 - D-Bus `python-dbus`
 - HTTPX `python-httpx`
-- langdetect `python-langdetect`
 
 If official packages are not available for any of the python dependencies, you can install them from pip:
 
