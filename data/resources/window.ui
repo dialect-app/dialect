@@ -475,6 +475,18 @@
                                   </object>
                                 </child>
                                 <child>
+                                  <object class="GtkButton" id="src_voice_btn">
+                                    <property name="visible">True</property>
+                                    <property name="sensitive">False</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">True</property>
+                                    <property name="tooltip-text" translatable="yes">Listen</property>
+                                    <child>
+                                      <placeholder/>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
                                   <object class="GtkButton" id="translate_btn">
                                     <property name="label" translatable="yes">Translate</property>
                                     <property name="visible">True</property>
@@ -567,7 +579,7 @@
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="voice_btn">
+                                  <object class="GtkButton" id="dest_voice_btn">
                                     <property name="visible">True</property>
                                     <property name="sensitive">False</property>
                                     <property name="can-focus">True</property>
