@@ -37,7 +37,11 @@ class TranslationError(Exception):
 
 class Translation:
     text = None
-    extra_data = {}
+    extra_data = {
+        'possible-mistakes': None,
+        'src-pronunciation': None,
+        'dest-pronunciation': None,
+    }
 
     def __init__(self, text, extra_data):
         self.text = text

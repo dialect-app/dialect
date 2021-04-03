@@ -85,7 +85,8 @@ class LibreTranslator(TranslatorBase):
                 r.json()['translatedText'],
                 {
                     'possible-mistakes': None,
-                    'translation': [],
+                    'src-pronunciation': None,
+                    'dest-pronunciation': None,
                 },
             )
         except Exception as exc:

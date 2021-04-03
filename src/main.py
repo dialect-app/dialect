@@ -112,8 +112,10 @@ class Dialect(Gtk.Application):
         self.settings.set_boolean('show-pronunciation', value)
 
         # Update UI
-        if self.window.trans_pronunciation is not None:
-            self.window.pronunciation_revealer.set_reveal_child(value)
+        if self.window.trans_src_pron is not None:
+            self.window.src_pron_revealer.set_reveal_child(value)
+        if self.window.trans_dest_pron is not None:
+            self.window.dest_pron_revealer.set_reveal_child(value)
 
     def on_preferences(self, _action, _param):
         """ Show preferences window """
