@@ -230,7 +230,7 @@ class DialectWindow(Handy.ApplicationWindow):
         """
         try:
             self.voice_loading = True
-            self.tts = TTS[0]()
+            self.tts = TTS[self.settings.get_int('tts') - 1]()
             self.tts_langs = self.tts.languages
             if not listen:
                 GLib.idle_add(self.toggle_voice_spinner, False)
