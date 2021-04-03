@@ -46,6 +46,7 @@ class DialectWindow(Handy.ApplicationWindow):
     src_text = Gtk.Template.Child()
     clear_btn = Gtk.Template.Child()
     paste_btn = Gtk.Template.Child()
+    src_voice_btn = Gtk.Template.Child()
     translate_btn = Gtk.Template.Child()
 
     dest_box = Gtk.Template.Child()
@@ -53,7 +54,7 @@ class DialectWindow(Handy.ApplicationWindow):
     trans_spinner = Gtk.Template.Child()
     trans_warning = Gtk.Template.Child()
     copy_btn = Gtk.Template.Child()
-    voice_btn = Gtk.Template.Child()
+    dest_voice_btn = Gtk.Template.Child()
 
     actionbar = Gtk.Template.Child()
     src_lang_btn2 = Gtk.Template.Child()
@@ -205,22 +206,41 @@ class DialectWindow(Handy.ApplicationWindow):
         ).start()
 
     def on_listen_failed(self):
-        self.voice_btn.set_image(self.voice_warning)
-        self.voice_spinner.stop()
-        self.voice_btn.set_tooltip_text(_('A network issue has occured. Retry?'))
+        self.src_voice_btn.set_image(self.src_voice_warning)
+        self.src_voice_spinner.stop()
+
+        self.dest_voice_btn.set_image(self.dest_voice_warning)
+        self.dest_voice_spinner.stop()
+
+        tooltip_text = _('A network issue has occured. Retry?')
+        self.src_voice_btn.set_tooltip_text(tooltip_text)
+        self.dest_voice_btn.set_tooltip_text(tooltip_text)
+
         self.send_notification(_('A network issue has occured.\nPlease try again.'))
+
+        src_text = self.src_buffer.get_text(
+            self.src_buffer.get_start_iter(),
+            self.src_buffer.get_end_iter(),
+            True
+        )
         dest_text = self.dest_buffer.get_text(
             self.dest_buffer.get_start_iter(),
             self.dest_buffer.get_end_iter(),
             True
         )
+
         if self.tts_langs:
-            self.voice_btn.set_sensitive(
+            self.src_voice_btn.set_sensitive(
+                self.src_lang_selector.get_property('selected') in self.tts_langs
+                and src_text != ''
+            )
+            self.dest_voice_btn.set_sensitive(
                 self.dest_lang_selector.get_property('selected') in self.tts_langs
                 and dest_text != ''
             )
         else:
-            self.voice_btn.set_sensitive(dest_text != '')
+            self.src_voice_btn.set_sensitive(src_text != '')
+            self.dest_voice_btn.set_sensitive(dest_text != '')
 
     def load_lang_speech(self, listen=False, text=None, language=None):
         """
@@ -309,16 +329,26 @@ class DialectWindow(Handy.ApplicationWindow):
         # Translation progress spinner
         self.trans_spinner.hide()
         self.trans_warning.hide()
-        # Voice button prep-work
-        self.voice_warning = Gtk.Image.new_from_icon_name(
+
+        # Voice buttons prep-work
+        self.src_voice_warning = Gtk.Image.new_from_icon_name(
             'dialog-warning-symbolic', Gtk.IconSize.BUTTON)
-        self.voice_btn.connect('clicked', self.ui_voice)
-        self.voice_image = Gtk.Image.new_from_icon_name(
+        self.src_voice_image = Gtk.Image.new_from_icon_name(
             'audio-speakers-symbolic', Gtk.IconSize.BUTTON)
-        self.voice_spinner = Gtk.Spinner()  # For use while audio is running or still loading.
+        self.src_voice_spinner = Gtk.Spinner()  # For use while audio is running or still loading.
+        self.src_voice_btn.connect('clicked', self.ui_src_voice)
+
+        self.dest_voice_warning = Gtk.Image.new_from_icon_name(
+            'dialog-warning-symbolic', Gtk.IconSize.BUTTON)
+        self.dest_voice_image = Gtk.Image.new_from_icon_name(
+            'audio-speakers-symbolic', Gtk.IconSize.BUTTON)
+        self.dest_voice_spinner = Gtk.Spinner()
+        self.dest_voice_btn.connect('clicked', self.ui_dest_voice)
+
         self.toggle_voice_spinner(True)
 
-        self.voice_btn.set_visible(bool(self.settings.get_int('tts')))
+        self.src_voice_btn.set_visible(bool(self.settings.get_int('tts')))
+        self.dest_voice_btn.set_visible(bool(self.settings.get_int('tts')))
 
     def responsive_listener(self, _window):
         size = self.get_size()
@@ -393,29 +423,55 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def toggle_voice_spinner(self, active=True):
         if active:
-            self.voice_btn.set_sensitive(False)
-            self.voice_btn.set_image(self.voice_spinner)
-            self.voice_spinner.start()
+            self.src_voice_btn.set_sensitive(False)
+            self.src_voice_btn.set_image(self.src_voice_spinner)
+            self.src_voice_spinner.start()
+
+            self.dest_voice_btn.set_sensitive(False)
+            self.dest_voice_btn.set_image(self.dest_voice_spinner)
+            self.dest_voice_spinner.start()
         else:
+            src_text = self.src_buffer.get_text(
+                self.src_buffer.get_start_iter(),
+                self.src_buffer.get_end_iter(),
+                True
+            )
+            self.src_voice_btn.set_sensitive(
+                self.src_lang_selector.get_property('selected') in self.tts_langs
+                and src_text != ''
+            )
+            self.src_voice_btn.set_image(self.src_voice_image)
+            self.src_voice_spinner.stop()
+
             dest_text = self.dest_buffer.get_text(
                 self.dest_buffer.get_start_iter(),
                 self.dest_buffer.get_end_iter(),
                 True
             )
-            self.voice_btn.set_sensitive(
+            self.dest_voice_btn.set_sensitive(
                 self.dest_lang_selector.get_property('selected') in self.tts_langs
                 and dest_text != ''
             )
-            self.voice_btn.set_image(self.voice_image)
-            self.voice_spinner.stop()
+            self.dest_voice_btn.set_image(self.dest_voice_image)
+            self.dest_voice_spinner.stop()
 
     def on_src_lang_changed(self, _obj, _param):
         code = self.src_lang_selector.get_property('selected')
         dest_code = self.dest_lang_selector.get_property('selected')
+        src_text = self.src_buffer.get_text(
+            self.src_buffer.get_start_iter(),
+            self.src_buffer.get_end_iter(),
+            True
+        )
 
         if code == dest_code:
             code = self.dest_langs[1] if code == self.src_langs[0] else dest_code
             self.dest_lang_selector.set_property('selected', self.src_langs[0])
+
+        # Disable or enable listen function.
+        if self.tts_langs and bool(self.settings.get_int('tts')):
+            self.src_voice_btn.set_sensitive(code in self.tts_langs
+                                         and src_text != '')
 
         if code in self.translator.languages:
             self.src_lang_label.set_label(self.translator.languages[code].capitalize())
@@ -459,7 +515,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
         # Disable or enable listen function.
         if self.tts_langs and bool(self.settings.get_int('tts')):
-            self.voice_btn.set_sensitive(code in self.tts_langs
+            self.dest_voice_btn.set_sensitive(code in self.tts_langs
                                          and dest_text != '')
 
         name = self.translator.languages[code].capitalize()
@@ -585,26 +641,37 @@ class DialectWindow(Handy.ApplicationWindow):
             end_iter = self.src_buffer.get_end_iter()
             self.src_buffer.insert(end_iter, text)
 
-    def ui_voice(self, _button):
+    def ui_src_voice(self, _button):
+        src_text = self.src_buffer.get_text(
+            self.src_buffer.get_start_iter(),
+            self.src_buffer.get_end_iter(),
+            True
+        )
+        src_language = self.src_lang_selector.get_property('selected')
+        self._voice(src_text, src_language)
+
+    def ui_dest_voice(self, _button):
         dest_text = self.dest_buffer.get_text(
             self.dest_buffer.get_start_iter(),
             self.dest_buffer.get_end_iter(),
             True
         )
         dest_language = self.dest_lang_selector.get_property('selected')
-        # Add here code that changes voice button behavior
-        if dest_text != '':
+        self._voice(dest_text, dest_language)
+
+    def _voice(self, text, lang):
+        if text != '':
             self.toggle_voice_spinner(True)
             if self.tts_langs:
                 threading.Thread(
                     target=self.voice_download,
-                    args=(dest_text, dest_language),
+                    args=(text, lang),
                     daemon=True
                 ).start()
             else:
                 threading.Thread(
                     target=self.load_lang_speech,
-                    args=(True, dest_text, dest_language),
+                    args=(True, text, lang),
                     daemon=True
                 ).start()
 
@@ -671,17 +738,24 @@ class DialectWindow(Handy.ApplicationWindow):
         sensitive = buffer.get_char_count() != 0
         self.translate_btn.set_sensitive(sensitive)
         self.clear_btn.set_sensitive(sensitive)
+        if not self.voice_loading and self.tts_langs:
+            self.src_voice_btn.set_sensitive(
+                self.src_lang_selector.get_property('selected') in self.tts_langs
+                and sensitive
+            )
+        elif not self.voice_loading and not self.tts_langs:
+            self.src_voice_btn.set_sensitive(sensitive)
 
     def on_dest_text_changed(self, buffer):
         sensitive = buffer.get_char_count() != 0
         self.copy_btn.set_sensitive(sensitive)
         if not self.voice_loading and self.tts_langs:
-            self.voice_btn.set_sensitive(
+            self.dest_voice_btn.set_sensitive(
                 self.dest_lang_selector.get_property('selected') in self.tts_langs
                 and sensitive
             )
         elif not self.voice_loading and not self.tts_langs:
-            self.voice_btn.set_sensitive(sensitive)
+            self.dest_voice_btn.set_sensitive(sensitive)
 
     def user_action_ended(self, buffer):
         # If the text is over the highest number of characters allowed, it is truncated.
@@ -781,7 +855,8 @@ class DialectWindow(Handy.ApplicationWindow):
             self.trans_warning.show()
             self.send_notification(_('Translation failed.\nPlease check for network issues.'))
             self.copy_btn.set_sensitive(False)
-            self.voice_btn.set_sensitive(False)
+            self.src_voice_btn.set_sensitive(False)
+            self.dest_voice_btn.set_sensitive(False)
 
         def on_trans_success():
             self.trans_warning.hide()

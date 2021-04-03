@@ -9,7 +9,7 @@ A translation app for GNOME.
 ## Features
 
 - Translation based on the [googletrans](https://github.com/ssut/py-googletrans) Python API, an unofficial API for Google Translate
-- Translation based on the LibreTranslate API, allowing you use any instance available online
+- Translation based on the LibreTranslate API, allowing you to use any public instance
 - Translation history
 - Automatic language detection
 - Text to speech
@@ -28,7 +28,8 @@ Arch-based distro users can install from the AUR: [`dialect`](https://aur.archli
 ### Fedora
 
 Dialect is available for Fedora 33 and later:
-```
+
+```bash
 sudo dnf install dialect
 ```
 
@@ -47,7 +48,6 @@ sudo dnf install dialect
 - gTTS `python-gtts`
 - D-Bus `python-dbus`
 - HTTPX `python-httpx`
-- langdetect `python-langdetect`
 
 If official packages are not available for any of the python dependencies, you can install them from pip:
 
