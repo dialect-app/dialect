@@ -58,7 +58,8 @@
             </child>
             <child>
               <object class="HdyActionRow">
-                <property name="title" translatable="yes">Use "Auto" as default language on launch</property>
+                <property name="title" translatable="yes">Default to Auto</property>
+                <property name="subtitle" translatable="yes">Use "Auto" as the default language on every launch</property>
                 <property name="visible">True</property>
                 <property name="activatable_widget">auto_trans</property>
                 <child>
