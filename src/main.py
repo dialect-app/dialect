@@ -32,11 +32,16 @@ class Dialect(Gtk.Application):
         self.version = version
         self.window = None
         self.launch_text = ''
+        self.launch_langs = {}
         self.settings = Gio.Settings.new(APP_ID)
 
-        # Add --text command line option
+        # Add command line options
         self.add_main_option('text', b't', GLib.OptionFlags.NONE,
                              GLib.OptionArg.STRING, 'Text to translate', None)
+        self.add_main_option('src', b's', GLib.OptionFlags.NONE,
+                             GLib.OptionArg.STRING, 'Source lang code', None)
+        self.add_main_option('dest', b'd', GLib.OptionFlags.NONE,
+                             GLib.OptionArg.STRING, 'Destination lang code', None)
 
     def do_activate(self):
         self.window = self.props.active_window
@@ -46,6 +51,7 @@ class Dialect(Gtk.Application):
                 # Translators: Do not translate the app name!
                 title=_('Dialect'),
                 text=self.launch_text,
+                langs=self.launch_langs,
                 settings=self.settings
             )
         self.window.present()
@@ -53,12 +59,24 @@ class Dialect(Gtk.Application):
     def do_command_line(self, command_line):
         options = command_line.get_options_dict()
         options = options.end().unpack()
+        text = ''
+        langs = {
+            'src': None,
+            'dest': None
+        }
 
         if 'text' in options:
-            if self.window is not None:
-                self.window.translate(options['text'])
-            else:
-                self.launch_text = options['text']
+            text = options['text']
+        if 'src' in options:
+            langs['src'] = options['src']
+        if 'dest' in options:
+            langs['dest'] = options['dest']
+
+        if self.window is not None:
+             self.window.translate(text, langs['src'], langs['dest'])
+        else:
+            self.launch_text = text
+            self.launch_langs = langs
 
         self.activate()
         return 0

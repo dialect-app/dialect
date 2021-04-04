@@ -24,6 +24,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
     dark_mode = Gtk.Template.Child()
     live_translation = Gtk.Template.Child()
     translate_accel = Gtk.Template.Child()
+    src_auto = Gtk.Template.Child()
     backend = Gtk.Template.Child()
     backend_instance = Gtk.Template.Child()
     backend_instance_row = Gtk.Template.Child()
@@ -48,6 +49,8 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
     def setup(self):
         # Disable search, we have few preferences
         self.set_search_enabled(False)
+        # Temporal fix for crash
+        self.connect('destroy', self._unbind_settings)
 
         # Setup translate accel combo row
         model = Gio.ListStore.new(Handy.ValueObject)
@@ -72,6 +75,8 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
                            Gio.SettingsBindFlags.DEFAULT)
         self.settings.bind('translate-accel', self.translate_accel,
                            'selected-index', Gio.SettingsBindFlags.DEFAULT)
+        self.settings.bind('src-auto', self.src_auto, 'active',
+                           Gio.SettingsBindFlags.DEFAULT)
         self.settings.bind('backend', self.backend,
                            'selected-index', Gio.SettingsBindFlags.DEFAULT)
 
@@ -122,6 +127,11 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         # Search Provider
         if os.getenv('XDG_CURRENT_DESKTOP') != 'GNOME':
             self.search_provider.hide()
+
+    def _unbind_settings(self,  *args, **kwargs):
+        self.settings.unbind(self.dark_mode, 'active')
+        self.settings.unbind(self.live_translation, 'active')
+        self.settings.unbind(self.src_auto, 'active')
 
     def _on_settings_changed(self, _settings, key):
         backend = self.backend.get_selected_index()

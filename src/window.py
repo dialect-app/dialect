@@ -97,11 +97,12 @@ class DialectWindow(Handy.ApplicationWindow):
     # Propeties
     backend_loading = GObject.Property(type=bool, default=False)
 
-    def __init__(self, text, settings, **kwargs):
+    def __init__(self, text, langs, settings, **kwargs):
         super().__init__(**kwargs)
 
-        # Text passed to command line
+        # Options passed to command line
         self.launch_text = text
+        self.launch_langs = langs
 
         # GSettings object
         self.settings = settings
@@ -165,7 +166,8 @@ class DialectWindow(Handy.ApplicationWindow):
             self.src_lang_selector.set_languages(self.translator.languages)
             self.dest_lang_selector.set_languages(self.translator.languages)
             # Update selected langs
-            self.src_lang_selector.set_property('selected', 'auto')
+            src_lang_default = 'auto' if self.settings.get_boolean('src-auto') else self.src_langs[0]
+            self.src_lang_selector.set_property('selected', src_lang_default)
             self.dest_lang_selector.set_property('selected', self.dest_langs[0])
 
             self.no_retranslate = False
@@ -192,8 +194,16 @@ class DialectWindow(Handy.ApplicationWindow):
             # Update UI
             GLib.idle_add(update_ui)
 
-            if launch and self.launch_text:
-                GLib.idle_add(self.translate, self.launch_text)
+            if launch:
+                self.no_retranslate = True
+                if self.launch_langs['src'] is not None:
+                    self.src_lang_selector.set_property('selected', self.launch_langs['src'])
+                if self.launch_langs['dest'] is not None and self.launch_langs['dest'] in self.translator.languages:
+                    self.dest_lang_selector.set_property('selected', self.launch_langs['dest'])
+                self.no_retranslate = False
+
+                if self.launch_text != '':
+                    GLib.idle_add(self.translate, self.launch_text, self.launch_langs['src'], self.launch_langs['dest'])
 
         except Exception as exc:
             # Show error view
@@ -388,13 +398,18 @@ class DialectWindow(Handy.ApplicationWindow):
             self.src_lang_selector.set_relative_to(self.src_lang_btn)
             self.dest_lang_selector.set_relative_to(self.dest_lang_btn)
 
-    def translate(self, text):
+    def translate(self, text, src_lang, dest_lang):
         """
         Translates the given text from auto detected language to last used
         language
         """
         # Set src lang to Auto
-        self.src_lang_selector.set_property('selected', 'auto')
+        if src_lang is None:
+            self.src_lang_selector.set_property('selected', 'auto')
+        else:
+            self.src_lang_selector.set_property('selected', src_lang)
+        if dest_lang is not None and dest_lang in self.translator.languages:
+            self.dest_lang_selector.set_property('selected', dest_lang)
         # Set text to src buffer
         self.src_buffer.set_text(text)
         # Run translation
