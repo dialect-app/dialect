@@ -73,7 +73,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
                            Gio.SettingsBindFlags.DEFAULT)
         self.settings.bind('translate-accel', self.translate_accel,
                            'selected-index', Gio.SettingsBindFlags.DEFAULT)
-        self.settings.bind('auto-trans', self.auto_trans, 'active',
+        self.settings.bind('src-auto', self.auto_trans, 'active',
                            Gio.SettingsBindFlags.DEFAULT)
         self.settings.bind('backend', self.backend,
                            'selected-index', Gio.SettingsBindFlags.DEFAULT)

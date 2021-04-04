@@ -166,7 +166,7 @@ class DialectWindow(Handy.ApplicationWindow):
             self.src_lang_selector.set_languages(self.translator.languages)
             self.dest_lang_selector.set_languages(self.translator.languages)
             # Update selected langs
-            src_lang_default = 'auto' if self.settings.get_boolean('auto-trans') else self.src_langs[0]
+            src_lang_default = 'auto' if self.settings.get_boolean('src-auto') else self.src_langs[0]
             self.src_lang_selector.set_property('selected', src_lang_default)
             self.dest_lang_selector.set_property('selected', self.dest_langs[0])
 

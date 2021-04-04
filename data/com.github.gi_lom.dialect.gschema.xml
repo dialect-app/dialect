@@ -10,7 +10,7 @@
     <key type="b" name="show-pronunciation">
         <default>false</default>
     </key>
-    <key type="b" name="auto-trans">
+    <key type="b" name="src-auto">
         <default>true</default>
     </key>
     <key type="i" name="translate-accel">
