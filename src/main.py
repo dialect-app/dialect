@@ -32,7 +32,7 @@ class Dialect(Gtk.Application):
         self.version = version
         self.window = None
         self.launch_text = ''
-        self.launch_langs = []
+        self.launch_langs = {}
         self.settings = Gio.Settings.new(APP_ID)
 
         # Add command line options
@@ -60,17 +60,20 @@ class Dialect(Gtk.Application):
         options = command_line.get_options_dict()
         options = options.end().unpack()
         text = ''
-        langs = [None, None]
+        langs = {
+            'src': None,
+            'dest': None
+        }
 
         if 'text' in options:
             text = options['text']
         if 'src' in options:
-            langs[0] = options['src']
+            langs['src'] = options['src']
         if 'dest' in options:
-            langs[1] = options['dest']
+            langs['dest'] = options['dest']
 
         if self.window is not None:
-             self.window.translate(text, langs[0], langs[1])
+             self.window.translate(text, langs['src'], langs['dest'])
         else:
             self.launch_text = text
             self.launch_langs = langs

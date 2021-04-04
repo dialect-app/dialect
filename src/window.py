@@ -196,14 +196,14 @@ class DialectWindow(Handy.ApplicationWindow):
 
             if launch:
                 self.no_retranslate = True
-                if self.launch_langs[0] is not None:
-                    self.src_lang_selector.set_property('selected', self.launch_langs[0])
-                if self.launch_langs[1] is not None and self.launch_langs[1] in self.translator.languages:
-                    self.dest_lang_selector.set_property('selected', self.launch_langs[1])
+                if self.launch_langs['src'] is not None:
+                    self.src_lang_selector.set_property('selected', self.launch_langs['src'])
+                if self.launch_langs['dest'] is not None and self.launch_langs['dest'] in self.translator.languages:
+                    self.dest_lang_selector.set_property('selected', self.launch_langs['dest'])
                 self.no_retranslate = False
 
                 if self.launch_text != '':
-                    GLib.idle_add(self.translate, self.launch_text, self.launch_langs[0], self.launch_langs[1])
+                    GLib.idle_add(self.translate, self.launch_text, self.launch_langs['src'], self.launch_langs['dest'])
 
         except Exception as exc:
             # Show error view
