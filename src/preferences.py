@@ -49,6 +49,8 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
     def setup(self):
         # Disable search, we have few preferences
         self.set_search_enabled(False)
+        # Temporal fix for crash
+        self.connect('destroy', self._unbind_settings)
 
         # Setup translate accel combo row
         model = Gio.ListStore.new(Handy.ValueObject)
@@ -125,6 +127,11 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         # Search Provider
         if os.getenv('XDG_CURRENT_DESKTOP') != 'GNOME':
             self.search_provider.hide()
+
+    def _unbind_settings(self,  *args, **kwargs):
+        self.settings.unbind(self.dark_mode, 'active')
+        self.settings.unbind(self.live_translation, 'active')
+        self.settings.unbind(self.src_auto, 'active')
 
     def _on_settings_changed(self, _settings, key):
         backend = self.backend.get_selected_index()
