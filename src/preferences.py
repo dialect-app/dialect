@@ -24,7 +24,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
     dark_mode = Gtk.Template.Child()
     live_translation = Gtk.Template.Child()
     translate_accel = Gtk.Template.Child()
-    auto_trans = Gtk.Template.Child()
+    src_auto = Gtk.Template.Child()
     backend = Gtk.Template.Child()
     backend_instance = Gtk.Template.Child()
     backend_instance_row = Gtk.Template.Child()
@@ -73,7 +73,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
                            Gio.SettingsBindFlags.DEFAULT)
         self.settings.bind('translate-accel', self.translate_accel,
                            'selected-index', Gio.SettingsBindFlags.DEFAULT)
-        self.settings.bind('src-auto', self.auto_trans, 'active',
+        self.settings.bind('src-auto', self.src_auto, 'active',
                            Gio.SettingsBindFlags.DEFAULT)
         self.settings.bind('backend', self.backend,
                            'selected-index', Gio.SettingsBindFlags.DEFAULT)

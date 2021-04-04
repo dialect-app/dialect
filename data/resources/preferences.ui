@@ -61,9 +61,9 @@
                 <property name="title" translatable="yes">Default to Auto</property>
                 <property name="subtitle" translatable="yes">Use "Auto" as the default language on every launch</property>
                 <property name="visible">True</property>
-                <property name="activatable_widget">auto_trans</property>
+                <property name="activatable_widget">src_auto</property>
                 <child>
-                  <object class="GtkSwitch" id="auto_trans">
+                  <object class="GtkSwitch" id="src_auto">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="valign">center</property>
