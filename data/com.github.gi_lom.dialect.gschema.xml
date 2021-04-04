@@ -10,6 +10,9 @@
     <key type="b" name="show-pronunciation">
         <default>false</default>
     </key>
+    <key type="b" name="auto-trans">
+        <default>true</default>
+    </key>
     <key type="i" name="translate-accel">
         <!-- 0 = Ctrl+Enter | 1 = Enter -->
         <default>0</default>

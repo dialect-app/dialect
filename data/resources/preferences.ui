@@ -57,6 +57,21 @@
               </object>
             </child>
             <child>
+              <object class="HdyActionRow">
+                <property name="title" translatable="yes">Auto translation on startup</property>
+                <property name="subtitle" translatable="yes"></property>
+                <property name="visible">True</property>
+                <property name="activatable_widget">auto_trans</property>
+                <child>
+                  <object class="GtkSwitch" id="auto_trans">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
               <object class="HdyComboRow" id="backend">
                 <property name="title" translatable="yes">Translator</property>
                 <property name="subtitle" translatable="yes">Choose from the available translation services.</property>
