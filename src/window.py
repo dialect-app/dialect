@@ -195,10 +195,13 @@ class DialectWindow(Handy.ApplicationWindow):
             GLib.idle_add(update_ui)
 
             if launch:
+                self.no_retranslate = True
                 if self.launch_langs[0] is not None:
                     self.src_lang_selector.set_property('selected', self.launch_langs[0])
                 if self.launch_langs[1] is not None and self.launch_langs[1] in self.translator.languages:
                     self.dest_lang_selector.set_property('selected', self.launch_langs[1])
+                self.no_retranslate = False
+
                 if self.launch_text != '':
                     GLib.idle_add(self.translate, self.launch_text, self.launch_langs[0], self.launch_langs[1])
 
