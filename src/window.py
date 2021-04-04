@@ -97,11 +97,12 @@ class DialectWindow(Handy.ApplicationWindow):
     # Propeties
     backend_loading = GObject.Property(type=bool, default=False)
 
-    def __init__(self, text, settings, **kwargs):
+    def __init__(self, text, langs, settings, **kwargs):
         super().__init__(**kwargs)
 
-        # Text passed to command line
+        # Options passed to command line
         self.launch_text = text
+        self.launch_langs = langs
 
         # GSettings object
         self.settings = settings
@@ -193,8 +194,13 @@ class DialectWindow(Handy.ApplicationWindow):
             # Update UI
             GLib.idle_add(update_ui)
 
-            if launch and self.launch_text:
-                GLib.idle_add(self.translate, self.launch_text)
+            if launch:
+                if self.launch_langs[0] is not None:
+                    self.src_lang_selector.set_property('selected', self.launch_langs[0])
+                if self.launch_langs[1] is not None and self.launch_langs[1] in self.translator.languages:
+                    self.dest_lang_selector.set_property('selected', self.launch_langs[1])
+                if self.launch_text != '':
+                    GLib.idle_add(self.translate, self.launch_text, self.launch_langs[0], self.launch_langs[1])
 
         except Exception as exc:
             # Show error view
@@ -389,13 +395,18 @@ class DialectWindow(Handy.ApplicationWindow):
             self.src_lang_selector.set_relative_to(self.src_lang_btn)
             self.dest_lang_selector.set_relative_to(self.dest_lang_btn)
 
-    def translate(self, text):
+    def translate(self, text, src_lang, dest_lang):
         """
         Translates the given text from auto detected language to last used
         language
         """
         # Set src lang to Auto
-        self.src_lang_selector.set_property('selected', 'auto')
+        if src_lang is None:
+            self.src_lang_selector.set_property('selected', 'auto')
+        else:
+            self.src_lang_selector.set_property('selected', src_lang)
+        if dest_lang is not None and dest_lang in self.translator.languages:
+            self.dest_lang_selector.set_property('selected', dest_lang)
         # Set text to src buffer
         self.src_buffer.set_text(text)
         # Run translation
