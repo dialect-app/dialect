@@ -26,6 +26,7 @@ sources = [
   'window.py',
   'preferences.py',
   'lang_selector.py',
+  'settings.py',
 ]
 # Install sources
 install_data(sources, install_dir: moduledir)
