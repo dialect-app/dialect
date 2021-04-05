@@ -7,7 +7,7 @@ import httpx
 from dialect.translators.basetrans import Detected, TranslatorBase, TranslationError, Translation
 
 
-class LibreTranslator(TranslatorBase):
+class Translator(TranslatorBase):
     name = 'libretranslate'
     prettyname = 'LibreTranslate'
     client = None

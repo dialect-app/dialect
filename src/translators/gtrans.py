@@ -2,12 +2,12 @@
 # Copyright 2021 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from googletrans import LANGUAGES, Translator
+from googletrans import LANGUAGES, Translator as GoogleTranslator
 
 from dialect.translators.basetrans import TranslatorBase, TranslationError, Translation
 
 
-class GTranslator(TranslatorBase):
+class Translator(TranslatorBase):
     name = 'google'
     prettyname = 'Google Translate'
     history = []
@@ -19,7 +19,7 @@ class GTranslator(TranslatorBase):
     }
 
     def __init__(self, **kwargs):
-        self._translator = Translator()
+        self._translator = GoogleTranslator()
 
     def detect(self, src_text):
         try:

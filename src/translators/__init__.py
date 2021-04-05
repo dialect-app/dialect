@@ -1,7 +1,9 @@
-from dialect.translators.gtrans import GTranslator
-from dialect.translators.libretrans import LibreTranslator
+import pkgutil
+import importlib
 
-TRANSLATORS = [
-    GTranslator,
-    LibreTranslator,
-]
+TRANSLATORS = {}
+for importer, modname, ispkg in pkgutil.iter_modules(__path__):
+    if modname != 'basetrans':
+        modclass = importlib.import_module('dialect.translators.' + modname).Translator
+        TRANSLATORS[modclass.name] = modclass
+
