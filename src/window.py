@@ -180,12 +180,13 @@ class DialectWindow(Handy.ApplicationWindow):
 
         try:
             # Translator object
-            if TRANSLATORS[backend].supported_features['change-instance']:
-                self.translator = TRANSLATORS[backend](
-                    base_url=self.settings.get_string(f'{TRANSLATORS[backend].name}-instance')
+            translators = list(TRANSLATORS.values())
+            if translators[backend].supported_features['change-instance']:
+                self.translator = translators[backend](
+                    base_url=self.settings.get_string(f'{translators[backend].name}-instance')
                 )
             else:
-                self.translator = TRANSLATORS[backend]()
+                self.translator = translators[backend]()
 
             # Get saved languages
             self.src_langs = list(self.settings.get_value(f'{self.translator.name}-src-langs'))

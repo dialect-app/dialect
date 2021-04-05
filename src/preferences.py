@@ -44,6 +44,8 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         # Get GSettings object
         self.settings = settings
 
+        self.translators = list(TRANSLATORS.values())
+
         self.setup()
 
     def setup(self):
@@ -62,7 +64,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
 
         # Setup backends combo row
         model = Gio.ListStore.new(Handy.ValueObject)
-        options = [translator.prettyname for translator in TRANSLATORS]
+        options = [translator.prettyname for translator in self.translators]
         for count, value in enumerate(options):
             model.insert(count, Handy.ValueObject.new(value))
         self.backend.bind_name_model(model,
@@ -135,11 +137,11 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
 
     def _on_settings_changed(self, _settings, key):
         backend = self.backend.get_selected_index()
-        if key == f'{TRANSLATORS[backend].name}-instance':
-            if TRANSLATORS[backend].supported_features['change-instance']:
+        if key == f'{self.translators[backend].name}-instance':
+            if self.translators[backend].supported_features['change-instance']:
                 # Update backend
-                self.settings.reset(f'{TRANSLATORS[backend].name}-src-langs')
-                self.settings.reset(f'{TRANSLATORS[backend].name}-dest-langs')
+                self.settings.reset(f'{self.translators[backend].name}-src-langs')
+                self.settings.reset(f'{self.translators[backend].name}-dest-langs')
                 self.parent.change_backends(backend)
 
     def _toggle_dark_mode(self, switch, _active):
@@ -174,11 +176,11 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
     def _on_edit_backend_instance(self, _button):
         backend = self.backend.get_selected_index()
         self.backend_instance_stack.set_visible_child_name('edit')
-        self.backend_instance.set_text(self.settings.get_string(f'{TRANSLATORS[backend].name}-instance'))
+        self.backend_instance.set_text(self.settings.get_string(f'{self.translators[backend].name}-instance'))
 
     def _on_save_backend_instance(self, _button):
         backend = self.backend.get_selected_index()
-        old_value = self.settings.get_string(f'{TRANSLATORS[backend].name}-instance')
+        old_value = self.settings.get_string(f'{self.translators[backend].name}-instance')
         new_value = self.backend_instance.get_text()
 
         url = re.compile(r"https?://(www\.)?")
@@ -195,16 +197,16 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
 
     def _on_reset_backend_instance(self, _button):
         backend = self.backend.get_selected_index()
-        self.settings.reset(f'{TRANSLATORS[backend].name}-instance')
+        self.settings.reset(f'{self.translators[backend].name}-instance')
         self.backend_instance_stack.set_visible_child_name('view')
         Gtk.StyleContext.remove_class(self.backend_instance.get_style_context(), 'error')
         self.error_popover.popdown()
 
     def __check_instance_support(self):
         backend = self.backend.get_selected_index()
-        if TRANSLATORS[backend].supported_features['change-instance']:
+        if self.translators[backend].supported_features['change-instance']:
             self.backend_instance_row.set_visible(True)
-            self.settings.bind(f'{TRANSLATORS[backend].name}-instance', self.backend_instance_label,
+            self.settings.bind(f'{self.translators[backend].name}-instance', self.backend_instance_label,
                                'label', Gio.SettingsBindFlags.DEFAULT)
 
         else:
@@ -227,16 +229,16 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
 
         GLib.idle_add(spinner_start)
         backend = self.backend.get_selected_index()
-        validate = TRANSLATORS[backend].validate_instance_url(url)
+        validate = self.translators[backend].validate_instance_url(url)
         if validate:
-            self.settings.set_string(f'{TRANSLATORS[backend].name}-instance', url)
+            self.settings.set_string(f'{self.translators[backend].name}-instance', url)
             GLib.idle_add(Gtk.StyleContext.remove_class, self.backend_instance.get_style_context(), 'error')
             GLib.idle_add(self.backend_instance_stack.set_visible_child_name, 'view')
             GLib.idle_add(self.error_popover.popdown)
         else:
             GLib.idle_add(Gtk.StyleContext.add_class, self.backend_instance.get_style_context(), 'error')
             error_text = _('Not a valid {backend} instance')
-            error_text = error_text.format(backend=TRANSLATORS[backend].prettyname)
+            error_text = error_text.format(backend=self.translators[backend].prettyname)
             GLib.idle_add(self.error_label.set_label, error_text)
             GLib.idle_add(self.error_popover.popup)
 
