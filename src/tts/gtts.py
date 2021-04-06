@@ -23,4 +23,3 @@ class GTextToSpeech(TextToSpeechBase):
 
         except Exception as exc:
             raise TextToSpeechError(exc) from exc
-        
