@@ -37,12 +37,12 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
     tts = Gtk.Template.Child()
     search_provider = Gtk.Template.Child()
 
+    _backend_options = []
+
     def __init__(self, parent, **kwargs):
         super().__init__(**kwargs)
 
         self.parent = parent
-
-        self.translators = list(TRANSLATORS.values())
 
         self.setup()
 
@@ -62,24 +62,24 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
 
         # Setup backends combo row
         model = Gio.ListStore.new(Handy.ValueObject)
-        options = [translator.prettyname for translator in self.translators]
-        for count, value in enumerate(options):
-            model.insert(count, Handy.ValueObject.new(value))
+        self._backend_options = [
+            [translator.name, translator.prettyname] for translator in TRANSLATORS.values()
+        ]
+        for count, value in enumerate(self._backend_options):
+            model.insert(count, Handy.ValueObject.new(value[1]))
         self.backend.bind_name_model(model,
                                      Handy.ValueObject.dup_string)
 
         # Bind preferences with GSettings
         Settings.get().bind('live-translation', self.live_translation, 'active',
-                           Gio.SettingsBindFlags.DEFAULT)
+                            Gio.SettingsBindFlags.DEFAULT)
         Settings.get().bind('translate-accel', self.translate_accel,
-                           'selected-index', Gio.SettingsBindFlags.DEFAULT)
+                            'selected-index', Gio.SettingsBindFlags.DEFAULT)
         Settings.get().bind('src-auto', self.src_auto, 'active',
-                           Gio.SettingsBindFlags.DEFAULT)
-        Settings.get().bind('backend', self.backend,
-                           'selected-index', Gio.SettingsBindFlags.DEFAULT)
+                            Gio.SettingsBindFlags.DEFAULT)
 
         # Setup TTS
-        self.tts.set_active(bool(Settings.get().get_int('tts')))
+        self.tts.set_active(Settings.get().tts)
 
         # Toggle dark mode
         self.dark_mode.connect('notify::active', self._toggle_dark_mode)
@@ -89,6 +89,10 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         self.live_translation.connect('notify::active', self._toggle_accel_pref)
 
         # Switch backends
+        selected_backend = TRANSLATORS[Settings.get().backend]
+        self.backend.set_selected_index(
+            self._backend_options.index([selected_backend.name, selected_backend.prettyname])
+        )
         self.backend.connect('notify::selected-index', self._switch_backends)
         self.parent.connect('notify::backend-loading', self._on_backend_loading)
 
@@ -132,12 +136,12 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         Settings.get().unbind(self.src_auto, 'active')
 
     def _on_settings_changed(self, _settings, key):
-        backend = self.backend.get_selected_index()
-        if key == f'{self.translators[backend].name}-instance':
-            if self.translators[backend].supported_features['change-instance']:
+        backend = Settings.get().backend
+        if key == 'backend-settings':
+            if TRANSLATORS[backend].supported_features['change-instance']:
                 # Update backend
-                Settings.get().reset(f'{self.translators[backend].name}-src-langs')
-                Settings.get().reset(f'{self.translators[backend].name}-dest-langs')
+                Settings.get().reset_src_langs(backend)
+                Settings.get().reset_dest_langs(backend)
                 self.parent.change_backends(backend)
 
     def _toggle_dark_mode(self, switch, _active):
@@ -159,24 +163,26 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
                 target=self.parent.load_lang_speech,
                 daemon=True
             ).start()
-        Settings.get().set_int('tts', value)
+        Settings.get().tts_value = value
 
     def _switch_backends(self, row, _value):
+        backend = self._backend_options[row.get_selected_index()][0]
+        Settings.get().backend = backend
         self.__check_instance_support()
-        self.parent.change_backends(row.get_selected_index())
+        self.parent.change_backends(backend)
 
     def _on_backend_loading(self, window, _value):
         self.backend.set_sensitive(not window.get_property('backend-loading'))
         self.backend_instance_row.set_sensitive(not window.get_property('backend-loading'))
 
     def _on_edit_backend_instance(self, _button):
-        backend = self.backend.get_selected_index()
+        backend = Settings.get().backend
         self.backend_instance_stack.set_visible_child_name('edit')
-        self.backend_instance.set_text(Settings.get().get_string(f'{self.translators[backend].name}-instance'))
+        self.backend_instance.set_text(Settings.get().get_instance_url(backend))
 
     def _on_save_backend_instance(self, _button):
-        backend = self.backend.get_selected_index()
-        old_value = Settings.get().get_string(f'{self.translators[backend].name}-instance')
+        backend = Settings.get().backend
+        old_value = Settings.get().get_instance_url(backend)
         new_value = self.backend_instance.get_text()
 
         url = re.compile(r"https?://(www\.)?")
@@ -192,19 +198,17 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
             self.backend_instance_stack.set_visible_child_name('view')
 
     def _on_reset_backend_instance(self, _button):
-        backend = self.backend.get_selected_index()
-        Settings.get().reset(f'{self.translators[backend].name}-instance')
+        backend = Settings.get().backend
+        Settings.get().reset_instance_url(backend)
         self.backend_instance_stack.set_visible_child_name('view')
         Gtk.StyleContext.remove_class(self.backend_instance.get_style_context(), 'error')
         self.error_popover.popdown()
 
     def __check_instance_support(self):
-        backend = self.backend.get_selected_index()
-        if self.translators[backend].supported_features['change-instance']:
+        backend = Settings.get().backend
+        if TRANSLATORS[backend].supported_features['change-instance']:
             self.backend_instance_row.set_visible(True)
-            Settings.get().bind(f'{self.translators[backend].name}-instance', self.backend_instance_label,
-                               'label', Gio.SettingsBindFlags.DEFAULT)
-
+            self.backend_instance_label.set_label(Settings.get().get_instance_url(backend))
         else:
             self.backend_instance_row.set_visible(False)
 
@@ -221,20 +225,21 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
             self.backend_instance_edit_box.set_sensitive(True)
             self.backend_instance_save.remove(self.instance_save_spinner)
             self.backend_instance_save.add(self.instance_save_image)
+            self.backend_instance_label.set_label(Settings.get().get_instance_url(backend))
             self.instance_save_spinner.stop()
 
         GLib.idle_add(spinner_start)
-        backend = self.backend.get_selected_index()
-        validate = self.translators[backend].validate_instance_url(url)
+        backend = Settings.get().backend
+        validate = TRANSLATORS[backend].validate_instance_url(url)
         if validate:
-            Settings.get().set_string(f'{self.translators[backend].name}-instance', url)
+            Settings.get().set_instance_url(backend, url)
             GLib.idle_add(Gtk.StyleContext.remove_class, self.backend_instance.get_style_context(), 'error')
             GLib.idle_add(self.backend_instance_stack.set_visible_child_name, 'view')
             GLib.idle_add(self.error_popover.popdown)
         else:
             GLib.idle_add(Gtk.StyleContext.add_class, self.backend_instance.get_style_context(), 'error')
             error_text = _('Not a valid {backend} instance')
-            error_text = error_text.format(backend=self.translators[backend].prettyname)
+            error_text = error_text.format(backend=TRANSLATORS[backend].prettyname)
             GLib.idle_add(self.error_label.set_label, error_text)
             GLib.idle_add(self.error_popover.popup)
 

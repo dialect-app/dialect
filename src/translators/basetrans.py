@@ -14,6 +14,9 @@ class TranslatorBase:
         'pronunciation': False,
         'change-instance': False,
     }
+    instance_url = ''
+    src_langs = ['en', 'fr', 'es', 'de']
+    dest_langs = ['fr', 'es', 'de', 'en']
 
     @staticmethod
     def validate_instance_url(url):

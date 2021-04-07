@@ -13,5 +13,13 @@ def check_backend_availability(backend_name):
 
     return False
 
+def get_fallback_backend_name():
+    if TRANSLATORS:
+        return list(TRANSLATORS.keys())[0]
+    return None
+
 def get_fallback_backend():
-    return list(TRANSLATORS.keys())[0]
+    backend_name = get_fallback_backend_name()
+    if backend_name:
+        return TRANSLATORS[backend_name]
+    return None

@@ -100,7 +100,7 @@ class Dialect(Gtk.Application):
         """ Setup menu actions """
 
         self.pronunciation_action = Gio.SimpleAction.new_stateful(
-            'pronunciation', None, Settings.get().get_value('show-pronunciation')
+            'pronunciation', None, Settings.get().show_pronunciation_value
         )
         self.pronunciation_action.connect('change-state', self.on_pronunciation)
         self.add_action(self.pronunciation_action)
@@ -126,7 +126,7 @@ class Dialect(Gtk.Application):
     def on_pronunciation(self, action, value):
         """ Update show pronunciation setting """
         action.set_state(value)
-        Settings.get().set_boolean('show-pronunciation', value)
+        Settings.get().show_pronunciation = value
 
         # Update UI
         if self.window.trans_src_pron is not None:
@@ -144,11 +144,8 @@ class Dialect(Gtk.Application):
         """Launch the Keyboard Shortcuts window."""
         builder = Gtk.Builder.new_from_resource(f'{RES_PATH}/shortcuts-window.ui')
         translate_shortcut = builder.get_object('translate_shortcut')
-        translate_shortcut.set_visible(not Settings.get().get_boolean('live-translation'))
-        if Settings.get().get_value('translate-accel'):
-            translate_shortcut.set_property('accelerator', 'Return')
-        else:
-            translate_shortcut.set_property('accelerator', '<Primary>Return')
+        translate_shortcut.set_visible(not Settings.get().live_translation)
+        translate_shortcut.set_property('accelerator', Settings.get().translate_accel)
         shortcuts_window = builder.get_object('shortcuts')
         shortcuts_window.set_transient_for(self.window)
         shortcuts_window.show()

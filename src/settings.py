@@ -1,6 +1,13 @@
-from gi.repository import Gio
+# Copyright 2021 Mufeed Ali
+# Copyright 2021 Rafael Mardojai CM
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+import json
+
+from gi.repository import Gio, GLib
 
 from dialect.define import APP_ID
+from dialect.translators import check_backend_availability, get_fallback_backend_name, TRANSLATORS
 
 
 class Settings(Gio.Settings):
@@ -27,3 +34,240 @@ class Settings(Gio.Settings):
             Settings.instance = Settings.new()
 
         return Settings.instance
+
+    @property
+    def translate_accel(self):
+        """Return the user's preferred translation shortcut."""
+        value = self.translate_accel_value
+
+        if value == 0:
+            return '<Primary>Return'
+        if value == 1:
+            return 'Return'
+
+        return '<Primary>Return'
+
+    @property
+    def translate_accel_value(self):
+        """Return the user's preferred translation shortcut value."""
+        return self.get_int('translate-accel')
+
+    @property
+    def tts(self):
+        """Return the user's preferred TTS service."""
+        return bool(self.tts_value)
+
+    @property
+    def tts_value(self):
+        """Return the user's preferred TTS service value."""
+        return self.get_int('tts')
+
+    @tts_value.setter
+    def tts_value(self, value):
+        """Set the user's preferred TTS service value."""
+        self.set_int('tts', value)
+
+    @property
+    def dark_mode(self):
+        return self.get_boolean('dark-mode')
+
+    @dark_mode.setter
+    def dark_mode(self, state):
+        self.set_boolean('dark-mode', state)
+
+    @property
+    def live_translation(self):
+        return self.get_boolean('live-translation')
+
+    @live_translation.setter
+    def live_translation(self, state):
+        self.set_boolean('live-translation', state)
+
+    @property
+    def show_pronunciation(self):
+        return self.get_boolean('show-pronunciation')
+
+    @property
+    def show_pronunciation_value(self):
+        return self.get_value('show-pronunciation')
+
+    @show_pronunciation.setter
+    def show_pronunciation(self, state):
+        self.set_boolean('show-pronunciation', state)
+
+    @property
+    def src_auto(self):
+        return self.get_boolean('src-auto')
+
+    @src_auto.setter
+    def src_auto(self, state):
+        self.set_boolean('src-auto', state)
+
+    @property
+    def backend(self):
+        """Return the user's preferred backend."""
+        value = None
+
+        try:
+            value = self.get_int('backend')
+        except Exception:
+            pass
+
+        if value in [None, -1]:
+            value = self.get_string('backend-name')
+        else:
+            if value == 0:
+                value = 'google'
+            elif value == 1:
+                value = 'libretranslate'
+
+        if check_backend_availability(value):
+            return value
+
+        self.backend = get_fallback_backend_name()
+        return get_fallback_backend_name()
+
+    @backend.setter
+    def backend(self, name):
+        """
+        Set the user's preferred backend.
+
+        :param name: name of backend
+        :type name: string
+        """
+        self._delete_int_key('backend')
+        self.set_string('backend-name', name)
+
+    def get_instance_url(self, backend):
+        try:
+            instance_url = self.get_string(f'{backend}-instance')
+            if instance_url:
+                return instance_url
+        except Exception:
+            pass
+
+        settings = self.backend_settings.get(backend)
+
+        if settings is not None and settings.get('instance-url'):
+            return settings.get('instance-url')
+
+        return TRANSLATORS[backend].instance_url
+
+    def set_instance_url(self, backend, instance_url):
+        self._delete_str_key(f'{backend}-instance')
+        settings = self._backend_settings(backend)
+        settings[backend]['instance-url'] = instance_url
+        self.backend_settings = settings
+
+    def reset_instance_url(self, backend):
+        self._delete_str_key(f'{backend}-instance')
+        settings = self._backend_settings()
+        settings[backend]['instance-url'] = TRANSLATORS[backend].instance_url
+        self.backend_settings = settings
+
+    def get_dest_langs(self, backend):
+        try:
+            dest_langs = list(self.get_value(f'{backend}-dest-langs'))
+            if dest_langs:
+                return dest_langs
+        except Exception:
+            pass
+
+        settings = self.backend_settings.get(backend)
+
+        if settings is not None and settings.get('dest-langs'):
+            return settings.get('dest-langs')
+
+        return TRANSLATORS[backend].dest_langs
+
+    def set_dest_langs(self, backend, langs):
+        self._delete_arr_key(f'{backend}-dest-langs')
+        settings = self._backend_settings(backend)
+        settings[backend]['dest-langs'] = langs
+        self.backend_settings = settings
+
+    def reset_dest_langs(self, backend):
+        self._delete_arr_key(f'{backend}-dest-langs')
+        settings = self._backend_settings(backend)
+        settings[backend]['dest-langs'] = TRANSLATORS[backend].dest_langs
+        self.backend_settings = settings
+
+    def get_src_langs(self, backend):
+        try:
+            src_langs = list(self.get_value(f'{backend}-src-langs'))
+            if src_langs:
+                return src_langs
+        except Exception:
+            pass
+
+        settings = self.backend_settings.get(backend)
+
+        if settings is not None and settings.get('src-langs'):
+            return settings.get('src-langs')
+
+        return TRANSLATORS[backend].src_langs
+
+    def set_src_langs(self, backend, langs):
+        self._delete_arr_key(f'{backend}-src-langs')
+        settings = self._backend_settings(backend)
+        settings[backend]['src-langs'] = langs
+        self.backend_settings = settings
+
+    def reset_src_langs(self, backend):
+        self._delete_arr_key(f'{backend}-src-langs')
+        settings = self._backend_settings(backend)
+        settings[backend]['src-langs'] = TRANSLATORS[backend].src_langs
+        self.backend_settings = settings
+
+    @property
+    def backend_settings(self):
+        return json.loads(self.get_string('backend-settings'))
+
+    @backend_settings.setter
+    def backend_settings(self, state):
+        self.set_string('backend-settings', json.dumps(state))
+
+    def _backend_settings(self, backend):
+        """
+        Returns the backend settings object but with necessary dict created.
+        
+        Just a convenience function.
+        """
+        settings = self.backend_settings
+
+        if backend not in settings:
+            settings[backend] = {}
+
+        return settings
+
+    def _delete_arr_key(self, key):
+        try:
+            self.get_value(key)
+            self.set_value(key,
+                           GLib.Variant('as', []))
+        except Exception:
+            pass
+
+    def _delete_enum_key(self, key):
+        try:
+            self.get_enum(key)
+            self.set_enum(key,
+                          -1)
+        except Exception:
+            pass
+
+    def _delete_int_key(self, key):
+        try:
+            self.get_int(key)
+            self.set_int(key,
+                         -1)
+        except Exception:
+            pass
+
+    def _delete_str_key(self, key):
+        try:
+            self.get_value(key)
+            self.set_value(key,
+                           GLib.Variant('s', ''))
+        except Exception:
+            pass

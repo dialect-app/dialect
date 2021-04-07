@@ -18,11 +18,11 @@ class Translator(TranslatorBase):
         'pronunciation': False,
         'change-instance': True,
     }
-    base_url = ''
+    instance_url = 'translate.astian.org'
 
     def __init__(self, base_url=None, **kwargs):
         if base_url is not None:
-            self.base_url = base_url
+            self.instance_url = base_url
 
         self.client = httpx.Client()
 
@@ -33,21 +33,21 @@ class Translator(TranslatorBase):
 
     @property
     def detect_url(self):
-        if self.base_url.startswith('localhost:'):
-            return 'http://' + self.base_url + '/detect'
-        return 'https://' + self.base_url + '/detect'
+        if self.instance_url.startswith('localhost:'):
+            return 'http://' + self.instance_url + '/detect'
+        return 'https://' + self.instance_url + '/detect'
 
     @property
     def translate_url(self):
-        if self.base_url.startswith('localhost:'):
-            return 'http://' + self.base_url + '/translate'
-        return 'https://' + self.base_url + '/translate'
+        if self.instance_url.startswith('localhost:'):
+            return 'http://' + self.instance_url + '/translate'
+        return 'https://' + self.instance_url + '/translate'
 
     @property
     def lang_url(self):
-        if self.base_url.startswith('localhost:'):
-            return 'http://' + self.base_url + '/languages'
-        return 'https://' + self.base_url + '/languages'
+        if self.instance_url.startswith('localhost:'):
+            return 'http://' + self.instance_url + '/languages'
+        return 'https://' + self.instance_url + '/languages'
 
     @staticmethod
     def validate_instance_url(url):
