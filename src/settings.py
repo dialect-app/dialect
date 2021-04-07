@@ -113,6 +113,8 @@ class Settings(Gio.Settings):
         value = None
 
         try:
+            # Dialect 1.2.0 and below used the backend key and
+            # stored the index of the chosen backend as an int.
             value = self.get_int('backend')
         except Exception:
             pass
@@ -139,11 +141,13 @@ class Settings(Gio.Settings):
         :param name: name of backend
         :type name: string
         """
-        self._delete_int_key('backend')
+        self._delete_int_key('backend')  # Set deprecated key to unused state.
         self.set_string('backend-name', name)
 
     def get_instance_url(self, backend):
         try:
+            # Dialect 1.2.0 and below used separate keys for each
+            # backend-specific setting.
             instance_url = self.get_string(f'{backend}-instance')
             if instance_url:
                 return instance_url
@@ -158,19 +162,21 @@ class Settings(Gio.Settings):
         return TRANSLATORS[backend].instance_url
 
     def set_instance_url(self, backend, instance_url):
-        self._delete_str_key(f'{backend}-instance')
+        self._delete_str_key(f'{backend}-instance')  # Set deprecated key to unused state.
         settings = self._backend_settings(backend)
         settings[backend]['instance-url'] = instance_url
         self.backend_settings = settings
 
     def reset_instance_url(self, backend):
-        self._delete_str_key(f'{backend}-instance')
+        self._delete_str_key(f'{backend}-instance')  # Set deprecated key to unused state.
         settings = self._backend_settings()
         settings[backend]['instance-url'] = TRANSLATORS[backend].instance_url
         self.backend_settings = settings
 
     def get_dest_langs(self, backend):
         try:
+            # Dialect 1.2.0 and below used separate keys for each
+            # backend-specific setting.
             dest_langs = list(self.get_value(f'{backend}-dest-langs'))
             if dest_langs:
                 return dest_langs
@@ -185,19 +191,21 @@ class Settings(Gio.Settings):
         return TRANSLATORS[backend].dest_langs
 
     def set_dest_langs(self, backend, langs):
-        self._delete_arr_key(f'{backend}-dest-langs')
+        self._delete_arr_key(f'{backend}-dest-langs')  # Set deprecated key to unused state.
         settings = self._backend_settings(backend)
         settings[backend]['dest-langs'] = langs
         self.backend_settings = settings
 
     def reset_dest_langs(self, backend):
-        self._delete_arr_key(f'{backend}-dest-langs')
+        self._delete_arr_key(f'{backend}-dest-langs')  # Set deprecated key to unused state.
         settings = self._backend_settings(backend)
         settings[backend]['dest-langs'] = TRANSLATORS[backend].dest_langs
         self.backend_settings = settings
 
     def get_src_langs(self, backend):
         try:
+            # Dialect 1.2.0 and below used separate keys for each
+            # backend-specific setting.
             src_langs = list(self.get_value(f'{backend}-src-langs'))
             if src_langs:
                 return src_langs
@@ -212,13 +220,13 @@ class Settings(Gio.Settings):
         return TRANSLATORS[backend].src_langs
 
     def set_src_langs(self, backend, langs):
-        self._delete_arr_key(f'{backend}-src-langs')
+        self._delete_arr_key(f'{backend}-src-langs')  # Set deprecated key to unused state.
         settings = self._backend_settings(backend)
         settings[backend]['src-langs'] = langs
         self.backend_settings = settings
 
     def reset_src_langs(self, backend):
-        self._delete_arr_key(f'{backend}-src-langs')
+        self._delete_arr_key(f'{backend}-src-langs')  # Set deprecated key to unused state.
         settings = self._backend_settings(backend)
         settings[backend]['src-langs'] = TRANSLATORS[backend].src_langs
         self.backend_settings = settings
@@ -246,32 +254,33 @@ class Settings(Gio.Settings):
 
     def _delete_arr_key(self, key):
         try:
-            self.get_value(key)
-            self.set_value(key,
-                           GLib.Variant('as', []))
+            val = self.get_strv(key)
+            if val != []:
+                self.set_value(key, GLib.Variant('as', []))
         except Exception:
             pass
 
     def _delete_enum_key(self, key):
         try:
-            self.get_enum(key)
-            self.set_enum(key,
-                          -1)
+            val = self.get_enum(key)
+            if val > -1:
+                self.set_enum(key, -1)
         except Exception:
             pass
 
     def _delete_int_key(self, key):
         try:
-            self.get_int(key)
-            self.set_int(key,
-                         -1)
+            val = self.get_int(key)
+            if val > -1:
+                self.set_int(key, -1)
         except Exception:
             pass
 
     def _delete_str_key(self, key):
         try:
-            self.get_value(key)
-            self.set_value(key,
-                           GLib.Variant('s', ''))
+            val = self.get_string(key)
+            if val != '':
+                self.set_value(key,
+                               GLib.Variant('s', ''))
         except Exception:
             pass
