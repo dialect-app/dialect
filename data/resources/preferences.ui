@@ -171,7 +171,7 @@
               </object>
             </child>
             <child>
-              <object class="HdyActionRow">
+              <object class="HdyActionRow" id="tts_row">
                 <property name="title" translatable="yes">Text to Speech</property>
                 <property name="subtitle" translatable="yes">Use Google for Text to Speech functionality.</property>
                 <property name="visible">True</property>
