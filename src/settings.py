@@ -7,7 +7,11 @@ import json
 from gi.repository import Gio, GLib
 
 from dialect.define import APP_ID
-from dialect.translators import check_backend_availability, get_fallback_backend_name, TRANSLATORS
+from dialect.translators import (
+    check_backend_availability,
+    get_fallback_backend_name,
+    TRANSLATORS
+)
 from dialect.tts import TTS
 
 

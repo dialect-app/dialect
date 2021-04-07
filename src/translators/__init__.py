@@ -17,9 +17,3 @@ def get_fallback_backend_name():
     if TRANSLATORS:
         return list(TRANSLATORS.keys())[0]
     return None
-
-def get_fallback_backend():
-    backend_name = get_fallback_backend_name()
-    if backend_name:
-        return TRANSLATORS[backend_name]
-    return None

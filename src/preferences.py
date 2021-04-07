@@ -7,7 +7,7 @@ import re
 import threading
 from gettext import gettext as _
 
-from gi.repository import Gio, GLib, Gtk, Handy
+from gi.repository import Gio, GLib, GObject, Gtk, Handy
 
 from dialect.define import RES_PATH
 from dialect.translators import TRANSLATORS
@@ -38,8 +38,6 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
     tts = Gtk.Template.Child()
     search_provider = Gtk.Template.Child()
 
-    _backend_options = []
-
     def __init__(self, parent, **kwargs):
         super().__init__(**kwargs)
 
@@ -56,20 +54,23 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         # Setup translate accel combo row
         model = Gio.ListStore.new(Handy.ValueObject)
         options = ['Ctrl + Enter', 'Enter']
-        for count, value in enumerate(options):
-            model.insert(count, Handy.ValueObject.new(value))
+        for index, value in enumerate(options):
+            model.insert(index, Handy.ValueObject.new(value))
         self.translate_accel.bind_name_model(model,
                                              Handy.ValueObject.dup_string)
 
         # Setup backends combo row
-        model = Gio.ListStore.new(Handy.ValueObject)
-        self._backend_options = [
-            [translator.name, translator.prettyname] for translator in TRANSLATORS.values()
+        self.backend_model = Gio.ListStore.new(TranslatorObject)
+        backend_options = [
+            TranslatorObject(translator.name, translator.prettyname) for translator in TRANSLATORS.values()
         ]
-        for count, value in enumerate(self._backend_options):
-            model.insert(count, Handy.ValueObject.new(value[1]))
-        self.backend.bind_name_model(model,
-                                     Handy.ValueObject.dup_string)
+        selected_backend_index = 0
+        for index, value in enumerate(backend_options):
+            self.backend_model.insert(index, value)
+            if value.name == Settings.get().backend:
+                selected_backend_index = index
+        self.backend.bind_name_model(self.backend_model,
+                                     TranslatorObject.get_name)
 
         # Bind preferences with GSettings
         Settings.get().bind('live-translation', self.live_translation, 'active',
@@ -90,10 +91,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         self.live_translation.connect('notify::active', self._toggle_accel_pref)
 
         # Switch backends
-        selected_backend = TRANSLATORS[Settings.get().backend]
-        self.backend.set_selected_index(
-            self._backend_options.index([selected_backend.name, selected_backend.prettyname])
-        )
+        self.backend.set_selected_index(selected_backend_index)
         self.backend.connect('notify::selected-index', self._switch_backends)
         self.parent.connect('notify::backend-loading', self._on_backend_loading)
 
@@ -173,7 +171,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
             ).start()
 
     def _switch_backends(self, row, _value):
-        backend = self._backend_options[row.get_selected_index()][0]
+        backend = self.backend_model[row.get_selected_index()].name
         Settings.get().backend = backend
         self.__check_instance_support()
         self.parent.change_backends(backend)
@@ -251,3 +249,15 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
             GLib.idle_add(self.error_popover.popup)
 
         GLib.idle_add(spinner_end)
+
+class TranslatorObject(GObject.Object):
+    name = None
+    prettyname = None
+
+    def __init__(self, name, prettyname):
+        super().__init__()
+        self.name = name
+        self.prettyname = prettyname
+
+    def get_name(self):
+        return self.prettyname
