@@ -13,11 +13,12 @@ gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
 gi.require_version('Handy', '1')
 
-from gi.repository import Gdk, Gio, GLib, Gtk, Gst, Handy
+from gi.repository import Gdk, Gio, GLib, Gst, Gtk, Handy
 
 from dialect.define import APP_ID, RES_PATH
-from dialect.window import DialectWindow
 from dialect.preferences import DialectPreferencesWindow
+from dialect.settings import Settings
+from dialect.window import DialectWindow
 
 
 class Dialect(Gtk.Application):
@@ -33,7 +34,6 @@ class Dialect(Gtk.Application):
         self.window = None
         self.launch_text = ''
         self.launch_langs = {}
-        self.settings = Gio.Settings.new(APP_ID)
 
         # Add command line options
         self.add_main_option('text', b't', GLib.OptionFlags.NONE,
@@ -51,8 +51,7 @@ class Dialect(Gtk.Application):
                 # Translators: Do not translate the app name!
                 title=_('Dialect'),
                 text=self.launch_text,
-                langs=self.launch_langs,
-                settings=self.settings
+                langs=self.launch_langs
             )
         self.window.present()
 
@@ -101,7 +100,7 @@ class Dialect(Gtk.Application):
         """ Setup menu actions """
 
         self.pronunciation_action = Gio.SimpleAction.new_stateful(
-            'pronunciation', None, self.settings.get_value('show-pronunciation')
+            'pronunciation', None, Settings.get().show_pronunciation_value
         )
         self.pronunciation_action.connect('change-state', self.on_pronunciation)
         self.add_action(self.pronunciation_action)
@@ -127,7 +126,7 @@ class Dialect(Gtk.Application):
     def on_pronunciation(self, action, value):
         """ Update show pronunciation setting """
         action.set_state(value)
-        self.settings.set_boolean('show-pronunciation', value)
+        Settings.get().show_pronunciation = value
 
         # Update UI
         if self.window.trans_src_pron is not None:
@@ -137,7 +136,7 @@ class Dialect(Gtk.Application):
 
     def on_preferences(self, _action, _param):
         """ Show preferences window """
-        window = DialectPreferencesWindow(self.window, settings=self.settings)
+        window = DialectPreferencesWindow(self.window)
         window.set_transient_for(self.window)
         window.present()
 
@@ -145,11 +144,8 @@ class Dialect(Gtk.Application):
         """Launch the Keyboard Shortcuts window."""
         builder = Gtk.Builder.new_from_resource(f'{RES_PATH}/shortcuts-window.ui')
         translate_shortcut = builder.get_object('translate_shortcut')
-        translate_shortcut.set_visible(not self.settings.get_boolean('live-translation'))
-        if self.settings.get_value('translate-accel'):
-            translate_shortcut.set_property('accelerator', 'Return')
-        else:
-            translate_shortcut.set_property('accelerator', '<Primary>Return')
+        translate_shortcut.set_visible(not Settings.get().live_translation)
+        translate_shortcut.set_property('accelerator', Settings.get().translate_accel)
         shortcuts_window = builder.get_object('shortcuts')
         shortcuts_window.set_transient_for(self.window)
         shortcuts_window.show()

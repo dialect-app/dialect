@@ -7,7 +7,7 @@ class TextToSpeechBase:
     prettyname = ''
     languages = ['en']
 
-    def download_voice(self, text, language):
+    def download_voice(self, text, language, file):
         pass
 
 
@@ -18,4 +18,3 @@ class TextToSpeechError(Exception):
         self.cause = cause
         self.message = message
         super().__init__(self.message)
-

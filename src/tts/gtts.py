@@ -7,7 +7,7 @@ from gtts import gTTS, lang
 from dialect.tts.basetts import TextToSpeechBase, TextToSpeechError
 
 
-class GTextToSpeech(TextToSpeechBase):
+class TextToSpeech(TextToSpeechBase):
     name = 'google'
     prettyname = 'Google Text-to-Speech'
     languages = []
@@ -23,4 +23,3 @@ class GTextToSpeech(TextToSpeechBase):
 
         except Exception as exc:
             raise TextToSpeechError(exc) from exc
-        
