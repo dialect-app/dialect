@@ -69,21 +69,6 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
                                      Handy.ValueObject.dup_string)
 
         # Bind preferences with GSettings
-        self.dark_mode.set_active(Settings.get().get_boolean('dark-mode'))
-        self.dark_mode.connect('notify::active', self._toggle_dark_mode)
-
-        self.live_translation.set_active(Settings.get().get_boolean('live-translation'))
-        self.live_translation.connect('notify::active', self._toggle_live_translation)
-
-        self.src_auto.set_active(Settings.get().get_boolean('src-auto'))
-        self.src_auto.connect('notify::active', self._toggle_src_auto)
-
-        self.backend.set_active(Settings.get().get_boolean('backend'))
-        self.backend.connect('notify::active', self._toggle_backend)
-
-        self.dark_mode.set_active(Settings.get().get_boolean('dark-mode'))
-        self.dark_mode.connect('notify::active', self._toggle_dark_mode)
-
         Settings.get().bind('live-translation', self.live_translation, 'active',
                            Gio.SettingsBindFlags.DEFAULT)
         Settings.get().bind('translate-accel', self.translate_accel,
@@ -95,6 +80,9 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
 
         # Setup TTS
         self.tts.set_active(bool(Settings.get().get_int('tts')))
+
+        # Toggle dark mode
+        self.dark_mode.connect('notify::active', self._toggle_dark_mode)
 
         # Set translate accel sensitivity by live translation state
         self.translate_accel.set_sensitive(not self.live_translation.get_active())
@@ -156,7 +144,6 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         gtk_settings = Gtk.Settings.get_default()
         active = switch.get_active()
         gtk_settings.set_property('gtk-application-prefer-dark-theme', active)
-        Settings.get().set_boolean('dark-mode', active)
 
     def _toggle_accel_pref(self, switch, _active):
         self.translate_accel.set_sensitive(not switch.get_active())
