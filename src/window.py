@@ -7,13 +7,13 @@ import threading
 from gettext import gettext as _
 from tempfile import NamedTemporaryFile
 
-from gi.repository import Gdk, GLib, GObject, Gtk, Gst, Handy
+from gi.repository import Gdk, GLib, GObject, Gst, Gtk, Handy
 
-from dialect.define import APP_ID, RES_PATH, MAX_LENGTH, TRANS_NUMBER
+from dialect.define import APP_ID, MAX_LENGTH, RES_PATH, TRANS_NUMBER
 from dialect.lang_selector import DialectLangSelector
+from dialect.settings import Settings
 from dialect.translators import TRANSLATORS
 from dialect.tts import TTS
-from dialect.settings import Settings
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/window.ui')

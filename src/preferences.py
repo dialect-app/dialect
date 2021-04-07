@@ -10,9 +10,9 @@ from gettext import gettext as _
 from gi.repository import Gio, GLib, GObject, Gtk, Handy
 
 from dialect.define import RES_PATH
+from dialect.settings import Settings
 from dialect.translators import TRANSLATORS
 from dialect.tts import TTS
-from dialect.settings import Settings
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/preferences.ui')
@@ -60,9 +60,9 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
                                              Handy.ValueObject.dup_string)
 
         # Setup backends combo row
-        self.backend_model = Gio.ListStore.new(TranslatorObject)
+        self.backend_model = Gio.ListStore.new(BackendObject)
         backend_options = [
-            TranslatorObject(translator.name, translator.prettyname) for translator in TRANSLATORS.values()
+            BackendObject(translator.name, translator.prettyname) for translator in TRANSLATORS.values()
         ]
         selected_backend_index = 0
         for index, value in enumerate(backend_options):
@@ -70,7 +70,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
             if value.name == Settings.get().backend:
                 selected_backend_index = index
         self.backend.bind_name_model(self.backend_model,
-                                     TranslatorObject.get_name)
+                                     BackendObject.get_name)
 
         # Bind preferences with GSettings
         Settings.get().bind('live-translation', self.live_translation, 'active',
@@ -250,7 +250,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
 
         GLib.idle_add(spinner_end)
 
-class TranslatorObject(GObject.Object):
+class BackendObject(GObject.Object):
     name = None
     prettyname = None
 

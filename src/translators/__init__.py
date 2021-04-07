@@ -1,5 +1,5 @@
-import pkgutil
 import importlib
+import pkgutil
 
 TRANSLATORS = {}
 for _importer, modname, _ispkg in pkgutil.iter_modules(__path__):
