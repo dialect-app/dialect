@@ -8,6 +8,7 @@ from gi.repository import Gio, GLib
 
 from dialect.define import APP_ID
 from dialect.translators import check_backend_availability, get_fallback_backend_name, TRANSLATORS
+from dialect.tts import TTS
 
 
 class Settings(Gio.Settings):
@@ -55,17 +56,16 @@ class Settings(Gio.Settings):
     @property
     def tts(self):
         """Return the user's preferred TTS service."""
-        return bool(self.tts_value)
+        value = self.get_string('tts-name')
+        if value not in TTS.keys():
+            value = ''
+            self.tts = value
+        return value
 
-    @property
-    def tts_value(self):
-        """Return the user's preferred TTS service value."""
-        return self.get_int('tts')
-
-    @tts_value.setter
-    def tts_value(self, value):
-        """Set the user's preferred TTS service value."""
-        self.set_int('tts', value)
+    @tts.setter
+    def tts(self, value):
+        """Set the user's preferred TTS service."""
+        self.set_string('tts-name', value)
 
     @property
     def dark_mode(self):

@@ -7,7 +7,7 @@ class TextToSpeechBase:
     prettyname = ''
     languages = ['en']
 
-    def download_voice(self, text, language):
+    def download_voice(self, text, language, file):
         pass
 
 

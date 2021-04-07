@@ -146,7 +146,7 @@ class DialectWindow(Handy.ApplicationWindow):
             daemon=True
         ).start()
         # Get languages available for speech
-        if Settings.get().tts:
+        if Settings.get().tts != '':
             threading.Thread(target=self.load_lang_speech, daemon=True).start()
 
     def load_translator(self, backend, launch=False):
@@ -263,7 +263,7 @@ class DialectWindow(Handy.ApplicationWindow):
         """
         try:
             self.voice_loading = True
-            self.tts = TTS[Settings.get().tts_value - 1]()
+            self.tts = TTS[Settings.get().tts]()
             self.tts_langs = self.tts.languages
             if not listen:
                 GLib.idle_add(self.toggle_voice_spinner, False)
@@ -360,8 +360,8 @@ class DialectWindow(Handy.ApplicationWindow):
 
         self.toggle_voice_spinner(True)
 
-        self.src_voice_btn.set_visible(Settings.get().tts)
-        self.dest_voice_btn.set_visible(Settings.get().tts)
+        self.src_voice_btn.set_visible(Settings.get().tts != '')
+        self.dest_voice_btn.set_visible(Settings.get().tts != '')
 
     def responsive_listener(self, _window):
         size = self.get_size()
@@ -485,7 +485,7 @@ class DialectWindow(Handy.ApplicationWindow):
             self.dest_lang_selector.set_property('selected', self.src_langs[0])
 
         # Disable or enable listen function.
-        if self.tts_langs and Settings.get().tts:
+        if self.tts_langs and Settings.get().tts != '':
             self.src_voice_btn.set_sensitive(code in self.tts_langs
                                          and src_text != '')
 
@@ -530,7 +530,7 @@ class DialectWindow(Handy.ApplicationWindow):
             self.src_lang_selector.set_property('selected', self.dest_langs[0])
 
         # Disable or enable listen function.
-        if self.tts_langs and Settings.get().tts:
+        if self.tts_langs and Settings.get().tts != '':
             self.dest_voice_btn.set_sensitive(code in self.tts_langs
                                          and dest_text != '')
 

@@ -27,9 +27,8 @@
     <key type="s" name="backend-settings">
         <default>"{}"</default>
     </key>
-    <key type="i" name="tts">
-        <!-- 0 = Disabled | 1 = Google TTS -->
-        <default>1</default>
+    <key type="s" name="tts-name">
+        <default>"google"</default>
     </key>
     <key type="as" name="google-src-langs">
         <!-- Deprecated option -->

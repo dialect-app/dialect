@@ -11,6 +11,7 @@ from gi.repository import Gio, GLib, Gtk, Handy
 
 from dialect.define import RES_PATH
 from dialect.translators import TRANSLATORS
+from dialect.tts import TTS
 from dialect.settings import Settings
 
 
@@ -79,7 +80,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
                             Gio.SettingsBindFlags.DEFAULT)
 
         # Setup TTS
-        self.tts.set_active(Settings.get().tts)
+        self.tts.set_active(Settings.get().tts != '')
 
         # Toggle dark mode
         self.dark_mode.connect('notify::active', self._toggle_dark_mode)
@@ -153,17 +154,23 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         self.translate_accel.set_sensitive(not switch.get_active())
 
     def _toggle_tts(self, switch, _active):
-        value = int(switch.get_active())
+        value = ''
+        if switch.get_active() and len(TTS) >= 1:
+            tts = list(TTS.keys())
+            value = str(tts[0])
+
         self.parent.src_voice_btn.set_sensitive(False)
         self.parent.src_voice_btn.set_visible(switch.get_active())
         self.parent.dest_voice_btn.set_sensitive(False)
         self.parent.dest_voice_btn.set_visible(switch.get_active())
+
+        Settings.get().tts = value
+
         if switch.get_active():
             threading.Thread(
                 target=self.parent.load_lang_speech,
                 daemon=True
             ).start()
-        Settings.get().tts_value = value
 
     def _switch_backends(self, row, _value):
         backend = self._backend_options[row.get_selected_index()][0]
