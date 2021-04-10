@@ -86,7 +86,6 @@ class DialectWindow(Handy.ApplicationWindow):
     first_key = 0
     second_key = 0
     mobile_mode = False
-    window_size = []
     # Connectivity issues monitoring
     trans_failed = False
     voice_loading = False
@@ -132,7 +131,8 @@ class DialectWindow(Handy.ApplicationWindow):
 
         # Connect responsive design function
         self.connect('check-resize', self.responsive_listener)
-        self.connect('destroy', self.save_translator_settings)
+        # Save settings on close
+        self.connect('delete-event', self.save_settings)
 
         self.setup_headerbar()
         self.setup_actionbar()
@@ -366,7 +366,6 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def responsive_listener(self, _window):
         size = self.get_size()
-        self.window_size = [size.width, size.height]
 
         if size.width < 680:
             if self.mobile_mode is False:
@@ -416,8 +415,10 @@ class DialectWindow(Handy.ApplicationWindow):
         # Run translation
         self.translation(None)
 
-    def save_translator_settings(self, *args, **kwargs):
-        Settings.get().window_size = self.window_size
+    def save_settings(self, *args, **kwargs):
+        if not self.is_maximized():
+            size = self.get_size()
+            Settings.get().window_size = (size.width, size.height)
         if self.translator is not None:
             Settings.get().set_src_langs(self.translator.name, self.src_langs)
             Settings.get().set_dest_langs(self.translator.name, self.dest_langs)
@@ -861,7 +862,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.set_property('backend-loading', True)
 
         # Save previous backend settings
-        self.save_translator_settings()
+        self.save_settings()
 
         # Load translator
         threading.Thread(target=self.load_translator,
