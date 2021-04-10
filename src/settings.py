@@ -41,6 +41,16 @@ class Settings(Gio.Settings):
         return Settings.instance
 
     @property
+    def window_size(self):
+        value = self.get_value('window-size')
+        return (value[0], value[1])
+
+    @window_size.setter
+    def window_size(self, size):
+        width, height = size
+        self.set_value('window-size', GLib.Variant('ai', [width, height]))
+
+    @property
     def translate_accel(self):
         """Return the user's preferred translation shortcut."""
         value = self.translate_accel_value
