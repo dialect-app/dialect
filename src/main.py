@@ -46,10 +46,13 @@ class Dialect(Gtk.Application):
     def do_activate(self):
         self.window = self.props.active_window
         if not self.window:
+            width, height = Settings.get().window_size
             self.window = DialectWindow(
                 application=self,
                 # Translators: Do not translate the app name!
                 title=_('Dialect'),
+                default_height=height,
+                default_width=width,
                 text=self.launch_text,
                 langs=self.launch_langs
             )

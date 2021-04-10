@@ -86,6 +86,7 @@ class DialectWindow(Handy.ApplicationWindow):
     first_key = 0
     second_key = 0
     mobile_mode = False
+    window_size = []
     # Connectivity issues monitoring
     trans_failed = False
     voice_loading = False
@@ -365,8 +366,9 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def responsive_listener(self, _window):
         size = self.get_size()
+        self.window_size = [size.width, size.height]
 
-        if size.width < 600:
+        if size.width < 680:
             if self.mobile_mode is False:
                 self.mobile_mode = True
                 self.toggle_mobile_mode()
@@ -415,6 +417,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.translation(None)
 
     def save_translator_settings(self, *args, **kwargs):
+        Settings.get().window_size = self.window_size
         if self.translator is not None:
             Settings.get().set_src_langs(self.translator.name, self.src_langs)
             Settings.get().set_dest_langs(self.translator.name, self.dest_langs)
