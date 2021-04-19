@@ -74,6 +74,8 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
                                      BackendObject.get_name)
 
         # Bind preferences with GSettings
+        Settings.get().bind('dark-mode', self.dark_mode, 'active',
+                            Gio.SettingsBindFlags.DEFAULT)
         Settings.get().bind('live-translation', self.live_translation, 'active',
                             Gio.SettingsBindFlags.DEFAULT)
         Settings.get().bind('translate-accel', self.translate_accel,
