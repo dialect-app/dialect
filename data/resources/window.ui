@@ -360,6 +360,7 @@
                                   <object class="GtkTextView" id="src_text">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
+                                    <property name="has-focus">True</property>
                                     <property name="wrap-mode">word-char</property>
                                     <property name="margin-start">9</property>
                                     <property name="margin-end">9</property>
