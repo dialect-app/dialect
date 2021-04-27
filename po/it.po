@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-02-19 19:06+0100\n"
+"PO-Revision-Date: 2021-04-27 19:06+0100\n"
 "Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <LL@li.org>\n"
 "Language: it\n"
@@ -71,12 +71,11 @@ msgstr "Pulsanti degli appunti"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:26
 msgid "The Dialect Authors"
-msgstr ""
+msgstr "Gli autori di Dialect"
 
 #: data/resources/about.ui:11
-#, fuzzy
 msgid "Copyright 2020-2021 The Dialect Authors"
-msgstr "Copyright 2020 gi-lom"
+msgstr "Copyright 2020-2021 Gli autori di Dialect"
 
 #: data/resources/about.ui:14
 msgid "Github page"
@@ -134,11 +133,11 @@ msgstr "La scelta non selezionata verrà utilizzata per l'interruzione di linea"
 
 #: data/resources/preferences.ui:61
 msgid "Default to Auto"
-msgstr ""
+msgstr "Automatico Predefinito"
 
 #: data/resources/preferences.ui:62
 msgid "Use \"Auto\" as the default language on every launch"
-msgstr ""
+msgstr "Usa \"Automatico\" come lingua predefinita ad ogni avvio"
 
 #: data/resources/preferences.ui:76
 msgid "Translator"
@@ -169,13 +168,12 @@ msgid "Save"
 msgstr "Salva"
 
 #: data/resources/preferences.ui:175
-#, fuzzy
 msgid "Text to Speech"
-msgstr "Text to speech"
+msgstr "Sintesi Vocale"
 
 #: data/resources/preferences.ui:176
 msgid "Use Google for Text to Speech functionality."
-msgstr ""
+msgstr "Utilizza la funzionalità di sintesi vocale di Google."
 
 #: data/resources/preferences.ui:192
 msgid "Search Provider"
