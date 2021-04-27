@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-04-27 12:30-0300\n"
+"PO-Revision-Date: 2021-04-27 12:39-0300\n"
 "Last-Translator: Gustavo Costa <xfgusta@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -73,11 +73,11 @@ msgstr "Botões da área de transferência"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:26
 msgid "The Dialect Authors"
-msgstr "Os autores do Dialect"
+msgstr "Autores do Dialect"
 
 #: data/resources/about.ui:11
 msgid "Copyright 2020-2021 The Dialect Authors"
-msgstr "Copyright 2020-2021 Os autores do Dialect"
+msgstr "Copyright 2020-2021 Autores do Dialect"
 
 #: data/resources/about.ui:14
 msgid "Github page"
