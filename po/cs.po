@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-04-24 20:05+0200\n"
+"PO-Revision-Date: 2021-04-27 17:30+0200\n"
 "Last-Translator: Vojtěch Perník <translations@pervoj.cz>\n"
 "Language-Team: Czech <@>\n"
 "Language: cs\n"
@@ -73,12 +73,11 @@ msgstr "Tlačítka schránky"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:26
 msgid "The Dialect Authors"
-msgstr ""
+msgstr "Autoři Dialektu"
 
 #: data/resources/about.ui:11
-#, fuzzy
 msgid "Copyright 2020-2021 The Dialect Authors"
-msgstr "Copyright 2020 gi-lom"
+msgstr "Copyright 2020-2021 Autoři Dialektu"
 
 #: data/resources/about.ui:14
 msgid "Github page"
@@ -135,11 +134,11 @@ msgstr "Nevybraná volba bude použita pro zalomení řádku"
 
 #: data/resources/preferences.ui:61
 msgid "Default to Auto"
-msgstr ""
+msgstr "Výchozí na Automatický"
 
 #: data/resources/preferences.ui:62
 msgid "Use \"Auto\" as the default language on every launch"
-msgstr ""
+msgstr "Použít \"Automatický\" jako výchozí jazyk po každém spuštění"
 
 #: data/resources/preferences.ui:76
 msgid "Translator"
@@ -170,13 +169,12 @@ msgid "Save"
 msgstr "Uložit"
 
 #: data/resources/preferences.ui:175
-#, fuzzy
 msgid "Text to Speech"
-msgstr "Text na řeč"
+msgstr "Převod textu na řeč"
 
 #: data/resources/preferences.ui:176
 msgid "Use Google for Text to Speech functionality."
-msgstr ""
+msgstr "Použít Google pro funkci Převodu textu na řeč"
 
 #: data/resources/preferences.ui:192
 msgid "Search Provider"
