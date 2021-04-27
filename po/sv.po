@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-02-19 17:42+0100\n"
+"PO-Revision-Date: 2021-04-27 21:53+0200\n"
 "Last-Translator: Åke Engelbrektson <eson@svenskasprakfiler.se>\n"
 "Language-Team: Svenska Språkfiler <contactform@svenskasprakfiler.se>\n"
 "Language: sv\n"
@@ -73,12 +73,11 @@ msgstr "Urklippsknappar"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:26
 msgid "The Dialect Authors"
-msgstr ""
+msgstr "Dialects utvecklare"
 
 #: data/resources/about.ui:11
-#, fuzzy
 msgid "Copyright 2020-2021 The Dialect Authors"
-msgstr "Copyright 2020 gi-lom"
+msgstr "Copyright 2020-2021 Dialects utvecklare"
 
 #: data/resources/about.ui:14
 msgid "Github page"
@@ -135,11 +134,11 @@ msgstr "Oanvänt alternativ kommer att användas för radbrytning."
 
 #: data/resources/preferences.ui:61
 msgid "Default to Auto"
-msgstr ""
+msgstr "Auto som standard"
 
 #: data/resources/preferences.ui:62
 msgid "Use \"Auto\" as the default language on every launch"
-msgstr ""
+msgstr "Använd \"Auto\" som standardspråk vid varje programstart"
 
 #: data/resources/preferences.ui:76
 msgid "Translator"
@@ -170,13 +169,12 @@ msgid "Save"
 msgstr "Spara"
 
 #: data/resources/preferences.ui:175
-#, fuzzy
 msgid "Text to Speech"
 msgstr "Text till tal"
 
 #: data/resources/preferences.ui:176
 msgid "Use Google for Text to Speech functionality."
-msgstr ""
+msgstr "Använd Google för text till tal-funktion."
 
 #: data/resources/preferences.ui:192
 msgid "Search Provider"
