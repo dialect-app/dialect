@@ -58,7 +58,7 @@ pip install googletrans gtts
 ### Building from Git
 
 ```bash
-git clone https://github.com/gi-lom/dialect.git
+git clone https://github.com/dialect-app/dialect.git
 cd dialect
 meson builddir --prefix=/usr/local
 sudo ninja -C builddir install
@@ -67,7 +67,7 @@ sudo ninja -C builddir install
 For testing and development purposes, you may run a local build:
 
 ```bash
-git clone https://github.com/gi-lom/dialect.git
+git clone https://github.com/dialect-app/dialect.git
 cd dialect
 meson builddir
 meson configure _build -Dprefix=$(pwd)/builddir/testdir

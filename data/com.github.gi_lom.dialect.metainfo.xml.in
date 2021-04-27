@@ -21,8 +21,8 @@
       <li>Clipboard buttons</li>
     </ul>
   </description>
-  <url type="homepage">https://github.com/gi-lom/dialect/</url>
-  <url type="bugtracker">https://github.com/gi-lom/dialect/issues/</url>
+  <url type="homepage">https://github.com/dialect-app/dialect/</url>
+  <url type="bugtracker">https://github.com/dialect-app/dialect/issues/</url>
   <developer_name>gi-lom</developer_name>
   <content_rating type="oars-1.1" />
 
@@ -31,13 +31,13 @@
 
   <screenshots>
     <screenshot type="default">
-      <image>https://raw.githubusercontent.com/gi-lom/dialect/main/preview.png</image>
+      <image>https://raw.githubusercontent.com/dialect-app/dialect/main/preview.png</image>
     </screenshot>
     <screenshot>
-      <image>https://raw.githubusercontent.com/gi-lom/dialect/main/preview-2.png</image>
+      <image>https://raw.githubusercontent.com/dialect-app/dialect/main/preview-2.png</image>
     </screenshot>
     <screenshot>
-      <image>https://raw.githubusercontent.com/gi-lom/dialect/main/preview-mobile.png</image>
+      <image>https://raw.githubusercontent.com/dialect-app/dialect/main/preview-mobile.png</image>
     </screenshot>
   </screenshots>
   <releases>
