@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-02-20 14:25+0100\n"
+"PO-Revision-Date: 2021-04-27 20:37+0200\n"
 "Last-Translator: Onno Giesmann <nutzer3105@gmail.com>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -58,7 +58,7 @@ msgstr ""
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
-msgstr "Text zu Sprache"
+msgstr "Text-zu-Sprache"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Translation history"
@@ -74,12 +74,11 @@ msgstr "Zwischenablage-Schaltflächen"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:26
 msgid "The Dialect Authors"
-msgstr ""
+msgstr "Die Autoren von Dialect"
 
 #: data/resources/about.ui:11
-#, fuzzy
 msgid "Copyright 2020-2021 The Dialect Authors"
-msgstr "Copyright 2020 gi-lom"
+msgstr "Copyright 2020-2021 Die Autoren von Dialect"
 
 #: data/resources/about.ui:14
 msgid "Github page"
@@ -136,11 +135,11 @@ msgstr "Mit der jeweils anderen Option wird ein Zeilenumbruch erzeugt."
 
 #: data/resources/preferences.ui:61
 msgid "Default to Auto"
-msgstr ""
+msgstr "Standard zu Auto"
 
 #: data/resources/preferences.ui:62
 msgid "Use \"Auto\" as the default language on every launch"
-msgstr ""
+msgstr "Verwende bei jedem Start \"Auto\" als Standardsprache"
 
 #: data/resources/preferences.ui:76
 msgid "Translator"
@@ -171,13 +170,12 @@ msgid "Save"
 msgstr "Speichern"
 
 #: data/resources/preferences.ui:175
-#, fuzzy
 msgid "Text to Speech"
-msgstr "Text zu Sprache"
+msgstr "Text-zu-Sprache"
 
 #: data/resources/preferences.ui:176
 msgid "Use Google for Text to Speech functionality."
-msgstr ""
+msgstr "Google für Text-zu-Sprache verwenden."
 
 #: data/resources/preferences.ui:192
 msgid "Search Provider"
