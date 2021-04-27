@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-04-27 18:24+0300\n"
+"PO-Revision-Date: 2021-04-27 18:42+0300\n"
 "Last-Translator: Bedirhan Tuhana GAYRETLİ <v30xythedev@gmail.com>\n"
 "Language-Team: Turkish <LL@li.org>\n"
 "Language: tr\n"
@@ -75,7 +75,7 @@ msgstr "Dialect Yaratıcıları"
 
 #: data/resources/about.ui:11
 msgid "Copyright 2020-2021 The Dialect Authors"
-msgstr "Telif Hakkı 2020 gi-lom"
+msgstr "Telif Hakkı 2020-2021 Dialect Yaratıcıları"
 
 #: data/resources/about.ui:14
 msgid "Github page"
@@ -131,9 +131,8 @@ msgid "Unselected choice will be used for line break."
 msgstr "Seçilmemiş seçim satır sonu için kullanılacaktır."
 
 #: data/resources/preferences.ui:61
-#, fuzzy
 msgid "Default to Auto"
-msgstr "Otomatiği Varsayılan Yap"
+msgstr "Otomatik Olarak Varsayılan"
 
 #: data/resources/preferences.ui:62
 msgid "Use \"Auto\" as the default language on every launch"
