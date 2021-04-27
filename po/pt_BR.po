@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-02-20 02:51-0300\n"
+"PO-Revision-Date: 2021-04-27 12:30-0300\n"
 "Last-Translator: Gustavo Costa <xfgusta@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.2\n"
+"X-Generator: Poedit 2.4.1\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #. Translators: Do not translate the app name!
@@ -28,7 +28,7 @@ msgstr "Dialect"
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
 msgid "Translate between languages"
-msgstr "Traduzir entre idiomas"
+msgstr "Traduza entre idiomas"
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
@@ -37,7 +37,7 @@ msgstr "traduzir;tradução;tradutor;"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:9 data/resources/about.ui:12
 msgid "A translation app for GNOME."
-msgstr "Um aplicativo de tradução para GNOME."
+msgstr "Um aplicativo de tradução para o GNOME."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
@@ -73,12 +73,11 @@ msgstr "Botões da área de transferência"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:26
 msgid "The Dialect Authors"
-msgstr ""
+msgstr "Os autores do Dialect"
 
 #: data/resources/about.ui:11
-#, fuzzy
 msgid "Copyright 2020-2021 The Dialect Authors"
-msgstr "Copyright 2020 gi-lom"
+msgstr "Copyright 2020-2021 Os autores do Dialect"
 
 #: data/resources/about.ui:14
 msgid "Github page"
@@ -87,7 +86,7 @@ msgstr "Página do Github"
 #. Replace me with your names.
 #: data/resources/about.ui:19
 msgid "translator-credits"
-msgstr "Gustavo Costa"
+msgstr "Gustavo Costa <xfgusta@gmail.com>"
 
 #: data/resources/menu.ui:7
 msgid "Show Pronunciation"
@@ -99,7 +98,7 @@ msgstr "Preferências"
 
 #: data/resources/menu.ui:18
 msgid "Keyboard Shortcuts"
-msgstr "Atalhos de Teclado"
+msgstr "Atalhos de teclado"
 
 #: data/resources/menu.ui:22
 msgid "About Dialect"
@@ -111,7 +110,7 @@ msgstr "Aparência"
 
 #: data/resources/preferences.ui:19
 msgid "Dark Mode"
-msgstr "Modo Noturno"
+msgstr "Modo Escuro"
 
 #: data/resources/preferences.ui:35
 msgid "Behavior"
@@ -135,11 +134,11 @@ msgstr "A escolha não selecionada será usada para quebra de linha."
 
 #: data/resources/preferences.ui:61
 msgid "Default to Auto"
-msgstr ""
+msgstr "Automático por Padrão"
 
 #: data/resources/preferences.ui:62
 msgid "Use \"Auto\" as the default language on every launch"
-msgstr ""
+msgstr "Usa \"Automático\" como o idioma padrão em cada lançamento"
 
 #: data/resources/preferences.ui:76
 msgid "Translator"
@@ -170,13 +169,12 @@ msgid "Save"
 msgstr "Salvar"
 
 #: data/resources/preferences.ui:175
-#, fuzzy
 msgid "Text to Speech"
-msgstr "Texto para fala"
+msgstr "Texto para Fala"
 
 #: data/resources/preferences.ui:176
 msgid "Use Google for Text to Speech functionality."
-msgstr ""
+msgstr "Usa o Google para a funcionalidade Texto para Fala."
 
 #: data/resources/preferences.ui:192
 msgid "Search Provider"
