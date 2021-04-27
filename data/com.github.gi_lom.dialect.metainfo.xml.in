@@ -23,7 +23,7 @@
   </description>
   <url type="homepage">https://github.com/dialect-app/dialect/</url>
   <url type="bugtracker">https://github.com/dialect-app/dialect/issues/</url>
-  <developer_name>gi-lom</developer_name>
+  <developer_name>The Dialect Authors</developer_name>
   <content_rating type="oars-1.1" />
 
   <launchable type="desktop-id">com.github.gi_lom.dialect.desktop</launchable>
