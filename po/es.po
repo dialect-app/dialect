@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-02-19 11:11-0500\n"
+"PO-Revision-Date: 2021-04-27 09:51-0500\n"
 "Last-Translator: Rafael Mardojai CM <mardojai.cardenas@gmail.com>\n"
 "Language-Team: Spanish; Castilian <mardojai.cardenas@gmail.com>\n"
 "Language: es\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"X-Generator: Gtranslator 3.38.0\n"
+"X-Generator: Gtranslator 40.0\n"
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
@@ -74,12 +74,11 @@ msgstr "Botones del portapapeles"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:26
 msgid "The Dialect Authors"
-msgstr ""
+msgstr "Los Autores de Dialect"
 
 #: data/resources/about.ui:11
-#, fuzzy
 msgid "Copyright 2020-2021 The Dialect Authors"
-msgstr "Copyright 2020 gi-lom"
+msgstr "Copyright 2020-2021 Los Autores de Dialect"
 
 #: data/resources/about.ui:14
 msgid "Github page"
@@ -136,11 +135,11 @@ msgstr "La opción no seleccionada se utilizará para nueva línea."
 
 #: data/resources/preferences.ui:61
 msgid "Default to Auto"
-msgstr ""
+msgstr "Automático Predeterminado"
 
 #: data/resources/preferences.ui:62
 msgid "Use \"Auto\" as the default language on every launch"
-msgstr ""
+msgstr "Utilice \"Automático\" como idioma predeterminado en cada lanzamiento "
 
 #: data/resources/preferences.ui:76
 msgid "Translator"
@@ -171,13 +170,12 @@ msgid "Save"
 msgstr "Guardar"
 
 #: data/resources/preferences.ui:175
-#, fuzzy
 msgid "Text to Speech"
-msgstr "Texto a voz"
+msgstr "Texto a Voz"
 
 #: data/resources/preferences.ui:176
 msgid "Use Google for Text to Speech functionality."
-msgstr ""
+msgstr "Utilice Google para la funcionalidad Texto a Voz."
 
 #: data/resources/preferences.ui:192
 msgid "Search Provider"
