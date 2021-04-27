@@ -1,15 +1,15 @@
 # Czech translations for dialect package.
 # Copyright (C) 2021 THE dialect'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the dialect package.
-# Vojtěch Perník <pervoj@gmx.com>, 2021.
+# Vojtěch Perník <translations@pervoj.cz>, 2021.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-04-27 17:27+0200\n"
-"Last-Translator: Vojtěch Perník <pervoj@gmx.com>\n"
+"PO-Revision-Date: 2021-04-27 17:30+0200\n"
+"Last-Translator: Vojtěch Perník <translations@pervoj.cz>\n"
 "Language-Team: Czech <@>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
