@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-02-19 19:19+0100\n"
-"Last-Translator: Heimen Stoffels <vistausss@outlook.com>\n"
+"PO-Revision-Date: 2021-04-27 18:32+0200\n"
+"Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -73,12 +73,11 @@ msgstr "Klembordknoppen"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:26
 msgid "The Dialect Authors"
-msgstr ""
+msgstr "Het Dialect-team"
 
 #: data/resources/about.ui:11
-#, fuzzy
 msgid "Copyright 2020-2021 The Dialect Authors"
-msgstr "Copyright 2020 gi-lom"
+msgstr "Copyright 2020-2021 Het Dialect-team"
 
 #: data/resources/about.ui:14
 msgid "Github page"
@@ -136,11 +135,11 @@ msgstr "De niet-geselecteerde keuze wordt gebruikt voor regelafbreking."
 
 #: data/resources/preferences.ui:61
 msgid "Default to Auto"
-msgstr ""
+msgstr "Automatisch detecteren"
 
 #: data/resources/preferences.ui:62
 msgid "Use \"Auto\" as the default language on every launch"
-msgstr ""
+msgstr "Gebruik standaard ‘Automatisch detecteren’ als taalkeuze"
 
 #: data/resources/preferences.ui:76
 msgid "Translator"
@@ -171,13 +170,12 @@ msgid "Save"
 msgstr "Opslaan"
 
 #: data/resources/preferences.ui:175
-#, fuzzy
 msgid "Text to Speech"
 msgstr "Tekst-naar-spraak"
 
 #: data/resources/preferences.ui:176
 msgid "Use Google for Text to Speech functionality."
-msgstr ""
+msgstr "Gebruik Google's tekst-naar-spraakfunctionaliteit."
 
 #: data/resources/preferences.ui:192
 msgid "Search Provider"
