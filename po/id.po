@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-02-20 00:26+0700\n"
+"PO-Revision-Date: 2021-04-28 11:54+0700\n"
 "Last-Translator: Kukuh Syafaat <kukuhsyafaat@gnome.org>\n"
 "Language-Team: \n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.2\n"
+"X-Generator: Poedit 2.4.3\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. Translators: Do not translate the app name!
@@ -73,12 +73,11 @@ msgstr "Tombol Papan Klip"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:26
 msgid "The Dialect Authors"
-msgstr ""
+msgstr "Penulis Dialect"
 
 #: data/resources/about.ui:11
-#, fuzzy
 msgid "Copyright 2020-2021 The Dialect Authors"
-msgstr "Hak Cipta 2020 gi-lom"
+msgstr "Hak Cipta 2020-2021 Penulis Dialect"
 
 #: data/resources/about.ui:14
 msgid "Github page"
@@ -103,7 +102,7 @@ msgstr "Pintasan Papan Tik"
 
 #: data/resources/menu.ui:22
 msgid "About Dialect"
-msgstr "Tentang Dialek"
+msgstr "Tentang Dialect"
 
 #: data/resources/preferences.ui:15
 msgid "Appearance"
@@ -135,11 +134,11 @@ msgstr "Pilihan yang tidak dipilih akan digunakan untuk hentian baris."
 
 #: data/resources/preferences.ui:61
 msgid "Default to Auto"
-msgstr ""
+msgstr "Bawaan ke Otomatis"
 
 #: data/resources/preferences.ui:62
 msgid "Use \"Auto\" as the default language on every launch"
-msgstr ""
+msgstr "Gunakan \"Otomatis\" sebagai bahasa bawan pada setiap peluncuran"
 
 #: data/resources/preferences.ui:76
 msgid "Translator"
@@ -170,13 +169,12 @@ msgid "Save"
 msgstr "Simpan"
 
 #: data/resources/preferences.ui:175
-#, fuzzy
 msgid "Text to Speech"
-msgstr "Teks ke ucapan"
+msgstr "Teks ke Ucapan"
 
 #: data/resources/preferences.ui:176
 msgid "Use Google for Text to Speech functionality."
-msgstr ""
+msgstr "Gunakan Google untuk fungsi Teks ke Ucapan."
 
 #: data/resources/preferences.ui:192
 msgid "Search Provider"
@@ -189,7 +187,7 @@ msgid ""
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
-"Dialek memiliki Penyedia Pencarian GNOME. Mengaktifkan atau menonaktifkan "
+"Dialect memiliki Penyedia Pencarian GNOME. Mengaktifkan atau menonaktifkan "
 "Terjemahan Langsung di sini juga akan mengaktifkan atau menonaktifkan "
 "Penyedia Pencarian GNOME. Hal ini untuk mengurangi kemungkinan "
 "penyalahgunaan API. Pastikan juga bahwa fitur ini diaktifkan di Pengaturan "
