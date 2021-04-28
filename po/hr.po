@@ -78,7 +78,7 @@ msgstr "Autori programa Dialect"
 
 #: data/resources/about.ui:11
 msgid "Copyright 2020-2021 The Dialect Authors"
-msgstr "Autorska prava 2020., autori programa Dialect"
+msgstr "Autorska prava 2020. – 2021., autori programa Dialect"
 
 #: data/resources/about.ui:14
 msgid "Github page"
