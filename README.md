@@ -79,6 +79,10 @@ ninja -C builddir run
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
+### Translations
+
+Dialect is translated into many languages already. Please help to [translate Dialect](https://github.com/dialect-app/dialect/tree/main/po/) into other languages.
+
 ## License
 
 [GNU General Public License 3 or later](https://www.gnu.org/licenses/gpl-3.0.en.html)
