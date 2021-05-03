@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-02-19 21:01+0300\n"
+"PO-Revision-Date: 2021-05-03 17:25+0300\n"
 "Last-Translator: Nikita Kravets <k.qovekt@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -75,9 +75,8 @@ msgid "The Dialect Authors"
 msgstr ""
 
 #: data/resources/about.ui:11
-#, fuzzy
 msgid "Copyright 2020-2021 The Dialect Authors"
-msgstr "Copyright 2020 gi-lom"
+msgstr "Copyright 2020 Авторы Dialect"
 
 #: data/resources/about.ui:14
 msgid "Github page"
@@ -169,7 +168,6 @@ msgid "Save"
 msgstr "Сохранить"
 
 #: data/resources/preferences.ui:175
-#, fuzzy
 msgid "Text to Speech"
 msgstr "Прослушивание текста"
 
