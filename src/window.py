@@ -7,13 +7,13 @@ import threading
 from gettext import gettext as _
 from tempfile import NamedTemporaryFile
 
-from gi.repository import Gdk, GLib, GObject, Gtk, Gst, Handy
+from gi.repository import Gdk, GLib, GObject, Gst, Gtk, Handy
 
-from gtts import gTTS, lang
-
-from dialect.define import APP_ID, RES_PATH, MAX_LENGTH, TRANS_NUMBER
+from dialect.define import APP_ID, MAX_LENGTH, RES_PATH, TRANS_NUMBER
 from dialect.lang_selector import DialectLangSelector
+from dialect.settings import Settings
 from dialect.translators import TRANSLATORS
+from dialect.tts import TTS
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/window.ui')
@@ -39,22 +39,25 @@ class DialectWindow(Handy.ApplicationWindow):
 
     menu_btn = Gtk.Template.Child()
 
-    pronunciation_revealer = Gtk.Template.Child()
-    pronunciation_label = Gtk.Template.Child()
+    src_pron_revealer = Gtk.Template.Child()
+    src_pron_label = Gtk.Template.Child()
     mistakes = Gtk.Template.Child()
     mistakes_label = Gtk.Template.Child()
     char_counter = Gtk.Template.Child()
     src_text = Gtk.Template.Child()
     clear_btn = Gtk.Template.Child()
     paste_btn = Gtk.Template.Child()
+    src_voice_btn = Gtk.Template.Child()
     translate_btn = Gtk.Template.Child()
 
     dest_box = Gtk.Template.Child()
+    dest_pron_revealer = Gtk.Template.Child()
+    dest_pron_label = Gtk.Template.Child()
     dest_text = Gtk.Template.Child()
     trans_spinner = Gtk.Template.Child()
     trans_warning = Gtk.Template.Child()
     copy_btn = Gtk.Template.Child()
-    voice_btn = Gtk.Template.Child()
+    dest_voice_btn = Gtk.Template.Child()
 
     actionbar = Gtk.Template.Child()
     src_lang_btn2 = Gtk.Template.Child()
@@ -66,8 +69,10 @@ class DialectWindow(Handy.ApplicationWindow):
 
     # Translator
     translator = None
+    # Text to speech
+    tts = None
+    tts_langs = None
     # Language values
-    lang_speech = None
     src_langs = []
     dest_langs = []
     # Current input Text
@@ -87,19 +92,19 @@ class DialectWindow(Handy.ApplicationWindow):
     # Trans mistakes
     trans_mistakes = None
     # Pronunciations
-    trans_pronunciation = None
+    trans_src_pron = None
+    trans_dest_pron = None
 
     # Propeties
     backend_loading = GObject.Property(type=bool, default=False)
 
-    def __init__(self, text, settings, **kwargs):
+    def __init__(self, text, langs, **kwargs):
         super().__init__(**kwargs)
 
-        # Text passed to command line
+        # Options passed to command line
         self.launch_text = text
+        self.launch_langs = langs
 
-        # GSettings object
-        self.settings = settings
         # Application object
         self.app = kwargs['application']
 
@@ -121,13 +126,13 @@ class DialectWindow(Handy.ApplicationWindow):
 
         # Load saved dark mode
         gtk_settings = Gtk.Settings.get_default()
-        dark_mode = self.settings.get_boolean('dark-mode')
         gtk_settings.set_property('gtk-application-prefer-dark-theme',
-                                  dark_mode)
+                                  Settings.get().dark_mode)
 
         # Connect responsive design function
         self.connect('check-resize', self.responsive_listener)
-        self.connect('destroy', self.save_translator_settings)
+        # Save settings on close
+        self.connect('delete-event', self.save_settings)
 
         self.setup_headerbar()
         self.setup_actionbar()
@@ -136,23 +141,24 @@ class DialectWindow(Handy.ApplicationWindow):
 
         # Load translator
         self.retry_backend_btn.connect('clicked', self.retry_load_translator)
-        threading.Thread(target=self.load_translator,
-                         args=[self.settings.get_int('backend')],
-                         daemon=True
+        threading.Thread(
+            target=self.load_translator,
+            args=[Settings.get().backend, True],
+            daemon=True
         ).start()
         # Get languages available for speech
-        threading.Thread(target=self.load_lang_speech, daemon=True).start()
+        if Settings.get().tts != '':
+            threading.Thread(target=self.load_lang_speech, daemon=True).start()
 
-    def load_translator(self, backend):
+    def load_translator(self, backend, launch=False):
         def update_ui():
             # Supported features
-            self.voice_btn.set_visible(self.translator.supported_features['voice'])
-
             if not self.translator.supported_features['mistakes']:
                 self.mistakes.set_revealed(False)
 
             if not self.translator.supported_features['pronunciation']:
-                self.pronunciation_revealer.set_reveal_child(False)
+                self.src_pron_revealer.set_reveal_child(False)
+                self.dest_pron_revealer.set_reveal_child(False)
                 self.app.pronunciation_action.set_enabled(False)
 
             self.no_retranslate = True
@@ -160,7 +166,8 @@ class DialectWindow(Handy.ApplicationWindow):
             self.src_lang_selector.set_languages(self.translator.languages)
             self.dest_lang_selector.set_languages(self.translator.languages)
             # Update selected langs
-            self.src_lang_selector.set_property('selected', 'auto')
+            src_lang_default = 'auto' if Settings.get().src_auto else self.src_langs[0]
+            self.src_lang_selector.set_property('selected', src_lang_default)
             self.dest_lang_selector.set_property('selected', self.dest_langs[0])
 
             self.no_retranslate = False
@@ -175,17 +182,28 @@ class DialectWindow(Handy.ApplicationWindow):
             # Translator object
             if TRANSLATORS[backend].supported_features['change-instance']:
                 self.translator = TRANSLATORS[backend](
-                    base_url=self.settings.get_string(f'{TRANSLATORS[backend].name}-instance')
+                    base_url=Settings.get().get_instance_url(TRANSLATORS[backend].name)
                 )
             else:
                 self.translator = TRANSLATORS[backend]()
 
             # Get saved languages
-            self.src_langs = list(self.settings.get_value(f'{self.translator.name}-src-langs'))
-            self.dest_langs = list(self.settings.get_value(f'{self.translator.name}-dest-langs'))
+            self.src_langs = Settings.get().get_src_langs(self.translator.name)
+            self.dest_langs = Settings.get().get_dest_langs(self.translator.name)
 
             # Update UI
             GLib.idle_add(update_ui)
+
+            if launch:
+                self.no_retranslate = True
+                if self.launch_langs['src'] is not None:
+                    self.src_lang_selector.set_property('selected', self.launch_langs['src'])
+                if self.launch_langs['dest'] is not None and self.launch_langs['dest'] in self.translator.languages:
+                    self.dest_lang_selector.set_property('selected', self.launch_langs['dest'])
+                self.no_retranslate = False
+
+                if self.launch_text != '':
+                    GLib.idle_add(self.translate, self.launch_text, self.launch_langs['src'], self.launch_langs['dest'])
 
         except Exception as exc:
             # Show error view
@@ -197,40 +215,60 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def retry_load_translator(self, _button):
         threading.Thread(target=self.load_translator,
-                         args=[self.settings.get_int('backend')],
+                         args=[Settings.get().backend],
                          daemon=True
         ).start()
 
     def on_listen_failed(self):
-        self.voice_btn.set_image(self.voice_warning)
-        self.voice_spinner.stop()
-        self.voice_btn.set_tooltip_text(_('A network issue has occured. Retry?'))
+        self.src_voice_btn.set_image(self.src_voice_warning)
+        self.src_voice_spinner.stop()
+
+        self.dest_voice_btn.set_image(self.dest_voice_warning)
+        self.dest_voice_spinner.stop()
+
+        tooltip_text = _('A network issue has occured. Retry?')
+        self.src_voice_btn.set_tooltip_text(tooltip_text)
+        self.dest_voice_btn.set_tooltip_text(tooltip_text)
+
         self.send_notification(_('A network issue has occured.\nPlease try again.'))
+
+        src_text = self.src_buffer.get_text(
+            self.src_buffer.get_start_iter(),
+            self.src_buffer.get_end_iter(),
+            True
+        )
         dest_text = self.dest_buffer.get_text(
             self.dest_buffer.get_start_iter(),
             self.dest_buffer.get_end_iter(),
             True
         )
-        if self.lang_speech:
-            self.voice_btn.set_sensitive(
-                self.dest_lang_selector.get_property('selected') in self.lang_speech
+
+        if self.tts_langs:
+            self.src_voice_btn.set_sensitive(
+                self.src_lang_selector.get_property('selected') in self.tts_langs
+                and src_text != ''
+            )
+            self.dest_voice_btn.set_sensitive(
+                self.dest_lang_selector.get_property('selected') in self.tts_langs
                 and dest_text != ''
             )
         else:
-            self.voice_btn.set_sensitive(dest_text != '')
+            self.src_voice_btn.set_sensitive(src_text != '')
+            self.dest_voice_btn.set_sensitive(dest_text != '')
 
     def load_lang_speech(self, listen=False, text=None, language=None):
         """
-        Load the language list for gTTS.
+        Load the language list for TTS.
 
         text and language parameters are only needed with listen parameter.
         """
         try:
             self.voice_loading = True
-            self.lang_speech = list(lang.tts_langs().keys())
+            self.tts = TTS[Settings.get().tts]()
+            self.tts_langs = self.tts.languages
             if not listen:
                 GLib.idle_add(self.toggle_voice_spinner, False)
-            elif language in self.lang_speech and text != '':
+            elif language in self.tts_langs and text != '':
                 self.voice_download(text, language)
 
         except RuntimeError as exc:
@@ -305,19 +343,31 @@ class DialectWindow(Handy.ApplicationWindow):
         # Translation progress spinner
         self.trans_spinner.hide()
         self.trans_warning.hide()
-        # Voice button prep-work
-        self.voice_warning = Gtk.Image.new_from_icon_name(
+
+        # Voice buttons prep-work
+        self.src_voice_warning = Gtk.Image.new_from_icon_name(
             'dialog-warning-symbolic', Gtk.IconSize.BUTTON)
-        self.voice_btn.connect('clicked', self.ui_voice)
-        self.voice_image = Gtk.Image.new_from_icon_name(
+        self.src_voice_image = Gtk.Image.new_from_icon_name(
             'audio-speakers-symbolic', Gtk.IconSize.BUTTON)
-        self.voice_spinner = Gtk.Spinner()  # For use while audio is running or still loading.
+        self.src_voice_spinner = Gtk.Spinner()  # For use while audio is running or still loading.
+        self.src_voice_btn.connect('clicked', self.ui_src_voice)
+
+        self.dest_voice_warning = Gtk.Image.new_from_icon_name(
+            'dialog-warning-symbolic', Gtk.IconSize.BUTTON)
+        self.dest_voice_image = Gtk.Image.new_from_icon_name(
+            'audio-speakers-symbolic', Gtk.IconSize.BUTTON)
+        self.dest_voice_spinner = Gtk.Spinner()
+        self.dest_voice_btn.connect('clicked', self.ui_dest_voice)
+
         self.toggle_voice_spinner(True)
+
+        self.src_voice_btn.set_visible(Settings.get().tts != '')
+        self.dest_voice_btn.set_visible(Settings.get().tts != '')
 
     def responsive_listener(self, _window):
         size = self.get_size()
 
-        if size.width < 600:
+        if size.width < 680:
             if self.mobile_mode is False:
                 self.mobile_mode = True
                 self.toggle_mobile_mode()
@@ -348,24 +398,30 @@ class DialectWindow(Handy.ApplicationWindow):
             self.src_lang_selector.set_relative_to(self.src_lang_btn)
             self.dest_lang_selector.set_relative_to(self.dest_lang_btn)
 
-    def translate(self, text):
+    def translate(self, text, src_lang, dest_lang):
         """
         Translates the given text from auto detected language to last used
         language
         """
         # Set src lang to Auto
-        self.src_lang_selector.set_property('selected', 'auto')
+        if src_lang is None:
+            self.src_lang_selector.set_property('selected', 'auto')
+        else:
+            self.src_lang_selector.set_property('selected', src_lang)
+        if dest_lang is not None and dest_lang in self.translator.languages:
+            self.dest_lang_selector.set_property('selected', dest_lang)
         # Set text to src buffer
         self.src_buffer.set_text(text)
         # Run translation
         self.translation(None)
 
-    def save_translator_settings(self, *args, **kwargs):
+    def save_settings(self, *args, **kwargs):
+        if not self.is_maximized():
+            size = self.get_size()
+            Settings.get().window_size = (size.width, size.height)
         if self.translator is not None:
-            self.settings.set_value(f'{self.translator.name}-src-langs',
-                                    GLib.Variant('as', self.src_langs))
-            self.settings.set_value(f'{self.translator.name}-dest-langs',
-                                    GLib.Variant('as', self.dest_langs))
+            Settings.get().set_src_langs(self.translator.name, self.src_langs)
+            Settings.get().set_dest_langs(self.translator.name, self.dest_langs)
 
     def send_notification(self, text, timeout=5):
         """
@@ -387,29 +443,55 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def toggle_voice_spinner(self, active=True):
         if active:
-            self.voice_btn.set_sensitive(False)
-            self.voice_btn.set_image(self.voice_spinner)
-            self.voice_spinner.start()
+            self.src_voice_btn.set_sensitive(False)
+            self.src_voice_btn.set_image(self.src_voice_spinner)
+            self.src_voice_spinner.start()
+
+            self.dest_voice_btn.set_sensitive(False)
+            self.dest_voice_btn.set_image(self.dest_voice_spinner)
+            self.dest_voice_spinner.start()
         else:
+            src_text = self.src_buffer.get_text(
+                self.src_buffer.get_start_iter(),
+                self.src_buffer.get_end_iter(),
+                True
+            )
+            self.src_voice_btn.set_sensitive(
+                self.src_lang_selector.get_property('selected') in self.tts_langs
+                and src_text != ''
+            )
+            self.src_voice_btn.set_image(self.src_voice_image)
+            self.src_voice_spinner.stop()
+
             dest_text = self.dest_buffer.get_text(
                 self.dest_buffer.get_start_iter(),
                 self.dest_buffer.get_end_iter(),
                 True
             )
-            self.voice_btn.set_sensitive(
-                self.dest_lang_selector.get_property('selected') in self.lang_speech
+            self.dest_voice_btn.set_sensitive(
+                self.dest_lang_selector.get_property('selected') in self.tts_langs
                 and dest_text != ''
             )
-            self.voice_btn.set_image(self.voice_image)
-            self.voice_spinner.stop()
+            self.dest_voice_btn.set_image(self.dest_voice_image)
+            self.dest_voice_spinner.stop()
 
     def on_src_lang_changed(self, _obj, _param):
         code = self.src_lang_selector.get_property('selected')
         dest_code = self.dest_lang_selector.get_property('selected')
+        src_text = self.src_buffer.get_text(
+            self.src_buffer.get_start_iter(),
+            self.src_buffer.get_end_iter(),
+            True
+        )
 
         if code == dest_code:
             code = self.dest_langs[1] if code == self.src_langs[0] else dest_code
             self.dest_lang_selector.set_property('selected', self.src_langs[0])
+
+        # Disable or enable listen function.
+        if self.tts_langs and Settings.get().tts != '':
+            self.src_voice_btn.set_sensitive(code in self.tts_langs
+                                         and src_text != '')
 
         if code in self.translator.languages:
             self.src_lang_label.set_label(self.translator.languages[code].capitalize())
@@ -452,8 +534,8 @@ class DialectWindow(Handy.ApplicationWindow):
             self.src_lang_selector.set_property('selected', self.dest_langs[0])
 
         # Disable or enable listen function.
-        if self.lang_speech and self.translator.supported_features['voice']:
-            self.voice_btn.set_sensitive(code in self.lang_speech
+        if self.tts_langs and Settings.get().tts != '':
+            self.dest_voice_btn.set_sensitive(code in self.tts_langs
                                          and dest_text != '')
 
         name = self.translator.languages[code].capitalize()
@@ -579,26 +661,37 @@ class DialectWindow(Handy.ApplicationWindow):
             end_iter = self.src_buffer.get_end_iter()
             self.src_buffer.insert(end_iter, text)
 
-    def ui_voice(self, _button):
+    def ui_src_voice(self, _button):
+        src_text = self.src_buffer.get_text(
+            self.src_buffer.get_start_iter(),
+            self.src_buffer.get_end_iter(),
+            True
+        )
+        src_language = self.src_lang_selector.get_property('selected')
+        self._voice(src_text, src_language)
+
+    def ui_dest_voice(self, _button):
         dest_text = self.dest_buffer.get_text(
             self.dest_buffer.get_start_iter(),
             self.dest_buffer.get_end_iter(),
             True
         )
         dest_language = self.dest_lang_selector.get_property('selected')
-        # Add here code that changes voice button behavior
-        if dest_text != '':
+        self._voice(dest_text, dest_language)
+
+    def _voice(self, text, lang):
+        if text != '':
             self.toggle_voice_spinner(True)
-            if self.lang_speech:
+            if self.tts_langs:
                 threading.Thread(
                     target=self.voice_download,
-                    args=(dest_text, dest_language),
+                    args=(text, lang),
                     daemon=True
                 ).start()
             else:
                 threading.Thread(
                     target=self.load_lang_speech,
-                    args=(True, dest_text, dest_language),
+                    args=(True, text, lang),
                     daemon=True
                 ).start()
 
@@ -614,10 +707,9 @@ class DialectWindow(Handy.ApplicationWindow):
     def voice_download(self, text, language):
         try:
             self.voice_loading = True
-            tts = gTTS(text, lang=language, lang_check=False)
+
             with NamedTemporaryFile() as file_to_play:
-                tts.write_to_fp(file_to_play)
-                file_to_play.seek(0)
+                self.tts.download_voice(text, language, file_to_play)
                 self.player.set_property('uri', 'file://' + file_to_play.name)
                 self.player.set_state(Gst.State.PLAYING)
                 self.player_event.wait()
@@ -641,15 +733,15 @@ class DialectWindow(Handy.ApplicationWindow):
                 modifiers in (shift_mask, 0) and not self.src_text.is_focus()):
             self.src_text.grab_focus()
 
-        if not self.settings.get_boolean('live-translation'):
+        if not Settings.get().live_translation:
             if control_mask == modifiers:
                 if keyboard.keyval == Gdk.KEY_Return:
-                    if not self.settings.get_value('translate-accel'):
+                    if not Settings.get().translate_accel_value:
                         self.translation(button)
                         return Gdk.EVENT_STOP
                     return Gdk.EVENT_PROPAGATE
             elif keyboard.keyval == Gdk.KEY_Return:
-                if self.settings.get_value('translate-accel'):
+                if Settings.get().translate_accel_value:
                     self.translation(button)
                     return Gdk.EVENT_STOP
                 return Gdk.EVENT_PROPAGATE
@@ -666,17 +758,24 @@ class DialectWindow(Handy.ApplicationWindow):
         sensitive = buffer.get_char_count() != 0
         self.translate_btn.set_sensitive(sensitive)
         self.clear_btn.set_sensitive(sensitive)
+        if not self.voice_loading and self.tts_langs:
+            self.src_voice_btn.set_sensitive(
+                self.src_lang_selector.get_property('selected') in self.tts_langs
+                and sensitive
+            )
+        elif not self.voice_loading and not self.tts_langs:
+            self.src_voice_btn.set_sensitive(sensitive)
 
     def on_dest_text_changed(self, buffer):
         sensitive = buffer.get_char_count() != 0
         self.copy_btn.set_sensitive(sensitive)
-        if not self.voice_loading and self.lang_speech:
-            self.voice_btn.set_sensitive(
-                self.dest_lang_selector.get_property('selected') in self.lang_speech
+        if not self.voice_loading and self.tts_langs:
+            self.dest_voice_btn.set_sensitive(
+                self.dest_lang_selector.get_property('selected') in self.tts_langs
                 and sensitive
             )
-        elif not self.voice_loading and not self.lang_speech:
-            self.voice_btn.set_sensitive(sensitive)
+        elif not self.voice_loading and not self.tts_langs:
+            self.dest_voice_btn.set_sensitive(sensitive)
 
     def user_action_ended(self, buffer):
         # If the text is over the highest number of characters allowed, it is truncated.
@@ -690,7 +789,7 @@ class DialectWindow(Handy.ApplicationWindow):
             )
             self.src_buffer.set_text(src_text[:MAX_LENGTH])
         self.char_counter.set_text(f'{str(buffer.get_char_count())}/{MAX_LENGTH}')
-        if self.settings.get_boolean('live-translation'):
+        if Settings.get().live_translation:
             self.translation(None)
 
     # The history part
@@ -763,7 +862,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.set_property('backend-loading', True)
 
         # Save previous backend settings
-        self.save_translator_settings()
+        self.save_settings()
 
         # Load translator
         threading.Thread(target=self.load_translator,
@@ -776,7 +875,8 @@ class DialectWindow(Handy.ApplicationWindow):
             self.trans_warning.show()
             self.send_notification(_('Translation failed.\nPlease check for network issues.'))
             self.copy_btn.set_sensitive(False)
-            self.voice_btn.set_sensitive(False)
+            self.src_voice_btn.set_sensitive(False)
+            self.dest_voice_btn.set_sensitive(False)
 
         def on_trans_success():
             self.trans_warning.hide()
@@ -795,12 +895,19 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.mistakes.set_revealed(False)
 
         def on_pronunciation():
-            reveal = self.settings.get_boolean('show-pronunciation')
-            if self.trans_pronunciation is not None and self.translator.supported_features['pronunciation']:
-                self.pronunciation_label.set_text(self.trans_pronunciation)
-                self.pronunciation_revealer.set_reveal_child(reveal)
-            elif self.pronunciation_revealer.get_reveal_child():
-                self.pronunciation_revealer.set_reveal_child(False)
+            reveal = Settings.get().show_pronunciation
+            if self.translator.supported_features['pronunciation']:
+                if self.trans_src_pron is not None:
+                    self.src_pron_label.set_text(self.trans_src_pron)
+                    self.src_pron_revealer.set_reveal_child(reveal)
+                elif self.src_pron_revealer.get_reveal_child():
+                    self.src_pron_revealer.set_reveal_child(False)
+
+                if self.trans_dest_pron is not None:
+                    self.dest_pron_label.set_text(self.trans_dest_pron)
+                    self.dest_pron_revealer.set_reveal_child(reveal)
+                elif self.dest_pron_revealer.get_reveal_child():
+                    self.dest_pron_revealer.set_reveal_child(False)
 
         while self.trans_queue:
             # If the first language is revealed automatically, let's set it
@@ -837,10 +944,8 @@ class DialectWindow(Handy.ApplicationWindow):
                         )
                         dest_text = translation.text
                         self.trans_mistakes = translation.extra_data['possible-mistakes']
-                        try:
-                            self.trans_pronunciation = translation.extra_data['translation'][1][3]
-                        except IndexError:
-                            self.trans_pronunciation = None
+                        self.trans_src_pron = translation.extra_data['src-pronunciation']
+                        self.trans_dest_pron = translation.extra_data['dest-pronunciation']
                         self.trans_failed = False
                     except Exception as exc:
                         print(exc)
@@ -858,7 +963,8 @@ class DialectWindow(Handy.ApplicationWindow):
                 else:
                     self.trans_failed = False
                     self.trans_mistakes = None
-                    self.trans_pronunciation = None
+                    self.trans_src_pron = None
+                    self.trans_dest_pron = None
                 GLib.idle_add(self.dest_buffer.set_text, dest_text)
                 GLib.idle_add(on_mistakes)
                 GLib.idle_add(on_pronunciation)

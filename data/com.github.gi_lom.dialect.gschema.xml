@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="dialect">
   <schema id="com.github.gi_lom.dialect" path="/com/github/gi_lom/dialect/">
+    <key type="ai" name="window-size">
+        <default>[800, 300]</default>
+    </key>
     <key type="b" name="dark-mode">
         <default>false</default>
     </key>
@@ -10,28 +13,51 @@
     <key type="b" name="show-pronunciation">
         <default>false</default>
     </key>
+    <key type="b" name="src-auto">
+        <default>true</default>
+    </key>
     <key type="i" name="translate-accel">
         <!-- 0 = Ctrl+Enter | 1 = Enter -->
         <default>0</default>
     </key>
     <key type="i" name="backend">
-        <!-- 0 = Google Translate | 1 = LibreTranslate -->
-        <default>0</default>
+        <!-- Deprecated option -->
+        <description>DEPRECATED: This key is deprecated and normally ignored.</description>
+        <default>-1</default>
+    </key>
+    <key type="s" name="backend-name">
+        <default>"google"</default>
+    </key>
+    <key type="s" name="backend-settings">
+        <default>"{}"</default>
+    </key>
+    <key type="s" name="tts-name">
+        <default>"google"</default>
     </key>
     <key type="as" name="google-src-langs">
-        <default>["en", "fr", "es", "de"]</default>
+        <!-- Deprecated option -->
+        <description>DEPRECATED: This key is deprecated and normally ignored.</description>
+        <default>[]</default>
     </key>
     <key type="as" name="google-dest-langs">
-        <default>["fr", "es", "de", "en"]</default>
+        <!-- Deprecated option -->
+        <description>DEPRECATED: This key is deprecated and normally ignored.</description>
+        <default>[]</default>
     </key>
     <key type="as" name="libretranslate-src-langs">
-        <default>["en", "fr", "es", "de"]</default>
+        <!-- Deprecated option -->
+        <description>DEPRECATED: This key is deprecated and normally ignored.</description>
+        <default>[]</default>
     </key>
     <key type="as" name="libretranslate-dest-langs">
-        <default>["fr", "es", "de", "en"]</default>
+        <!-- Deprecated option -->
+        <description>DEPRECATED: This key is deprecated and normally ignored.</description>
+        <default>[]</default>
     </key>
     <key type="s" name="libretranslate-instance">
-        <default>"translate.astian.org"</default>
+        <!-- Deprecated option -->
+        <description>DEPRECATED: This key is deprecated and normally ignored.</description>
+        <default>""</default>
     </key>
   </schema>
 </schemalist>

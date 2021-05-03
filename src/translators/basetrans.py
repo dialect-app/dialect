@@ -12,9 +12,11 @@ class TranslatorBase:
     supported_features = {
         'mistakes': False,
         'pronunciation': False,
-        'voice': False,
         'change-instance': False,
     }
+    instance_url = ''
+    src_langs = ['en', 'fr', 'es', 'de']
+    dest_langs = ['fr', 'es', 'de', 'en']
 
     @staticmethod
     def validate_instance_url(url):
@@ -38,7 +40,11 @@ class TranslationError(Exception):
 
 class Translation:
     text = None
-    extra_data = {}
+    extra_data = {
+        'possible-mistakes': None,
+        'src-pronunciation': None,
+        'dest-pronunciation': None,
+    }
 
     def __init__(self, text, extra_data):
         self.text = text

@@ -9,7 +9,7 @@ A translation app for GNOME.
 ## Features
 
 - Translation based on the [googletrans](https://github.com/ssut/py-googletrans) Python API, an unofficial API for Google Translate
-- Translation based on the LibreTranslate API, allowing you use any instance available online
+- Translation based on the LibreTranslate API, allowing you to use any public instance
 - Translation history
 - Automatic language detection
 - Text to speech
@@ -28,7 +28,8 @@ Arch-based distro users can install from the AUR: [`dialect`](https://aur.archli
 ### Fedora
 
 Dialect is available for Fedora 33 and later:
-```
+
+```bash
 sudo dnf install dialect
 ```
 
@@ -46,6 +47,7 @@ sudo dnf install dialect
 - Googletrans `python-googletrans`
 - gTTS `python-gtts`
 - D-Bus `python-dbus`
+- HTTPX `python-httpx`
 
 If official packages are not available for any of the python dependencies, you can install them from pip:
 
@@ -56,7 +58,7 @@ pip install googletrans gtts
 ### Building from Git
 
 ```bash
-git clone https://github.com/gi-lom/dialect.git
+git clone https://github.com/dialect-app/dialect.git
 cd dialect
 meson builddir --prefix=/usr/local
 sudo ninja -C builddir install
@@ -65,7 +67,7 @@ sudo ninja -C builddir install
 For testing and development purposes, you may run a local build:
 
 ```bash
-git clone https://github.com/gi-lom/dialect.git
+git clone https://github.com/dialect-app/dialect.git
 cd dialect
 meson builddir
 meson configure _build -Dprefix=$(pwd)/builddir/testdir
@@ -76,6 +78,10 @@ ninja -C builddir run
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+### Translations
+
+Dialect is translated into many languages already. Please help to [translate Dialect](https://github.com/dialect-app/dialect/tree/main/po/) into other languages.
 
 ## License
 

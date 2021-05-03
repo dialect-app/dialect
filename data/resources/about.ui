@@ -8,9 +8,9 @@
     <property name="destroy_with_parent">True</property>
     <property name="type_hint">dialog</property>
     <property name="program_name">Dialect</property>
-    <property name="copyright" translatable="yes">Copyright 2020 gi-lom</property>
-    <property name="comments" translatable="yes">A translation app for GNOME based on Google Translate.</property>
-    <property name="website">https://github.com/gi-lom/dialect</property>
+    <property name="copyright" translatable="yes">Copyright 2020-2021 The Dialect Authors</property>
+    <property name="comments" translatable="yes">A translation app for GNOME.</property>
+    <property name="website">https://github.com/dialect-app/dialect</property>
     <property name="website_label" translatable="yes">Github page</property>
     <property name="authors">gi-lom
 Mufeed Ali

@@ -11,7 +11,9 @@ import threading
 
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib, Gio
+
 from dialect.translators import TRANSLATORS
+from dialect.settings import Settings
 
 APP_ID = 'com.github.gi_lom.dialect'
 
@@ -32,8 +34,7 @@ class TranslateService(dbus.service.Object):
 
         # Translations running now
         self.translations = dict()
-        self.settings = Gio.Settings.new(APP_ID)
-        self.settings.connect('changed', self._on_settings_changed)
+        Settings.get().connect('changed', self._on_settings_changed)
 
         self.dest_language = None
         self.active_thread = None
@@ -122,8 +123,8 @@ class TranslateService(dbus.service.Object):
 
         # set dest_language to last used language and src_language to auto detection
         src_language = 'auto'
-        src_language_saved = self.settings.get_strv(f'{self.translator.name}-src-langs')[0]
-        dest_language = self.settings.get_strv(f'{self.translator.name}-dest-langs')[0]
+        src_language_saved = Settings.get().get_src_langs(self.translator.name)[0]
+        dest_language = Settings.get().get_dest_langs(self.translator.name)[0]
 
         if self.trans_queue:
             self.trans_queue.pop(0)
@@ -184,21 +185,21 @@ class TranslateService(dbus.service.Object):
                 return
 
     def is_live_enabled(self):
-        return self.settings.get_boolean('live-translation')
+        return Settings.get().live_translation
 
     def _get_translator(self):
-        backend = self.settings.get_int('backend')
+        backend = Settings.get().backend
         if TRANSLATORS[backend].supported_features['change-instance']:
             translator = TRANSLATORS[backend](
-                base_url=self.settings.get_string(f'{TRANSLATORS[backend].name}-instance')
+                base_url=Settings.get().get_string(f'{TRANSLATORS[backend].name}-instance')
             )
         else:
             translator = TRANSLATORS[backend]()
         return translator
 
     def _on_settings_changed(self, _settings, key):
-        backend = self.settings.get_int('backend')
-        if key == 'backend' or key == f'{TRANSLATORS[backend].name}-instance':
+        backend = Settings.get().backend
+        if key == 'backend-name' or key == f'backend-settings':
             self.translator = self._get_translator()
 
 

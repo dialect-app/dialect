@@ -6,51 +6,52 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-19 10:50-0500\n"
-"PO-Revision-Date: 2021-01-18 16:01+0300\n"
+"POT-Creation-Date: 2021-04-27 08:53-0500\n"
+"PO-Revision-Date: 2021-04-27 18:42+0300\n"
 "Last-Translator: Bedirhan Tuhana GAYRETLİ <v30xythedev@gmail.com>\n"
 "Language-Team: Turkish <LL@li.org>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.4.2\n"
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:6 data/resources/window.ui:66
-#: src/main.py:47 src/main.py:68
+#: src/main.py:53 src/main.py:88
 msgid "Dialect"
 msgstr "Dialect"
 
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
 msgid "Translate between languages"
-msgstr ""
+msgstr "Diller arasında çevir"
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
 msgid "translate;translation;"
 msgstr "çevir;çeviri;"
 
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:9
-#, fuzzy
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:9 data/resources/about.ui:12
 msgid "A translation app for GNOME."
-msgstr "GNOME için çeviri uygulaması"
+msgstr "GNOME için çeviri uygulaması."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
 msgstr "Özellikler:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
-#, fuzzy
 msgid "Translation based on an unofficial API for Google Translate"
-msgstr "GNOME için Google Çeviri tabanlı çeviri uygulaması."
+msgstr "GNOME için Google Çeviri tabanlı çeviri uygulaması"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid ""
 "Translation based on the LibreTranslate API, allowing you use any instance "
 "available online"
 msgstr ""
+"LibreTranslate API tabanlı çeviri, çevrimiçi olarak mevcut herhangi bir "
+"örneği kullanmanıza izin verir"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
@@ -69,16 +70,12 @@ msgid "Clipboard buttons"
 msgstr "Pano butonları"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:26
-msgid "gi-lom"
-msgstr "gi-lom"
+msgid "The Dialect Authors"
+msgstr "Dialect Yaratıcıları"
 
 #: data/resources/about.ui:11
-msgid "Copyright 2020 gi-lom"
-msgstr "Telif Hakkı 2020 gi-lom"
-
-#: data/resources/about.ui:12
-msgid "A translation app for GNOME based on Google Translate."
-msgstr "GNOME için Google Çeviri tabanlı çeviri uygulaması."
+msgid "Copyright 2020-2021 The Dialect Authors"
+msgstr "Telif Hakkı 2020-2021 Dialect Yaratıcıları"
 
 #: data/resources/about.ui:14
 msgid "Github page"
@@ -131,43 +128,57 @@ msgstr "Çeviri Kısayolu"
 
 #: data/resources/preferences.ui:55
 msgid "Unselected choice will be used for line break."
-msgstr "Seçilmemiş olan kombinasyon sonraki satır için kullanılır."
+msgstr "Seçilmemiş seçim satır sonu için kullanılacaktır."
 
 #: data/resources/preferences.ui:61
-#, fuzzy
-msgid "Translator"
-msgstr "Çevir"
+msgid "Default to Auto"
+msgstr "Otomatik Olarak Varsayılan"
 
 #: data/resources/preferences.ui:62
+msgid "Use \"Auto\" as the default language on every launch"
+msgstr "Her başlatmada varsayılan dil olarak \"Otomatik\" kullan"
+
+#: data/resources/preferences.ui:76
+msgid "Translator"
+msgstr "Çevirmen"
+
+#: data/resources/preferences.ui:77
 msgid "Choose from the available translation services."
-msgstr ""
+msgstr "Kullanılabilir çeviri hizmetleri arasından seçim yapın."
 
-#: data/resources/preferences.ui:68
-#, fuzzy
+#: data/resources/preferences.ui:83
 msgid "Translator Instance"
-msgstr "Hızlı çevir"
+msgstr "Çevirmen Örneği"
 
-#: data/resources/preferences.ui:69
+#: data/resources/preferences.ui:84
 msgid "Specify URL of translation service."
-msgstr ""
+msgstr "Çeviri servisinin URL adresini belirtin."
 
-#: data/resources/preferences.ui:94
+#: data/resources/preferences.ui:109
 msgid "Edit"
-msgstr ""
-
-#: data/resources/preferences.ui:128
-msgid "Reset to default"
-msgstr ""
+msgstr "Düzenle"
 
 #: data/resources/preferences.ui:143
-msgid "Save"
-msgstr ""
+msgid "Reset to default"
+msgstr "Varsayılana sıfırla"
 
-#: data/resources/preferences.ui:162
+#: data/resources/preferences.ui:158
+msgid "Save"
+msgstr "Kaydet"
+
+#: data/resources/preferences.ui:175
+msgid "Text to Speech"
+msgstr "Metinden Sese"
+
+#: data/resources/preferences.ui:176
+msgid "Use Google for Text to Speech functionality."
+msgstr "Metinden Sese için Google kullanın."
+
+#: data/resources/preferences.ui:192
 msgid "Search Provider"
 msgstr "Arama sağlayıcısı"
 
-#: data/resources/preferences.ui:163
+#: data/resources/preferences.ui:193
 msgid ""
 "Dialect has a GNOME Search Provider. Enabling or disabling Live Translation "
 "here will also enable or disable the GNOME Search Provider. This is to "
@@ -202,22 +213,21 @@ msgstr "Çıkış"
 
 #: data/resources/window.ui:42
 msgid "Loading..."
-msgstr ""
+msgstr "Yükleniyor..."
 
 #: data/resources/window.ui:83
 msgid "Failed loading translator backend"
-msgstr ""
+msgstr "Çeviri arka işlemi yüklenemedi"
 
 #: data/resources/window.ui:108
 msgid "Retry"
-msgstr ""
+msgstr "Yeniden dene"
 
 #: data/resources/window.ui:115
-#, fuzzy
 msgid "Open preferences"
-msgstr "Tercihler"
+msgstr "Tercihleri aç"
 
-#: data/resources/window.ui:193 data/resources/window.ui:679
+#: data/resources/window.ui:193 data/resources/window.ui:726
 msgid "Switch languages"
 msgstr "Dili değiştir"
 
@@ -229,48 +239,48 @@ msgstr "Önceki çeviri"
 msgid "Next translation"
 msgstr "Sonraki çeviri"
 
-#: data/resources/window.ui:452
+#: data/resources/window.ui:453
 msgid "Clear"
 msgstr "Temizle"
 
-#: data/resources/window.ui:467
+#: data/resources/window.ui:468
 msgid "Paste"
 msgstr "Yapıştır"
 
-#: data/resources/window.ui:479
-msgid "Translate"
-msgstr "Çevir"
-
-#: data/resources/window.ui:556
-msgid "Translation in progress..."
-msgstr "Çeviriliyor..."
-
-#: data/resources/window.ui:564
-msgid "Translation seems to have failed"
-msgstr "Görünüşe göre çeviri başarısız oldu"
-
-#: data/resources/window.ui:575
+#: data/resources/window.ui:484 data/resources/window.ui:622
 msgid "Listen"
 msgstr "Dinle"
 
-#: data/resources/window.ui:590
+#: data/resources/window.ui:492
+msgid "Translate"
+msgstr "Çevir"
+
+#: data/resources/window.ui:603
+msgid "Translation in progress..."
+msgstr "Çeviriliyor..."
+
+#: data/resources/window.ui:611
+msgid "Translation seems to have failed"
+msgstr "Görünüşe göre çeviri başarısız oldu"
+
+#: data/resources/window.ui:637
 msgid "Copy"
 msgstr "Kopyala"
 
-#: data/resources/window.ui:770
+#: data/resources/window.ui:817
 msgid "No network connection detected."
 msgstr "Ağ bağlantısı algılanmadı."
 
-#: src/preferences.py:208
+#: src/preferences.py:250
 #, python-brace-format
 msgid "Not a valid {backend} instance"
-msgstr ""
+msgstr "Geçerli bir {backend} örneği değil"
 
-#: src/window.py:207
+#: src/window.py:229
 msgid "A network issue has occured. Retry?"
 msgstr "Ağ sorunu oluştu. Yeniden dene?"
 
-#: src/window.py:208
+#: src/window.py:233
 msgid ""
 "A network issue has occured.\n"
 "Please try again."
@@ -278,25 +288,31 @@ msgstr ""
 "Ağ sorunu oluştu.\n"
 "Lütfen tekrar deneyin."
 
-#: src/window.py:425 src/window.py:429
+#: src/window.py:507 src/window.py:511
 msgid "Auto"
 msgstr "Otomatik"
 
-#: src/window.py:685
+#: src/window.py:784
 msgid "5000 characters limit reached!"
 msgstr "5000 karakter limiti aşıldı!"
 
-#: src/window.py:777
+#: src/window.py:876
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
 msgstr ""
-"Çeviri hata ile sonuçlandı.\n"
+"Çeviri başarısız oldu.\n"
 "Lütfen ağınızı kontrol edin."
 
-#: src/window.py:792
+#: src/window.py:892
 msgid "Did you mean: "
-msgstr "Şunu mu demek istediniz:"
+msgstr "Şunu mu demek istediniz: "
+
+#~ msgid "gi-lom"
+#~ msgstr "gi-lom"
+
+#~ msgid "A translation app for GNOME based on Google Translate."
+#~ msgstr "GNOME için Google Çeviri tabanlı çeviri uygulaması."
 
 #~ msgid "Text translation up to 5000 chars"
 #~ msgstr "5000 karaktere kadar metin çevirme"

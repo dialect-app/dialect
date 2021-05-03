@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-19 10:50-0500\n"
-"PO-Revision-Date: 2020-11-02 11:51-0300\n"
-"Last-Translator: Gustavo Costa <gusta@null.net>\n"
+"POT-Creation-Date: 2021-04-27 08:53-0500\n"
+"PO-Revision-Date: 2021-04-27 12:39-0300\n"
+"Last-Translator: Gustavo Costa <xfgusta@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -21,39 +21,39 @@ msgstr ""
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:6 data/resources/window.ui:66
-#: src/main.py:47 src/main.py:68
+#: src/main.py:53 src/main.py:88
 msgid "Dialect"
 msgstr "Dialect"
 
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
 msgid "Translate between languages"
-msgstr ""
+msgstr "Traduza entre idiomas"
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
 msgid "translate;translation;"
 msgstr "traduzir;tradução;tradutor;"
 
-#: data/com.github.gi_lom.dialect.metainfo.xml.in:9
-#, fuzzy
+#: data/com.github.gi_lom.dialect.metainfo.xml.in:9 data/resources/about.ui:12
 msgid "A translation app for GNOME."
-msgstr "Um aplicativo de tradução para GNOME"
+msgstr "Um aplicativo de tradução para o GNOME."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
 msgstr "Características:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
-#, fuzzy
 msgid "Translation based on an unofficial API for Google Translate"
-msgstr "Um aplicativo de tradução para GNOME baseado no Google Tradutor."
+msgstr "Tradução baseada em uma API não oficial do Google Tradutor"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid ""
 "Translation based on the LibreTranslate API, allowing you use any instance "
 "available online"
 msgstr ""
+"Tradução baseada na API LibreTranslate, permitindo que você use qualquer "
+"instância disponível online"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
@@ -72,16 +72,12 @@ msgid "Clipboard buttons"
 msgstr "Botões da área de transferência"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:26
-msgid "gi-lom"
-msgstr "gi-lom"
+msgid "The Dialect Authors"
+msgstr "Autores do Dialect"
 
 #: data/resources/about.ui:11
-msgid "Copyright 2020 gi-lom"
-msgstr "Copyright 2020 gi-lom"
-
-#: data/resources/about.ui:12
-msgid "A translation app for GNOME based on Google Translate."
-msgstr "Um aplicativo de tradução para GNOME baseado no Google Tradutor."
+msgid "Copyright 2020-2021 The Dialect Authors"
+msgstr "Copyright 2020-2021 Autores do Dialect"
 
 #: data/resources/about.ui:14
 msgid "Github page"
@@ -90,11 +86,11 @@ msgstr "Página do Github"
 #. Replace me with your names.
 #: data/resources/about.ui:19
 msgid "translator-credits"
-msgstr "Gustavo Costa"
+msgstr "Gustavo Costa <xfgusta@gmail.com>"
 
 #: data/resources/menu.ui:7
 msgid "Show Pronunciation"
-msgstr ""
+msgstr "Mostrar pronúncia"
 
 #: data/resources/menu.ui:14
 msgid "Preferences"
@@ -102,7 +98,7 @@ msgstr "Preferências"
 
 #: data/resources/menu.ui:18
 msgid "Keyboard Shortcuts"
-msgstr "Atalhos de Teclado"
+msgstr "Atalhos de teclado"
 
 #: data/resources/menu.ui:22
 msgid "About Dialect"
@@ -114,7 +110,7 @@ msgstr "Aparência"
 
 #: data/resources/preferences.ui:19
 msgid "Dark Mode"
-msgstr "Modo Noturno"
+msgstr "Modo Escuro"
 
 #: data/resources/preferences.ui:35
 msgid "Behavior"
@@ -137,40 +133,54 @@ msgid "Unselected choice will be used for line break."
 msgstr "A escolha não selecionada será usada para quebra de linha."
 
 #: data/resources/preferences.ui:61
-#, fuzzy
-msgid "Translator"
-msgstr "Traduzir"
+msgid "Default to Auto"
+msgstr "Automático por Padrão"
 
 #: data/resources/preferences.ui:62
+msgid "Use \"Auto\" as the default language on every launch"
+msgstr "Usa \"Automático\" como o idioma padrão em cada lançamento"
+
+#: data/resources/preferences.ui:76
+msgid "Translator"
+msgstr "Tradutor"
+
+#: data/resources/preferences.ui:77
 msgid "Choose from the available translation services."
-msgstr ""
+msgstr "Escolha um dos serviços de tradução disponíveis."
 
-#: data/resources/preferences.ui:68
-#, fuzzy
+#: data/resources/preferences.ui:83
 msgid "Translator Instance"
-msgstr "Traduzir"
+msgstr "Instância do tradutor"
 
-#: data/resources/preferences.ui:69
+#: data/resources/preferences.ui:84
 msgid "Specify URL of translation service."
-msgstr ""
+msgstr "Especifique o URL do serviço de tradução."
 
-#: data/resources/preferences.ui:94
+#: data/resources/preferences.ui:109
 msgid "Edit"
-msgstr ""
-
-#: data/resources/preferences.ui:128
-msgid "Reset to default"
-msgstr ""
+msgstr "Editar"
 
 #: data/resources/preferences.ui:143
-msgid "Save"
-msgstr ""
+msgid "Reset to default"
+msgstr "Restaurar ao padrão"
 
-#: data/resources/preferences.ui:162
+#: data/resources/preferences.ui:158
+msgid "Save"
+msgstr "Salvar"
+
+#: data/resources/preferences.ui:175
+msgid "Text to Speech"
+msgstr "Texto para Fala"
+
+#: data/resources/preferences.ui:176
+msgid "Use Google for Text to Speech functionality."
+msgstr "Usa o Google para a funcionalidade Texto para Fala."
+
+#: data/resources/preferences.ui:192
 msgid "Search Provider"
 msgstr "Provedor de Pesquisa"
 
-#: data/resources/preferences.ui:163
+#: data/resources/preferences.ui:193
 msgid ""
 "Dialect has a GNOME Search Provider. Enabling or disabling Live Translation "
 "here will also enable or disable the GNOME Search Provider. This is to "
@@ -204,22 +214,21 @@ msgstr "Sair"
 
 #: data/resources/window.ui:42
 msgid "Loading..."
-msgstr ""
+msgstr "Carregando..."
 
 #: data/resources/window.ui:83
 msgid "Failed loading translator backend"
-msgstr ""
+msgstr "Falha ao carregar back-end do tradutor"
 
 #: data/resources/window.ui:108
 msgid "Retry"
-msgstr ""
+msgstr "Tentar novamente"
 
 #: data/resources/window.ui:115
-#, fuzzy
 msgid "Open preferences"
-msgstr "Preferências"
+msgstr "Abrir preferências"
 
-#: data/resources/window.ui:193 data/resources/window.ui:679
+#: data/resources/window.ui:193 data/resources/window.ui:726
 msgid "Switch languages"
 msgstr "Alternar idiomas"
 
@@ -231,48 +240,48 @@ msgstr "Tradução anterior"
 msgid "Next translation"
 msgstr "Próxima tradução"
 
-#: data/resources/window.ui:452
+#: data/resources/window.ui:453
 msgid "Clear"
 msgstr "Limpar"
 
-#: data/resources/window.ui:467
+#: data/resources/window.ui:468
 msgid "Paste"
 msgstr "Colar"
 
-#: data/resources/window.ui:479
-msgid "Translate"
-msgstr "Traduzir"
-
-#: data/resources/window.ui:556
-msgid "Translation in progress..."
-msgstr "Tradução em andamento..."
-
-#: data/resources/window.ui:564
-msgid "Translation seems to have failed"
-msgstr "A tradução parece ter falhado"
-
-#: data/resources/window.ui:575
+#: data/resources/window.ui:484 data/resources/window.ui:622
 msgid "Listen"
 msgstr "Ouvir"
 
-#: data/resources/window.ui:590
+#: data/resources/window.ui:492
+msgid "Translate"
+msgstr "Traduzir"
+
+#: data/resources/window.ui:603
+msgid "Translation in progress..."
+msgstr "Tradução em andamento..."
+
+#: data/resources/window.ui:611
+msgid "Translation seems to have failed"
+msgstr "A tradução parece ter falhado"
+
+#: data/resources/window.ui:637
 msgid "Copy"
 msgstr "Copiar"
 
-#: data/resources/window.ui:770
+#: data/resources/window.ui:817
 msgid "No network connection detected."
 msgstr "Nenhuma conexão de rede detectada."
 
-#: src/preferences.py:208
+#: src/preferences.py:250
 #, python-brace-format
 msgid "Not a valid {backend} instance"
-msgstr ""
+msgstr "Não é uma instância {backend} válida"
 
-#: src/window.py:207
+#: src/window.py:229
 msgid "A network issue has occured. Retry?"
 msgstr "Ocorreu um problema de rede. Tentar novamente?"
 
-#: src/window.py:208
+#: src/window.py:233
 msgid ""
 "A network issue has occured.\n"
 "Please try again."
@@ -280,15 +289,15 @@ msgstr ""
 "Ocorreu um problema de rede.\n"
 "Por favor, tente novamente."
 
-#: src/window.py:425 src/window.py:429
+#: src/window.py:507 src/window.py:511
 msgid "Auto"
 msgstr "Automático"
 
-#: src/window.py:685
+#: src/window.py:784
 msgid "5000 characters limit reached!"
 msgstr "Limite de 5.000 caracteres atingido!"
 
-#: src/window.py:777
+#: src/window.py:876
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
@@ -296,9 +305,15 @@ msgstr ""
 "A tradução falhou.\n"
 "Verifique se há problemas de rede."
 
-#: src/window.py:792
+#: src/window.py:892
 msgid "Did you mean: "
 msgstr "Você quis dizer: "
+
+#~ msgid "gi-lom"
+#~ msgstr "gi-lom"
+
+#~ msgid "A translation app for GNOME based on Google Translate."
+#~ msgstr "Um aplicativo de tradução para GNOME baseado no Google Tradutor."
 
 #~ msgid "Text translation up to 5000 chars"
 #~ msgstr "Tradução de texto de até 5.000 caracteres"

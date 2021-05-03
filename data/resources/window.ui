@@ -360,6 +360,7 @@
                                   <object class="GtkTextView" id="src_text">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
+                                    <property name="has-focus">True</property>
                                     <property name="wrap-mode">word-char</property>
                                     <property name="margin-start">9</property>
                                     <property name="margin-end">9</property>
@@ -373,7 +374,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkRevealer" id="pronunciation_revealer">
+                              <object class="GtkRevealer" id="src_pron_revealer">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="transition-type">slide-down</property>
@@ -384,7 +385,7 @@
                                     <property name="can-focus">False</property>
                                     <property name="shadow-type">in</property>
                                     <child>
-                                      <object class="GtkLabel" id="pronunciation_label">
+                                      <object class="GtkLabel" id="src_pron_label">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="margin-top">4</property>
@@ -475,6 +476,18 @@
                                   </object>
                                 </child>
                                 <child>
+                                  <object class="GtkButton" id="src_voice_btn">
+                                    <property name="visible">True</property>
+                                    <property name="sensitive">False</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">True</property>
+                                    <property name="tooltip-text" translatable="yes">Listen</property>
+                                    <child>
+                                      <placeholder/>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
                                   <object class="GtkButton" id="translate_btn">
                                     <property name="label" translatable="yes">Translate</property>
                                     <property name="visible">True</property>
@@ -545,6 +558,40 @@
                               </packing>
                             </child>
                             <child>
+                              <object class="GtkRevealer" id="dest_pron_revealer">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="transition-type">slide-down</property>
+                                <property name="reveal-child">False</property>
+                                <child>
+                                  <object class="GtkScrolledWindow">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="shadow-type">in</property>
+                                    <child>
+                                      <object class="GtkLabel" id="dest_pron_label">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="margin-top">4</property>
+                                        <property name="margin-bottom">4</property>
+                                        <property name="margin-start">9</property>
+                                        <property name="margin-end">9</property>
+                                        <property name="xalign">0</property>
+                                        <property name="wrap">True</property>
+                                        <property name="wrap-mode">word-char</property>
+                                        <style>
+                                          <class name="dim-label"/>
+                                        </style>
+                                      </object>
+                                    </child>
+                                    <style>
+                                      <class name="pronunciation"/>
+                                    </style>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
                               <object class="GtkBox">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
@@ -567,7 +614,7 @@
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="voice_btn">
+                                  <object class="GtkButton" id="dest_voice_btn">
                                     <property name="visible">True</property>
                                     <property name="sensitive">False</property>
                                     <property name="can-focus">True</property>

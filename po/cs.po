@@ -1,185 +1,184 @@
-# Russian translations for dialect package.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Czech translations for dialect package.
+# Copyright (C) 2021 THE dialect'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the dialect package.
-# Nikita Kravets <k.qovekt@gmail.com>, 2020.
+# Vojtěch Perník <translations@pervoj.cz>, 2021.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-02-19 21:01+0300\n"
-"Last-Translator: Nikita Kravets <k.qovekt@gmail.com>\n"
-"Language-Team: \n"
-"Language: ru\n"
+"PO-Revision-Date: 2021-04-27 17:30+0200\n"
+"Last-Translator: Vojtěch Perník <translations@pervoj.cz>\n"
+"Language-Team: Czech <@>\n"
+"Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.2\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2\n"
+"X-Generator: Gtranslator 40.0\n"
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:6 data/resources/window.ui:66
 #: src/main.py:53 src/main.py:88
 msgid "Dialect"
-msgstr "Dialect"
+msgstr "Dialekt"
 
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
 msgid "Translate between languages"
-msgstr "Перевод между языками"
+msgstr "Překládejte mezi jazyky"
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
 msgid "translate;translation;"
-msgstr "перевести;перевод;translate;translation;"
+msgstr "přeložit;překlad;"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:9 data/resources/about.ui:12
 msgid "A translation app for GNOME."
-msgstr "Переводчик для GNOME."
+msgstr "Překladač pro GNOME"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
-msgstr "Особенности:"
+msgstr "Funkce:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
 msgid "Translation based on an unofficial API for Google Translate"
-msgstr "Перевод на основе неофициального API Google Переводчика"
+msgstr "Překlad je postavený na neoficiálním API pro Google Překladač"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid ""
 "Translation based on the LibreTranslate API, allowing you use any instance "
 "available online"
 msgstr ""
-"Перевод на основе API LibreTranslate, позволяющий использовать любой "
-"экземпляр, доступный онлайн"
+"Překlad založený na API LibreTranslate, který vám umožní použít jakoukoli "
+"instanci dostupnou online"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
-msgstr "Прослушивание текста"
+msgstr "Text na řeč"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Translation history"
-msgstr "История переводов"
+msgstr "Historie překladů"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:20
 msgid "Automatic language detection"
-msgstr "Автоматическое определение языка"
+msgstr "Automatická detekce jazyka"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:21
 msgid "Clipboard buttons"
-msgstr "Работа с буфером обмена"
+msgstr "Tlačítka schránky"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:26
 msgid "The Dialect Authors"
-msgstr ""
+msgstr "Autoři Dialektu"
 
 #: data/resources/about.ui:11
-#, fuzzy
 msgid "Copyright 2020-2021 The Dialect Authors"
-msgstr "Copyright 2020 gi-lom"
+msgstr "Copyright 2020-2021 Autoři Dialektu"
 
 #: data/resources/about.ui:14
 msgid "Github page"
-msgstr "Страница Github"
+msgstr "Stránka na GitHubu"
 
 #. Replace me with your names.
 #: data/resources/about.ui:19
 msgid "translator-credits"
-msgstr "Никита Кравец"
+msgstr "Vojtěch Perník <translations@pervoj.cz>"
 
 #: data/resources/menu.ui:7
 msgid "Show Pronunciation"
-msgstr "Показать произношение"
+msgstr "Zobrazit výslovnost"
 
 #: data/resources/menu.ui:14
 msgid "Preferences"
-msgstr "Параметры"
+msgstr "Předvolby"
 
 #: data/resources/menu.ui:18
 msgid "Keyboard Shortcuts"
-msgstr "Комбинации клавиш"
+msgstr "Klávesové zkratky"
 
 #: data/resources/menu.ui:22
 msgid "About Dialect"
-msgstr "О приложении"
+msgstr "O Dialektu"
 
 #: data/resources/preferences.ui:15
 msgid "Appearance"
-msgstr "Внешний вид"
+msgstr "Vzhled"
 
 #: data/resources/preferences.ui:19
 msgid "Dark Mode"
-msgstr "Тёмный режим"
+msgstr "Tmavý režim"
 
 #: data/resources/preferences.ui:35
 msgid "Behavior"
-msgstr "Поведение"
+msgstr "Chování"
 
 #: data/resources/preferences.ui:39
 msgid "Live Translation"
-msgstr "Переводить по мере ввода"
+msgstr "Živý překlad"
 
 #: data/resources/preferences.ui:40
 msgid "Warning: Your IP address may get banned for API abuse."
-msgstr "Внимание: ваш IP может быть заблокирован из-за злоупотребления API."
+msgstr "Varování: Vaše IP adresa může být zablokována za zneužívání API."
 
 #: data/resources/preferences.ui:54
 msgid "Translation Shortcut"
-msgstr "Комбинация клавиш для перевода"
+msgstr "Zkratka překladu"
 
 #: data/resources/preferences.ui:55
 msgid "Unselected choice will be used for line break."
-msgstr "Невыбранный вариант будет перемещать курсор на новую строку."
+msgstr "Nevybraná volba bude použita pro zalomení řádku"
 
 #: data/resources/preferences.ui:61
 msgid "Default to Auto"
-msgstr ""
+msgstr "Výchozí na Automatický"
 
 #: data/resources/preferences.ui:62
 msgid "Use \"Auto\" as the default language on every launch"
-msgstr ""
+msgstr "Použít \"Automatický\" jako výchozí jazyk po každém spuštění"
 
 #: data/resources/preferences.ui:76
 msgid "Translator"
-msgstr "Переводчик"
+msgstr "Překladač"
 
 #: data/resources/preferences.ui:77
 msgid "Choose from the available translation services."
-msgstr "Выберите один из доступных сервисов."
+msgstr "Vyberte z dostupných překladačů."
 
 #: data/resources/preferences.ui:83
 msgid "Translator Instance"
-msgstr "Экземпляр переводчика"
+msgstr "Instance překladače"
 
 #: data/resources/preferences.ui:84
 msgid "Specify URL of translation service."
-msgstr "Укажите URL сервиса перевода."
+msgstr "Specifikujte URL adresu překladače."
 
 #: data/resources/preferences.ui:109
 msgid "Edit"
-msgstr "Редактировать"
+msgstr "Upravit"
 
 #: data/resources/preferences.ui:143
 msgid "Reset to default"
-msgstr "Сбросить"
+msgstr "Obnovit do základního nastavení"
 
 #: data/resources/preferences.ui:158
 msgid "Save"
-msgstr "Сохранить"
+msgstr "Uložit"
 
 #: data/resources/preferences.ui:175
-#, fuzzy
 msgid "Text to Speech"
-msgstr "Прослушивание текста"
+msgstr "Převod textu na řeč"
 
 #: data/resources/preferences.ui:176
 msgid "Use Google for Text to Speech functionality."
-msgstr ""
+msgstr "Použít Google pro funkci Převodu textu na řeč"
 
 #: data/resources/preferences.ui:192
 msgid "Search Provider"
-msgstr "Провайдер поиска"
+msgstr "Poskytovatel vyhledávání"
 
 #: data/resources/preferences.ui:193
 msgid ""
@@ -188,161 +187,130 @@ msgid ""
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
-"Dialect имеет функцию перевода в поиске GNOME. Включение или отключение "
-"перевода по мере ввода здесь также включает или отключает провайдер поиска. "
-"Это сделано для уменьшения возможности злоупотребления API. Также убедитесь, "
-"что эта функция включена в настройках GNOME."
+"Dialekt má poskytovatele vyhledávání GNOME. Povolením nebo zakázáním živého "
+"překladu zde také povolíte nebo zakážete poskytovatele vyhledávání GNOME. To "
+"má omezit možnost zneužití API. Také se ujistěte, že je tato funkce povolena "
+"v nastavení GNOME."
 
 #: data/resources/shortcuts-window.ui:13
 msgctxt "shortcuts window"
 msgid "General"
-msgstr "Общие"
+msgstr "Obecné"
 
 #: data/resources/shortcuts-window.ui:17
 msgctxt "shortcuts window"
 msgid "Preferences"
-msgstr "Параметры"
+msgstr "Předvolby"
 
 #: data/resources/shortcuts-window.ui:24
 msgctxt "shortcuts window"
 msgid "Translate"
-msgstr "Перевести"
+msgstr "Překlad"
 
 #: data/resources/shortcuts-window.ui:31
 msgctxt "shortcuts window"
 msgid "Quit"
-msgstr "Выход"
+msgstr "Ukončit"
 
 #: data/resources/window.ui:42
 msgid "Loading..."
-msgstr "Загрузка..."
+msgstr "Načítání..."
 
 #: data/resources/window.ui:83
 msgid "Failed loading translator backend"
-msgstr "Ошибка загрузки переводчика"
+msgstr "Načtení backendu překladače selhalo"
 
 #: data/resources/window.ui:108
 msgid "Retry"
-msgstr "Повторить"
+msgstr "Zkusit znovu"
 
 #: data/resources/window.ui:115
 msgid "Open preferences"
-msgstr "Открыть параметры"
+msgstr "Otevřít předvolby"
 
 #: data/resources/window.ui:193 data/resources/window.ui:726
 msgid "Switch languages"
-msgstr "Обратный перевод"
+msgstr "Změnit jazyky"
 
 #: data/resources/window.ui:273
 msgid "Previous translation"
-msgstr "Предыдущий перевод"
+msgstr "Předchozí překlad"
 
 #: data/resources/window.ui:292
 msgid "Next translation"
-msgstr "Следующий перевод"
+msgstr "Následující překlad"
 
 #: data/resources/window.ui:453
 msgid "Clear"
-msgstr "Очистить"
+msgstr "Vyčistit"
 
 #: data/resources/window.ui:468
 msgid "Paste"
-msgstr "Вставить"
+msgstr "Vložit"
 
 #: data/resources/window.ui:484 data/resources/window.ui:622
 msgid "Listen"
-msgstr "Прослушать"
+msgstr "Poslech"
 
 #: data/resources/window.ui:492
 msgid "Translate"
-msgstr "Перевести"
+msgstr "Přeložit"
 
 #: data/resources/window.ui:603
 msgid "Translation in progress..."
-msgstr "Перевод в процессе..."
+msgstr "Probíhá překlad..."
 
 #: data/resources/window.ui:611
 msgid "Translation seems to have failed"
-msgstr "Похоже, текст не удалось перевести"
+msgstr "Vypadá to, že překládání selhalo"
 
 #: data/resources/window.ui:637
 msgid "Copy"
-msgstr "Копировать"
+msgstr "Kopírovat"
 
 #: data/resources/window.ui:817
 msgid "No network connection detected."
-msgstr "Сетевое соединение не обнаружено."
+msgstr "Nebylo detekováno připojení k internetu."
 
 #: src/preferences.py:250
 #, python-brace-format
 msgid "Not a valid {backend} instance"
-msgstr "Недействительный экземпляр {backend}"
+msgstr "Neplatná instance {backend}"
 
 #: src/window.py:229
 msgid "A network issue has occured. Retry?"
-msgstr "Возникла проблема с соединением. Повторить?"
+msgstr "Došlo k problému se sítí. Zkusit znovu?"
 
 #: src/window.py:233
 msgid ""
 "A network issue has occured.\n"
 "Please try again."
 msgstr ""
-"Возникла проблема с соединением.\n"
-"Пожалуйста, повторите попытку."
+"Došlo k problému se sítí.\n"
+"Prosím, zkuste to znovu."
 
 #: src/window.py:507 src/window.py:511
 msgid "Auto"
-msgstr "Определить язык"
+msgstr "Automatický"
 
 #: src/window.py:784
 msgid "5000 characters limit reached!"
-msgstr "Достигнут лимит в 5000 символов!"
+msgstr "Limit 5000 znaků byl dosažen!"
 
 #: src/window.py:876
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
 msgstr ""
-"Не удалось перевести текст.\n"
-"Пожалуйста, проверьте соединение."
+"Překládání selhalo.\n"
+"Zkontrolujte prosím síť."
 
 #: src/window.py:892
 msgid "Did you mean: "
-msgstr "Возможно, вы имели в виду: "
+msgstr "Měli jste na mysli: "
 
 #~ msgid "gi-lom"
 #~ msgstr "gi-lom"
 
 #~ msgid "A translation app for GNOME based on Google Translate."
-#~ msgstr "Переводчик для GNOME, основанный на Google Переводчике."
-
-#~ msgid "Text translation up to 5000 chars"
-#~ msgstr "Перевод текста длиной до 5000 символов"
-
-#, fuzzy
-#~ msgid "Added Indonesian translation"
-#~ msgstr "Предыдущий перевод"
-
-#, fuzzy
-#~ msgid "Added Portugese (BR) translation"
-#~ msgstr "Предыдущий перевод"
-
-#, fuzzy
-#~ msgid "Added Hungarian translation"
-#~ msgstr "Следующий перевод"
-
-#, fuzzy
-#~ msgid "Added Italian translation"
-#~ msgstr "Следующий перевод"
-
-#, fuzzy
-#~ msgid "Added Persian translation"
-#~ msgstr "Предыдущий перевод"
-
-#, fuzzy
-#~ msgid "Added Russian translation"
-#~ msgstr "Предыдущий перевод"
-
-#, fuzzy
-#~ msgid "Added Turkish translation"
-#~ msgstr "Предыдущий перевод"
+#~ msgstr "Překladač pro GNOME postavený na Google Překladači"

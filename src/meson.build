@@ -15,7 +15,6 @@ run_target('run',
 )
 
 subdir('search_provider')
-subdir('translators')
 
 # Python sources
 sources = [
@@ -25,6 +24,11 @@ sources = [
   'window.py',
   'preferences.py',
   'lang_selector.py',
+  'settings.py',
 ]
 # Install sources
 install_data(sources, install_dir: moduledir)
+
+# Install translators and tts providers
+install_subdir('translators', install_dir: moduledir)
+install_subdir('tts', install_dir: moduledir)
