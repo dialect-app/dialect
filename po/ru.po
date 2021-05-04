@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-02-19 21:01+0300\n"
+"PO-Revision-Date: 2021-05-04 16:29+0300\n"
 "Last-Translator: Nikita Kravets <k.qovekt@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -72,12 +72,11 @@ msgstr "Работа с буфером обмена"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:26
 msgid "The Dialect Authors"
-msgstr ""
+msgstr "Авторы Dialect"
 
 #: data/resources/about.ui:11
-#, fuzzy
 msgid "Copyright 2020-2021 The Dialect Authors"
-msgstr "Copyright 2020 gi-lom"
+msgstr "Copyright 2020-2021 Авторы Dialect"
 
 #: data/resources/about.ui:14
 msgid "Github page"
@@ -90,7 +89,7 @@ msgstr "Никита Кравец"
 
 #: data/resources/menu.ui:7
 msgid "Show Pronunciation"
-msgstr "Показать произношение"
+msgstr "Показывать произношение"
 
 #: data/resources/menu.ui:14
 msgid "Preferences"
@@ -122,7 +121,9 @@ msgstr "Переводить по мере ввода"
 
 #: data/resources/preferences.ui:40
 msgid "Warning: Your IP address may get banned for API abuse."
-msgstr "Внимание: ваш IP может быть заблокирован из-за злоупотребления API."
+msgstr ""
+"Внимание: ваш IP может быть заблокирован\n"
+"из-за злоупотребления API."
 
 #: data/resources/preferences.ui:54
 msgid "Translation Shortcut"
@@ -130,15 +131,19 @@ msgstr "Комбинация клавиш для перевода"
 
 #: data/resources/preferences.ui:55
 msgid "Unselected choice will be used for line break."
-msgstr "Невыбранный вариант будет перемещать курсор на новую строку."
+msgstr ""
+"Невыбранный вариант будет перемещать\n"
+"курсор на новую строку."
 
 #: data/resources/preferences.ui:61
 msgid "Default to Auto"
-msgstr ""
+msgstr "Автоопределение по умолчанию"
 
 #: data/resources/preferences.ui:62
 msgid "Use \"Auto\" as the default language on every launch"
 msgstr ""
+"Автоматически определять исходный язык\n"
+"при каждом запуске"
 
 #: data/resources/preferences.ui:76
 msgid "Translator"
@@ -169,13 +174,12 @@ msgid "Save"
 msgstr "Сохранить"
 
 #: data/resources/preferences.ui:175
-#, fuzzy
 msgid "Text to Speech"
 msgstr "Прослушивание текста"
 
 #: data/resources/preferences.ui:176
 msgid "Use Google for Text to Speech functionality."
-msgstr ""
+msgstr "Использовать Google для синтеза речи."
 
 #: data/resources/preferences.ui:192
 msgid "Search Provider"
