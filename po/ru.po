@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-05-04 15:57+0300\n"
+"PO-Revision-Date: 2021-05-04 16:29+0300\n"
 "Last-Translator: Nikita Kravets <k.qovekt@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -76,7 +76,7 @@ msgstr "Авторы Dialect"
 
 #: data/resources/about.ui:11
 msgid "Copyright 2020-2021 The Dialect Authors"
-msgstr "Copyright 2020 Авторы Dialect"
+msgstr "Copyright 2020-2021 Авторы Dialect"
 
 #: data/resources/about.ui:14
 msgid "Github page"
