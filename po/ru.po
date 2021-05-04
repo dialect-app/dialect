@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-05-04 15:52+0300\n"
+"PO-Revision-Date: 2021-05-04 15:57+0300\n"
 "Last-Translator: Nikita Kravets <k.qovekt@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -131,7 +131,9 @@ msgstr "Комбинация клавиш для перевода"
 
 #: data/resources/preferences.ui:55
 msgid "Unselected choice will be used for line break."
-msgstr "Невыбранный вариант будет перемещать курсор на новую строку."
+msgstr ""
+"Невыбранный вариант будет перемещать\n"
+"курсор на новую строку."
 
 #: data/resources/preferences.ui:61
 msgid "Default to Auto"
@@ -139,7 +141,9 @@ msgstr "Автоопределение по умолчанию"
 
 #: data/resources/preferences.ui:62
 msgid "Use \"Auto\" as the default language on every launch"
-msgstr "Автоматически определять исходный язык при каждом запуске"
+msgstr ""
+"Автоматически определять исходный язык\n"
+"при каждом запуске"
 
 #: data/resources/preferences.ui:76
 msgid "Translator"
