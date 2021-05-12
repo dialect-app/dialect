@@ -81,7 +81,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ### Translations
 
-Dialect is translated into many languages already. Please help to [translate Dialect](https://github.com/dialect-app/dialect/tree/main/po/) into other languages.
+Dialect has already been translated into many languages (see the [TRANSLATORS](https://github.com/dialect-app/dialect/blob/main/TRANSLATORS.md) file). Please help [translate Dialect](https://github.com/dialect-app/dialect/tree/main/po/) into more languages.
 
 ## License
 
