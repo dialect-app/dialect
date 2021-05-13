@@ -14,7 +14,7 @@ nl             | Dutch                | @Vistaus
 pt_BR          | Brazilian Portuguese | @xfgusta
 ru             | Russian              | @nexeleriot
 sv             | Swedish              | @eson57
-tr             | Turkish              | @v30xy
+tr             | Turkish              | @noteqnil
 hr             | Croatian             | @milotype
 cs             | Czech                | @pervoj
 
