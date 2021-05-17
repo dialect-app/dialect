@@ -11,6 +11,7 @@ hu             | Hungarian            | @meskobalazs
 id             | Indonesian           | @cho2
 it             | Italian              | @albanobattistella
 nl             | Dutch                | @Vistaus
+pt             | Portuguese           | @JulianoSCbah
 pt_BR          | Brazilian Portuguese | @xfgusta
 ru             | Russian              | @nexeleriot
 sv             | Swedish              | @eson57
