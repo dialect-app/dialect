@@ -9,15 +9,16 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-04-27 09:51-0500\n"
+"PO-Revision-Date: 2021-05-22 14:34+0000\n"
 "Last-Translator: Rafael Mardojai CM <mardojai.cardenas@gmail.com>\n"
-"Language-Team: Spanish; Castilian <mardojai.cardenas@gmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/dialect/dialect/"
+"es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"X-Generator: Gtranslator 40.0\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.7-dev\n"
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
@@ -46,7 +47,7 @@ msgstr "Características:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
 msgid "Translation based on an unofficial API for Google Translate"
-msgstr "Traducción basada en una API no oficial de Google Translate."
+msgstr "Traducción basada en una API no oficial de Google Translate"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid ""
@@ -103,7 +104,7 @@ msgstr "Atajos de teclado"
 
 #: data/resources/menu.ui:22
 msgid "About Dialect"
-msgstr "Acerca de Dialect "
+msgstr "Acerca de Dialect"
 
 #: data/resources/preferences.ui:15
 msgid "Appearance"
@@ -127,7 +128,7 @@ msgstr "Advertencia: su IP podría ser bloqueada por abuso de API."
 
 #: data/resources/preferences.ui:54
 msgid "Translation Shortcut"
-msgstr "Atajo de Traducción "
+msgstr "Atajo de Traducción"
 
 #: data/resources/preferences.ui:55
 msgid "Unselected choice will be used for line break."
@@ -139,7 +140,7 @@ msgstr "Automático Predeterminado"
 
 #: data/resources/preferences.ui:62
 msgid "Use \"Auto\" as the default language on every launch"
-msgstr "Utilice \"Automático\" como idioma predeterminado en cada lanzamiento "
+msgstr "Utilice \"Automático\" como idioma predeterminado en cada lanzamiento"
 
 #: data/resources/preferences.ui:76
 msgid "Translator"
