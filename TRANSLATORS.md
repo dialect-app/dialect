@@ -7,6 +7,7 @@ Language code  | Language             | Maintainers
 de             | German               | @Etamuk
 es             | Spanish              | @rafaelmardojai
 fa             | Persian              | @musicsd
+he             | Hebrew               | @yarons
 hu             | Hungarian            | @meskobalazs
 id             | Indonesian           | @cho2
 it             | Italian              | @albanobattistella
