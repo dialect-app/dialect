@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-05-22 15:03+0000\n"
+"PO-Revision-Date: 2021-05-22 15:04+0000\n"
 "Last-Translator: Mufeed Ali <fushinari@protonmail.com>\n"
 "Language-Team: Persian <https://hosted.weblate.org/projects/dialect/dialect/"
 "fa/>\n"
@@ -46,15 +46,16 @@ msgstr "ویژِگی‌ها:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
 msgid "Translation based on an unofficial API for Google Translate"
-msgstr "گَردانِش بَر پایِه‌یِ یِک اِی‌پی‌آیِ نابُنیادین بَرایِ گَردانِشِ گوگِل اَست"
+msgstr ""
+"گَردانِش بَر پایِه‌یِ یِک اِی‌پی‌آیِ نابُنیادین بَرایِ گَردانِشِ گوگِل اَست"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid ""
 "Translation based on the LibreTranslate API, allowing you use any instance "
 "available online"
 msgstr ""
-"گَردانِش بَر پایِه‌یِ اِی‌پی‌آیِ لیبره‌ترانزلِیت اَست، تَواناییِ بِکارگیریِ هَر نِمونِه‌یِ بَرتارِ "
-"دَر دَسترِس را بِشُما می‌دَهَد"
+"گَردانِش بَر پایِه‌یِ اِی‌پی‌آیِ لیبره‌ترانزلِیت اَست، تَواناییِ بِکارگیریِ "
+"هَر نِمونِه‌یِ بَرتارِ دَر دَسترِس را بِشُما می‌دَهَد"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
@@ -123,7 +124,8 @@ msgstr "گَردانِشِ زِندِه"
 
 #: data/resources/preferences.ui:40
 msgid "Warning: Your IP address may get banned for API abuse."
-msgstr "هُشدار: شایَد نِشانیِ آی‌پیِ شُما بَرایِ کَژکارگیریِ اِی‌پی‌آی بَستِه شَوَد."
+msgstr ""
+"هُشدار: شایَد نِشانیِ آی‌پیِ شُما بَرایِ کَژکارگیریِ اِی‌پی‌آی بَستِه شَوَد."
 
 #: data/resources/preferences.ui:54
 msgid "Translation Shortcut"
