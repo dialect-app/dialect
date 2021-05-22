@@ -23,6 +23,7 @@
   </description>
   <url type="homepage">https://github.com/dialect-app/dialect/</url>
   <url type="bugtracker">https://github.com/dialect-app/dialect/issues/</url>
+  <url type="translate">https://hosted.weblate.org/engage/dialect/</url>
   <developer_name>The Dialect Authors</developer_name>
   <content_rating type="oars-1.1" />
 
