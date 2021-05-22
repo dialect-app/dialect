@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-05-22 13:51+0000\n"
+"PO-Revision-Date: 2021-05-22 14:25+0000\n"
 "Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/dialect/dialect/"
 "tr/>\n"
@@ -45,15 +45,15 @@ msgstr "Özellikler:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
 msgid "Translation based on an unofficial API for Google Translate"
-msgstr "GNOME için Google Çeviri tabanlı çeviri uygulaması"
+msgstr "Resmi olmayan bir Google Translate API'si tabanlı çeviri"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid ""
 "Translation based on the LibreTranslate API, allowing you use any instance "
 "available online"
 msgstr ""
-"LibreTranslate API tabanlı çeviri, çevrimiçi olarak mevcut herhangi bir "
-"örneği kullanmanıza izin verir"
+"LibreTranslate API tabanlı çeviri, herhangi bir çevrim içi örneği "
+"kullanmanıza izin verir"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
@@ -65,11 +65,11 @@ msgstr "Çeviri geçmişi"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:20
 msgid "Automatic language detection"
-msgstr "Otomatik dil denetleme"
+msgstr "Otomatik dil algılama"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:21
 msgid "Clipboard buttons"
-msgstr "Pano butonları"
+msgstr "Pano düğmeleri"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:26
 msgid "The Dialect Authors"
@@ -86,11 +86,13 @@ msgstr "Github sayfası"
 #. Replace me with your names.
 #: data/resources/about.ui:19
 msgid "translator-credits"
-msgstr "Bedirhan Tuhana"
+msgstr ""
+"Bedirhan Tuhana\n"
+"Oğuz Ersen"
 
 #: data/resources/menu.ui:7
 msgid "Show Pronunciation"
-msgstr "Telaffuzunu göster"
+msgstr "Telaffuzunu Göster"
 
 #: data/resources/menu.ui:14
 msgid "Preferences"
@@ -118,7 +120,7 @@ msgstr "Davranış"
 
 #: data/resources/preferences.ui:39
 msgid "Live Translation"
-msgstr "Anında Çeviri"
+msgstr "Canlı Çeviri"
 
 #: data/resources/preferences.ui:40
 msgid "Warning: Your IP address may get banned for API abuse."
@@ -134,7 +136,7 @@ msgstr "Seçilmemiş seçim satır sonu için kullanılacaktır."
 
 #: data/resources/preferences.ui:61
 msgid "Default to Auto"
-msgstr "Otomatik Olarak Varsayılan"
+msgstr "Varsayılan Olarak Otomatik"
 
 #: data/resources/preferences.ui:62
 msgid "Use \"Auto\" as the default language on every launch"
@@ -154,7 +156,7 @@ msgstr "Çevirmen Örneği"
 
 #: data/resources/preferences.ui:84
 msgid "Specify URL of translation service."
-msgstr "Çeviri servisinin URL adresini belirtin."
+msgstr "Çeviri hizmetinin URL adresini belirtin."
 
 #: data/resources/preferences.ui:109
 msgid "Edit"
@@ -174,11 +176,11 @@ msgstr "Metinden Sese"
 
 #: data/resources/preferences.ui:176
 msgid "Use Google for Text to Speech functionality."
-msgstr "Metinden Sese için Google kullanın."
+msgstr "Metinden Sese işlevi için Google kullanın."
 
 #: data/resources/preferences.ui:192
 msgid "Search Provider"
-msgstr "Arama sağlayıcısı"
+msgstr "Arama Sağlayıcısı"
 
 #: data/resources/preferences.ui:193
 msgid ""
