@@ -39,7 +39,7 @@
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="wrap">True</property>
-                    <property name="label" translatable="yes">Loading...</property>
+                    <property name="label" translatable="yes">Loading…</property>
                     <attributes>
                       <attribute name="scale" value="2"/>
                       <attribute name="weight" value="bold"/>
@@ -600,7 +600,7 @@
                                   <object class="GtkSpinner" id="trans_spinner">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="tooltip-text" translatable="yes">Translation in progress...</property>
+                                    <property name="tooltip-text" translatable="yes">Translating…</property>
                                     <property name="margin-start">8</property>
                                   </object>
                                 </child>
@@ -608,7 +608,7 @@
                                   <object class="GtkImage" id="trans_warning">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="tooltip-text" translatable="yes">Translation seems to have failed</property>
+                                    <property name="tooltip-text" translatable="yes">Could not translate the text</property>
                                     <property name="margin-start">8</property>
                                     <property name="icon-name">dialog-warning-symbolic</property>
                                   </object>
@@ -723,7 +723,7 @@
                                     <property name="sensitive" bind-source="switch_btn" bind-property="sensitive">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
-                                    <property name="tooltip-text" translatable="yes">Switch languages</property>
+                                    <property name="tooltip-text" translatable="yes">⮂</property>
                                     <child>
                                       <object class="GtkImage">
                                         <property name="visible">True</property>
@@ -814,7 +814,7 @@
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="halign">start</property>
-                            <property name="label" translatable="yes">No network connection detected.</property>
+                            <property name="label" translatable="yes">Connect to the Internet first.</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
