@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-05-03 23:50+0430\n"
-"Last-Translator: Soheil Khanalipur <soheil@disroot.org>\n"
-"Language-Team: Persian <soheil@disroot.org>\n"
+"PO-Revision-Date: 2021-05-22 15:10+0000\n"
+"Last-Translator: Mufeed Ali <fushinari@protonmail.com>\n"
+"Language-Team: Persian <https://hosted.weblate.org/projects/dialect/dialect/"
+"fa/>\n"
 "Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0\n"
-"X-Generator: Gtranslator 3.36.0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.7-dev\n"
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
@@ -45,15 +46,16 @@ msgstr "ویژِگی‌ها:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
 msgid "Translation based on an unofficial API for Google Translate"
-msgstr "گَردانِش بَر پایِه‌یِ یِک اِی‌پی‌آیِ نابُنیادین بَرایِ گَردانِشِ گوگِل اَست"
+msgstr ""
+"گَردانِش بَر پایِه‌یِ یِک اِی‌پی‌آیِ نابُنیادین بَرایِ گَردانِشِ گوگِل اَست"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid ""
 "Translation based on the LibreTranslate API, allowing you use any instance "
 "available online"
 msgstr ""
-"گَردانِش بَر پایِه‌یِ اِی‌پی‌آیِ لیبره‌ترانزلِیت اَست، تَواناییِ بِکارگیریِ هَر نِمونِه‌یِ بَرتارِ "
-"دَر دَسترِس را بِشُما می‌دَهَد"
+"گَردانِش بَر پایِه‌یِ اِی‌پی‌آیِ لیبره‌ترانزلِیت اَست، تَواناییِ بِکارگیریِ "
+"هَر نِمونِه‌یِ بَرتارِ دَر دَسترِس را بِشُما می‌دَهَد"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
@@ -122,7 +124,8 @@ msgstr "گَردانِشِ زِندِه"
 
 #: data/resources/preferences.ui:40
 msgid "Warning: Your IP address may get banned for API abuse."
-msgstr "هُشدار: شایَد نِشانیِ آی‌پیِ شُما بَرایِ کَژکارگیریِ اِی‌پی‌آی بَستِه شَوَد."
+msgstr ""
+"هُشدار: شایَد نِشانیِ آی‌پیِ شُما بَرایِ کَژکارگیریِ اِی‌پی‌آی بَستِه شَوَد."
 
 #: data/resources/preferences.ui:54
 msgid "Translation Shortcut"
@@ -187,10 +190,10 @@ msgid ""
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
-"دایلِکت یِک فَراهَم‌آوَرِ جُستجویِ گنوم دارَد. کارا یا ناکارا کَردَنِ گَردانِشِ زِندِه‌یِ اینجا، "
-"فَراهَم‌آوَرِ جُستجوی گنوم را هَم کارا یا ناکارا می‌کُنَد. این بَرایِ کاهِشِ شایِشِ "
-"کَژکارگیریِ اِی‌پی‌آی بِکار گِرِفتِه می‌شَوَد. هَمچِنین بِنگَرید کِه این ویژِگی دِر ساماندَهیِ "
-"گنوم کارا باشَد."
+"دایلِکت یِک فَراهَم‌آوَرِ جُستجویِ گنوم دارَد. کارا یا ناکارا کَردَنِ "
+"گَردانِشِ زِندِه‌یِ اینجا، فَراهَم‌آوَرِ جُستجوی گنوم را هَم کارا یا ناکارا "
+"می‌کُنَد. این بَرایِ کاهِشِ شایِشِ کَژکارگیریِ اِی‌پی‌آی بِکار گِرِفتِه "
+"می‌شَوَد. هَمچِنین بِنگَرید کِه این ویژِگی دِر ساماندَهیِ گنوم کارا باشَد."
 
 #: data/resources/shortcuts-window.ui:13
 msgctxt "shortcuts window"
