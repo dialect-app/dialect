@@ -22,7 +22,7 @@ msgstr ""
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:6 data/resources/window.ui:66
-#: src/main.py:53 src/main.py:88
+#: dialect/main.py:53 dialect/main.py:88
 msgid "Dialect"
 msgstr "דיאלקט"
 
@@ -272,16 +272,16 @@ msgstr "העתקה"
 msgid "No network connection detected."
 msgstr "לא זוהה חיבור לרשת."
 
-#: src/preferences.py:250
+#: dialect/preferences.py:250
 #, python-brace-format
 msgid "Not a valid {backend} instance"
 msgstr "עותק שגוי של {backend}"
 
-#: src/window.py:229
+#: dialect/window.py:229
 msgid "A network issue has occured. Retry?"
 msgstr "קרתה תקלה ברשת. לנסות שוב?"
 
-#: src/window.py:233
+#: dialect/window.py:233
 msgid ""
 "A network issue has occured.\n"
 "Please try again."
@@ -289,15 +289,15 @@ msgstr ""
 "קרתה תקלה ברשת.‬\n"
 "‫נא לנסות שוב."
 
-#: src/window.py:507 src/window.py:511
+#: dialect/window.py:507 dialect/window.py:511
 msgid "Auto"
 msgstr "אוטומטי"
 
-#: src/window.py:784
+#: dialect/window.py:784
 msgid "5000 characters limit reached!"
 msgstr "הגעת למגבלה של 5000 תווים!"
 
-#: src/window.py:876
+#: dialect/window.py:876
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
@@ -306,6 +306,6 @@ msgstr ""
 "‬\n"
 "‫נא לבדוק שהרשת תקינה."
 
-#: src/window.py:892
+#: dialect/window.py:892
 msgid "Did you mean: "
 msgstr "אולי כוונך הייתה: "

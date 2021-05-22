@@ -5,6 +5,6 @@ data/resources/menu.ui
 data/resources/preferences.ui
 data/resources/shortcuts-window.ui
 data/resources/window.ui
-src/main.py
-src/preferences.py
-src/window.py
+dialect/main.py
+dialect/preferences.py
+dialect/window.py

@@ -9,7 +9,7 @@ configure_file(
   install_dir: get_option('bindir')
 )
 
-launcher = join_paths(meson.build_root(), 'src', meson.project_name())
+launcher = join_paths(meson.build_root(), 'dialect', meson.project_name())
 run_target('run',
   command: [launcher]
 )

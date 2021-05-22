@@ -21,7 +21,7 @@ msgstr ""
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:6 data/resources/window.ui:66
-#: src/main.py:53 src/main.py:88
+#: dialect/main.py:53 dialect/main.py:88
 msgid "Dialect"
 msgstr "Dialect"
 
@@ -274,16 +274,16 @@ msgstr "Kopieren"
 msgid "No network connection detected."
 msgstr "Keine Netzwerkverbindung erkannt."
 
-#: src/preferences.py:250
+#: dialect/preferences.py:250
 #, python-brace-format
 msgid "Not a valid {backend} instance"
 msgstr "Keine gültige {backend}-Instanz"
 
-#: src/window.py:229
+#: dialect/window.py:229
 msgid "A network issue has occured. Retry?"
 msgstr "Ein Netzwerkfehler ist aufgetreten. Noch mal probieren?"
 
-#: src/window.py:233
+#: dialect/window.py:233
 msgid ""
 "A network issue has occured.\n"
 "Please try again."
@@ -291,15 +291,15 @@ msgstr ""
 "Ein Netzwerkfehler ist aufgetreten.\n"
 "Bitte probieren Sie es noch mal."
 
-#: src/window.py:507 src/window.py:511
+#: dialect/window.py:507 dialect/window.py:511
 msgid "Auto"
 msgstr "Auto"
 
-#: src/window.py:784
+#: dialect/window.py:784
 msgid "5000 characters limit reached!"
 msgstr "Begrenzung von 5000 Zeichen erreicht!"
 
-#: src/window.py:876
+#: dialect/window.py:876
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
@@ -307,7 +307,7 @@ msgstr ""
 "Übersetzung fehlgeschlagen.\n"
 "Bitte prüfen Sie, ob es Netzwerkprobleme gibt."
 
-#: src/window.py:892
+#: dialect/window.py:892
 msgid "Did you mean: "
 msgstr "Meinten Sie vielleicht: "
 

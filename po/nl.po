@@ -21,7 +21,7 @@ msgstr ""
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:6 data/resources/window.ui:66
-#: src/main.py:53 src/main.py:88
+#: dialect/main.py:53 dialect/main.py:88
 msgid "Dialect"
 msgstr "Dialect"
 
@@ -273,16 +273,16 @@ msgstr "Kopiëren"
 msgid "No network connection detected."
 msgstr "Je bent niet verbonden met het internet."
 
-#: src/preferences.py:250
+#: dialect/preferences.py:250
 #, python-brace-format
 msgid "Not a valid {backend} instance"
 msgstr "Geen geldig {backend}-proces"
 
-#: src/window.py:229
+#: dialect/window.py:229
 msgid "A network issue has occured. Retry?"
 msgstr "Er is een verbindingsprobleem opgetreden. Wil je het opnieuw proberen?"
 
-#: src/window.py:233
+#: dialect/window.py:233
 msgid ""
 "A network issue has occured.\n"
 "Please try again."
@@ -290,15 +290,15 @@ msgstr ""
 "Er is een verbindingsprobleem opgetreden.\n"
 "Probeer het opnieuw."
 
-#: src/window.py:507 src/window.py:511
+#: dialect/window.py:507 dialect/window.py:511
 msgid "Auto"
 msgstr "Automatisch"
 
-#: src/window.py:784
+#: dialect/window.py:784
 msgid "5000 characters limit reached!"
 msgstr "Je hebt het tekenlimiet (5000) bereikt!"
 
-#: src/window.py:876
+#: dialect/window.py:876
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
@@ -306,7 +306,7 @@ msgstr ""
 "De vertaling is mislukt.\n"
 "Controleer je internetverbinding."
 
-#: src/window.py:892
+#: dialect/window.py:892
 msgid "Did you mean: "
 msgstr "Bedoelde je: "
 
