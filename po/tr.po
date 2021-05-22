@@ -261,7 +261,7 @@ msgstr "Çevir"
 
 #: data/resources/window.ui:603
 msgid "Translation in progress..."
-msgstr "Çeviriliyor..."
+msgstr "Çeviri devam ediyor..."
 
 #: data/resources/window.ui:611
 msgid "Translation seems to have failed"
