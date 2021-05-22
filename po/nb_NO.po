@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-05-22 15:56+0000\n"
+"PO-Revision-Date: 2021-05-22 16:02+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/dialect/"
 "dialect/nb_NO/>\n"
@@ -182,12 +182,16 @@ msgid "Search Provider"
 msgstr "Søketilbyder"
 
 #: data/resources/preferences.ui:193
+#, fuzzy
 msgid ""
 "Dialect has a GNOME Search Provider. Enabling or disabling Live Translation "
 "here will also enable or disable the GNOME Search Provider. This is to "
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
+"Dialect har en GNOME-søketilbyder. Å skru av eller på sanntidsoversettelse "
+"her skrur også av denne for å redusere muligheten for API-misbruk. Forsikre "
+"deg også om at funksjonen er påslått i GNOME-innstillingene."
 
 #: data/resources/shortcuts-window.ui:13
 msgctxt "shortcuts window"
@@ -261,31 +265,35 @@ msgid "Translation in progress..."
 msgstr "Oversetter …"
 
 #: data/resources/window.ui:611
+#, fuzzy
 msgid "Translation seems to have failed"
-msgstr ""
+msgstr "Kunne ikke oversette teksten"
 
 #: data/resources/window.ui:637
 msgid "Copy"
 msgstr "Kopier"
 
 #: data/resources/window.ui:817
+#, fuzzy
 msgid "No network connection detected."
-msgstr ""
+msgstr "Koble til Internett først."
 
 #: dialect/preferences.py:250
 #, python-brace-format
 msgid "Not a valid {backend} instance"
-msgstr ""
+msgstr "Ikke en gyldig {backend}-instans"
 
 #: dialect/window.py:229
 msgid "A network issue has occured. Retry?"
-msgstr ""
+msgstr "Problemer med nettverket. Prøv igjen?"
 
 #: dialect/window.py:233
 msgid ""
 "A network issue has occured.\n"
 "Please try again."
 msgstr ""
+"Problemer med nettverket.\n"
+"Prøv igjen."
 
 #: dialect/window.py:507 dialect/window.py:511
 msgid "Auto"
@@ -293,13 +301,15 @@ msgstr "Auto"
 
 #: dialect/window.py:784
 msgid "5000 characters limit reached!"
-msgstr ""
+msgstr "Maksimalt 5 000 tegn."
 
 #: dialect/window.py:876
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
 msgstr ""
+"Kunne ikke oversette.\n"
+"Sjekk om dette er et nettverksproblem."
 
 #: dialect/window.py:892
 msgid "Did you mean: "
