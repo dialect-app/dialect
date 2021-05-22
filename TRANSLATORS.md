@@ -1,5 +1,9 @@
 # Translators
 
+<a href="https://hosted.weblate.org/engage/dialect/">
+<img src="https://hosted.weblate.org/widgets/dialect/-/dialect/svg-badge.svg" alt="Translation status" />
+</a>
+
 Dialect has been translated into the following languages:
 
 Language code  | Language             | Maintainers
