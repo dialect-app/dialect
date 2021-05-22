@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-05-22 14:25+0000\n"
+"PO-Revision-Date: 2021-05-22 14:34+0000\n"
 "Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/dialect/dialect/"
 "tr/>\n"
@@ -282,7 +282,7 @@ msgstr "Geçerli bir {backend} örneği değil"
 
 #: dialect/window.py:229
 msgid "A network issue has occured. Retry?"
-msgstr "Ağ sorunu oluştu. Yeniden dene?"
+msgstr "Ağ sorunu oluştu. Yeniden denensin mi?"
 
 #: dialect/window.py:233
 msgid ""
@@ -298,7 +298,7 @@ msgstr "Otomatik"
 
 #: dialect/window.py:784
 msgid "5000 characters limit reached!"
-msgstr "5000 karakter limiti aşıldı!"
+msgstr "5000 karakter sınırına ulaşıldı!"
 
 #: dialect/window.py:876
 msgid ""
@@ -306,11 +306,11 @@ msgid ""
 "Please check for network issues."
 msgstr ""
 "Çeviri başarısız oldu.\n"
-"Lütfen ağınızı kontrol edin."
+"Lütfen ağ sorunlarını denetleyin."
 
 #: dialect/window.py:892
 msgid "Did you mean: "
-msgstr "Şunu mu demek istediniz: "
+msgstr "Bunu mu demek istediniz: "
 
 #~ msgid "gi-lom"
 #~ msgstr "gi-lom"
