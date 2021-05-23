@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-05-23 14:07+0000\n"
+"PO-Revision-Date: 2021-05-23 15:30+0000\n"
 "Last-Translator: Sergio Varela <sergitroll9@gmail.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/dialect/dialect/"
 "eu/>\n"
@@ -29,155 +29,159 @@ msgstr "Dialect"
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
 msgid "Translate between languages"
-msgstr ""
+msgstr "Itzuli hizkuntzen artean"
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
 msgid "translate;translation;"
-msgstr ""
+msgstr "Itzuli;itzulpena;"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:9 data/resources/about.ui:12
 msgid "A translation app for GNOME."
-msgstr ""
+msgstr "GNOMErako itzulpen-aplikazio bat."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
-msgstr ""
+msgstr "Ezaugarriak:"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
 msgid "Translation based on an unofficial API for Google Translate"
-msgstr ""
+msgstr "Google Translateko API ez-ofizial batean oinarritutako itzulpena"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid ""
 "Translation based on the LibreTranslate API, allowing you use any instance "
 "available online"
 msgstr ""
+"LibreTranslate APIan oinarritutako itzulpena, linean eskuragarri dagoen "
+"edozein instantzia erabiltzeko aukera ematen duena"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
-msgstr ""
+msgstr "Ahozko testua"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Translation history"
-msgstr ""
+msgstr "Itzulpenaren historia"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:20
 msgid "Automatic language detection"
-msgstr ""
+msgstr "Hizkuntzen detekzio automatikoa"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:21
 msgid "Clipboard buttons"
-msgstr ""
+msgstr "Paper-zorroaren botoiak"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:26
 msgid "The Dialect Authors"
-msgstr ""
+msgstr "Dialect-en egileak"
 
 #: data/resources/about.ui:11
 msgid "Copyright 2020-2021 The Dialect Authors"
-msgstr ""
+msgstr "Copyright © 2020-2021 Dialect-en egileak"
 
 #: data/resources/about.ui:14
 msgid "Github page"
-msgstr ""
+msgstr "GitHub orria"
 
 #. Replace me with your names.
 #: data/resources/about.ui:19
 msgid "translator-credits"
-msgstr ""
+msgstr "Sergio Varela (https://hosted.weblate.org/user/IngrownMink4/)"
 
 #: data/resources/menu.ui:7
 msgid "Show Pronunciation"
-msgstr ""
+msgstr "Erakutsi ahoskera"
 
 #: data/resources/menu.ui:14
 msgid "Preferences"
-msgstr ""
+msgstr "Lehentasunak"
 
 #: data/resources/menu.ui:18
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Teklatu-lasterbideak"
 
 #: data/resources/menu.ui:22
 msgid "About Dialect"
-msgstr ""
+msgstr "Dialect-i buruz"
 
 #: data/resources/preferences.ui:15
 msgid "Appearance"
-msgstr ""
+msgstr "Itxura"
 
 #: data/resources/preferences.ui:19
 msgid "Dark Mode"
-msgstr ""
+msgstr "Modu iluna"
 
 #: data/resources/preferences.ui:35
 msgid "Behavior"
-msgstr ""
+msgstr "Portaera"
 
 #: data/resources/preferences.ui:39
 msgid "Live Translation"
-msgstr ""
+msgstr "Zuzeneko itzulpena"
 
 #: data/resources/preferences.ui:40
 msgid "Warning: Your IP address may get banned for API abuse."
 msgstr ""
+"Oharra: zure IP helbidea bidegabea izan daiteke APIa gehiegikeriaz "
+"erabiltzeagatik."
 
 #: data/resources/preferences.ui:54
 msgid "Translation Shortcut"
-msgstr ""
+msgstr "Itzulpen lasterbidea"
 
 #: data/resources/preferences.ui:55
 msgid "Unselected choice will be used for line break."
-msgstr ""
+msgstr "Hautatu gabeko aukera lerro-jauzian erabiliko da."
 
 #: data/resources/preferences.ui:61
 msgid "Default to Auto"
-msgstr ""
+msgstr "Lehenetsita, Automatikoa"
 
 #: data/resources/preferences.ui:62
 msgid "Use \"Auto\" as the default language on every launch"
-msgstr ""
+msgstr "\"Auto\" hizkuntza lehenetsi gisa erabiltzea jaurtiketa bakoitzean"
 
 #: data/resources/preferences.ui:76
 msgid "Translator"
-msgstr ""
+msgstr "Itzultzailea"
 
 #: data/resources/preferences.ui:77
 msgid "Choose from the available translation services."
-msgstr ""
+msgstr "Aukeran dituzun itzulpen-zerbitzuen artean aukeratu."
 
 #: data/resources/preferences.ui:83
 msgid "Translator Instance"
-msgstr ""
+msgstr "Itzultzailearen eskabidea"
 
 #: data/resources/preferences.ui:84
 msgid "Specify URL of translation service."
-msgstr ""
+msgstr "Zehaztu itzulpen-zerbitzuaren URLa."
 
 #: data/resources/preferences.ui:109
 msgid "Edit"
-msgstr ""
+msgstr "Editatu"
 
 #: data/resources/preferences.ui:143
 msgid "Reset to default"
-msgstr ""
+msgstr "Lehenetsitako balioak berrezartu"
 
 #: data/resources/preferences.ui:158
 msgid "Save"
-msgstr ""
+msgstr "Gorde"
 
 #: data/resources/preferences.ui:175
 msgid "Text to Speech"
-msgstr ""
+msgstr "Ahozko testua"
 
 #: data/resources/preferences.ui:176
 msgid "Use Google for Text to Speech functionality."
-msgstr ""
+msgstr "Erabili Google-en testutik ahotserako funtzioa."
 
 #: data/resources/preferences.ui:192
 msgid "Search Provider"
-msgstr ""
+msgstr "Bilaketa-hornitzailea"
 
 #: data/resources/preferences.ui:193
 msgid ""
@@ -186,116 +190,124 @@ msgid ""
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
+"Dialectek GNOME bilatzeko hornitzaile bat du. Zuzeneko itzulpena aktibatu "
+"edo desaktibatu hemen ere GNOME bilaketa-hornitzailea aktibatuko edo "
+"desaktibatuko da. Hau da, APIa gehiegikeriaz erabiltzeko aukera murrizteko. "
+"Ziurtatu, halaber, ezaugarri hori GNOMEren konfigurazioan gaituta dagoela."
 
 #: data/resources/shortcuts-window.ui:13
 msgctxt "shortcuts window"
 msgid "General"
-msgstr ""
+msgstr "Orokorra"
 
 #: data/resources/shortcuts-window.ui:17
 msgctxt "shortcuts window"
 msgid "Preferences"
-msgstr ""
+msgstr "Lehentasunak"
 
 #: data/resources/shortcuts-window.ui:24
 msgctxt "shortcuts window"
 msgid "Translate"
-msgstr ""
+msgstr "Itzuli"
 
 #: data/resources/shortcuts-window.ui:31
 msgctxt "shortcuts window"
 msgid "Quit"
-msgstr ""
+msgstr "Irten"
 
 #: data/resources/window.ui:42
 msgid "Loading..."
-msgstr ""
+msgstr "Kargatzen..."
 
 #: data/resources/window.ui:83
 msgid "Failed loading translator backend"
-msgstr ""
+msgstr "Itzultzailearen backend kargatzean huts egin du"
 
 #: data/resources/window.ui:108
 msgid "Retry"
-msgstr ""
+msgstr "Berriro saiatu"
 
 #: data/resources/window.ui:115
 msgid "Open preferences"
-msgstr ""
+msgstr "Ireki lehentasunak"
 
 #: data/resources/window.ui:193 data/resources/window.ui:726
 msgid "Switch languages"
-msgstr ""
+msgstr "Hizkuntza aldatu"
 
 #: data/resources/window.ui:273
 msgid "Previous translation"
-msgstr ""
+msgstr "Aurreko itzulpena"
 
 #: data/resources/window.ui:292
 msgid "Next translation"
-msgstr ""
+msgstr "Hurrengo itzulpena"
 
 #: data/resources/window.ui:453
 msgid "Clear"
-msgstr ""
+msgstr "Garbitu"
 
 #: data/resources/window.ui:468
 msgid "Paste"
-msgstr ""
+msgstr "Itsatsi"
 
 #: data/resources/window.ui:484 data/resources/window.ui:622
 msgid "Listen"
-msgstr ""
+msgstr "Entzun"
 
 #: data/resources/window.ui:492
 msgid "Translate"
-msgstr ""
+msgstr "Itzuli"
 
 #: data/resources/window.ui:603
 msgid "Translation in progress..."
-msgstr ""
+msgstr "Itzulpena egiten..."
 
 #: data/resources/window.ui:611
 msgid "Translation seems to have failed"
-msgstr ""
+msgstr "Badirudi itzulpenak huts egin duela"
 
 #: data/resources/window.ui:637
 msgid "Copy"
-msgstr ""
+msgstr "Kopiatu"
 
 #: data/resources/window.ui:817
 msgid "No network connection detected."
-msgstr ""
+msgstr "Ez da sare-konexiorik detektatu."
 
 #: dialect/preferences.py:250
 #, python-brace-format
 msgid "Not a valid {backend} instance"
-msgstr ""
+msgstr "Ez da {backend} baliozkotutako instantzia bat"
 
 #: dialect/window.py:229
 msgid "A network issue has occured. Retry?"
-msgstr ""
+msgstr "Sareko arazo bat gertatu da. Berriz saiatu?"
 
 #: dialect/window.py:233
 msgid ""
 "A network issue has occured.\n"
 "Please try again."
 msgstr ""
+"Sareko arazo bat gertatu da.\n"
+"Mesedez, saiatu berriro."
 
 #: dialect/window.py:507 dialect/window.py:511
 msgid "Auto"
-msgstr ""
+msgstr "Automatikoa"
 
 #: dialect/window.py:784
 msgid "5000 characters limit reached!"
-msgstr ""
+msgstr "5000 karaktereko mugara iritsi zara!"
 
 #: dialect/window.py:876
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
 msgstr ""
+"Itzulpenak huts egin du.\n"
+"Mesedez, egiaztatu sare-arazorik dagoen."
 
 #: dialect/window.py:892
 msgid "Did you mean: "
-msgstr ""
+msgstr "Zera esan nahi duzu: "
