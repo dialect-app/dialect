@@ -8,13 +8,16 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2021-05-23 23:10+0000\n"
+"Last-Translator: Swann Fournial <s.fournial@protonmail.com>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/dialect/dialect/"
+"fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.7-dev\n"
 
 #. Translators: Do not translate the app name!
 #: data/com.github.gi_lom.dialect.desktop.in:8
@@ -82,99 +85,99 @@ msgstr ""
 #. Replace me with your names.
 #: data/resources/about.ui:19
 msgid "translator-credits"
-msgstr ""
+msgstr "Swann Fournial"
 
 #: data/resources/menu.ui:7
 msgid "Show Pronunciation"
-msgstr ""
+msgstr "Afficher la prononciation"
 
 #: data/resources/menu.ui:14
 msgid "Preferences"
-msgstr ""
+msgstr "Préférences"
 
 #: data/resources/menu.ui:18
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Raccourcis clavier"
 
 #: data/resources/menu.ui:22
 msgid "About Dialect"
-msgstr ""
+msgstr "À propos de Dialect"
 
 #: data/resources/preferences.ui:15
 msgid "Appearance"
-msgstr ""
+msgstr "Apparence"
 
 #: data/resources/preferences.ui:19
 msgid "Dark Mode"
-msgstr ""
+msgstr "Mode sombre"
 
 #: data/resources/preferences.ui:35
 msgid "Behavior"
-msgstr ""
+msgstr "Comportement"
 
 #: data/resources/preferences.ui:39
 msgid "Live Translation"
-msgstr ""
+msgstr "Traduction simultanée"
 
 #: data/resources/preferences.ui:40
 msgid "Warning: Your IP address may get banned for API abuse."
-msgstr ""
+msgstr "Avertissement : votre adresse IP peut être bannie pour abus d'API."
 
 #: data/resources/preferences.ui:54
 msgid "Translation Shortcut"
-msgstr ""
+msgstr "Raccourci de traduction"
 
 #: data/resources/preferences.ui:55
 msgid "Unselected choice will be used for line break."
-msgstr ""
+msgstr "Le choix non sélectionné sera utilisé pour le saut de ligne."
 
 #: data/resources/preferences.ui:61
 msgid "Default to Auto"
-msgstr ""
+msgstr "Par défaut sur Auto"
 
 #: data/resources/preferences.ui:62
 msgid "Use \"Auto\" as the default language on every launch"
-msgstr ""
+msgstr "Utiliser « Auto » comme langue par défaut à chaque lancement"
 
 #: data/resources/preferences.ui:76
 msgid "Translator"
-msgstr ""
+msgstr "Traducteur"
 
 #: data/resources/preferences.ui:77
 msgid "Choose from the available translation services."
-msgstr ""
+msgstr "Choisissez parmi les services de traduction disponibles."
 
 #: data/resources/preferences.ui:83
 msgid "Translator Instance"
-msgstr ""
+msgstr "Instance de traducteur"
 
 #: data/resources/preferences.ui:84
 msgid "Specify URL of translation service."
-msgstr ""
+msgstr "Indiquez l'URL du service de traduction."
 
 #: data/resources/preferences.ui:109
 msgid "Edit"
-msgstr ""
+msgstr "Modifier"
 
 #: data/resources/preferences.ui:143
 msgid "Reset to default"
-msgstr ""
+msgstr "Réinitialiser sur par défaut"
 
 #: data/resources/preferences.ui:158
 msgid "Save"
-msgstr ""
+msgstr "Enregistrer"
 
 #: data/resources/preferences.ui:175
 msgid "Text to Speech"
-msgstr ""
+msgstr "Synthèse vocale"
 
 #: data/resources/preferences.ui:176
 msgid "Use Google for Text to Speech functionality."
-msgstr ""
+msgstr "Utiliser Google pour la fonctionnalité Synthèse vocale."
 
 #: data/resources/preferences.ui:192
 msgid "Search Provider"
-msgstr ""
+msgstr "Fournisseur de recherche"
 
 #: data/resources/preferences.ui:193
 msgid ""
@@ -183,116 +186,125 @@ msgid ""
 "reduce the possibility of API abuse. Also make sure that the feature is "
 "enabled in GNOME Settings."
 msgstr ""
+"Dialect a un fournisseur de recherche GNOME. Activer ou désactiver "
+"Traduction simultanée ici activera ou désactivera également le fournisseur "
+"de recherche GNOME. Ceci a pour but de réduire les risques d'abus de l'API. "
+"Assurez-vous également que la fonctionnalité est activée dans les paramètres "
+"GNOME."
 
 #: data/resources/shortcuts-window.ui:13
 msgctxt "shortcuts window"
 msgid "General"
-msgstr ""
+msgstr "Général"
 
 #: data/resources/shortcuts-window.ui:17
 msgctxt "shortcuts window"
 msgid "Preferences"
-msgstr ""
+msgstr "Préférences"
 
 #: data/resources/shortcuts-window.ui:24
 msgctxt "shortcuts window"
 msgid "Translate"
-msgstr ""
+msgstr "Traduire"
 
 #: data/resources/shortcuts-window.ui:31
 msgctxt "shortcuts window"
 msgid "Quit"
-msgstr ""
+msgstr "Quitter"
 
 #: data/resources/window.ui:42
 msgid "Loading..."
-msgstr ""
+msgstr "Chargement…"
 
 #: data/resources/window.ui:83
 msgid "Failed loading translator backend"
-msgstr ""
+msgstr "Échec du chargement du backend du traducteur"
 
 #: data/resources/window.ui:108
 msgid "Retry"
-msgstr ""
+msgstr "Réessayer"
 
 #: data/resources/window.ui:115
 msgid "Open preferences"
-msgstr ""
+msgstr "Ouvrir les préférences"
 
 #: data/resources/window.ui:193 data/resources/window.ui:726
 msgid "Switch languages"
-msgstr ""
+msgstr "Intervertir les langues"
 
 #: data/resources/window.ui:273
 msgid "Previous translation"
-msgstr ""
+msgstr "Traduction précédente"
 
 #: data/resources/window.ui:292
 msgid "Next translation"
-msgstr ""
+msgstr "Traduction suivante"
 
 #: data/resources/window.ui:453
 msgid "Clear"
-msgstr ""
+msgstr "Effacer"
 
 #: data/resources/window.ui:468
 msgid "Paste"
-msgstr ""
+msgstr "Coller"
 
 #: data/resources/window.ui:484 data/resources/window.ui:622
 msgid "Listen"
-msgstr ""
+msgstr "Écouter"
 
 #: data/resources/window.ui:492
 msgid "Translate"
-msgstr ""
+msgstr "Traduire"
 
 #: data/resources/window.ui:603
 msgid "Translation in progress..."
-msgstr ""
+msgstr "Traduction en cours…"
 
 #: data/resources/window.ui:611
 msgid "Translation seems to have failed"
-msgstr ""
+msgstr "La traduction semble avoir échoué"
 
 #: data/resources/window.ui:637
 msgid "Copy"
-msgstr ""
+msgstr "Copier"
 
 #: data/resources/window.ui:817
 msgid "No network connection detected."
-msgstr ""
+msgstr "Aucune connexion réseau détectée."
 
 #: dialect/preferences.py:250
 #, python-brace-format
 msgid "Not a valid {backend} instance"
-msgstr ""
+msgstr "Pas une instance {backend} valide"
 
 #: dialect/window.py:229
 msgid "A network issue has occured. Retry?"
-msgstr ""
+msgstr "Un problème de réseau s'est produit. Réessayer ?"
 
 #: dialect/window.py:233
 msgid ""
 "A network issue has occured.\n"
 "Please try again."
 msgstr ""
+"Un problème réseau s'est produit.\n"
+"Veuillez réessayer."
 
 #: dialect/window.py:507 dialect/window.py:511
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 #: dialect/window.py:784
 msgid "5000 characters limit reached!"
-msgstr ""
+msgstr "Limite de 5000 caractères atteinte !"
 
 #: dialect/window.py:876
 msgid ""
 "Translation failed.\n"
 "Please check for network issues."
 msgstr ""
+"La traduction a échoué.\n"
+"Veuillez vérifier les problèmes de réseau."
 
 #: dialect/window.py:892
 msgid "Did you mean: "
-msgstr ""
+msgstr "Vouliez-vous dire : "
