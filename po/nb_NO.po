@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-05-22 21:44+0000\n"
+"PO-Revision-Date: 2021-05-23 04:25+0000\n"
 "Last-Translator: Mufeed Ali <fushinari@protonmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/dialect/"
 "dialect/nb_NO/>\n"
@@ -182,7 +182,6 @@ msgid "Search Provider"
 msgstr "Søketilbyder"
 
 #: data/resources/preferences.ui:193
-#, fuzzy
 msgid ""
 "Dialect has a GNOME Search Provider. Enabling or disabling Live Translation "
 "here will also enable or disable the GNOME Search Provider. This is to "
@@ -214,12 +213,10 @@ msgid "Quit"
 msgstr "Avslutt"
 
 #: data/resources/window.ui:42
-#, fuzzy
 msgid "Loading..."
 msgstr "Laster inn …"
 
 #: data/resources/window.ui:83
-#, fuzzy
 msgid "Failed loading translator backend"
 msgstr "Klarte ikke å laste inn oversetter-bakende"
 
@@ -260,12 +257,10 @@ msgid "Translate"
 msgstr "Oversett"
 
 #: data/resources/window.ui:603
-#, fuzzy
 msgid "Translation in progress..."
 msgstr "Oversetter …"
 
 #: data/resources/window.ui:611
-#, fuzzy
 msgid "Translation seems to have failed"
 msgstr "Kunne ikke oversette teksten"
 
@@ -274,7 +269,6 @@ msgid "Copy"
 msgstr "Kopier"
 
 #: data/resources/window.ui:817
-#, fuzzy
 msgid "No network connection detected."
 msgstr "Koble til Internett først."
 
