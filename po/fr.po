@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
 "PO-Revision-Date: 2021-05-23 23:10+0000\n"
-"Last-Translator: Swann Fournial <s.fournial@protonmail.com>\n"
+"Last-Translator: J. Lavoie <j.lavoie@net-c.ca>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/dialect/dialect/"
 "fr/>\n"
 "Language: fr\n"
@@ -24,63 +24,65 @@ msgstr ""
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:6 data/resources/window.ui:66
 #: dialect/main.py:53 dialect/main.py:88
 msgid "Dialect"
-msgstr ""
+msgstr "Dialect"
 
 #: data/com.github.gi_lom.dialect.desktop.in:9
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:7
 msgid "Translate between languages"
-msgstr ""
+msgstr "Traduire entre les langues"
 
 #. Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 #: data/com.github.gi_lom.dialect.desktop.in:13
 msgid "translate;translation;"
-msgstr ""
+msgstr "tranduire;traduction;"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:9 data/resources/about.ui:12
 msgid "A translation app for GNOME."
-msgstr ""
+msgstr "Une application de traduction pour GNOME."
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:12
 msgid "Features:"
-msgstr ""
+msgstr "Fonctionnalités :"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:16
 msgid "Translation based on an unofficial API for Google Translate"
-msgstr ""
+msgstr "Traduction basée sur une API non officielle pour Google Traduction"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:17
 msgid ""
 "Translation based on the LibreTranslate API, allowing you use any instance "
 "available online"
 msgstr ""
+"Traduction basée sur l'API LibreTranslate, vous permettant d'utiliser "
+"n'importe quelle instance disponible en ligne"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:18
 msgid "Text to speech"
-msgstr ""
+msgstr "Synthèse vocale"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:19
 msgid "Translation history"
-msgstr ""
+msgstr "Historique de traduction"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:20
 msgid "Automatic language detection"
-msgstr ""
+msgstr "Détection automatique de la langue"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:21
 msgid "Clipboard buttons"
-msgstr ""
+msgstr "Boutons du presse-papier"
 
 #: data/com.github.gi_lom.dialect.metainfo.xml.in:26
 msgid "The Dialect Authors"
-msgstr ""
+msgstr "Les auteurs de Dialect"
 
 #: data/resources/about.ui:11
 msgid "Copyright 2020-2021 The Dialect Authors"
-msgstr ""
+msgstr "Copyright 2020-2021 Les auteurs de Dialect"
 
 #: data/resources/about.ui:14
 msgid "Github page"
-msgstr ""
+msgstr "Page GitHub"
 
 #. Replace me with your names.
 #: data/resources/about.ui:19
