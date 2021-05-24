@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: dialect\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-27 08:53-0500\n"
-"PO-Revision-Date: 2021-05-23 15:30+0000\n"
-"Last-Translator: Mufeed Ali <fushinari@protonmail.com>\n"
+"PO-Revision-Date: 2021-05-24 01:15+0000\n"
+"Last-Translator: J. Lavoie <j.lavoie@net-c.ca>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/dialect/dialect/"
 "de/>\n"
 "Language: de\n"
@@ -217,7 +217,7 @@ msgstr "Beenden"
 
 #: data/resources/window.ui:42
 msgid "Loading..."
-msgstr "Wird geladen…"
+msgstr "Wird geladen …"
 
 #: data/resources/window.ui:83
 msgid "Failed loading translator backend"
@@ -261,7 +261,7 @@ msgstr "Übersetzen"
 
 #: data/resources/window.ui:603
 msgid "Translation in progress..."
-msgstr "Übersetzung läuft…"
+msgstr "Übersetzung läuft …"
 
 #: data/resources/window.ui:611
 msgid "Translation seems to have failed"
