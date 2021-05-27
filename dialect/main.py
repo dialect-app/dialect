@@ -56,6 +56,7 @@ class Dialect(Gtk.Application):
                 text=self.launch_text,
                 langs=self.launch_langs
             )
+        self.setup_actions()
         self.window.present()
 
     def do_command_line(self, command_line):
@@ -87,7 +88,6 @@ class Dialect(Gtk.Application):
         Gtk.Application.do_startup(self)
         GLib.set_application_name(_('Dialect'))
         GLib.set_prgname('com.github.gi_lom.dialect')
-        self.setup_actions()
 
         Handy.init()  # Init Handy
         Gst.init(None)  # Init Gst
@@ -122,7 +122,7 @@ class Dialect(Gtk.Application):
         self.add_action(about_action)
 
         switch_action = Gio.SimpleAction.new('switch', None)
-        switch_action.connect('activate', self.on_switch)
+        switch_action.connect('activate', self.window.ui_switch)
         self.set_accels_for_action('app.switch', ['<Primary>S'])
         self.add_action(switch_action)
 
@@ -167,10 +167,6 @@ class Dialect(Gtk.Application):
         about.set_version(self.version)
         about.connect('response', lambda dialog, response: dialog.destroy())
         about.present()
-
-    def on_switch(self, _action, _param):
-        """ Switch languages """
-        self.window.ui_switch()
 
     def on_quit(self, _action, _param):
         self.quit()

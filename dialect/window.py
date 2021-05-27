@@ -606,7 +606,7 @@ class DialectWindow(Handy.ApplicationWindow):
         # Switch all
         GLib.idle_add(self.switch_all, src_language, dest_language, src_text, dest_text)
 
-    def ui_switch(self):
+    def ui_switch(self, _action, _param):
         # Get variables
         self.langs_button_box.set_sensitive(False)
         self.translate_btn.set_sensitive(False)
