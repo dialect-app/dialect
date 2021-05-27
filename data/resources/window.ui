@@ -190,6 +190,7 @@
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="receives-default">True</property>
+                            <property name="action-name">app.switch</property>
                             <property name="tooltip-text" translatable="yes">Switch languages</property>
                             <child>
                               <object class="GtkImage">
@@ -724,6 +725,7 @@
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
                                     <property name="tooltip-text" translatable="yes">Switch languages</property>
+                                    <property name="action-name">app.switch</property>
                                     <child>
                                       <object class="GtkImage">
                                         <property name="visible">True</property>
