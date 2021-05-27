@@ -301,9 +301,6 @@ class DialectWindow(Handy.ApplicationWindow):
 
         self.langs_button_box.set_homogeneous(False)
 
-        # Switch button
-        self.switch_btn.connect('clicked', self.ui_switch)
-
         # Add menu to menu button
         builder = Gtk.Builder.new_from_resource(f'{RES_PATH}/menu.ui')
         menu = builder.get_object('app-menu')
@@ -314,9 +311,6 @@ class DialectWindow(Handy.ApplicationWindow):
         # Set popovers to lang buttons
         self.src_lang_btn2.set_popover(self.src_lang_selector)
         self.dest_lang_btn2.set_popover(self.dest_lang_selector)
-
-        # Switch button
-        self.switch_btn2.connect('clicked', self.ui_switch)
 
     def setup_translation(self):
         # Left buffer
@@ -612,7 +606,7 @@ class DialectWindow(Handy.ApplicationWindow):
         # Switch all
         GLib.idle_add(self.switch_all, src_language, dest_language, src_text, dest_text)
 
-    def ui_switch(self, _button):
+    def ui_switch(self):
         # Get variables
         self.langs_button_box.set_sensitive(False)
         self.translate_btn.set_sensitive(False)
