@@ -26,6 +26,13 @@
               </object>
             </child>
             <child>
+              <object class="GtkShortcutsShortcut" id="switch_shortcut">
+                <property name="visible">True</property>
+                <property name="title" translatable="yes" context="shortcuts window">Switch Languages</property>
+                <property name="accelerator">&lt;Primary&gt;S</property>
+              </object>
+            </child>
+            <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
                 <property name="title" translatable="yes" context="shortcuts window">Quit</property>
