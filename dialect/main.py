@@ -121,9 +121,9 @@ class Dialect(Gtk.Application):
         about_action.connect('activate', self.on_about)
         self.add_action(about_action)
 
-        switch_action = Gio.SimpleAction.new('main', None)
+        switch_action = Gio.SimpleAction.new('switch', None)
         switch_action.connect('activate', self.on_switch)
-        self.set_accels_for_action('app.main', ['<Primary>S'])
+        self.set_accels_for_action('app.switch', ['<Primary>S'])
         self.add_action(switch_action)
 
         quit_action = Gio.SimpleAction.new('quit', None)
@@ -170,7 +170,7 @@ class Dialect(Gtk.Application):
 
     def on_switch(self, _action, _param):
         """ Switch languages """
-        self.window.ui_switch(None)
+        self.window.ui_switch()
 
     def on_quit(self, _action, _param):
         self.quit()
