@@ -56,7 +56,7 @@ class Dialect(Gtk.Application):
                 text=self.launch_text,
                 langs=self.launch_langs
             )
-        self.setup_actions()
+            self.setup_actions()
         self.window.present()
 
     def do_command_line(self, command_line):
