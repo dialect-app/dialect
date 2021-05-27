@@ -59,7 +59,7 @@
             <child>
               <object class="HdyActionRow">
                 <property name="title" translatable="yes">Default to Auto</property>
-                <property name="subtitle" translatable="yes">Use "Auto" as the default language every time the program is started</property>
+                <property name="subtitle" translatable="yes">Use "Auto" as the default language</property>
                 <property name="visible">True</property>
                 <property name="activatable_widget">src_auto</property>
                 <child>
@@ -190,7 +190,7 @@
         <child>
           <object class="HdyPreferencesGroup" id="search_provider">
             <property name="title" translatable="yes">Search Provider</property>
-            <property name="description" translatable="yes">The GNOME search provider in Dialect is turned off when Live translation is to reduce API abuse. Ensure it is also turned on in the GNOME Settings.</property>
+            <property name="description" translatable="yes">To reduce API abuse, the GNOME search provider in Dialect is turned off when Live translation is. Ensure the search provider is also turned on in the GNOME Settings.</property>
             <property name="visible">True</property>
           </object>
         </child>

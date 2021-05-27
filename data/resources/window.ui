@@ -723,7 +723,7 @@
                                     <property name="sensitive" bind-source="switch_btn" bind-property="sensitive">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
-                                    <property name="tooltip-text" translatable="yes">Switches the languages</property>
+                                    <property name="tooltip-text" translatable="yes">Switch languages</property>
                                     <child>
                                       <object class="GtkImage">
                                         <property name="visible">True</property>
