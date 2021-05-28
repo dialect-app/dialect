@@ -814,7 +814,7 @@
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="halign">start</property>
-                            <property name="label" translatable="yes">Connect to the Internet first.</property>
+                            <property name="label" translatable="yes">No network connection detected.</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
