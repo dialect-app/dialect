@@ -173,7 +173,7 @@
             <child>
               <object class="HdyActionRow" id="tts_row">
                 <property name="title" translatable="yes">Text to Speech</property>
-                <property name="subtitle" translatable="yes">Use Google for speech synthesis functionality.</property>
+                <property name="subtitle" translatable="yes">Use Google for TTS.</property>
                 <property name="visible">True</property>
                 <property name="activatable_widget">tts</property>
                 <child>
