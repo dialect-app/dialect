@@ -8,10 +8,10 @@
     <property name="destroy_with_parent">True</property>
     <property name="type_hint">dialog</property>
     <property name="program_name" translatable="yes">Dialect</property>
-    <property name="copyright" translatable="yes">Copyright 2020-2021 The Dialect Authors</property>
+    <property name="copyright" translatable="yes">Copyright 2020–⁠2021 The Dialect Authors</property>
     <property name="comments" translatable="yes">A translation app for GNOME.</property>
     <property name="website">https://github.com/dialect-app/dialect</property>
-    <property name="website_label" translatable="yes">Github page</property>
+    <property name="website_label" translatable="yes">GitHub page</property>
     <property name="authors">gi-lom
 Mufeed Ali
 Rafael Mardojai CM

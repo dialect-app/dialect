@@ -52,14 +52,14 @@
             <child>
               <object class="HdyComboRow" id="translate_accel">
                 <property name="title" translatable="yes">Translation Shortcut</property>
-                <property name="subtitle" translatable="yes">Unselected choice will be used for line break.</property>
+                <property name="subtitle" translatable="yes">The unselected choice will be used for line break.</property>
                 <property name="visible">True</property>
               </object>
             </child>
             <child>
               <object class="HdyActionRow">
                 <property name="title" translatable="yes">Default to Auto</property>
-                <property name="subtitle" translatable="yes">Use "Auto" as the default language on every launch</property>
+                <property name="subtitle" translatable="yes">Use "Auto" as the default language</property>
                 <property name="visible">True</property>
                 <property name="activatable_widget">src_auto</property>
                 <child>
@@ -81,7 +81,7 @@
             <child>
               <object class="HdyActionRow" id="backend_instance_row">
                 <property name="title" translatable="yes">Translator Instance</property>
-                <property name="subtitle" translatable="yes">Specify URL of translation service.</property>
+                <property name="subtitle" translatable="yes">Enter a translation service URL.</property>
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkStack" id="backend_instance_stack">
@@ -172,8 +172,8 @@
             </child>
             <child>
               <object class="HdyActionRow" id="tts_row">
-                <property name="title" translatable="yes">Text to Speech</property>
-                <property name="subtitle" translatable="yes">Use Google for Text to Speech functionality.</property>
+                <property name="title" translatable="yes">Text-to-Speech</property>
+                <property name="subtitle" translatable="yes">Use Google for TTS.</property>
                 <property name="visible">True</property>
                 <property name="activatable_widget">tts</property>
                 <child>
@@ -190,7 +190,7 @@
         <child>
           <object class="HdyPreferencesGroup" id="search_provider">
             <property name="title" translatable="yes">Search Provider</property>
-            <property name="description" translatable="yes">Dialect has a GNOME Search Provider. Enabling or disabling Live Translation here will also enable or disable the GNOME Search Provider. This is to reduce the possibility of API abuse. Also make sure that the feature is enabled in GNOME Settings.</property>
+            <property name="description" translatable="yes">To reduce API abuse, the GNOME search provider in Dialect is turned off when Live translation is. Ensure the search provider is also turned on in the GNOME Settings.</property>
             <property name="visible">True</property>
           </object>
         </child>
