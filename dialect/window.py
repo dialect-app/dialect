@@ -735,7 +735,7 @@ class DialectWindow(Handy.ApplicationWindow):
                         self.translation(button)
                         return Gdk.EVENT_STOP
                     return Gdk.EVENT_PROPAGATE
-            if keyboard.keyval in enter_keys:
+            elif keyboard.keyval in enter_keys:
                 if Settings.get().translate_accel_value:
                     self.translation(button)
                     return Gdk.EVENT_STOP
