@@ -723,18 +723,19 @@ class DialectWindow(Handy.ApplicationWindow):
         control_mask = Gdk.ModifierType.CONTROL_MASK
         shift_mask = Gdk.ModifierType.SHIFT_MASK
         unicode_key_val = Gdk.keyval_to_unicode(keyboard.keyval)
+        enter_keys = (Gdk.KEY_Return, Gdk.KEY_KP_Enter)
         if (GLib.unichar_isgraph(chr(unicode_key_val)) and
                 modifiers in (shift_mask, 0) and not self.src_text.is_focus()):
             self.src_text.grab_focus()
 
         if not Settings.get().live_translation:
             if control_mask == modifiers:
-                if keyboard.keyval == Gdk.KEY_Return:
+                if keyboard.keyval in enter_keys:
                     if not Settings.get().translate_accel_value:
                         self.translation(button)
                         return Gdk.EVENT_STOP
                     return Gdk.EVENT_PROPAGATE
-            elif keyboard.keyval == Gdk.KEY_Return:
+            if keyboard.keyval in enter_keys:
                 if Settings.get().translate_accel_value:
                     self.translation(button)
                     return Gdk.EVENT_STOP
