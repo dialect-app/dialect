@@ -244,17 +244,17 @@ class DialectWindow(Handy.ApplicationWindow):
         )
 
         if self.tts_langs:
-            self.src_voice_btn.set_sensitive(
+            self.app.listen_src_action.set_enabled(
                 self.src_lang_selector.get_property('selected') in self.tts_langs
                 and src_text != ''
             )
-            self.dest_voice_btn.set_sensitive(
+            self.app.listen_dest_action.set_enabled(
                 self.dest_lang_selector.get_property('selected') in self.tts_langs
                 and dest_text != ''
             )
         else:
-            self.src_voice_btn.set_sensitive(src_text != '')
-            self.dest_voice_btn.set_sensitive(dest_text != '')
+            self.app.listen_src_action.set_enabled(src_text != '')
+            self.app.listen_dest_action.set_enabled(dest_text != '')
 
     def load_lang_speech(self, listen=False, text=None, language=None):
         """
@@ -279,10 +279,6 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.voice_loading = False
 
     def setup_headerbar(self):
-        # Connect history buttons
-        self.return_btn.connect('clicked', self.ui_return)
-        self.forward_btn.connect('clicked', self.ui_forward)
-
         # Left lang selector
         self.src_lang_selector = DialectLangSelector()
         self.src_lang_selector.connect('notify::selected',
@@ -321,8 +317,6 @@ class DialectWindow(Handy.ApplicationWindow):
         self.connect('key-press-event', self.update_trans_button)
         # Clear button
         self.clear_btn.connect('clicked', self.ui_clear)
-        # Paste button
-        self.paste_btn.connect('clicked', self.ui_paste)
         # Translate button
         self.translate_btn.connect('clicked', self.translation)
         # "Did you mean" links
@@ -332,8 +326,6 @@ class DialectWindow(Handy.ApplicationWindow):
         self.dest_buffer = self.dest_text.get_buffer()
         self.dest_buffer.set_text('')
         self.dest_buffer.connect('changed', self.on_dest_text_changed)
-        # Clipboard button
-        self.copy_btn.connect('clicked', self.ui_copy)
         # Translation progress spinner
         self.trans_spinner.hide()
         self.trans_warning.hide()
@@ -344,14 +336,12 @@ class DialectWindow(Handy.ApplicationWindow):
         self.src_voice_image = Gtk.Image.new_from_icon_name(
             'audio-speakers-symbolic', Gtk.IconSize.BUTTON)
         self.src_voice_spinner = Gtk.Spinner()  # For use while audio is running or still loading.
-        self.src_voice_btn.connect('clicked', self.ui_src_voice)
 
         self.dest_voice_warning = Gtk.Image.new_from_icon_name(
             'dialog-warning-symbolic', Gtk.IconSize.BUTTON)
         self.dest_voice_image = Gtk.Image.new_from_icon_name(
             'audio-speakers-symbolic', Gtk.IconSize.BUTTON)
         self.dest_voice_spinner = Gtk.Spinner()
-        self.dest_voice_btn.connect('clicked', self.ui_dest_voice)
 
         self.toggle_voice_spinner(True)
 
@@ -437,11 +427,11 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def toggle_voice_spinner(self, active=True):
         if active:
-            self.src_voice_btn.set_sensitive(False)
+            self.app.listen_src_action.set_enabled(False)
             self.src_voice_btn.set_image(self.src_voice_spinner)
             self.src_voice_spinner.start()
 
-            self.dest_voice_btn.set_sensitive(False)
+            self.app.listen_dest_action.set_enabled(False)
             self.dest_voice_btn.set_image(self.dest_voice_spinner)
             self.dest_voice_spinner.start()
         else:
@@ -450,7 +440,7 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.src_buffer.get_end_iter(),
                 True
             )
-            self.src_voice_btn.set_sensitive(
+            self.app.listen_src_action.set_enabled(
                 self.src_lang_selector.get_property('selected') in self.tts_langs
                 and src_text != ''
             )
@@ -462,7 +452,7 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.dest_buffer.get_end_iter(),
                 True
             )
-            self.dest_voice_btn.set_sensitive(
+            self.app.listen_dest_action.set_enabled(
                 self.dest_lang_selector.get_property('selected') in self.tts_langs
                 and dest_text != ''
             )
@@ -484,7 +474,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
         # Disable or enable listen function.
         if self.tts_langs and Settings.get().tts != '':
-            self.src_voice_btn.set_sensitive(code in self.tts_langs
+            self.app.listen_src_action.set_enabled(code in self.tts_langs
                                          and src_text != '')
 
         if code in self.translator.languages:
@@ -529,7 +519,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
         # Disable or enable listen function.
         if self.tts_langs and Settings.get().tts != '':
-            self.dest_voice_btn.set_sensitive(code in self.tts_langs
+            self.app.listen_dest_action.set_enabled(code in self.tts_langs
                                          and dest_text != '')
 
         name = self.translator.languages[code].capitalize()
@@ -559,13 +549,13 @@ class DialectWindow(Handy.ApplicationWindow):
     """
     User interface functions
     """
-    def ui_return(self, _button):
+    def ui_return(self, *args):
         """Go back one step in history."""
         if self.current_history != TRANS_NUMBER:
             self.current_history += 1
             self.history_update()
 
-    def ui_forward(self, _button):
+    def ui_forward(self, *args):
         """Go forward one step in history."""
         if self.current_history != 0:
             self.current_history -= 1
@@ -581,7 +571,7 @@ class DialectWindow(Handy.ApplicationWindow):
             del self.translator.history[: self.current_history]
             self.current_history = 0
         if len(self.translator.history) > 0:
-            self.return_btn.set_sensitive(True)
+            self.app.back_action.set_enabled(True)
         if len(self.translator.history) == TRANS_NUMBER:
             self.translator.history.pop()
         self.translator.history.insert(0, new_history_trans)
@@ -606,7 +596,7 @@ class DialectWindow(Handy.ApplicationWindow):
         # Switch all
         GLib.idle_add(self.switch_all, src_language, dest_language, src_text, dest_text)
 
-    def ui_switch(self, _action, _param):
+    def ui_switch(self, *args):
         # Get variables
         self.langs_button_box.set_sensitive(False)
         self.translate_btn.set_sensitive(False)
@@ -640,7 +630,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.src_buffer.set_text('')
         self.src_buffer.emit('end-user-action')
 
-    def ui_copy(self, _button):
+    def ui_copy(self, *args):
         dest_text = self.dest_buffer.get_text(
             self.dest_buffer.get_start_iter(),
             self.dest_buffer.get_end_iter(),
@@ -649,13 +639,13 @@ class DialectWindow(Handy.ApplicationWindow):
         self.clipboard.set_text(dest_text, -1)
         self.clipboard.store()
 
-    def ui_paste(self, _button):
+    def ui_paste(self, *args):
         text = self.clipboard.wait_for_text()
         if text is not None:
             end_iter = self.src_buffer.get_end_iter()
             self.src_buffer.insert(end_iter, text)
 
-    def ui_src_voice(self, _button):
+    def ui_src_voice(self, *args):
         src_text = self.src_buffer.get_text(
             self.src_buffer.get_start_iter(),
             self.src_buffer.get_end_iter(),
@@ -664,7 +654,7 @@ class DialectWindow(Handy.ApplicationWindow):
         src_language = self.src_lang_selector.get_property('selected')
         self._voice(src_text, src_language)
 
-    def ui_dest_voice(self, _button):
+    def ui_dest_voice(self, *args):
         dest_text = self.dest_buffer.get_text(
             self.dest_buffer.get_start_iter(),
             self.dest_buffer.get_end_iter(),
@@ -754,23 +744,23 @@ class DialectWindow(Handy.ApplicationWindow):
         self.translate_btn.set_sensitive(sensitive)
         self.clear_btn.set_sensitive(sensitive)
         if not self.voice_loading and self.tts_langs:
-            self.src_voice_btn.set_sensitive(
+            self.app.listen_src_action.set_enabled(
                 self.src_lang_selector.get_property('selected') in self.tts_langs
                 and sensitive
             )
         elif not self.voice_loading and not self.tts_langs:
-            self.src_voice_btn.set_sensitive(sensitive)
+            self.app.listen_src_action.set_enabled(sensitive)
 
     def on_dest_text_changed(self, buffer):
         sensitive = buffer.get_char_count() != 0
-        self.copy_btn.set_sensitive(sensitive)
+        self.app.copy_action.set_enabled(sensitive)
         if not self.voice_loading and self.tts_langs:
-            self.dest_voice_btn.set_sensitive(
+            self.app.listen_dest_action.set_enabled(
                 self.dest_lang_selector.get_property('selected') in self.tts_langs
                 and sensitive
             )
         elif not self.voice_loading and not self.tts_langs:
-            self.dest_voice_btn.set_sensitive(sensitive)
+            self.app.listen_dest_action.set_enabled(sensitive)
 
     def user_action_ended(self, buffer):
         # If the text is over the highest number of characters allowed, it is truncated.
@@ -789,8 +779,8 @@ class DialectWindow(Handy.ApplicationWindow):
 
     # The history part
     def reset_return_forward_btns(self):
-        self.return_btn.set_sensitive(self.current_history < len(self.translator.history) - 1)
-        self.forward_btn.set_sensitive(self.current_history > 0)
+        self.app.back_action.set_enabled(self.current_history < len(self.translator.history) - 1)
+        self.app.forward_action.set_enabled(self.current_history > 0)
 
     # Retrieve translation history
     def history_update(self):
@@ -869,9 +859,9 @@ class DialectWindow(Handy.ApplicationWindow):
         def on_trans_failed():
             self.trans_warning.show()
             self.send_notification(_('Translation failed.\nPlease check for network issues.'))
-            self.copy_btn.set_sensitive(False)
-            self.src_voice_btn.set_sensitive(False)
-            self.dest_voice_btn.set_sensitive(False)
+            self.app.copy_action.set_enabled(False)
+            self.app.listen_src_action.set_enabled(False)
+            self.app.listen_dest_action.set_enabled(False)
 
         def on_trans_success():
             self.trans_warning.hide()

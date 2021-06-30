@@ -43,8 +43,11 @@ class Dialect(Gtk.Application):
         self.add_main_option('dest', b'd', GLib.OptionFlags.NONE,
                              GLib.OptionArg.STRING, 'Destination lang code', None)
 
+        self.setup_actions()
+
     def do_activate(self):
         self.window = self.props.active_window
+        
         if not self.window:
             width, height = Settings.get().window_size
             self.window = DialectWindow(
@@ -56,7 +59,8 @@ class Dialect(Gtk.Application):
                 text=self.launch_text,
                 langs=self.launch_langs
             )
-            self.setup_actions()
+            self.setup_actions_signals()
+            
         self.window.present()
 
     def do_command_line(self, command_line):
@@ -101,35 +105,69 @@ class Dialect(Gtk.Application):
 
     def setup_actions(self):
         """ Setup menu actions """
-
         self.pronunciation_action = Gio.SimpleAction.new_stateful(
             'pronunciation', None, Settings.get().show_pronunciation_value
         )
-        self.pronunciation_action.connect('change-state', self.on_pronunciation)
         self.add_action(self.pronunciation_action)
 
-        preferences_action = Gio.SimpleAction.new('preferences', None)
-        preferences_action.connect('activate', self.on_preferences)
+        self.preferences_action = Gio.SimpleAction.new('preferences', None)
         self.set_accels_for_action('app.preferences', ['<Primary>comma'])
-        self.add_action(preferences_action)
+        self.add_action(self.preferences_action)
 
-        shortcuts_action = Gio.SimpleAction.new('shortcuts', None)
-        shortcuts_action.connect('activate', self.on_shortcuts)
-        self.add_action(shortcuts_action)
+        self.shortcuts_action = Gio.SimpleAction.new('shortcuts', None)
+        self.add_action(self.shortcuts_action)
 
-        about_action = Gio.SimpleAction.new('about', None)
-        about_action.connect('activate', self.on_about)
-        self.add_action(about_action)
+        self.about_action = Gio.SimpleAction.new('about', None)
+        self.add_action(self.about_action)
 
-        switch_action = Gio.SimpleAction.new('switch', None)
-        switch_action.connect('activate', self.window.ui_switch)
+        self.back_action = Gio.SimpleAction.new('back', None)
+        self.back_action.set_enabled(False)
+        self.set_accels_for_action('app.back', ['<Alt>Left'])
+        self.add_action(self.back_action)
+
+        self.forward_action = Gio.SimpleAction.new('forward', None)
+        self.forward_action.set_enabled(False)
+        self.set_accels_for_action('app.forward', ['<Alt>Right'])
+        self.add_action(self.forward_action)
+
+        self.switch_action = Gio.SimpleAction.new('switch', None)
         self.set_accels_for_action('app.switch', ['<Primary>S'])
-        self.add_action(switch_action)
+        self.add_action(self.switch_action)
 
-        quit_action = Gio.SimpleAction.new('quit', None)
-        quit_action.connect('activate', self.on_quit)
+        self.paste_action = Gio.SimpleAction.new('paste', None)
+        self.set_accels_for_action('app.paste', ['<Primary><Shift>V'])
+        self.add_action(self.paste_action)
+
+        self.copy_action = Gio.SimpleAction.new('copy', None)
+        self.copy_action.set_enabled(False)
+        self.set_accels_for_action('app.copy', ['<Primary><Shift>C'])
+        self.add_action(self.copy_action)
+
+        self.listen_dest_action = Gio.SimpleAction.new('listen-dest', None)
+        self.set_accels_for_action('app.listen-dest', ['<Primary><Shift>C'])
+        self.add_action(self.listen_dest_action)
+
+        self.listen_src_action = Gio.SimpleAction.new('listen-src', None)
+        self.set_accels_for_action('app.listen-src', ['<Primary><Shift>C'])
+        self.add_action(self.listen_src_action)
+
+        self.quit_action = Gio.SimpleAction.new('quit', None)
         self.set_accels_for_action('app.quit', ['<Primary>Q'])
-        self.add_action(quit_action)
+        self.add_action(self.quit_action)
+
+    def setup_actions_signals(self):
+        self.pronunciation_action.connect('change-state', self.on_pronunciation)
+        self.preferences_action.connect('activate', self.on_preferences)
+        self.shortcuts_action.connect('activate', self.on_shortcuts)
+        self.about_action.connect('activate', self.on_about)
+        self.back_action.connect('activate', self.window.ui_return)
+        self.forward_action.connect('activate', self.window.ui_forward)
+        self.switch_action.connect('activate', self.window.ui_switch)
+        self.paste_action.connect('activate', self.window.ui_paste)
+        self.copy_action.connect('activate', self.window.ui_copy)
+        self.listen_dest_action.connect('activate', self.window.ui_dest_voice)
+        self.listen_src_action.connect('activate', self.window.ui_src_voice)
+        self.quit_action.connect('activate', self.on_quit)
 
     def on_pronunciation(self, action, value):
         """ Update show pronunciation setting """

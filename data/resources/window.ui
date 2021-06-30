@@ -268,9 +268,9 @@
                     <child>
                       <object class="GtkButton" id="return_btn">
                         <property name="visible">True</property>
-                        <property name="sensitive">False</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
+                        <property name="action-name">app.back</property>
                         <property name="tooltip-text" translatable="yes">Previous translation</property>
                         <child>
                           <object class="GtkImage">
@@ -287,9 +287,9 @@
                     <child>
                       <object class="GtkButton" id="forward_btn">
                         <property name="visible">True</property>
-                        <property name="sensitive">False</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
+                        <property name="action-name">app.forward</property>
                         <property name="tooltip-text" translatable="yes">Next translation</property>
                         <child>
                           <object class="GtkImage">
@@ -466,6 +466,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
+                                    <property name="action-name">app.paste</property>
                                     <property name="tooltip-text" translatable="yes">Paste</property>
                                     <child>
                                       <object class="GtkImage">
@@ -479,9 +480,9 @@
                                 <child>
                                   <object class="GtkButton" id="src_voice_btn">
                                     <property name="visible">True</property>
-                                    <property name="sensitive">False</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
+                                    <property name="action-name">app.listen-src</property>
                                     <property name="tooltip-text" translatable="yes">Listen</property>
                                     <child>
                                       <placeholder/>
@@ -617,9 +618,9 @@
                                 <child>
                                   <object class="GtkButton" id="dest_voice_btn">
                                     <property name="visible">True</property>
-                                    <property name="sensitive">False</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
+                                    <property name="action-name">app.listen-dest</property>
                                     <property name="tooltip-text" translatable="yes">Listen</property>
                                     <child>
                                       <placeholder/>
@@ -632,9 +633,9 @@
                                 <child>
                                   <object class="GtkButton" id="copy_btn">
                                     <property name="visible">True</property>
-                                    <property name="sensitive">False</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
+                                    <property name="action-name">app.copy</property>
                                     <property name="tooltip-text" translatable="yes">Copy</property>
                                     <child>
                                       <object class="GtkImage">
