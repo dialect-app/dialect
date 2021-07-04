@@ -547,13 +547,13 @@ class DialectWindow(Handy.ApplicationWindow):
     """
     User interface functions
     """
-    def ui_return(self, *args):
+    def ui_return(self, _action, _param):
         """Go back one step in history."""
         if self.current_history != TRANS_NUMBER:
             self.current_history += 1
             self.history_update()
 
-    def ui_forward(self, *args):
+    def ui_forward(self, _action, _param):
         """Go forward one step in history."""
         if self.current_history != 0:
             self.current_history -= 1
@@ -594,7 +594,7 @@ class DialectWindow(Handy.ApplicationWindow):
         # Switch all
         GLib.idle_add(self.switch_all, src_language, dest_language, src_text, dest_text)
 
-    def ui_switch(self, *args):
+    def ui_switch(self, _action, _param):
         # Get variables
         self.langs_button_box.set_sensitive(False)
         self.translate_btn.set_sensitive(False)
@@ -624,11 +624,11 @@ class DialectWindow(Handy.ApplicationWindow):
         # Switch all
         self.switch_all(src_language, dest_language, src_text, dest_text)
 
-    def ui_clear(self, *args):
+    def ui_clear(self, _action, _param):
         self.src_buffer.set_text('')
         self.src_buffer.emit('end-user-action')
 
-    def ui_copy(self, *args):
+    def ui_copy(self, _action, _param):
         dest_text = self.dest_buffer.get_text(
             self.dest_buffer.get_start_iter(),
             self.dest_buffer.get_end_iter(),
@@ -637,13 +637,13 @@ class DialectWindow(Handy.ApplicationWindow):
         self.clipboard.set_text(dest_text, -1)
         self.clipboard.store()
 
-    def ui_paste(self, *args):
+    def ui_paste(self, _action, _param):
         text = self.clipboard.wait_for_text()
         if text is not None:
             end_iter = self.src_buffer.get_end_iter()
             self.src_buffer.insert(end_iter, text)
 
-    def ui_src_voice(self, *args):
+    def ui_src_voice(self, _action, _param):
         src_text = self.src_buffer.get_text(
             self.src_buffer.get_start_iter(),
             self.src_buffer.get_end_iter(),
@@ -652,7 +652,7 @@ class DialectWindow(Handy.ApplicationWindow):
         src_language = self.src_lang_selector.get_property('selected')
         self._voice(src_text, src_language)
 
-    def ui_dest_voice(self, *args):
+    def ui_dest_voice(self, _action, _param):
         dest_text = self.dest_buffer.get_text(
             self.dest_buffer.get_start_iter(),
             self.dest_buffer.get_end_iter(),
