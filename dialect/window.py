@@ -315,8 +315,6 @@ class DialectWindow(Handy.ApplicationWindow):
         self.src_buffer.connect('changed', self.on_src_text_changed)
         self.src_buffer.connect('end-user-action', self.user_action_ended)
         self.connect('key-press-event', self.update_trans_button)
-        # Clear button
-        self.clear_btn.connect('clicked', self.ui_clear)
         # Translate button
         self.translate_btn.connect('clicked', self.translation)
         # "Did you mean" links
@@ -626,7 +624,7 @@ class DialectWindow(Handy.ApplicationWindow):
         # Switch all
         self.switch_all(src_language, dest_language, src_text, dest_text)
 
-    def ui_clear(self, _button):
+    def ui_clear(self, *args):
         self.src_buffer.set_text('')
         self.src_buffer.emit('end-user-action')
 
@@ -742,7 +740,7 @@ class DialectWindow(Handy.ApplicationWindow):
     def on_src_text_changed(self, buffer):
         sensitive = buffer.get_char_count() != 0
         self.translate_btn.set_sensitive(sensitive)
-        self.clear_btn.set_sensitive(sensitive)
+        self.app.clear_action.set_enabled(sensitive)
         if not self.voice_loading and self.tts_langs:
             self.app.listen_src_action.set_enabled(
                 self.src_lang_selector.get_property('selected') in self.tts_langs

@@ -108,6 +108,7 @@ class Dialect(Gtk.Application):
         self.pronunciation_action = Gio.SimpleAction.new_stateful(
             'pronunciation', None, Settings.get().show_pronunciation_value
         )
+        self.set_accels_for_action('app.pronunciation', ['<Primary>P'])
         self.add_action(self.pronunciation_action)
 
         self.preferences_action = Gio.SimpleAction.new('preferences', None)
@@ -133,6 +134,11 @@ class Dialect(Gtk.Application):
         self.switch_action = Gio.SimpleAction.new('switch', None)
         self.set_accels_for_action('app.switch', ['<Primary>S'])
         self.add_action(self.switch_action)
+
+        self.clear_action = Gio.SimpleAction.new('clear', None)
+        self.clear_action.set_enabled(False)
+        self.set_accels_for_action('app.clear', ['<Primary>D'])
+        self.add_action(self.clear_action)
 
         self.paste_action = Gio.SimpleAction.new('paste', None)
         self.set_accels_for_action('app.paste', ['<Primary><Shift>V'])
@@ -163,6 +169,7 @@ class Dialect(Gtk.Application):
         self.back_action.connect('activate', self.window.ui_return)
         self.forward_action.connect('activate', self.window.ui_forward)
         self.switch_action.connect('activate', self.window.ui_switch)
+        self.clear_action.connect('activate', self.window.ui_clear)
         self.paste_action.connect('activate', self.window.ui_paste)
         self.copy_action.connect('activate', self.window.ui_copy)
         self.listen_dest_action.connect('activate', self.window.ui_dest_voice)
