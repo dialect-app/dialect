@@ -448,9 +448,9 @@
                                 <child>
                                   <object class="GtkButton" id="clear_btn">
                                     <property name="visible">True</property>
-                                    <property name="sensitive">False</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
+                                    <property name="action-name">app.clear</property>
                                     <property name="tooltip-text" translatable="yes">Clear</property>
                                     <child>
                                       <object class="GtkImage">
