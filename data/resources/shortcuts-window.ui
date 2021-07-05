@@ -28,14 +28,14 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
-                <property name="title" translatable="yes" context="shortcuts window">Clear text entry</property>
+                <property name="title" translatable="yes" context="shortcuts window">Clear source text</property>
                 <property name="accelerator">&lt;Primary&gt;D</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
-                <property name="title" translatable="yes" context="shortcuts window">Copy output text</property>
+                <property name="title" translatable="yes" context="shortcuts window">Copy translation</property>
                 <property name="accelerator">&lt;Primary&gt;&lt;shift&gt;C</property>
               </object>
             </child>
@@ -55,14 +55,14 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
-                <property name="title" translatable="yes" context="shortcuts window">Listen source text</property>
+                <property name="title" translatable="yes" context="shortcuts window">Listen to source text</property>
                 <property name="accelerator">&lt;Primary&gt;&lt;shift&gt;L</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
-                <property name="title" translatable="yes" context="shortcuts window">Listen output text</property>
+                <property name="title" translatable="yes" context="shortcuts window">Listen to translation</property>
                 <property name="accelerator">&lt;Primary&gt;L</property>
               </object>
             </child>
