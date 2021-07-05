@@ -116,6 +116,7 @@ class Dialect(Gtk.Application):
         self.add_action(self.preferences_action)
 
         self.shortcuts_action = Gio.SimpleAction.new('shortcuts', None)
+        self.set_accels_for_action('app.shortcuts', ['<Primary>question'])
         self.add_action(self.shortcuts_action)
 
         self.about_action = Gio.SimpleAction.new('about', None)
