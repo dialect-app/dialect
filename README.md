@@ -81,7 +81,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ### Translations
 
-Dialect has already been translated into many languages (see the [TRANSLATORS](https://github.com/dialect-app/dialect/blob/main/TRANSLATORS.md) file). Please help translate Dialect into more languages through [Weblate](https://hosted.weblate.org/engage/dialect/) or [by submitting a pull request](https://github.com/dialect-app/po/tree/main/).
+Dialect has already been translated into many languages (see the [translations repository](https://github.com/dialect-app/po/blob/main/README.md) file). Please help translate Dialect into more languages through [Weblate](https://hosted.weblate.org/engage/dialect/).
 
 <a href="https://hosted.weblate.org/engage/dialect/">
 <img src="https://hosted.weblate.org/widgets/dialect/-/dialect/multi-auto.svg" alt="Translation status" />
