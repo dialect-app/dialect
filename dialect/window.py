@@ -568,8 +568,6 @@ class DialectWindow(Handy.ApplicationWindow):
         if self.current_history > 0:
             del self.translator.history[: self.current_history]
             self.current_history = 0
-        if len(self.translator.history) > 0:
-            self.app.back_action.set_enabled(True)
         if len(self.translator.history) == TRANS_NUMBER:
             self.translator.history.pop()
         self.translator.history.insert(0, new_history_trans)
@@ -793,6 +791,9 @@ class DialectWindow(Handy.ApplicationWindow):
         self.src_buffer.set_text(lang_hist['Text'][0])
         self.dest_buffer.set_text(lang_hist['Text'][1])
 
+    def set_no_retranslate(self, state):
+        self.no_retranslate = state
+
     # THE TRANSLATION AND SAVING TO HISTORY PART
     def appeared_before(self):
         src_language = self.src_lang_selector.get_property('selected')
@@ -803,17 +804,23 @@ class DialectWindow(Handy.ApplicationWindow):
             True
         )
         if (
-            self.translator.history[self.current_history]['Languages'][0] == src_language
+            len(self.translator.history) >= self.current_history + 1
+            and (self.translator.history[self.current_history]['Languages'][0] == src_language or 'auto')
             and self.translator.history[self.current_history]['Languages'][1] == dest_language
             and self.translator.history[self.current_history]['Text'][0] == src_text
             and not self.trans_failed
+        ) or (
+            len(self.trans_queue) == 1
+            and (self.trans_queue[0].get('src_language') == src_language or 'auto')
+            and self.trans_queue[0].get('dest_language') == dest_language
+            and self.trans_queue[0].get('src_text') == src_text
         ):
             return True
         return False
 
     def translation(self, _button):
         # If it's like the last translation then it's useless to continue
-        if len(self.translator.history) == 0 or not self.appeared_before():
+        if not self.appeared_before():
             src_text = self.src_buffer.get_text(
                 self.src_buffer.get_start_iter(),
                 self.src_buffer.get_end_iter(),
@@ -904,10 +911,10 @@ class DialectWindow(Handy.ApplicationWindow):
                     if isinstance(src_language, list):
                         src_language = src_language[0]
                     if src_language in self.translator.languages.keys():
-                        self.no_retranslate = True
+                        GLib.idle_add(self.set_no_retranslate, True)
                         GLib.idle_add(self.src_lang_selector.set_property,
                                       'selected', src_language)
-                        self.no_retranslate = False
+                        GLib.idle_add(self.set_no_retranslate, False)
                         if src_language not in self.src_langs:
                             self.src_langs[0] = src_language
                     else:
