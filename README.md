@@ -70,7 +70,7 @@ For testing and development purposes, you may run a local build:
 git clone --recurse-submodules https://github.com/dialect-app/dialect.git
 cd dialect
 meson builddir
-meson configure _build -Dprefix=$(pwd)/builddir/testdir
+meson configure builddir -Dprefix=$(pwd)/builddir/testdir
 ninja -C builddir install
 ninja -C builddir run
 ```
