@@ -252,7 +252,7 @@ class Settings(Gio.Settings):
     def _backend_settings(self, backend):
         """
         Returns the backend settings object but with necessary dict created.
-        
+
         Just a convenience function.
         """
         settings = self.backend_settings

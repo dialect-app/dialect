@@ -160,6 +160,8 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.src_pron_revealer.set_reveal_child(False)
                 self.dest_pron_revealer.set_reveal_child(False)
                 self.app.pronunciation_action.set_enabled(False)
+            else:
+                self.app.pronunciation_action.set_enabled(True)
 
             self.no_retranslate = True
             # Update langs list
@@ -214,9 +216,10 @@ class DialectWindow(Handy.ApplicationWindow):
             print('Error: ' + str(exc))
 
     def retry_load_translator(self, _button):
-        threading.Thread(target=self.load_translator,
-                         args=[Settings.get().backend],
-                         daemon=True
+        threading.Thread(
+            target=self.load_translator,
+            args=[Settings.get().backend],
+            daemon=True
         ).start()
 
     def on_listen_failed(self):
@@ -473,7 +476,7 @@ class DialectWindow(Handy.ApplicationWindow):
         # Disable or enable listen function.
         if self.tts_langs and Settings.get().tts != '':
             self.app.listen_src_action.set_enabled(code in self.tts_langs
-                                         and src_text != '')
+                                                   and src_text != '')
 
         if code in self.translator.languages:
             self.src_lang_label.set_label(self.translator.languages[code].capitalize())
@@ -518,7 +521,7 @@ class DialectWindow(Handy.ApplicationWindow):
         # Disable or enable listen function.
         if self.tts_langs and Settings.get().tts != '':
             self.app.listen_dest_action.set_enabled(code in self.tts_langs
-                                         and dest_text != '')
+                                                    and dest_text != '')
 
         name = self.translator.languages[code].capitalize()
         self.dest_lang_label.set_label(name)
@@ -855,9 +858,10 @@ class DialectWindow(Handy.ApplicationWindow):
         self.save_settings()
 
         # Load translator
-        threading.Thread(target=self.load_translator,
-                         args=[backend],
-                         daemon=True
+        threading.Thread(
+            target=self.load_translator,
+            args=[backend],
+            daemon=True
         ).start()
 
     def run_translation(self):
