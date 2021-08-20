@@ -173,15 +173,11 @@ class Settings(Gio.Settings):
 
     def set_instance_url(self, backend, instance_url):
         self._delete_str_key(f'{backend}-instance')  # Set deprecated key to unused state.
-        settings = self._backend_settings(backend)
-        settings[backend]['instance-url'] = instance_url
-        self.backend_settings = settings
+        self._set_backend_setting(backend, 'instance-url', instance_url)
 
     def reset_instance_url(self, backend):
         self._delete_str_key(f'{backend}-instance')  # Set deprecated key to unused state.
-        settings = self._backend_settings()
-        settings[backend]['instance-url'] = TRANSLATORS[backend].instance_url
-        self.backend_settings = settings
+        self._set_backend_setting(backend, 'instance-url', TRANSLATORS[backend].instance_url)
 
     def get_dest_langs(self, backend):
         try:
@@ -202,15 +198,11 @@ class Settings(Gio.Settings):
 
     def set_dest_langs(self, backend, langs):
         self._delete_arr_key(f'{backend}-dest-langs')  # Set deprecated key to unused state.
-        settings = self._backend_settings(backend)
-        settings[backend]['dest-langs'] = langs
-        self.backend_settings = settings
+        self._set_backend_setting(backend, 'dest-langs', langs)
 
     def reset_dest_langs(self, backend):
         self._delete_arr_key(f'{backend}-dest-langs')  # Set deprecated key to unused state.
-        settings = self._backend_settings(backend)
-        settings[backend]['dest-langs'] = TRANSLATORS[backend].dest_langs
-        self.backend_settings = settings
+        self._set_backend_setting(backend, 'dest-langs', TRANSLATORS[backend].dest_langs)
 
     def get_src_langs(self, backend):
         try:
@@ -231,36 +223,31 @@ class Settings(Gio.Settings):
 
     def set_src_langs(self, backend, langs):
         self._delete_arr_key(f'{backend}-src-langs')  # Set deprecated key to unused state.
-        settings = self._backend_settings(backend)
-        settings[backend]['src-langs'] = langs
-        self.backend_settings = settings
+        self._set_backend_setting(backend, 'src-langs', langs)
 
     def reset_src_langs(self, backend):
         self._delete_arr_key(f'{backend}-src-langs')  # Set deprecated key to unused state.
-        settings = self._backend_settings(backend)
-        settings[backend]['src-langs'] = TRANSLATORS[backend].src_langs
-        self.backend_settings = settings
+        self._set_backend_setting(backend, 'src-langs', TRANSLATORS[backend].src_langs)
 
     @property
     def backend_settings(self):
         return json.loads(self.get_string('backend-settings'))
 
     @backend_settings.setter
-    def backend_settings(self, state):
-        self.set_string('backend-settings', json.dumps(state))
+    def backend_settings(self, value):
+        self.set_string('backend-settings', json.dumps(value))
 
-    def _backend_settings(self, backend):
+    def _set_backend_setting(self, backend, key, value):
         """
-        Returns the backend settings object but with necessary dict created.
-
-        Just a convenience function.
+        Sets the backend settings with key and value.
         """
         settings = self.backend_settings
 
         if backend not in settings:
             settings[backend] = {}
 
-        return settings
+        settings[backend][key] = value
+        self.backend_settings = settings
 
     def _delete_arr_key(self, key):
         try:
