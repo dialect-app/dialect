@@ -12,6 +12,18 @@
 
   <maintainer>
     <foaf:Person>
+      <foaf:name>Mufeed Ali</foaf:name>
+      <foaf:mbox rdf:resource="mailto:fushinari@protonmail.com" />
+      <foaf:account>
+        <foaf:OnlineAccount>
+            <foaf:accountServiceHomepage rdf:resource="https://github.com/"/>
+            <foaf:accountName>fushinari</foaf:accountName>
+        </foaf:OnlineAccount>
+      </foaf:account>
+    </foaf:Person>
+  </maintainer>
+  <maintainer>
+    <foaf:Person>
       <foaf:name>Rafael Mardojai CM</foaf:name>
       <foaf:mbox rdf:resource="mailto:email@rafaelmardojai.com" />
       <foaf:account>
