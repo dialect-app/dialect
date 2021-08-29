@@ -67,33 +67,30 @@ class DialectWindow(Handy.ApplicationWindow):
     notification_revealer = Gtk.Template.Child()
     notification_label = Gtk.Template.Child()
 
-    # Translator
-    translator = None
+    translator = None  # Translator object
+
     # Text to speech
     tts = None
     tts_langs = None
-    # Language values
+    voice_loading = False  # tts loading status
+
+    # Preset language values
     src_langs = []
     dest_langs = []
-    # Current input Text
-    current_input_text = ''
-    current_history = 0
-    no_retranslate = False
-    type_time = 0
-    trans_queue = []
-    active_thread = None
-    # These are for being able to go backspace
-    first_key = 0
-    second_key = 0
-    mobile_mode = False
-    # Connectivity issues monitoring
-    trans_failed = False
-    voice_loading = False
-    # Trans mistakes
-    trans_mistakes = None
+
+    current_history = 0  # for history management
+
+    # Translation-related variables
+    no_retranslate = False  # used to prevent unnecessary re-translations
+    trans_queue = []  # for pending translations
+    active_thread = None  # for ongoing translation
+    trans_failed = False  # for monitoring connectivity issues
+    trans_mistakes = None  # "mistakes" suggestions
     # Pronunciations
     trans_src_pron = None
     trans_dest_pron = None
+
+    mobile_mode = False  # UI mode
 
     # Propeties
     backend_loading = GObject.Property(type=bool, default=False)
