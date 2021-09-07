@@ -198,7 +198,21 @@
                     "sha256": "1a4995114262bffbc2413b159f2a1a480c969de6e6eb13ee966d470af86af59c"
                 }
             ]
-        }
+        },
+        {
+            "name": "python3-PySocks",
+            "buildsystem": "simple",
+            "build-commands": [
+                "pip3 install --exists-action=i --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} \"PySocks\""
+            ],
+            "sources": [
+                {
+                    "type": "file",
+                    "url": "https://files.pythonhosted.org/packages/8d/59/b4572118e098ac8e46e399a1dd0f2d85403ce8bbaad9ec79373ed6badaf9/PySocks-1.7.1-py3-none-any.whl",
+                    "sha256": "2725bd0a9925919b9b51739eea5f9e2bae91e83288108a9ad338b2e3a4435ee5"
+                }
+	        ]
+	    }
     ]
 }
 

@@ -4,8 +4,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 # Initial setup
+import socket
+import socks
 import sys
 from gettext import gettext as _
+from os import environ
 
 import gi
 gi.require_version('Gdk', '3.0')
@@ -35,6 +38,8 @@ class Dialect(Gtk.Application):
         self.launch_text = ''
         self.launch_langs = {}
 
+        self.proxy_status = setup_proxy()
+
         # Add command line options
         self.add_main_option('text', b't', GLib.OptionFlags.NONE,
                              GLib.OptionArg.STRING, 'Text to translate', None)
@@ -47,7 +52,7 @@ class Dialect(Gtk.Application):
 
     def do_activate(self):
         self.window = self.props.active_window
-        
+
         if not self.window:
             width, height = Settings.get().window_size
             self.window = DialectWindow(
@@ -60,7 +65,7 @@ class Dialect(Gtk.Application):
                 langs=self.launch_langs
             )
             self.setup_actions_signals()
-            
+
         self.window.present()
 
     def do_command_line(self, command_line):
@@ -80,7 +85,7 @@ class Dialect(Gtk.Application):
             langs['dest'] = options['dest']
 
         if self.window is not None:
-             self.window.translate(text, langs['src'], langs['dest'])
+            self.window.translate(text, langs['src'], langs['dest'])
         else:
             self.launch_text = text
             self.launch_langs = langs
@@ -216,6 +221,33 @@ class Dialect(Gtk.Application):
 
     def on_quit(self, _action, _param):
         self.quit()
+
+
+def setup_proxy():
+    """ Use proxy settings from GNOME """
+    try:
+        proxy = Gio.Settings.new("org.gnome.system.proxy")
+        mode = proxy.get_value("mode").get_string()
+        if mode == "manual":
+            # Fetch socks proxy settings
+            socks_settings = Gio.Settings.new("org.gnome.system.proxy.socks")
+            host = socks_settings.get_value("host").get_string()
+            port = socks_settings.get_value("port").get_int32()
+
+            if host != "" and port != 0:
+                # Reset proxy env vars
+                environ["all_proxy"] = ""
+                environ["ALL_PROXY"] = ""
+
+                # Try to set socks proxy by monkey patching
+                socks.set_default_proxy(socks.SOCKS4, host, port)
+                socket.socket = socks.socksocket
+
+                return True
+    except Exception as e:
+        print(f"Proxy setup failed: {e}")
+
+    return False
 
 
 def main(version):
