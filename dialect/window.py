@@ -461,12 +461,11 @@ class DialectWindow(Adw.ApplicationWindow):
         self.notification_label.set_text(text)
         self.notification_revealer.set_reveal_child(True)
 
-        timer = threading.Timer(
+        GLib.timeout_add_seconds(
             timeout,
-            GLib.idle_add,
-            args=[self.notification_revealer.set_reveal_child, False]
+            self.notification_revealer.set_reveal_child,
+            False
         )
-        timer.start()
 
     def toggle_voice_spinner(self, active=True):
         if active:
