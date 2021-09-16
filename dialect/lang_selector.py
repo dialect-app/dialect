@@ -7,6 +7,7 @@ import re
 from gi.repository import GObject, Gtk
 
 from dialect.define import RES_PATH
+from dialect.translators import get_lang_name
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/lang-selector.ui')
@@ -48,9 +49,9 @@ class DialectLangSelector(Gtk.Popover):
             self.lang_list.remove(child)
 
         # Load langs list
-        for code, name in languages.items():
+        for code in languages:
             row_selected = (code == self.selected)
-            self.lang_list.insert(LangRow(code, name.capitalize(), row_selected), -1)
+            self.lang_list.insert(LangRow(code, get_lang_name(code), row_selected), -1)
 
     def insert_recent(self, code, name, position=-1):
         row_selected = (code == self.selected)

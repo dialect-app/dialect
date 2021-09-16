@@ -12,7 +12,7 @@ from gi.repository import Gdk, GLib, GObject, Gst, Gtk, Handy
 from dialect.define import APP_ID, MAX_LENGTH, RES_PATH, TRANS_NUMBER
 from dialect.lang_selector import DialectLangSelector
 from dialect.settings import Settings
-from dialect.translators import TRANSLATORS
+from dialect.translators import TRANSLATORS, get_lang_name
 from dialect.tts import TTS
 
 
@@ -476,7 +476,7 @@ class DialectWindow(Handy.ApplicationWindow):
                                                    and src_text != '')
 
         if code in self.translator.languages:
-            self.src_lang_label.set_label(self.translator.languages[code].capitalize())
+            self.src_lang_label.set_label(get_lang_name(code))
             # Updated saved left langs list
             if code in self.src_langs:
                 # Bring lang to the top
@@ -492,8 +492,7 @@ class DialectWindow(Handy.ApplicationWindow):
         self.src_lang_selector.clear_recent()
         self.src_lang_selector.insert_recent('auto', _('Auto'))
         for code in self.src_langs:
-            name = self.translator.languages[code].capitalize()
-            self.src_lang_selector.insert_recent(code, name)
+            self.src_lang_selector.insert_recent(code, get_lang_name(code))
 
         # Refresh list
         self.src_lang_selector.refresh_selected()
@@ -520,8 +519,7 @@ class DialectWindow(Handy.ApplicationWindow):
             self.app.listen_dest_action.set_enabled(code in self.tts_langs
                                                     and dest_text != '')
 
-        name = self.translator.languages[code].capitalize()
-        self.dest_lang_label.set_label(name)
+        self.dest_lang_label.set_label(get_lang_name(code))
         # Updated saved right langs list
         if code in self.dest_langs:
             # Bring lang to the top
@@ -534,8 +532,7 @@ class DialectWindow(Handy.ApplicationWindow):
         # Rewrite recent langs
         self.dest_lang_selector.clear_recent()
         for code in self.dest_langs:
-            name = self.translator.languages[code].capitalize()
-            self.dest_lang_selector.insert_recent(code, name)
+            self.dest_lang_selector.insert_recent(code, get_lang_name(code))
 
         # Refresh list
         self.dest_lang_selector.refresh_selected()
@@ -911,7 +908,7 @@ class DialectWindow(Handy.ApplicationWindow):
                     src_language = self.translator.detect(src_text).lang
                     if isinstance(src_language, list):
                         src_language = src_language[0]
-                    if src_language in self.translator.languages.keys():
+                    if src_language in self.translator.languages:
                         GLib.idle_add(self.set_no_retranslate, True)
                         GLib.idle_add(self.src_lang_selector.set_property,
                                       'selected', src_language)

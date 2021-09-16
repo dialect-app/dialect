@@ -12,7 +12,7 @@ class Translator(TranslatorBase):
     prettyname = 'LibreTranslate'
     client = None
     history = []
-    languages = {}
+    languages = []
     supported_features = {
         'mistakes': False,
         'pronunciation': False,
@@ -29,7 +29,7 @@ class Translator(TranslatorBase):
         r = self.client.get(self.lang_url)
 
         for lang in r.json():
-            self.languages[lang['code']] = lang['name']
+            self.languages.append(lang['code'])
 
     @property
     def detect_url(self):
