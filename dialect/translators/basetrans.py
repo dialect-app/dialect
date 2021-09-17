@@ -6,9 +6,7 @@ class TranslatorBase:
     name = ''
     prettyname = ''
     history = []
-    languages = {
-        'en': 'ENGLISH'
-    }
+    languages = ['en']
     supported_features = {
         'mistakes': False,
         'pronunciation': False,
