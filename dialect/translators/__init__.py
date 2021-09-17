@@ -8,11 +8,13 @@ for _importer, modname, _ispkg in pkgutil.iter_modules(__path__):
         modclass = importlib.import_module('dialect.translators.' + modname).Translator
         TRANSLATORS[modclass.name] = modclass
 
+
 def check_backend_availability(backend_name):
     if backend_name in TRANSLATORS.keys():
         return True
 
     return False
+
 
 def get_fallback_backend_name():
     if TRANSLATORS:
@@ -36,8 +38,8 @@ LANGUAGES = {
     'ceb': _('Cebuano'),
     'ny': _('Chichewa'),
     'zh': _('Chinese'),
-    'zh-CN': _('Chinese (simplified)'),
-    'zh-TW': _('Chinese (traditional)'),
+    'zh-CN': _('Chinese (Simplified)'),
+    'zh-TW': _('Chinese (Traditional)'),
     'co': _('Corsican'),
     'hr': _('Croatian'),
     'cs': _('Czech'),
@@ -55,7 +57,7 @@ LANGUAGES = {
     'de': _('German'),
     'el': _('Greek'),
     'gu': _('Gujarati'),
-    'ht': _('Haitian creole'),
+    'ht': _('Haitian Creole'),
     'ha': _('Hausa'),
     'haw': _('Hawaiian'),
     'iw': _('Hebrew'),
@@ -73,8 +75,9 @@ LANGUAGES = {
     'kn': _('Kannada'),
     'kk': _('Kazakh'),
     'km': _('Khmer'),
+    'rw': _('Kinyarwanda'),
     'ko': _('Korean'),
-    'ku': _('Kurdish (kurmanji)'),
+    'ku': _('Kurdish (Kurmanji)'),
     'ky': _('Kyrgyz'),
     'lo': _('Lao'),
     'la': _('Latin'),
@@ -89,10 +92,10 @@ LANGUAGES = {
     'mi': _('Maori'),
     'mr': _('Marathi'),
     'mn': _('Mongolian'),
-    'my': _('Myanmar (burmese)'),
+    'my': _('Myanmar (Burmese)'),
     'ne': _('Nepali'),
     'no': _('Norwegian'),
-    'or': _('Odia'),
+    'or': _('Odia (Oriya)'),
     'ps': _('Pashto'),
     'fa': _('Persian'),
     'pl': _('Polish'),
@@ -101,7 +104,7 @@ LANGUAGES = {
     'ro': _('Romanian'),
     'ru': _('Russian'),
     'sm': _('Samoan'),
-    'gd': _('Scots gaelic'),
+    'gd': _('Scots Gaelic'),
     'sr': _('Serbian'),
     'st': _('Sesotho'),
     'sn': _('Shona'),
@@ -116,9 +119,11 @@ LANGUAGES = {
     'sv': _('Swedish'),
     'tg': _('Tajik'),
     'ta': _('Tamil'),
+    'tt': _('Tatar'),
     'te': _('Telugu'),
     'th': _('Thai'),
     'tr': _('Turkish'),
+    'tk': _('Turkmen'),
     'uk': _('Ukrainian'),
     'ur': _('Urdu'),
     'ug': _('Uyghur'),
@@ -130,6 +135,7 @@ LANGUAGES = {
     'yo': _('Yoruba'),
     'zu': _('Zulu'),
 }
+
 
 def get_lang_name(code):
     if code in LANGUAGES:
