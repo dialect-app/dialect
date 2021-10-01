@@ -30,7 +30,7 @@ class Translator(TranslatorBase):
     }
 
     def __init__(self, **kwargs):
-        self._translator = GoogleTranslator()
+        self._translator = GoogleTranslator(raise_exception=True)
 
     def detect(self, src_text):
         try:
