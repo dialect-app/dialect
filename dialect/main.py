@@ -47,7 +47,7 @@ class Dialect(Gtk.Application):
 
     def do_activate(self):
         self.window = self.props.active_window
-        
+
         if not self.window:
             width, height = Settings.get().window_size
             self.window = DialectWindow(
@@ -60,7 +60,7 @@ class Dialect(Gtk.Application):
                 langs=self.launch_langs
             )
             self.setup_actions_signals()
-            
+
         self.window.present()
 
     def do_command_line(self, command_line):
@@ -80,7 +80,7 @@ class Dialect(Gtk.Application):
             langs['dest'] = options['dest']
 
         if self.window is not None:
-             self.window.translate(text, langs['src'], langs['dest'])
+            self.window.translate(text, langs['src'], langs['dest'])
         else:
             self.launch_text = text
             self.launch_langs = langs
