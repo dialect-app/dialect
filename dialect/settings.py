@@ -120,16 +120,11 @@ class Settings(Gio.Settings):
     @property
     def backend(self):
         """Return the user's preferred backend."""
-        value = None
+        # Dialect 1.2.0 and below used the backend key and
+        # stored the index of the chosen backend as an int.
+        value = self.get_int('backend')
 
-        try:
-            # Dialect 1.2.0 and below used the backend key and
-            # stored the index of the chosen backend as an int.
-            value = self.get_int('backend')
-        except Exception:
-            pass
-
-        if value in [None, -1]:
+        if value == -1:
             value = self.get_string('backend-name')
         else:
             if value == 0:
@@ -155,14 +150,11 @@ class Settings(Gio.Settings):
         self.set_string('backend-name', name)
 
     def get_instance_url(self, backend):
-        try:
-            # Dialect 1.2.0 and below used separate keys for each
-            # backend-specific setting.
-            instance_url = self.get_string(f'{backend}-instance')
-            if instance_url:
-                return instance_url
-        except Exception:
-            pass
+        # Dialect 1.2.0 and below used separate keys for each
+        # backend-specific setting.
+        instance_url = self.get_string(f'{backend}-instance')
+        if instance_url:
+            return instance_url
 
         settings = self.backend_settings.get(backend)
 
@@ -180,14 +172,11 @@ class Settings(Gio.Settings):
         self._set_backend_setting(backend, 'instance-url', TRANSLATORS[backend].instance_url)
 
     def get_dest_langs(self, backend):
-        try:
-            # Dialect 1.2.0 and below used separate keys for each
-            # backend-specific setting.
-            dest_langs = list(self.get_value(f'{backend}-dest-langs'))
-            if dest_langs:
-                return dest_langs
-        except Exception:
-            pass
+        # Dialect 1.2.0 and below used separate keys for each
+        # backend-specific setting.
+        dest_langs = list(self.get_value(f'{backend}-dest-langs'))
+        if dest_langs:
+            return dest_langs
 
         settings = self.backend_settings.get(backend)
 
@@ -205,14 +194,11 @@ class Settings(Gio.Settings):
         self._set_backend_setting(backend, 'dest-langs', TRANSLATORS[backend].dest_langs)
 
     def get_src_langs(self, backend):
-        try:
-            # Dialect 1.2.0 and below used separate keys for each
-            # backend-specific setting.
-            src_langs = list(self.get_value(f'{backend}-src-langs'))
-            if src_langs:
-                return src_langs
-        except Exception:
-            pass
+        # Dialect 1.2.0 and below used separate keys for each
+        # backend-specific setting.
+        src_langs = list(self.get_value(f'{backend}-src-langs'))
+        if src_langs:
+            return src_langs
 
         settings = self.backend_settings.get(backend)
 
@@ -250,34 +236,24 @@ class Settings(Gio.Settings):
         self.backend_settings = settings
 
     def _delete_arr_key(self, key):
-        try:
-            val = self.get_strv(key)
-            if val != []:
-                self.set_value(key, GLib.Variant('as', []))
-        except Exception:
-            pass
+        val = self.get_strv(key)
+        if val != []:
+            self.set_value(key, GLib.Variant('as', []))
 
     def _delete_enum_key(self, key):
-        try:
-            val = self.get_enum(key)
-            if val > -1:
-                self.set_enum(key, -1)
-        except Exception:
-            pass
+        val = self.get_enum(key)
+        if val > -1:
+            self.set_enum(key, -1)
 
     def _delete_int_key(self, key):
-        try:
-            val = self.get_int(key)
-            if val > -1:
-                self.set_int(key, -1)
-        except Exception:
-            pass
+        val = self.get_int(key)
+        if val > -1:
+            self.set_int(key, -1)
 
     def _delete_str_key(self, key):
-        try:
-            val = self.get_string(key)
-            if val != '':
-                self.set_value(key,
-                               GLib.Variant('s', ''))
-        except Exception:
-            pass
+        val = self.get_string(key)
+        if val != '':
+            self.set_value(
+                key,
+                GLib.Variant('s', '')
+            )
