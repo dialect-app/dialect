@@ -10,7 +10,7 @@ import dbus.service
 import threading
 
 from dbus.mainloop.glib import DBusGMainLoop
-from gi.repository import GLib, Gio
+from gi.repository import GLib
 
 from dialect.translators import TRANSLATORS
 from dialect.settings import Settings
@@ -19,6 +19,7 @@ APP_ID = 'com.github.gi_lom.dialect'
 
 search_bus_name = 'org.gnome.Shell.SearchProvider2'
 sbn = dict(dbus_interface=search_bus_name)
+
 
 class TranslateService(dbus.service.Object):
     bus_name = 'com.github.gi_lom.dialect.SearchProvider'
@@ -198,8 +199,7 @@ class TranslateService(dbus.service.Object):
         return translator
 
     def _on_settings_changed(self, _settings, key):
-        backend = Settings.get().backend
-        if key == 'backend-name' or key == f'backend-settings':
+        if key == 'backend-name' or key == 'backend-settings':
             self.translator = self._get_translator()
 
 
@@ -207,4 +207,3 @@ if __name__ == "__main__":
     DBusGMainLoop(set_as_default=True)
     TranslateService()
     GLib.MainLoop().run()
-

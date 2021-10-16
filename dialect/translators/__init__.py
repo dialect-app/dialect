@@ -10,7 +10,7 @@ for _importer, modname, _ispkg in pkgutil.iter_modules(__path__):
 
 
 def check_backend_availability(backend_name):
-    if backend_name in TRANSLATORS.keys():
+    if backend_name in TRANSLATORS:
         return True
 
     return False
@@ -18,7 +18,7 @@ def check_backend_availability(backend_name):
 
 def get_fallback_backend_name():
     if TRANSLATORS:
-        return list(TRANSLATORS.keys())[0]
+        return next(iter(TRANSLATORS))
     return None
 
 
@@ -138,6 +138,4 @@ LANGUAGES = {
 
 
 def get_lang_name(code):
-    if code in LANGUAGES:
-        return LANGUAGES[code]
-    return code
+    return LANGUAGES.get(code, code)

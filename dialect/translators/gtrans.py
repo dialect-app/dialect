@@ -2,7 +2,7 @@
 # Copyright 2021 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from googletrans import LANGUAGES, Translator as GoogleTranslator
+from googletrans import Translator as GoogleTranslator
 
 from dialect.translators.basetrans import TranslatorBase, TranslationError, Translation
 
@@ -12,7 +12,7 @@ class Translator(TranslatorBase):
     prettyname = 'Google Translate'
     history = []
     languages = [
-        'af', 'sq', 'am', 'ar', 'hy', 'az', 'eu', 'be', 'bn', 'bs', 'bg', 'ca', 
+        'af', 'sq', 'am', 'ar', 'hy', 'az', 'eu', 'be', 'bn', 'bs', 'bg', 'ca',
         'ceb', 'ny', 'zh-CN', 'zh-TW', 'co', 'hr', 'cs', 'da', 'nl', 'en', 'eo',
         'et', 'tl', 'fi', 'fr', 'fy', 'gl', 'ka', 'de', 'el', 'gu', 'ht', 'ha',
         'haw', 'iw', 'he', 'hi', 'hmn', 'hu', 'is', 'ig', 'id', 'ga', 'it',

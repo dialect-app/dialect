@@ -199,9 +199,10 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
 
         if new_value != old_value:
             # Validate
-            threading.Thread(target=self.__validate_new_backend_instance,
-                             args=[new_value],
-                             daemon=True
+            threading.Thread(
+                target=self.__validate_new_backend_instance,
+                args=[new_value],
+                daemon=True
             ).start()
         else:
             self.backend_instance_stack.set_visible_child_name('view')
@@ -253,6 +254,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
             GLib.idle_add(self.error_popover.popup)
 
         GLib.idle_add(spinner_end)
+
 
 class BackendObject(GObject.Object):
     name = None
