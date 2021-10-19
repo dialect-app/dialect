@@ -42,6 +42,16 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="1.4.0" date="2021-10-18">
+      <description>
+        <ul>
+          <li>Added accels for most actions</li>
+          <li>Added localized language names</li>
+          <li>Added new translations</li>
+          <li>Fixed several minor bugs</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.3.0" date="2021-05-07">
       <description>
         <ul>
