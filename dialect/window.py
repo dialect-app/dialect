@@ -9,7 +9,7 @@ from tempfile import NamedTemporaryFile
 
 from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk
 
-from dialect.define import APP_ID, MAX_LENGTH, RES_PATH, TRANS_NUMBER
+from dialect.define import APP_ID, PROFILE, MAX_LENGTH, RES_PATH, TRANS_NUMBER
 from dialect.lang_selector import DialectLangSelector
 from dialect.settings import Settings
 from dialect.translators import TRANSLATORS, get_lang_name
@@ -119,6 +119,10 @@ class DialectWindow(Adw.ApplicationWindow):
 
     def setup(self):
         self.set_default_icon_name(APP_ID)
+
+        # Set devel style
+        if PROFILE == 'Devel':
+            self.get_style_context().add_class('devel')
 
         # Load saved dark mode
         style_manager = self.app.get_style_manager()
