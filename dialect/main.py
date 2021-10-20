@@ -105,6 +105,10 @@ class Dialect(Adw.Application):
         preferences.connect('activate', self._on_preferences)
         self.add_action(preferences)
 
+        shortcuts = Gio.SimpleAction.new('shortcuts', None)
+        shortcuts.connect('activate', self._on_shortcuts)
+        self.add_action(shortcuts)
+
         about = Gio.SimpleAction.new('about', None)
         about.connect('activate', self._on_about)
         self.add_action(about)
@@ -115,6 +119,7 @@ class Dialect(Adw.Application):
 
         self.set_accels_for_action('app.pronunciation', ['<Primary>P'])
         self.set_accels_for_action('app.preferences', ['<Primary>comma'])
+        self.set_accels_for_action('app.shortcuts', ['<Primary>question'])
         self.set_accels_for_action('app.quit', ['<Primary>Q'])
 
         self.set_accels_for_action('win.back', ['<Alt>Left'])
@@ -142,6 +147,16 @@ class Dialect(Adw.Application):
         window = DialectPreferencesWindow(self.window)
         window.set_transient_for(self.window)
         window.present()
+
+    def _on_shortcuts(self, _action, _param):
+        """Launch the Keyboard Shortcuts window."""
+        builder = Gtk.Builder.new_from_resource(f'{RES_PATH}/shortcuts.ui')
+        translate_shortcut = builder.get_object('translate_shortcut')
+        translate_shortcut.set_visible(not Settings.get().live_translation)
+        translate_shortcut.set_property('accelerator', Settings.get().translate_accel)
+        shortcuts_window = builder.get_object('help_overlay')
+        shortcuts_window.set_transient_for(self.window)
+        shortcuts_window.show()
 
     def _on_about(self, _action, _param):
         """ Show about dialog """
