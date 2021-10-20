@@ -103,7 +103,7 @@
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
                 <property name="title" translatable="yes" context="shortcut window">Shortcuts</property>
-                <property name="action-name">win.show-help-overlay</property>
+                <property name="action-name">app.shortcuts</property>
               </object>
             </child>
             <child>
