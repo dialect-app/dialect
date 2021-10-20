@@ -3,91 +3,57 @@
 <interface>
   <requires lib="gtk+" version="3.22"/>
   <template class="DialectLangSelector" parent="GtkPopover">
-    <property name="can_focus">False</property>
-    <property name="height_request">250</property>
+    <property name="height_request">300</property>
+    <style>
+      <class name="lang-selector"/>
+      <class name="menu"/>
+    </style>
     <child>
       <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">8</property>
         <child>
-          <object class="GtkSearchEntry" id="search">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="primary_icon_name">edit-find-symbolic</property>
-            <property name="primary_icon_activatable">False</property>
-            <property name="primary_icon_sensitive">False</property>
-            <property name="margin_top">8</property>
-            <property name="margin_start">8</property>
-            <property name="margin_end">8</property>
+          <object class="GtkBox" id="search_box">
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkSearchEntry" id="search"></object>
+            </child>
+            <style>
+              <class name="search_box"/>
+            </style>
           </object>
         </child>
         <child>
           <object class="GtkScrolledWindow" id="scroll">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="margin_bottom">8</property>
-            <property name="margin_start">8</property>
-            <property name="margin_end">8</property>
-            <child>
-              <object class="GtkViewport">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
+            <property name="vexpand">True</property>
+            <property name="child">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkBox">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="orientation">vertical</property>
+                  <object class="GtkRevealer" id="revealer">
+                    <property name="reveal-child">True</property>
                     <child>
-                      <object class="GtkRevealer" id="revealer">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="reveal-child">True</property>
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkBox">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="orientation">vertical</property>
-                            <child>
-                              <object class="GtkListBox" id="recent_list">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="selection-mode">none</property>
-                                <style>
-                                  <class name="background"/>
-                                </style>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkSeparator" id="separator">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="margin">8</property>
-                              </object>
-                            </child>
+                          <object class="GtkListView" id="recent_list">
+                            <property name="single-click-activate">True</property>
                           </object>
                         </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkListBox" id="lang_list">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="selection-mode">none</property>
-                        <style>
-                          <class name="background"/>
-                        </style>
+                        <child>
+                          <object class="GtkSeparator" id="separator"></object>
+                        </child>
                       </object>
                     </child>
                   </object>
                 </child>
+                <child>
+                  <object class="GtkListView" id="lang_list">
+                    <property name="single-click-activate">True</property>
+                  </object>
+                </child>
               </object>
-            </child>
+            </property>
           </object>
-          <packing>
-            <property name="expand">True</property>
-          </packing>
         </child>
       </object>
     </child>

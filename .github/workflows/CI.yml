@@ -8,14 +8,15 @@ jobs:
     name: "Flatpak Builder"
     runs-on: ubuntu-latest
     container:
-      image: bilelmoussaoui/flatpak-github-actions:gnome-40
+      image: bilelmoussaoui/flatpak-github-actions:gnome-nightly
       options: --privileged
     steps:
     - uses: actions/checkout@v2
       with:
         submodules: recursive
-    - uses: bilelmoussaoui/flatpak-github-actions@v2
+    - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v4
       with:
-        bundle: "dialect-dev.flatpak"
-        manifest-path: "build-aux/flatpak/com.github.gi_lom.dialect.json"
+        bundle: "dialect-devel.flatpak"
+        manifest-path: "build-aux/flatpak/com.github.gi_lom.dialect.Devel.json"
         run-tests: "true"
+        cache-key: flatpak-builder-${{ github.sha }}

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <object class="GtkShortcutsWindow" id="shortcuts">
+  <object class="GtkShortcutsWindow" id="help_overlay">
     <property name="modal">True</property>
     <child>
       <object class="GtkShortcutsSection">
@@ -22,28 +22,28 @@
               <object class="GtkShortcutsShortcut" id="switch_shortcut">
                 <property name="visible">True</property>
                 <property name="title" translatable="yes" context="shortcuts window">Switch Languages</property>
-                <property name="accelerator">&lt;Primary&gt;S</property>
+                <property name="action-name">win.switch</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
                 <property name="title" translatable="yes" context="shortcuts window">Clear source text</property>
-                <property name="accelerator">&lt;Primary&gt;D</property>
+                <property name="action-name">win.clear</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
                 <property name="title" translatable="yes" context="shortcuts window">Copy translation</property>
-                <property name="accelerator">&lt;Primary&gt;&lt;shift&gt;C</property>
+                <property name="action-name">win.copy</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
                 <property name="title" translatable="yes" context="shortcuts window">Show Pronunciation</property>
-                <property name="accelerator">&lt;Primary&gt;P</property>
+                <property name="action-name">app.pronunciation</property>
               </object>
             </child>
           </object>
@@ -56,14 +56,14 @@
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
                 <property name="title" translatable="yes" context="shortcuts window">Listen to source text</property>
-                <property name="accelerator">&lt;Primary&gt;&lt;shift&gt;L</property>
+                <property name="action-name">win.listen-src</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
                 <property name="title" translatable="yes" context="shortcuts window">Listen to translation</property>
-                <property name="accelerator">&lt;Primary&gt;L</property>
+                <property name="action-name">win.listen-dest</property>
               </object>
             </child>
           </object>
@@ -76,14 +76,14 @@
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
                 <property name="title" translatable="yes" context="shortcuts window">Go back in history</property>
-                <property name="accelerator">&lt;Primary&gt;Left</property>
+                <property name="action-name">win.back</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
                 <property name="title" translatable="yes" context="shortcuts window">Go forward in history</property>
-                <property name="accelerator">&lt;Primary&gt;Right</property>
+                <property name="action-name">win.forward</property>
               </object>
             </child>
           </object>
@@ -96,21 +96,21 @@
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
                 <property name="title" translatable="yes" context="shortcuts window">Preferences</property>
-                <property name="accelerator">&lt;Primary&gt;comma</property>
+                <property name="action-name">app.preferences</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
                 <property name="title" translatable="yes" context="shortcut window">Shortcuts</property>
-                <property name="accelerator">&lt;Primary&gt;question</property>
+                <property name="action-name">app.shortcuts</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
                 <property name="title" translatable="yes" context="shortcuts window">Quit</property>
-                <property name="accelerator">&lt;Primary&gt;Q</property>
+                <property name="action-name">app.quit</property>
               </object>
             </child>
           </object>

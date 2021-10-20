@@ -1,9 +1,19 @@
-.toolbox {
+
+.translation-box {
+  padding: 12px;
+}
+
+.translation-side-box {
   background: @theme_base_color;
   border: 1px solid @borders;
-  border-bottom-left-radius: 9px;
-  border-bottom-right-radius: 9px;
-  border-top: 0;
+  border-radius: 9px;
+}
+
+.translation-side-box scrolledwindow {
+  border-bottom: 1px solid @borders;
+}
+
+.tools-box {
   padding: 6px;
 }
 
@@ -13,39 +23,27 @@
 }
 
 .pronunciation {
-  border: 1px solid @borders;
+  border-bottom: 1px solid @borders;
   border-top: 0;
 }
 
-.translation-frame  {
+.lang-selector contents {
   background: @theme_base_color;
-  border-top-left-radius: 9px;
-  border-top-right-radius: 9px;
 }
-.translation-frame:disabled  {
-  background: @insensitive_bg_color;
+.lang-selector arrow {
+  background: @popover_bg_color;
 }
-.translation-frame:backdrop  {
-  background: @theme_unfocused_base_color;
+.search_box {
+  background: @popover_bg_color;
+  border-bottom: 1px solid @borders;
+  padding: 6px;
 }
-
-.translation-frame scrollbar {
-  padding-top: 3px;
-}
-
-.translation-frame scrollbar:dir(ltr) {
-  border-top-right-radius: 9px;
+.lang-selector row {
+  border-radius: 0px;
+  padding: 2px 12px;
 }
 
-.translation-frame scrollbar:dir(rtl) {
-  border-top-left-radius: 9px;
-}
-
-.langselector {
-  border-radius: 4px;
-}
-
-.bottomlang {
+.bottom-bar {
   background: @theme_base_color;
   border: 1px solid @borders;
   border-bottom: 0;

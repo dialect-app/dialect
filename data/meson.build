@@ -1,9 +1,15 @@
 subdir('resources')
 
 # Install desktop
+desktop_conf = configuration_data()
+desktop_conf.set('icon', application_id)
 desktop_file = i18n.merge_file(
-  input: 'com.github.gi_lom.dialect.desktop.in',
-  output: 'com.github.gi_lom.dialect.desktop',
+  input: configure_file(
+    input: '@0@.desktop.in.in'.format(base_id),
+    output: '@BASENAME@',
+    configuration: desktop_conf
+  ),
+  output: '@0@.desktop'.format(application_id),
   type: 'desktop',
   po_dir: '../po',
   install: true,
@@ -12,14 +18,21 @@ desktop_file = i18n.merge_file(
 desktop_utils = find_program('desktop-file-validate', required: false)
 if desktop_utils.found()
   test('Validate desktop file', desktop_utils,
-    args: [desktop_file]
+    args: [desktop_file.full_path()]
   )
 endif
 
+
 # Install metainfo
+appdata_conf = configuration_data()
+appdata_conf.set('app-id', application_id)
 appstream_file = i18n.merge_file(
-  input: 'com.github.gi_lom.dialect.metainfo.xml.in',
-  output: 'com.github.gi_lom.dialect.metainfo.xml',
+  input: configure_file(
+    input: '@0@.metainfo.xml.in.in'.format(base_id),
+    output: '@BASENAME@',
+    configuration: appdata_conf
+  ),
+  output: '@0@.metainfo.xml'.format(application_id),
   po_dir: '../po',
   install: true,
   install_dir: join_paths(get_option('datadir'), 'metainfo')
@@ -27,12 +40,18 @@ appstream_file = i18n.merge_file(
 appstream_util = find_program('appstream-util', required: false)
 if appstream_util.found()
   test('Validate appstream file', appstream_util,
-    args: ['validate-relax', appstream_file]
+    args: ['validate-relax', appstream_file.full_path()]
   )
 endif
 
 # Install gsettings schema
-install_data('com.github.gi_lom.dialect.gschema.xml',
+gschema_conf = configuration_data()
+gschema_conf.set('app-id', application_id)
+configure_file(
+  input: '@0@.gschema.xml.in'.format(base_id),
+  output: '@0@.gschema.xml'.format(application_id),
+  configuration: gschema_conf,
+  install: true,
   install_dir: join_paths(get_option('datadir'), 'glib-2.0/schemas')
 )
 
@@ -45,12 +64,13 @@ endif
 
 # Install colored icon
 install_data(
-  'com.github.gi_lom.dialect.svg',
+  '@0@.svg'.format(application_id),
   install_dir: join_paths(get_option('datadir'), 'icons/hicolor/scalable/apps')
 )
 
 # Install symbolic icon
 install_data(
-  'com.github.gi_lom.dialect-symbolic.svg',
-  install_dir: join_paths(get_option('datadir'), 'icons/hicolor/scalable/apps')
+  '@0@-symbolic.svg'.format(base_id),
+  install_dir: join_paths(get_option('datadir'), 'icons/hicolor/symbolic/apps'),
+  rename: '@0@-symbolic.svg'.format(application_id)
 )

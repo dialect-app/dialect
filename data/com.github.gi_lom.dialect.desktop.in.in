@@ -7,7 +7,7 @@ Exec=dialect
 Name=Dialect
 Comment=Translate between languages
 Categories=Network;GTK;
-Icon=com.github.gi_lom.dialect
+Icon=@icon@
 # Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
 Keywords=translate;translation;
 # Translators: Do NOT translate or transliterate this text (these are enum types)!

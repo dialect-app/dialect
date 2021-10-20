@@ -9,6 +9,15 @@ configure_file(
   install_dir: get_option('bindir')
 )
 
+# Generate dialect define module
+configure_file(
+  input: 'define.in',
+  output: 'define.py',
+  configuration: conf,
+  install: true,
+  install_dir: moduledir
+)
+
 launcher = join_paths(meson.build_root(), 'dialect', meson.project_name())
 run_target('run',
   command: [launcher]
@@ -20,7 +29,6 @@ subdir('search_provider')
 sources = [
   '__init__.py',
   'main.py',
-  'define.py',
   'window.py',
   'preferences.py',
   'lang_selector.py',

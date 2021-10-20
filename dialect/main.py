@@ -8,29 +8,29 @@ import sys
 from gettext import gettext as _
 
 import gi
-gi.require_version('Gdk', '3.0')
-gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '4.0')
+gi.require_version('Gtk', '4.0')
 gi.require_version('Gst', '1.0')
-gi.require_version('Handy', '1')
+gi.require_version('Adw', '1')
 
-from gi.repository import Gdk, Gio, GLib, Gst, Gtk, Handy
+from gi.repository import Adw, Gio, GLib, Gst, Gtk
 
-from dialect.define import APP_ID, RES_PATH
+from dialect.define import APP_ID, RES_PATH, VERSION
 from dialect.preferences import DialectPreferencesWindow
 from dialect.settings import Settings
 from dialect.window import DialectWindow
 
 
-class Dialect(Gtk.Application):
-    def __init__(self, version):
-        Gtk.Application.__init__(
+class Dialect(Adw.Application):
+    def __init__(self):
+        Adw.Application.__init__(
             self,
             application_id=APP_ID,
             flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE
         )
+        self.set_resource_base_path(RES_PATH)
 
         # App window
-        self.version = version
         self.window = None
         self.launch_text = ''
         self.launch_langs = {}
@@ -59,7 +59,6 @@ class Dialect(Gtk.Application):
                 text=self.launch_text,
                 langs=self.launch_langs
             )
-            self.setup_actions_signals()
 
         self.window.present()
 
@@ -89,95 +88,50 @@ class Dialect(Gtk.Application):
         return 0
 
     def do_startup(self):
-        Gtk.Application.do_startup(self)
-        GLib.set_application_name(_('Dialect'))
-        GLib.set_prgname('com.github.gi_lom.dialect')
+        Adw.Application.do_startup(self)
 
-        Handy.init()  # Init Handy
         Gst.init(None)  # Init Gst
-
-        # Load CSS
-        css_provider = Gtk.CssProvider()
-        css_provider.load_from_resource(f'{RES_PATH}/style.css')
-        screen = Gdk.Screen.get_default()
-        style_context = Gtk.StyleContext()
-        style_context.add_provider_for_screen(screen, css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
 
     def setup_actions(self):
         """ Setup menu actions """
-        self.pronunciation_action = Gio.SimpleAction.new_stateful(
+
+        pronunciation = Gio.SimpleAction.new_stateful(
             'pronunciation', None, Settings.get().show_pronunciation_value
         )
+        pronunciation.connect('change-state', self._on_pronunciation)
+        self.add_action(pronunciation)
+
+        preferences = Gio.SimpleAction.new('preferences', None)
+        preferences.connect('activate', self._on_preferences)
+        self.add_action(preferences)
+
+        shortcuts = Gio.SimpleAction.new('shortcuts', None)
+        shortcuts.connect('activate', self._on_shortcuts)
+        self.add_action(shortcuts)
+
+        about = Gio.SimpleAction.new('about', None)
+        about.connect('activate', self._on_about)
+        self.add_action(about)
+
+        quit_action = Gio.SimpleAction.new('quit', None)
+        quit_action.connect('activate', self._on_quit)
+        self.add_action(quit_action)
+
         self.set_accels_for_action('app.pronunciation', ['<Primary>P'])
-        self.add_action(self.pronunciation_action)
-
-        self.preferences_action = Gio.SimpleAction.new('preferences', None)
         self.set_accels_for_action('app.preferences', ['<Primary>comma'])
-        self.add_action(self.preferences_action)
-
-        self.shortcuts_action = Gio.SimpleAction.new('shortcuts', None)
         self.set_accels_for_action('app.shortcuts', ['<Primary>question'])
-        self.add_action(self.shortcuts_action)
-
-        self.about_action = Gio.SimpleAction.new('about', None)
-        self.add_action(self.about_action)
-
-        self.back_action = Gio.SimpleAction.new('back', None)
-        self.back_action.set_enabled(False)
-        self.set_accels_for_action('app.back', ['<Alt>Left'])
-        self.add_action(self.back_action)
-
-        self.forward_action = Gio.SimpleAction.new('forward', None)
-        self.forward_action.set_enabled(False)
-        self.set_accels_for_action('app.forward', ['<Alt>Right'])
-        self.add_action(self.forward_action)
-
-        self.switch_action = Gio.SimpleAction.new('switch', None)
-        self.set_accels_for_action('app.switch', ['<Primary>S'])
-        self.add_action(self.switch_action)
-
-        self.clear_action = Gio.SimpleAction.new('clear', None)
-        self.clear_action.set_enabled(False)
-        self.set_accels_for_action('app.clear', ['<Primary>D'])
-        self.add_action(self.clear_action)
-
-        self.paste_action = Gio.SimpleAction.new('paste', None)
-        self.set_accels_for_action('app.paste', ['<Primary><Shift>V'])
-        self.add_action(self.paste_action)
-
-        self.copy_action = Gio.SimpleAction.new('copy', None)
-        self.copy_action.set_enabled(False)
-        self.set_accels_for_action('app.copy', ['<Primary><Shift>C'])
-        self.add_action(self.copy_action)
-
-        self.listen_dest_action = Gio.SimpleAction.new('listen-dest', None)
-        self.set_accels_for_action('app.listen-dest', ['<Primary>L'])
-        self.add_action(self.listen_dest_action)
-
-        self.listen_src_action = Gio.SimpleAction.new('listen-src', None)
-        self.set_accels_for_action('app.listen-src', ['<Primary><Shift>L'])
-        self.add_action(self.listen_src_action)
-
-        self.quit_action = Gio.SimpleAction.new('quit', None)
         self.set_accels_for_action('app.quit', ['<Primary>Q'])
-        self.add_action(self.quit_action)
 
-    def setup_actions_signals(self):
-        self.pronunciation_action.connect('change-state', self.on_pronunciation)
-        self.preferences_action.connect('activate', self.on_preferences)
-        self.shortcuts_action.connect('activate', self.on_shortcuts)
-        self.about_action.connect('activate', self.on_about)
-        self.back_action.connect('activate', self.window.ui_return)
-        self.forward_action.connect('activate', self.window.ui_forward)
-        self.switch_action.connect('activate', self.window.ui_switch)
-        self.clear_action.connect('activate', self.window.ui_clear)
-        self.paste_action.connect('activate', self.window.ui_paste)
-        self.copy_action.connect('activate', self.window.ui_copy)
-        self.listen_dest_action.connect('activate', self.window.ui_dest_voice)
-        self.listen_src_action.connect('activate', self.window.ui_src_voice)
-        self.quit_action.connect('activate', self.on_quit)
+        self.set_accels_for_action('win.back', ['<Alt>Left'])
+        self.set_accels_for_action('win.forward', ['<Alt>Right'])
+        self.set_accels_for_action('win.switch', ['<Primary>S'])
+        self.set_accels_for_action('win.clear', ['<Primary>D'])
+        self.set_accels_for_action('win.paste', ['<Primary><Shift>V'])
+        self.set_accels_for_action('win.copy', ['<Primary><Shift>C'])
+        self.set_accels_for_action('win.listen-dest', ['<Primary>L'])
+        self.set_accels_for_action('win.listen-src', ['<Primary><Shift>L'])
 
-    def on_pronunciation(self, action, value):
+    def _on_pronunciation(self, action, value):
         """ Update show pronunciation setting """
         action.set_state(value)
         Settings.get().show_pronunciation = value
@@ -188,37 +142,36 @@ class Dialect(Gtk.Application):
         if self.window.trans_dest_pron is not None:
             self.window.dest_pron_revealer.set_reveal_child(value)
 
-    def on_preferences(self, _action, _param):
+    def _on_preferences(self, _action, _param):
         """ Show preferences window """
         window = DialectPreferencesWindow(self.window)
         window.set_transient_for(self.window)
         window.present()
 
-    def on_shortcuts(self, _action, _param):
+    def _on_shortcuts(self, _action, _param):
         """Launch the Keyboard Shortcuts window."""
-        builder = Gtk.Builder.new_from_resource(f'{RES_PATH}/shortcuts-window.ui')
+        builder = Gtk.Builder.new_from_resource(f'{RES_PATH}/shortcuts.ui')
         translate_shortcut = builder.get_object('translate_shortcut')
         translate_shortcut.set_visible(not Settings.get().live_translation)
         translate_shortcut.set_property('accelerator', Settings.get().translate_accel)
-        shortcuts_window = builder.get_object('shortcuts')
+        shortcuts_window = builder.get_object('help_overlay')
         shortcuts_window.set_transient_for(self.window)
         shortcuts_window.show()
 
-    def on_about(self, _action, _param):
+    def _on_about(self, _action, _param):
         """ Show about dialog """
         builder = Gtk.Builder.new_from_resource(f'{RES_PATH}/about.ui')
         about = builder.get_object('about')
         about.set_transient_for(self.window)
         about.set_logo_icon_name(APP_ID)
-        about.set_version(self.version)
-        about.connect('response', lambda dialog, response: dialog.destroy())
+        about.set_version(VERSION)
         about.present()
 
-    def on_quit(self, _action, _param):
+    def _on_quit(self, _action, _param):
         self.quit()
 
 
-def main(version):
+def main():
     # Run the Application
-    app = Dialect(version)
+    app = Dialect()
     return app.run(sys.argv)
