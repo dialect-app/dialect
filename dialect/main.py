@@ -151,11 +151,11 @@ class Dialect(Gtk.Application):
         self.add_action(self.copy_action)
 
         self.listen_dest_action = Gio.SimpleAction.new('listen-dest', None)
-        self.set_accels_for_action('app.listen-dest', ['<Primary><Shift>C'])
+        self.set_accels_for_action('app.listen-dest', ['<Primary>L'])
         self.add_action(self.listen_dest_action)
 
         self.listen_src_action = Gio.SimpleAction.new('listen-src', None)
-        self.set_accels_for_action('app.listen-src', ['<Primary><Shift>C'])
+        self.set_accels_for_action('app.listen-src', ['<Primary><Shift>L'])
         self.add_action(self.listen_src_action)
 
         self.quit_action = Gio.SimpleAction.new('quit', None)
