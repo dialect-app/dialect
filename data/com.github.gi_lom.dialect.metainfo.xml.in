@@ -42,6 +42,13 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="1.4.1" date="2021-10-20">
+      <description>
+        <ul>
+          <li>Fix shortcut bug</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.4.0" date="2021-10-18">
       <description>
         <ul>
