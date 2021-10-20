@@ -3,59 +3,47 @@
 <interface>
   <requires lib="gtk+" version="3.22"/>
   <template class="DialectLangSelector" parent="GtkPopover">
-    <property name="height_request">250</property>
+    <property name="height_request">300</property>
+    <style>
+      <class name="lang-selector"/>
+    </style>
     <child>
       <object class="GtkBox">
         <property name="orientation">vertical</property>
-        <property name="spacing">8</property>
         <child>
-          <object class="GtkSearchEntry" id="search">
-            <property name="margin_top">8</property>
-            <property name="margin_start">8</property>
-            <property name="margin_end">8</property>
-          </object>
+          <object class="GtkSearchEntry" id="search"></object>
         </child>
         <child>
           <object class="GtkScrolledWindow" id="scroll">
             <property name="vexpand">True</property>
-            <property name="margin_bottom">8</property>
-            <property name="margin_start">8</property>
-            <property name="margin_end">8</property>
-            <child>
-              <object class="GtkViewport">
+            <property name="child">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkBox">
-                    <property name="orientation">vertical</property>
+                  <object class="GtkRevealer" id="revealer">
+                    <property name="reveal-child">True</property>
                     <child>
-                      <object class="GtkRevealer" id="revealer">
-                        <property name="reveal-child">True</property>
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkBox">
-                            <property name="orientation">vertical</property>
-                            <child>
-                              <object class="GtkListView" id="recent_list">
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkSeparator" id="separator">
-                                <property name="margin-top">8</property>
-                                <property name="margin-bottom">8</property>
-                                <property name="margin-start">8</property>
-                                <property name="margin-end">8</property>
-                              </object>
-                            </child>
+                          <object class="GtkListView" id="recent_list">
+                            <property name="single-click-activate">True</property>
                           </object>
                         </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkListView" id="lang_list">
+                        <child>
+                          <object class="GtkSeparator" id="separator"></object>
+                        </child>
                       </object>
                     </child>
                   </object>
                 </child>
+                <child>
+                  <object class="GtkListView" id="lang_list">
+                    <property name="single-click-activate">True</property>
+                  </object>
+                </child>
               </object>
-            </child>
+            </property>
           </object>
         </child>
       </object>

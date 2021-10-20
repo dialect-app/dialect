@@ -27,8 +27,19 @@
   border-top: 0;
 }
 
-.langselector {
-  border-radius: 4px;
+.lang-selector contents {
+  padding: 0;
+}
+.lang-selector .search {
+  margin: 6px;
+}
+.lang-selector separator {
+  margin: 12px 6px;
+}
+.lang-selector row {
+  border-radius: 6px;
+  margin: 0 6px;
+  padding: 6px 12px;
 }
 
 .bottomlang {
