@@ -10,7 +10,6 @@ import signal
 import locale
 import gettext
 
-VERSION = '@VERSION@'
 pkgdatadir = '@pkgdatadir@'
 localedir = '@localedir@'
 builddir = os.environ.get('MESON_BUILD_ROOT')
@@ -35,4 +34,4 @@ if __name__ == '__main__':
     resource._register()
 
     from dialect import main
-    sys.exit(main.main(VERSION))
+    sys.exit(main.main())

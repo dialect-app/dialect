@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="dialect">
-  <schema id="com.github.gi_lom.dialect" path="/com/github/gi_lom/dialect/">
+  <schema id="@app-id@" path="/com/github/gi_lom/dialect/">
     <key type="ai" name="window-size">
         <default>[800, 300]</default>
     </key>

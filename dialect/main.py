@@ -15,22 +15,22 @@ gi.require_version('Adw', '1')
 
 from gi.repository import Adw, Gio, GLib, Gst, Gtk
 
-from dialect.define import APP_ID, RES_PATH
+from dialect.define import APP_ID, RES_PATH, VERSION
 from dialect.preferences import DialectPreferencesWindow
 from dialect.settings import Settings
 from dialect.window import DialectWindow
 
 
 class Dialect(Adw.Application):
-    def __init__(self, version):
+    def __init__(self):
         Adw.Application.__init__(
             self,
             application_id=APP_ID,
             flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE
         )
+        self.set_resource_base_path(RES_PATH)
 
         # App window
-        self.version = version
         self.window = None
         self.launch_text = ''
         self.launch_langs = {}
@@ -149,14 +149,14 @@ class Dialect(Adw.Application):
         about = builder.get_object('about')
         about.set_transient_for(self.window)
         about.set_logo_icon_name(APP_ID)
-        about.set_version(self.version)
+        about.set_version(VERSION)
         about.present()
 
     def _on_quit(self, _action, _param):
         self.quit()
 
 
-def main(version):
+def main():
     # Run the Application
-    app = Dialect(version)
+    app = Dialect()
     return app.run(sys.argv)

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>com.github.gi_lom.dialect</id>
+  <id>@app-id@</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
   <name>Dialect</name>
@@ -27,7 +27,7 @@
   <developer_name>The Dialect Authors</developer_name>
   <content_rating type="oars-1.1" />
 
-  <launchable type="desktop-id">com.github.gi_lom.dialect.desktop</launchable>
+  <launchable type="desktop-id">@app-id@.desktop</launchable>
   <translation type="gettext">dialect</translation>
 
   <screenshots>

@@ -1,5 +1,5 @@
 {
-    "app-id" : "com.github.gi_lom.dialect",
+    "app-id" : "com.github.gi_lom.dialect.Devel",
     "runtime" : "org.gnome.Platform",
     "runtime-version" : "master",
     "sdk" : "org.gnome.Sdk",
@@ -17,8 +17,8 @@
         "pypi-dependencies.json",
         {
             "name" : "dialect",
-            "builddir" : true,
             "buildsystem" : "meson",
+            "config-opts": ["-Dprofile=development"],
             "sources" : [
                 {
                     "type" : "dir",
