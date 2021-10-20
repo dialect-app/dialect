@@ -151,20 +151,14 @@
                                 <property name="spacing">6</property>
                                 <child>
                                   <object class="GtkMenuButton" id="src_lang_btn">
+                                    <property name="always-show-arrow">True</property>
+                                    <style>
+                                      <class name="raised"/>
+                                    </style>
                                     <child>
-                                      <object class="GtkBox">
-                                        <property name="spacing">8</property>
-                                        <child>
-                                          <object class="GtkLabel" id="src_lang_label">
-                                            <property name="ellipsize">end</property>
-                                            <property name="xalign">0</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkImage">
-                                            <property name="icon-name">pan-down-symbolic</property>
-                                          </object>
-                                        </child>
+                                      <object class="GtkLabel" id="src_lang_label">
+                                        <property name="ellipsize">end</property>
+                                        <property name="xalign">0</property>
                                       </object>
                                     </child>
                                   </object>
@@ -178,20 +172,14 @@
                                 </child>
                                 <child>
                                   <object class="GtkMenuButton" id="dest_lang_btn">
+                                    <property name="always-show-arrow">True</property>
+                                    <style>
+                                      <class name="raised"/>
+                                    </style>
                                     <child>
-                                      <object class="GtkBox">
-                                        <property name="spacing">8</property>
-                                        <child>
-                                          <object class="GtkLabel" id="dest_lang_label">
-                                            <property name="ellipsize">end</property>
-                                            <property name="xalign">0</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkImage">
-                                            <property name="icon-name">pan-down-symbolic</property>
-                                          </object>
-                                        </child>
+                                      <object class="GtkLabel" id="dest_lang_label">
+                                        <property name="ellipsize">end</property>
+                                        <property name="xalign">0</property>
                                       </object>
                                     </child>
                                   </object>
@@ -230,6 +218,7 @@
                       <object class="GtkMenuButton" id="menu_btn">
                         <property name="menu-model">app-menu</property>
                         <property name="icon-name">open-menu-symbolic</property>
+                        <property name="primary">True</property>
                       </object>
                     </child>
                   </object>
@@ -238,22 +227,22 @@
                   <object class="GtkOverlay">
                     <property name="vexpand">True</property>
                     <child>
-                      <object class="GtkBox" id="main_box">
+                      <object class="GtkBox">
                         <property name="orientation">vertical</property>
-                        <style>
-                          <class name="main-box"/>
-                        </style>
                         <child>
                           <object class="GtkBox" id="translator_box">
                             <property name="vexpand">True</property>
                             <property name="spacing">12</property>
                             <property name="homogeneous">True</property>
                             <property name="overflow">hidden</property>
+                            <style>
+                              <class name="translation-box"/>
+                            </style>
                             <child>
                               <object class="GtkBox">
                                 <property name="orientation">vertical</property>
                                 <style>
-                                  <class name="translation-box"/>
+                                  <class name="translation-side-box"/>
                                 </style>
                                 <child>
                                   <object class="GtkScrolledWindow">
@@ -387,7 +376,7 @@
                               <object class="GtkBox" id="dest_box">
                                 <property name="orientation">vertical</property>
                                 <style>
-                                  <class name="translation-box"/>
+                                  <class name="translation-side-box"/>
                                 </style>
                                 <child>
                                   <object class="GtkScrolledWindow">
@@ -492,23 +481,15 @@
                                     <property name="hexpand">True</property>
                                     <child>
                                       <object class="GtkMenuButton" id="src_lang_btn2">
+                                        <property name="hexpand">True</property>
                                         <property name="sensitive" bind-source="src_lang_btn" bind-property="sensitive">True</property>
                                         <property name="focus-on-click">False</property>
+                                        <property name="always-show-arrow">True</property>
                                         <child>
-                                          <object class="GtkBox">
-                                            <property name="spacing">8</property>
-                                            <child>
-                                              <object class="GtkLabel"> 
-                                                <property name="label" bind-source="src_lang_label" bind-property="label"/>
-                                                <property name="ellipsize">end</property>
-                                                <property name="xalign">0</property>
-                                              </object>
-                                            </child>
-                                            <child>
-                                              <object class="GtkImage">
-                                                <property name="icon-name">pan-down-symbolic</property>
-                                              </object>
-                                            </child>
+                                          <object class="GtkLabel"> 
+                                            <property name="label" bind-source="src_lang_label" bind-property="label"/>
+                                            <property name="ellipsize">end</property>
+                                            <property name="xalign">0</property>
                                           </object>
                                         </child>
                                       </object>
@@ -523,23 +504,15 @@
                                     </child>
                                     <child>
                                       <object class="GtkMenuButton" id="dest_lang_btn2">
+                                        <property name="hexpand">True</property>
                                         <property name="sensitive" bind-source="dest_lang_btn" bind-property="sensitive">True</property>
                                         <property name="focus-on-click">False</property>
+                                        <property name="always-show-arrow">True</property>
                                         <child>
-                                          <object class="GtkBox">
-                                            <property name="spacing">8</property>
-                                            <child>
-                                              <object class="GtkLabel">
-                                                <property name="label" bind-source="dest_lang_label" bind-property="label"/>
-                                                <property name="ellipsize">end</property>
-                                                <property name="xalign">0</property>
-                                              </object>
-                                            </child>
-                                            <child>
-                                              <object class="GtkImage">
-                                                <property name="icon-name">pan-down-symbolic</property>
-                                              </object>
-                                            </child>
+                                          <object class="GtkLabel">
+                                            <property name="label" bind-source="dest_lang_label" bind-property="label"/>
+                                            <property name="ellipsize">end</property>
+                                            <property name="xalign">0</property>
                                           </object>
                                         </child>
                                       </object>
@@ -550,7 +523,7 @@
                                   </object>
                                 </child>
                                 <style>
-                                  <class name="bottomlang"/>
+                                  <class name="bottom-bar"/>
                                 </style>
                               </object>
                             </child>
@@ -606,8 +579,8 @@
   </object>
   <object class="GtkSizeGroup">
     <widgets>
-      <widget name="src_lang_btn"/>
-      <widget name="dest_lang_btn"/>
+      <widget name="src_lang_label"/>
+      <widget name="dest_lang_label"/>
     </widgets>
   </object>
 </interface>

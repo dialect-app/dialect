@@ -1,15 +1,15 @@
 
-.main-box {
+.translation-box {
   padding: 12px;
 }
 
-.translation-box {
+.translation-side-box {
   background: @theme_base_color;
   border: 1px solid @borders;
   border-radius: 9px;
 }
 
-.translation-box scrolledwindow {
+.translation-side-box scrolledwindow {
   border-bottom: 1px solid @borders;
 }
 
@@ -42,7 +42,7 @@
   padding: 6px 12px;
 }
 
-.bottomlang {
+.bottom-bar {
   background: @theme_base_color;
   border: 1px solid @borders;
   border-bottom: 0;
