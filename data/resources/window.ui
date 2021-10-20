@@ -27,6 +27,7 @@
   <template class="DialectWindow" parent="AdwApplicationWindow">
     <property name="default-width">800</property>
     <property name="default-height">300</property>
+    <property name="focus-widget">src_text</property>
     <child>
       <object class="GtkStack" id="main_stack">
         <property name="transition-type">crossfade</property>
@@ -592,6 +593,9 @@
           </object>
         </child>
       </object>
+    </child>
+    <child>
+      <object class="GtkEventControllerKey" id="win_key_ctrlr"/>
     </child>
   </template>
   <object class="GtkSizeGroup">

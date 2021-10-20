@@ -66,6 +66,7 @@ class DialectWindow(Adw.ApplicationWindow):
     notification_label = Gtk.Template.Child()
 
     src_key_ctrlr = Gtk.Template.Child()
+    win_key_ctrlr = Gtk.Template.Child()
 
     # Translator
     translator = None  # Translator object
@@ -343,6 +344,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.src_buffer.connect('end-user-action', self.user_action_ended)
         # Detect typing
         self.src_key_ctrlr.connect('key-pressed', self.update_trans_button)
+        self.win_key_ctrlr.connect('key-pressed', self.on_key_event)
         # Translate button
         self.translate_btn.connect('clicked', self.translation)
         # "Did you mean" links
@@ -751,18 +753,24 @@ class DialectWindow(Adw.ApplicationWindow):
         finally:
             self.voice_loading = False
 
+    def on_key_event(self, _button, keyval, _keycode, state):
+        modifiers = state & Gtk.accelerator_get_default_mod_mask()
+        shift_mask = Gdk.ModifierType.SHIFT_MASK
+        unicode_key_val = Gdk.keyval_to_unicode(keyval)
+        if (GLib.unichar_isgraph(chr(unicode_key_val)) and
+                modifiers in (shift_mask, 0) and not self.src_text.is_focus()):
+            self.src_text.grab_focus()
+            end_iter = self.src_buffer.get_end_iter()
+            self.src_buffer.insert(end_iter, chr(unicode_key_val))
+            return Gdk.EVENT_STOP
+        return Gdk.EVENT_PROPAGATE
+
     # This starts the translation if Ctrl+Enter button is pressed
     def update_trans_button(self, _button, keyval, _keycode, state):
         modifiers = state & Gtk.accelerator_get_default_mod_mask()
 
         control_mask = Gdk.ModifierType.CONTROL_MASK
         enter_keys = (Gdk.KEY_Return, Gdk.KEY_KP_Enter)
-        # Disabled until I find better ways to make it work.
-        # shift_mask = Gdk.ModifierType.SHIFT_MASK
-        # unicode_key_val = Gdk.keyval_to_unicode(keyval)
-        # if (GLib.unichar_isgraph(chr(unicode_key_val)) and
-        #         modifiers in (shift_mask, 0) and not self.src_text.is_focus()):
-        #     self.src_text.grab_focus()
 
         if not Settings.get().live_translation:
             if control_mask == modifiers:
