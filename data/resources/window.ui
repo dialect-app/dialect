@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
+  <menu id="app-menu">
+    <section>
+      <attribute name="id">preferences-section</attribute>
+      <item>
+        <attribute name="label" translatable="yes">Show Pronunciation</attribute>
+        <attribute name="action">app.pronunciation</attribute>
+      </item>
+    </section>
+    <section>
+      <attribute name="id">help-section</attribute>
+      <item>
+        <attribute name="label" translatable="yes">Preferences</attribute>
+        <attribute name="action">app.preferences</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Keyboard Shortcuts</attribute>
+        <attribute name="action">win.show-help-overlay</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">About Dialect</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+    </section>
+  </menu>
   <template class="DialectWindow" parent="AdwApplicationWindow">
     <property name="default-width">800</property>
     <property name="default-height">300</property>
@@ -203,6 +227,7 @@
                     </child>
                     <child type="end">
                       <object class="GtkMenuButton" id="menu_btn">
+                        <property name="menu-model">app-menu</property>
                         <property name="icon-name">open-menu-symbolic</property>
                       </object>
                     </child>

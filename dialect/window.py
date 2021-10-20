@@ -37,8 +37,6 @@ class DialectWindow(Adw.ApplicationWindow):
     return_btn = Gtk.Template.Child()
     forward_btn = Gtk.Template.Child()
 
-    menu_btn = Gtk.Template.Child()
-
     src_pron_revealer = Gtk.Template.Child()
     src_pron_label = Gtk.Template.Child()
     mistakes = Gtk.Template.Child()
@@ -336,12 +334,6 @@ class DialectWindow(Adw.ApplicationWindow):
         self.dest_lang_btn.set_popover(self.dest_lang_selector)
 
         self.langs_button_box.set_homogeneous(False)
-
-        # Add menu to menu button
-        builder = Gtk.Builder.new_from_resource(f'{RES_PATH}/menu.ui')
-        menu = builder.get_object('app-menu')
-        menu_popover = Gtk.PopoverMenu.new_from_model(menu)
-        self.menu_btn.set_popover(menu_popover)
 
     def setup_translation(self):
         # Left buffer

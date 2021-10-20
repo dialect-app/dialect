@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/com/github/gi_lom/dialect">
-    <file>menu.ui</file>
-    <file>window.ui</file>
-    <file>about.ui</file>
-    <file>preferences.ui</file>
-    <file>lang-selector.ui</file>
-    <file>lang-row.ui</file>
-    <file>shortcuts.ui</file>
-    <file>style.css</file>
+    <file compressed="true">style.css</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="gtk/help-overlay.ui">shortcuts.ui</file>
+
+    <file compressed="true" preprocess="xml-stripblanks">window.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">about.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">preferences.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">lang-selector.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">lang-row.ui</file>
   </gresource>
 </gresources>
