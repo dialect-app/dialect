@@ -7,7 +7,7 @@ import threading
 from gettext import gettext as _
 from tempfile import NamedTemporaryFile
 
-from gi.repository import Gdk, GLib, GObject, Gst, Gtk, Handy
+from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk
 
 from dialect.define import APP_ID, MAX_LENGTH, RES_PATH, TRANS_NUMBER
 from dialect.lang_selector import DialectLangSelector
@@ -17,7 +17,7 @@ from dialect.tts import TTS
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/window.ui')
-class DialectWindow(Handy.ApplicationWindow):
+class DialectWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'DialectWindow'
 
     # Get widgets
@@ -67,8 +67,10 @@ class DialectWindow(Handy.ApplicationWindow):
     notification_revealer = Gtk.Template.Child()
     notification_label = Gtk.Template.Child()
 
-    translator = None  # Translator object
+    src_key_ctrlr = Gtk.Template.Child()
 
+    # Translator
+    translator = None  # Translator object
     # Text to speech
     tts = None
     tts_langs = None
@@ -112,29 +114,27 @@ class DialectWindow(Handy.ApplicationWindow):
         bus.connect('message', self.on_gst_message)
         self.player_event = threading.Event()  # An event for letting us know when Gst is done playing
 
-        # Clipboard
-        self.clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)  # This is only for the Clipboard button
-
         # Setup window
+        self.setup_actions()
         self.setup()
 
     def setup(self):
         self.set_default_icon_name(APP_ID)
 
         # Load saved dark mode
-        gtk_settings = Gtk.Settings.get_default()
-        gtk_settings.set_property('gtk-application-prefer-dark-theme',
-                                  Settings.get().dark_mode)
+        style_manager = self.app.get_style_manager()
+        if not style_manager.get_system_supports_color_schemes() and Settings.get().dark_mode:
+            style_manager.set_color_scheme(Adw.ColorScheme.FORCE_DARK)
 
         # Connect responsive design function
-        self.connect('check-resize', self.responsive_listener)
+        self.connect('notify::default-width', self.responsive_listener)
+        self.connect('notify::maximized', self.responsive_listener)
         # Save settings on close
-        self.connect('delete-event', self.save_settings)
+        self.connect('unrealize', self.save_settings)
 
         self.setup_headerbar()
-        self.setup_actionbar()
         self.setup_translation()
-        self.toggle_mobile_mode()
+        self.responsive_listener(launch=True)
 
         # Load translator
         self.retry_backend_btn.connect('clicked', self.retry_load_translator)
@@ -147,6 +147,43 @@ class DialectWindow(Handy.ApplicationWindow):
         if Settings.get().tts != '':
             threading.Thread(target=self.load_lang_speech, daemon=True).start()
 
+    def setup_actions(self):
+        back = Gio.SimpleAction.new('back', None)
+        back.set_enabled(False)
+        back.connect('activate', self.ui_return)
+        self.add_action(back)
+
+        forward_action = Gio.SimpleAction.new('forward', None)
+        forward_action.set_enabled(False)
+        forward_action.connect('activate', self.ui_forward)
+        self.add_action(forward_action)
+
+        switch_action = Gio.SimpleAction.new('switch', None)
+        switch_action.connect('activate', self.ui_switch)
+        self.add_action(switch_action)
+
+        clear_action = Gio.SimpleAction.new('clear', None)
+        clear_action.set_enabled(False)
+        clear_action.connect('activate', self.ui_clear)
+        self.add_action(clear_action)
+
+        paste_action = Gio.SimpleAction.new('paste', None)
+        paste_action.connect('activate', self.ui_paste)
+        self.add_action(paste_action)
+
+        copy_action = Gio.SimpleAction.new('copy', None)
+        copy_action.set_enabled(False)
+        copy_action.connect('activate', self.ui_copy)
+        self.add_action(copy_action)
+
+        listen_dest_action = Gio.SimpleAction.new('listen-dest', None)
+        listen_dest_action.connect('activate', self.ui_dest_voice)
+        self.add_action(listen_dest_action)
+
+        listen_src_action = Gio.SimpleAction.new('listen-src', None)
+        listen_src_action.connect('activate', self.ui_src_voice)
+        self.add_action(listen_src_action)
+
     def load_translator(self, backend, launch=False):
         def update_ui():
             # Supported features
@@ -156,9 +193,9 @@ class DialectWindow(Handy.ApplicationWindow):
             if not self.translator.supported_features['pronunciation']:
                 self.src_pron_revealer.set_reveal_child(False)
                 self.dest_pron_revealer.set_reveal_child(False)
-                self.app.pronunciation_action.set_enabled(False)
+                self.app.lookup_action('pronunciation').set_enabled(False)
             else:
-                self.app.pronunciation_action.set_enabled(True)
+                self.app.lookup_action('pronunciation').set_enabled(True)
 
             self.no_retranslate = True
             # Update langs list
@@ -225,10 +262,10 @@ class DialectWindow(Handy.ApplicationWindow):
         ).start()
 
     def on_listen_failed(self):
-        self.src_voice_btn.set_image(self.src_voice_warning)
+        self.src_voice_btn.set_child(self.src_voice_warning)
         self.src_voice_spinner.stop()
 
-        self.dest_voice_btn.set_image(self.dest_voice_warning)
+        self.dest_voice_btn.set_child(self.dest_voice_warning)
         self.dest_voice_spinner.stop()
 
         tooltip_text = _('A network issue has occured. Retry?')
@@ -249,17 +286,17 @@ class DialectWindow(Handy.ApplicationWindow):
         )
 
         if self.tts_langs:
-            self.app.listen_src_action.set_enabled(
+            self.lookup_action('listen-src').set_enabled(
                 self.src_lang_selector.get_property('selected') in self.tts_langs
                 and src_text != ''
             )
-            self.app.listen_dest_action.set_enabled(
+            self.lookup_action('listen-dest').set_enabled(
                 self.dest_lang_selector.get_property('selected') in self.tts_langs
                 and dest_text != ''
             )
         else:
-            self.app.listen_src_action.set_enabled(src_text != '')
-            self.app.listen_dest_action.set_enabled(dest_text != '')
+            self.lookup_action('listen-src').set_enabled(src_text != '')
+            self.lookup_action('listen-dest').set_enabled(dest_text != '')
 
     def load_lang_speech(self, listen=False, text=None, language=None):
         """
@@ -290,7 +327,6 @@ class DialectWindow(Handy.ApplicationWindow):
                                        self.on_src_lang_changed)
         # Set popover selector to button
         self.src_lang_btn.set_popover(self.src_lang_selector)
-        self.src_lang_selector.set_relative_to(self.src_lang_btn)
 
         # Right lang selector
         self.dest_lang_selector = DialectLangSelector()
@@ -298,20 +334,14 @@ class DialectWindow(Handy.ApplicationWindow):
                                         self.on_dest_lang_changed)
         # Set popover selector to button
         self.dest_lang_btn.set_popover(self.dest_lang_selector)
-        self.dest_lang_selector.set_relative_to(self.dest_lang_btn)
 
         self.langs_button_box.set_homogeneous(False)
 
         # Add menu to menu button
         builder = Gtk.Builder.new_from_resource(f'{RES_PATH}/menu.ui')
         menu = builder.get_object('app-menu')
-        menu_popover = Gtk.Popover.new_from_model(self.menu_btn, menu)
+        menu_popover = Gtk.PopoverMenu.new_from_model(menu)
         self.menu_btn.set_popover(menu_popover)
-
-    def setup_actionbar(self):
-        # Set popovers to lang buttons
-        self.src_lang_btn2.set_popover(self.src_lang_selector)
-        self.dest_lang_btn2.set_popover(self.dest_lang_selector)
 
     def setup_translation(self):
         # Left buffer
@@ -319,7 +349,8 @@ class DialectWindow(Handy.ApplicationWindow):
         self.src_buffer.set_text(self.launch_text)
         self.src_buffer.connect('changed', self.on_src_text_changed)
         self.src_buffer.connect('end-user-action', self.user_action_ended)
-        self.connect('key-press-event', self.update_trans_button)
+        # Detect typing
+        self.src_key_ctrlr.connect('key-pressed', self.update_trans_button)
         # Translate button
         self.translate_btn.connect('clicked', self.translation)
         # "Did you mean" links
@@ -334,16 +365,12 @@ class DialectWindow(Handy.ApplicationWindow):
         self.trans_warning.hide()
 
         # Voice buttons prep-work
-        self.src_voice_warning = Gtk.Image.new_from_icon_name(
-            'dialog-warning-symbolic', Gtk.IconSize.BUTTON)
-        self.src_voice_image = Gtk.Image.new_from_icon_name(
-            'audio-speakers-symbolic', Gtk.IconSize.BUTTON)
+        self.src_voice_warning = Gtk.Image.new_from_icon_name('dialog-warning-symbolic')
+        self.src_voice_image = Gtk.Image.new_from_icon_name('audio-speakers-symbolic')
         self.src_voice_spinner = Gtk.Spinner()  # For use while audio is running or still loading.
 
-        self.dest_voice_warning = Gtk.Image.new_from_icon_name(
-            'dialog-warning-symbolic', Gtk.IconSize.BUTTON)
-        self.dest_voice_image = Gtk.Image.new_from_icon_name(
-            'audio-speakers-symbolic', Gtk.IconSize.BUTTON)
+        self.dest_voice_warning = Gtk.Image.new_from_icon_name('dialog-warning-symbolic')
+        self.dest_voice_image = Gtk.Image.new_from_icon_name('audio-speakers-symbolic')
         self.dest_voice_spinner = Gtk.Spinner()
 
         self.toggle_voice_spinner(True)
@@ -351,10 +378,15 @@ class DialectWindow(Handy.ApplicationWindow):
         self.src_voice_btn.set_visible(Settings.get().tts != '')
         self.dest_voice_btn.set_visible(Settings.get().tts != '')
 
-    def responsive_listener(self, _window):
-        size = self.get_size()
+    def responsive_listener(self, _window=None, _param=None, launch=False):
+        if launch:
+            width, height = Settings.get().window_size
+        else:
+            size = self.get_default_size()
+            width = size.width
+            height = size.height
 
-        if size.width < 680:
+        if width < 680 and not self.is_maximized():
             if self.mobile_mode is False:
                 self.mobile_mode = True
                 self.toggle_mobile_mode()
@@ -362,6 +394,9 @@ class DialectWindow(Handy.ApplicationWindow):
             if self.mobile_mode is True:
                 self.mobile_mode = False
                 self.toggle_mobile_mode()
+
+        if launch:
+            self.set_default_size(width, height)
 
     def toggle_mobile_mode(self):
         if self.mobile_mode:
@@ -372,8 +407,10 @@ class DialectWindow(Handy.ApplicationWindow):
             # Change translation box orientation
             self.translator_box.set_orientation(Gtk.Orientation.VERTICAL)
             # Change lang selectors position
-            self.src_lang_selector.set_relative_to(self.src_lang_btn2)
-            self.dest_lang_selector.set_relative_to(self.dest_lang_btn2)
+            self.src_lang_btn.set_popover(None)
+            self.src_lang_btn2.set_popover(self.src_lang_selector)
+            self.dest_lang_btn.set_popover(None)
+            self.dest_lang_btn2.set_popover(self.dest_lang_selector)
         else:
             # Hide actionbar
             self.actionbar.set_reveal_child(False)
@@ -382,8 +419,10 @@ class DialectWindow(Handy.ApplicationWindow):
             # Reset translation box orientation
             self.translator_box.set_orientation(Gtk.Orientation.HORIZONTAL)
             # Reset lang selectors position
-            self.src_lang_selector.set_relative_to(self.src_lang_btn)
-            self.dest_lang_selector.set_relative_to(self.dest_lang_btn)
+            self.src_lang_btn2.set_popover(None)
+            self.src_lang_btn.set_popover(self.src_lang_selector)
+            self.dest_lang_btn2.set_popover(None)
+            self.dest_lang_btn.set_popover(self.dest_lang_selector)
 
     def translate(self, text, src_lang, dest_lang):
         """
@@ -404,7 +443,7 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def save_settings(self, *args, **kwargs):
         if not self.is_maximized():
-            size = self.get_size()
+            size = self.get_default_size()
             Settings.get().window_size = (size.width, size.height)
         if self.translator is not None:
             Settings.get().set_src_langs(self.translator.name, self.src_langs)
@@ -430,12 +469,12 @@ class DialectWindow(Handy.ApplicationWindow):
 
     def toggle_voice_spinner(self, active=True):
         if active:
-            self.app.listen_src_action.set_enabled(False)
-            self.src_voice_btn.set_image(self.src_voice_spinner)
+            self.lookup_action('listen-src').set_enabled(False)
+            self.src_voice_btn.set_child(self.src_voice_spinner)
             self.src_voice_spinner.start()
 
-            self.app.listen_dest_action.set_enabled(False)
-            self.dest_voice_btn.set_image(self.dest_voice_spinner)
+            self.lookup_action('listen-dest').set_enabled(False)
+            self.dest_voice_btn.set_child(self.dest_voice_spinner)
             self.dest_voice_spinner.start()
         else:
             src_text = self.src_buffer.get_text(
@@ -443,11 +482,11 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.src_buffer.get_end_iter(),
                 True
             )
-            self.app.listen_src_action.set_enabled(
+            self.lookup_action('listen-src').set_enabled(
                 self.src_lang_selector.get_property('selected') in self.tts_langs
                 and src_text != ''
             )
-            self.src_voice_btn.set_image(self.src_voice_image)
+            self.src_voice_btn.set_child(self.src_voice_image)
             self.src_voice_spinner.stop()
 
             dest_text = self.dest_buffer.get_text(
@@ -455,11 +494,11 @@ class DialectWindow(Handy.ApplicationWindow):
                 self.dest_buffer.get_end_iter(),
                 True
             )
-            self.app.listen_dest_action.set_enabled(
+            self.lookup_action('listen-dest').set_enabled(
                 self.dest_lang_selector.get_property('selected') in self.tts_langs
                 and dest_text != ''
             )
-            self.dest_voice_btn.set_image(self.dest_voice_image)
+            self.dest_voice_btn.set_child(self.dest_voice_image)
             self.dest_voice_spinner.stop()
 
     def on_src_lang_changed(self, _obj, _param):
@@ -479,8 +518,9 @@ class DialectWindow(Handy.ApplicationWindow):
 
         # Disable or enable listen function.
         if self.tts_langs and Settings.get().tts != '':
-            self.app.listen_src_action.set_enabled(code in self.tts_langs
-                                                   and src_text != '')
+            self.lookup_action('listen-src').set_enabled(
+                code in self.tts_langs and src_text != ''
+            )
 
         if code in self.translator.languages:
             self.src_lang_label.set_label(get_lang_name(code))
@@ -526,8 +566,9 @@ class DialectWindow(Handy.ApplicationWindow):
 
         # Disable or enable listen function.
         if self.tts_langs and Settings.get().tts != '':
-            self.app.listen_dest_action.set_enabled(code in self.tts_langs
-                                                    and dest_text != '')
+            self.lookup_action('listen-dest').set_enabled(
+                code in self.tts_langs and dest_text != ''
+            )
 
         self.dest_lang_label.set_label(get_lang_name(code))
         # Update saved dest langs list
@@ -642,14 +683,20 @@ class DialectWindow(Handy.ApplicationWindow):
             self.dest_buffer.get_end_iter(),
             True
         )
-        self.clipboard.set_text(dest_text, -1)
-        self.clipboard.store()
+        clipboard = Gdk.Display.get_default().get_clipboard()
+        clipboard.set(dest_text)
 
     def ui_paste(self, _action, _param):
-        text = self.clipboard.wait_for_text()
-        if text is not None:
-            end_iter = self.src_buffer.get_end_iter()
-            self.src_buffer.insert(end_iter, text)
+        clipboard = Gdk.Display.get_default().get_clipboard()
+
+        def on_paste(_clipboard, result):
+            text = clipboard.read_text_finish(result)
+            if text is not None:
+                end_iter = self.src_buffer.get_end_iter()
+                self.src_buffer.insert(end_iter, text)
+
+        cancellable = Gio.Cancellable()
+        clipboard.read_text_async(cancellable, on_paste)
 
     def ui_src_voice(self, _action, _param):
         src_text = self.src_buffer.get_text(
@@ -713,27 +760,28 @@ class DialectWindow(Handy.ApplicationWindow):
             self.voice_loading = False
 
     # This starts the translation if Ctrl+Enter button is pressed
-    def update_trans_button(self, button, keyboard):
-        modifiers = keyboard.get_state() & Gtk.accelerator_get_default_mod_mask()
+    def update_trans_button(self, _button, keyval, _keycode, state):
+        modifiers = state & Gtk.accelerator_get_default_mod_mask()
 
         control_mask = Gdk.ModifierType.CONTROL_MASK
-        shift_mask = Gdk.ModifierType.SHIFT_MASK
-        unicode_key_val = Gdk.keyval_to_unicode(keyboard.keyval)
         enter_keys = (Gdk.KEY_Return, Gdk.KEY_KP_Enter)
-        if (GLib.unichar_isgraph(chr(unicode_key_val)) and
-                modifiers in (shift_mask, 0) and not self.src_text.is_focus()):
-            self.src_text.grab_focus()
+        # Disabled until I find better ways to make it work.
+        # shift_mask = Gdk.ModifierType.SHIFT_MASK
+        # unicode_key_val = Gdk.keyval_to_unicode(keyval)
+        # if (GLib.unichar_isgraph(chr(unicode_key_val)) and
+        #         modifiers in (shift_mask, 0) and not self.src_text.is_focus()):
+        #     self.src_text.grab_focus()
 
         if not Settings.get().live_translation:
             if control_mask == modifiers:
-                if keyboard.keyval in enter_keys:
+                if keyval in enter_keys:
                     if not Settings.get().translate_accel_value:
-                        self.translation(button)
+                        self.translation(None)
                         return Gdk.EVENT_STOP
                     return Gdk.EVENT_PROPAGATE
-            elif keyboard.keyval in enter_keys:
+            elif keyval in enter_keys:
                 if Settings.get().translate_accel_value:
-                    self.translation(button)
+                    self.translation(None)
                     return Gdk.EVENT_STOP
                 return Gdk.EVENT_PROPAGATE
 
@@ -748,25 +796,25 @@ class DialectWindow(Handy.ApplicationWindow):
     def on_src_text_changed(self, buffer):
         sensitive = buffer.get_char_count() != 0
         self.translate_btn.set_sensitive(sensitive)
-        self.app.clear_action.set_enabled(sensitive)
+        self.lookup_action('clear').set_enabled(sensitive)
         if not self.voice_loading and self.tts_langs:
-            self.app.listen_src_action.set_enabled(
+            self.lookup_action('listen-src').set_enabled(
                 self.src_lang_selector.get_property('selected') in self.tts_langs
                 and sensitive
             )
         elif not self.voice_loading and not self.tts_langs:
-            self.app.listen_src_action.set_enabled(sensitive)
+            self.lookup_action('listen-src').set_enabled(sensitive)
 
     def on_dest_text_changed(self, buffer):
         sensitive = buffer.get_char_count() != 0
-        self.app.copy_action.set_enabled(sensitive)
+        self.lookup_action('copy').set_enabled(sensitive)
         if not self.voice_loading and self.tts_langs:
-            self.app.listen_dest_action.set_enabled(
+            self.lookup_action('listen-dest').set_enabled(
                 self.dest_lang_selector.get_property('selected') in self.tts_langs
                 and sensitive
             )
         elif not self.voice_loading and not self.tts_langs:
-            self.app.listen_dest_action.set_enabled(sensitive)
+            self.lookup_action('listen-dest').set_enabled(sensitive)
 
     def user_action_ended(self, buffer):
         # If the text is over the highest number of characters allowed, it is truncated.
@@ -785,8 +833,8 @@ class DialectWindow(Handy.ApplicationWindow):
 
     # The history part
     def reset_return_forward_btns(self):
-        self.app.back_action.set_enabled(self.current_history < len(self.translator.history) - 1)
-        self.app.forward_action.set_enabled(self.current_history > 0)
+        self.lookup_action('back').set_enabled(self.current_history < len(self.translator.history) - 1)
+        self.lookup_action('forward').set_enabled(self.current_history > 0)
 
     # Retrieve translation history
     def history_update(self):
@@ -875,9 +923,9 @@ class DialectWindow(Handy.ApplicationWindow):
         def on_trans_failed():
             self.trans_warning.show()
             self.send_notification(_('Translation failed.\nPlease check for network issues.'))
-            self.app.copy_action.set_enabled(False)
-            self.app.listen_src_action.set_enabled(False)
-            self.app.listen_dest_action.set_enabled(False)
+            self.lookup_action('copy').set_enabled(False)
+            self.lookup_action('listen-src').set_enabled(False)
+            self.lookup_action('listen-dest').set_enabled(False)
 
         def on_trans_success():
             self.trans_warning.hide()

@@ -1,5 +1,5 @@
 project('dialect',
-          version: '1.4.1',
+          version: '2.0.0',
     meson_version: '>= 0.50.0',
   default_options: [ 'warning_level=2',
                    ],

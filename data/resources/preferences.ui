@@ -1,28 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="3.0"/>
-  <requires lib="libhandy" version="1.0"/>
-  <template class="DialectPreferencesWindow" parent="HdyPreferencesWindow">
+  <template class="DialectPreferencesWindow" parent="AdwPreferencesWindow">
     <property name="default_height">420</property>
     <property name="default_width">600</property>
     <property name="modal">True</property>
-    <property name="window_position">center-on-parent</property>
     <child>
-      <object class="HdyPreferencesPage">
-        <property name="visible">True</property>
+      <object class="AdwPreferencesPage">
         <child>
-          <object class="HdyPreferencesGroup">
+          <object class="AdwPreferencesGroup" id="appearance">
             <property name="title" translatable="yes">Appearance</property>
-            <property name="visible">True</property>
+            <property name="visible">False</property>
             <child>
-              <object class="HdyActionRow">
+              <object class="AdwActionRow">
                 <property name="title" translatable="yes">Dark Mode</property>
-                <property name="visible">True</property>
                 <property name="activatable_widget">dark_mode</property>
                 <child>
                   <object class="GtkSwitch" id="dark_mode">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
                     <property name="valign">center</property>
                   </object>
                 </child>
@@ -31,155 +24,134 @@
           </object>
         </child>
         <child>
-          <object class="HdyPreferencesGroup">
+          <object class="AdwPreferencesGroup">
             <property name="title" translatable="yes">Behavior</property>
-            <property name="visible">True</property>
             <child>
-              <object class="HdyActionRow">
+              <object class="AdwActionRow">
                 <property name="title" translatable="yes">Live Translation</property>
                 <property name="subtitle" translatable="yes">Warning: Your IP address may get banned for API abuse.</property>
-                <property name="visible">True</property>
                 <property name="activatable_widget">live_translation</property>
                 <child>
                   <object class="GtkSwitch" id="live_translation">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
                     <property name="valign">center</property>
                   </object>
                 </child>
               </object>
             </child>
             <child>
-              <object class="HdyComboRow" id="translate_accel">
+              <object class="AdwComboRow" id="translate_accel">
                 <property name="title" translatable="yes">Translation Shortcut</property>
                 <property name="subtitle" translatable="yes">The unselected choice will be used for line break.</property>
-                <property name="visible">True</property>
+                <property name="model">
+                  <object class="GtkStringList">
+                    <items>
+                      <item>Ctrl + Enter</item>
+                      <item>Enter</item>
+                    </items>
+                  </object>
+                </property>
               </object>
             </child>
             <child>
-              <object class="HdyActionRow">
+              <object class="AdwActionRow">
                 <property name="title" translatable="yes">Default to Auto</property>
                 <property name="subtitle" translatable="yes">Use "Auto" as the default language</property>
-                <property name="visible">True</property>
                 <property name="activatable_widget">src_auto</property>
                 <child>
                   <object class="GtkSwitch" id="src_auto">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
                     <property name="valign">center</property>
                   </object>
                 </child>
               </object>
             </child>
             <child>
-              <object class="HdyComboRow" id="backend">
+              <object class="AdwComboRow" id="backend">
                 <property name="title" translatable="yes">Translator</property>
                 <property name="subtitle" translatable="yes">Choose from the available translation services.</property>
-                <property name="visible">True</property>
+                <property name="expression">
+                  <lookup name="prettyname" type="BackendObject"></lookup>
+                </property>
               </object>
             </child>
             <child>
-              <object class="HdyActionRow" id="backend_instance_row">
+              <object class="AdwActionRow" id="backend_instance_row">
                 <property name="title" translatable="yes">Translator Instance</property>
                 <property name="subtitle" translatable="yes">Enter a translation service URL.</property>
-                <property name="visible">True</property>
                 <child>
                   <object class="GtkStack" id="backend_instance_stack">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
                     <property name="transition-type">crossfade</property>
                     <child>
-                      <object class="GtkBox">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="spacing">6</property>
-                        <property name="valign">center</property>
-                        <property name="halign">end</property>
-                        <child>
-                          <object class="GtkLabel" id="backend_instance_label">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="backend_instance_edit">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="receives-default">True</property>
-                            <property name="tooltip-text" translatable="yes">Edit</property>
+                      <object class="GtkStackPage">
+                        <property name="name">view</property>
+                        <property name="child">
+                          <object class="GtkBox">
+                            <property name="spacing">6</property>
+                            <property name="valign">center</property>
+                            <property name="halign">end</property>
                             <child>
-                              <object class="GtkImage">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="icon-name">document-edit-symbolic</property>
+                              <object class="GtkLabel" id="backend_instance_label">
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="backend_instance_edit">
+                                <property name="tooltip-text" translatable="yes">Edit</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">document-edit-symbolic</property>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                           </object>
-                        </child>
+                        </property>
                       </object>
-                      <packing>
-                        <property name="name">view</property>
-                      </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id="backend_instance_edit_box">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="valign">center</property>
-                        <style>
-                          <class name="linked"/>
-                        </style>
-                        <child>
-                          <object class="GtkEntry" id="backend_instance">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="backend_instance_reset">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="receives-default">True</property>
-                            <property name="tooltip-text" translatable="yes">Reset to default</property>
+                      <object class="GtkStackPage">
+                        <property name="name">edit</property>
+                        <property name="child">
+                          <object class="GtkBox" id="backend_instance_edit_box">
+                            <property name="valign">center</property>
+                            <style>
+                              <class name="linked"/>
+                            </style>
                             <child>
-                              <object class="GtkImage">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="icon-name">view-refresh-symbolic</property>
+                              <object class="GtkEntry" id="backend_instance">
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="backend_instance_reset">
+                                <property name="tooltip-text" translatable="yes">Reset to default</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">view-refresh-symbolic</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="backend_instance_save">
+                                <property name="tooltip-text" translatable="yes">Save</property>
+                                <style>
+                                  <class name="suggested-action"/>
+                                </style>
                               </object>
                             </child>
                           </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="backend_instance_save">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="receives-default">True</property>
-                            <property name="tooltip-text" translatable="yes">Save</property>
-                            <style>
-                              <class name="suggested-action"/>
-                            </style>
-                          </object>
-                        </child>
+                        </property>
                       </object>
-                      <packing>
-                        <property name="name">edit</property>
-                      </packing>
                     </child>
                   </object>
                 </child>
               </object>
             </child>
             <child>
-              <object class="HdyActionRow" id="tts_row">
+              <object class="AdwActionRow" id="tts_row">
                 <property name="title" translatable="yes">Text-to-Speech</property>
                 <property name="subtitle" translatable="yes">Use Google for TTS.</property>
-                <property name="visible">True</property>
                 <property name="activatable_widget">tts</property>
                 <child>
                   <object class="GtkSwitch" id="tts">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
                     <property name="valign">center</property>
                   </object>
                 </child>
@@ -188,10 +160,9 @@
           </object>
         </child>
         <child>
-          <object class="HdyPreferencesGroup" id="search_provider">
+          <object class="AdwPreferencesGroup" id="search_provider">
             <property name="title" translatable="yes">Search Provider</property>
             <property name="description" translatable="yes">To reduce API abuse, the GNOME search provider in Dialect is turned off when Live translation is. Ensure the search provider is also turned on in the GNOME Settings.</property>
-            <property name="visible">True</property>
           </object>
         </child>
       </object>

@@ -205,7 +205,7 @@ class Settings(Gio.Settings):
         if settings is not None and settings.get('src-langs'):
             return settings.get('src-langs')
 
-        return TRANSLATORS[backend].src_langs
+        return TRANSLATORS[backend].src_langsP
 
     def set_src_langs(self, backend, langs):
         self._delete_arr_key(f'{backend}-src-langs')  # Set deprecated key to unused state.

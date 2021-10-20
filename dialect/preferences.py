@@ -7,7 +7,7 @@ import re
 import threading
 from gettext import gettext as _
 
-from gi.repository import Gio, GLib, GObject, Gtk, Handy
+from gi.repository import Adw, Gio, GLib, GObject, Gtk
 
 from dialect.define import RES_PATH
 from dialect.settings import Settings
@@ -16,12 +16,13 @@ from dialect.tts import TTS
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/preferences.ui')
-class DialectPreferencesWindow(Handy.PreferencesWindow):
+class DialectPreferencesWindow(Adw.PreferencesWindow):
     __gtype_name__ = 'DialectPreferencesWindow'
 
     parent = NotImplemented
 
     # Get preferences widgets
+    appearance = Gtk.Template.Child()
     dark_mode = Gtk.Template.Child()
     live_translation = Gtk.Template.Child()
     translate_accel = Gtk.Template.Child()
@@ -49,17 +50,12 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
     def setup(self):
         # Disable search, we have few preferences
         self.set_search_enabled(False)
-        # Temporal fix for crash
-        self.connect('destroy', self._unbind_settings)
 
-        # Setup translate accel combo row
-        model = Gio.ListStore.new(Handy.ValueObject)
-        options = ['Ctrl + Enter', 'Enter']
-        for index, value in enumerate(options):
-            model.insert(index, Handy.ValueObject.new(value))
-        self.translate_accel.bind_name_model(model,
-                                             Handy.ValueObject.dup_string)
-
+        # Show dark mode preference
+        self.style_manager = self.parent.app.get_style_manager()
+        if not self.style_manager.get_system_supports_color_schemes():
+            self.appearance.set_visible(True)
+        
         # Setup backends combo row
         self.backend_model = Gio.ListStore.new(BackendObject)
         backend_options = [
@@ -70,8 +66,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
             self.backend_model.insert(index, value)
             if value.name == Settings.get().backend:
                 selected_backend_index = index
-        self.backend.bind_name_model(self.backend_model,
-                                     BackendObject.get_name)
+        self.backend.set_model(self.backend_model)
 
         # Bind preferences with GSettings
         Settings.get().bind('dark-mode', self.dark_mode, 'active',
@@ -79,7 +74,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         Settings.get().bind('live-translation', self.live_translation, 'active',
                             Gio.SettingsBindFlags.DEFAULT)
         Settings.get().bind('translate-accel', self.translate_accel,
-                            'selected-index', Gio.SettingsBindFlags.DEFAULT)
+                            'selected', Gio.SettingsBindFlags.DEFAULT)
         Settings.get().bind('src-auto', self.src_auto, 'active',
                             Gio.SettingsBindFlags.DEFAULT)
 
@@ -95,8 +90,8 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         self.live_translation.connect('notify::active', self._toggle_accel_pref)
 
         # Switch backends
-        self.backend.set_selected_index(selected_backend_index)
-        self.backend.connect('notify::selected-index', self._switch_backends)
+        self.backend.set_selected(selected_backend_index)
+        self.backend.connect('notify::selected', self._switch_backends)
         self.parent.connect('notify::backend-loading', self._on_backend_loading)
 
         # Toggle TTS
@@ -109,24 +104,30 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
         self.backend_instance_reset.connect('clicked', self._on_reset_backend_instance)
         self.__check_instance_support()
 
-        self.instance_save_image = Gtk.Image.new_from_icon_name(
-            'emblem-ok-symbolic', Gtk.IconSize.BUTTON)
-        self.backend_instance_save.add(self.instance_save_image)
+        self.instance_save_image = Gtk.Image.new_from_icon_name('emblem-ok-symbolic')
+        self.backend_instance_save.set_child(self.instance_save_image)
         self.instance_save_spinner = Gtk.Spinner()
         self.instance_save_image.show()
         self.instance_save_spinner.show()
 
         self.error_popover = Gtk.Popover(
-            relative_to=self.backend_instance, can_focus=False, modal=False)
+            pointing_to=self.backend_instance.get_allocation(),
+            can_focus=False,
+        )
         self.error_label = Gtk.Label(label='Not a valid instance')
-        error_icon = Gtk.Image.new_from_icon_name(
-            'dialog-error-symbolic', Gtk.IconSize.LARGE_TOOLBAR)
-        error_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, margin=8, spacing=8)
-        error_box.pack_start(error_icon, False, False, 0)
-        error_box.pack_start(self.error_label, False, False, 0)
-        self.error_popover.add(error_box)
+        error_icon = Gtk.Image.new_from_icon_name('dialog-error-symbolic')
+        error_box = Gtk.Box(
+            orientation=Gtk.Orientation.HORIZONTAL,
+            margin_start=8,
+            margin_end=8,
+            margin_top=8,
+            margin_bottom=8,
+            spacing=8
+        )
+        error_box.prepend(error_icon)
+        error_box.prepend(self.error_label)
+        self.error_popover.set_child(error_box)
         self.error_popover.set_position(Gtk.PositionType.BOTTOM)
-        error_box.show_all()
         self.error_popover.hide()
 
         # Search Provider
@@ -148,9 +149,12 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
                 self.parent.change_backends(backend)
 
     def _toggle_dark_mode(self, switch, _active):
-        gtk_settings = Gtk.Settings.get_default()
-        active = switch.get_active()
-        gtk_settings.set_property('gtk-application-prefer-dark-theme', active)
+        if not self.style_manager.get_system_supports_color_schemes():
+            active = switch.get_active()
+            if active:
+                self.style_manager.set_color_scheme(Adw.ColorScheme.FORCE_DARK)
+            else:
+                self.style_manager.set_color_scheme(Adw.ColorScheme.DEFAULT)
 
     def _toggle_accel_pref(self, switch, _active):
         self.translate_accel.set_sensitive(not switch.get_active())
@@ -175,7 +179,7 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
             ).start()
 
     def _switch_backends(self, row, _value):
-        backend = self.backend_model[row.get_selected_index()].name
+        backend = self.backend_model[row.get_selected()].name
         Settings.get().backend = backend
         self.__check_instance_support()
         self.parent.change_backends(backend)
@@ -257,13 +261,13 @@ class DialectPreferencesWindow(Handy.PreferencesWindow):
 
 
 class BackendObject(GObject.Object):
-    name = None
-    prettyname = None
+    __gtype_name__ = 'BackendObject'
+
+    name = GObject.Property(type=str)
+    prettyname = GObject.Property(type=str)
 
     def __init__(self, name, prettyname):
         super().__init__()
-        self.name = name
-        self.prettyname = prettyname
 
-    def get_name(self):
-        return self.prettyname
+        self.set_property('name', name)
+        self.set_property('prettyname', prettyname)

@@ -4,7 +4,7 @@
 
 import re
 
-from gi.repository import GObject, Gtk
+from gi.repository import Gio, GObject, Gtk
 
 from dialect.define import RES_PATH
 from dialect.translators import get_lang_name
@@ -31,46 +31,56 @@ class DialectLangSelector(Gtk.Popover):
         # Connect popover closed signal
         self.connect('closed', self._closed)
         # Connect list signals
-        self.recent_list.connect('row-activated', self._activated)
-        self.lang_list.connect('row-activated', self._activated)
-        # Set filter func to lang list
-        self.lang_list.set_filter_func(self.filter_func, None, False)
+        self.recent_list.connect('activate', self._activated)
+        self.lang_list.connect('activate', self._activated)
         # Connect search entry changed signal
         self.search.connect('changed', self._update_search)
 
-    def filter_func(self, row, _data, _notify_destroy):
-        search = self.search.get_text()
-        return bool(re.search(search, row.name, re.IGNORECASE))
+        self.factory = Gtk.BuilderListItemFactory.new_from_resource(
+            None, f'{RES_PATH}/lang-row.ui'
+        );
+
+        self.recent_model = Gio.ListStore.new(LangObject)
+        selection_model = Gtk.SingleSelection.new(self.recent_model)
+        selection_model.set_autoselect(False)
+        self.recent_list.set_model(selection_model)
+        self.recent_list.set_factory(self.factory)
+
+        self.lang_model = Gio.ListStore.new(LangObject)
+        self.filter = Gtk.CustomFilter()
+        self.filter.set_filter_func(self._filter_func)
+        fitler_model = Gtk.FilterListModel.new(self.lang_model, self.filter)
+        selection_model = Gtk.SingleSelection.new(fitler_model)
+        selection_model.set_autoselect(False)
+        self.lang_list.set_model(selection_model)
+        self.lang_list.set_factory(self.factory)
 
     def set_languages(self, languages):
         # Clear list
-        children = self.lang_list.get_children()
-        for child in children:
-            self.lang_list.remove(child)
+        self.lang_model.remove_all()
 
         # Load langs list
         for code in languages:
-            row_selected = (code == self.selected)
-            self.lang_list.insert(LangRow(code, get_lang_name(code), row_selected), -1)
+            self.lang_model.append(LangObject(code, get_lang_name(code)))
 
-    def insert_recent(self, code, name, position=-1):
+    def insert_recent(self, code, name):
         row_selected = (code == self.selected)
-        self.recent_list.insert(LangRow(code, name, row_selected), position)
+        self.recent_model.append(LangObject(code, name, row_selected))
 
     def clear_recent(self):
-        children = self.recent_list.get_children()
-        for child in children:
-            self.recent_list.remove(child)
+        self.recent_model.remove_all()
 
     def refresh_selected(self):
-        for lang in self.lang_list.get_children():
-            lang.selected = (lang.code == self.selected)
+        for item in self.lang_model:
+            item.set_property('selected', (item.code == self.selected))
 
-    def _activated(self, _list, row):
+    def _activated(self, list_view, index):
         # Close popover
         self.popdown()
+        model = list_view.get_model()
+        lang = model.get_selected_item()
         # Set selected property
-        self.set_property('selected', row.code)
+        self.set_property('selected', lang.code)
 
     def _closed(self, _popover):
         # Reset scroll
@@ -79,39 +89,30 @@ class DialectLangSelector(Gtk.Popover):
         # Clear search
         self.search.set_text('')
 
+    def _filter_func(self, item):
+        search = self.search.get_text()
+        return bool(re.search(search, item.name, re.IGNORECASE))
+
     def _update_search(self, _entry):
         search = self.search.get_text()
         if search != '':
             self.revealer.set_reveal_child(False)
         else:
             self.revealer.set_reveal_child(True)
-        self.lang_list.invalidate_filter()
+
+        self.filter.emit('changed', Gtk.FilterChange.DIFFERENT)
 
 
-class LangRow(Gtk.ListBoxRow):
+class LangObject(GObject.Object):
+    __gtype_name__ = 'LangObject'
 
-    def __init__(self, code, name, selected=False, **kwargs):
-        super().__init__(**kwargs)
+    code = GObject.Property(type=str)
+    name = GObject.Property(type=str)
+    selected = GObject.Property(type=bool, default=False)
 
-        self.code = code
-        self.name = name
+    def __init__(self, code, name, selected=False):
+        super().__init__()
 
-        row_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
-        label = Gtk.Label(self.name,
-                          halign=Gtk.Align.START,
-                          margin_start=4)
-        self.get_style_context().add_class('langselector')
-        row_box.pack_start(label, False, True, 0)
-        self.selected_icon = Gtk.Image.new_from_icon_name('object-select-symbolic', Gtk.IconSize.BUTTON)
-        row_box.pack_start(self.selected_icon, False, True, 0)
-        self.add(row_box)
-        self.show_all()
-        self.selected = selected
-
-    @property
-    def selected(self):
-        return self.selected_icon.get_visible()
-
-    @selected.setter
-    def selected(self, value):
-        self.selected_icon.set_visible(value)
+        self.set_property('code', code)
+        self.set_property('name', name)
+        self.set_property('selected', selected)
