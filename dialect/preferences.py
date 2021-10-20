@@ -149,12 +149,12 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
                 self.parent.change_backends(backend)
 
     def _toggle_dark_mode(self, switch, _active):
-        if not self.style_manager.get_system_supports_color_schemes():
-            active = switch.get_active()
-            if active:
-                self.style_manager.set_color_scheme(Adw.ColorScheme.FORCE_DARK)
-            else:
-                self.style_manager.set_color_scheme(Adw.ColorScheme.DEFAULT)
+        active = switch.get_active()
+        self.style_manager.set_color_scheme(
+            Adw.ColorScheme.FORCE_DARK
+            if active
+            else Adw.ColorScheme.DEFAULT
+        )
 
     def _toggle_accel_pref(self, switch, _active):
         self.translate_accel.set_sensitive(not switch.get_active())
