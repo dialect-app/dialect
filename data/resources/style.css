@@ -23,7 +23,7 @@
 }
 
 .pronunciation {
-  border: 1px solid @borders;
+  border-bottom: 1px solid @borders;
   border-top: 0;
 }
 
