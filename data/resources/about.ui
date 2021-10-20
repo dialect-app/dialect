@@ -8,8 +8,7 @@
     <property name="comments" translatable="yes">A translation app for GNOME.</property>
     <property name="website">https://github.com/dialect-app/dialect</property>
     <property name="website_label" translatable="yes">GitHub page</property>
-    <property name="authors">
-Mufeed Ali
+    <property name="authors">Mufeed Ali
 Rafael Mardojai CM
 </property>
     <property name="translator-credits" translatable="yes" comments="Replace me with your names.">translator-credits</property>

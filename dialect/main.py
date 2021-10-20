@@ -13,7 +13,7 @@ gi.require_version('Gtk', '4.0')
 gi.require_version('Gst', '1.0')
 gi.require_version('Adw', '1')
 
-from gi.repository import Adw, Gdk, Gio, GLib, Gst, Gtk
+from gi.repository import Adw, Gio, GLib, Gst, Gtk
 
 from dialect.define import APP_ID, RES_PATH
 from dialect.preferences import DialectPreferencesWindow

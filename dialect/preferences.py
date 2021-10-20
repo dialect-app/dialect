@@ -55,7 +55,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         self.style_manager = self.parent.app.get_style_manager()
         if not self.style_manager.get_system_supports_color_schemes():
             self.appearance.set_visible(True)
-        
+
         # Setup backends combo row
         self.backend_model = Gio.ListStore.new(BackendObject)
         backend_options = [

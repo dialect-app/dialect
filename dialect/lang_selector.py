@@ -38,7 +38,7 @@ class DialectLangSelector(Gtk.Popover):
 
         self.factory = Gtk.BuilderListItemFactory.new_from_resource(
             None, f'{RES_PATH}/lang-row.ui'
-        );
+        )
 
         self.recent_model = Gio.ListStore.new(LangObject)
         selection_model = Gtk.SingleSelection.new(self.recent_model)
