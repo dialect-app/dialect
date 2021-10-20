@@ -28,18 +28,19 @@
 }
 
 .lang-selector contents {
-  padding: 0;
+  background: @theme_base_color;
 }
-.lang-selector .search {
-  margin: 6px;
+.lang-selector arrow {
+  background: @popover_bg_color;
 }
-.lang-selector separator {
-  margin: 12px 6px;
+.search_box {
+  background: @popover_bg_color;
+  border-bottom: 1px solid @borders;
+  padding: 6px;
 }
 .lang-selector row {
-  border-radius: 6px;
-  margin: 0 6px;
-  padding: 6px 12px;
+  border-radius: 0px;
+  padding: 2px 12px;
 }
 
 .bottom-bar {

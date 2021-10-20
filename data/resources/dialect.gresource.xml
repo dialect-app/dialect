@@ -2,7 +2,6 @@
 <gresources>
   <gresource prefix="/com/github/gi_lom/dialect">
     <file compressed="true">style.css</file>
-    <file compressed="true">style-dark.css</file>
     <file compressed="true" preprocess="xml-stripblanks">shortcuts.ui</file>
 
     <file compressed="true" preprocess="xml-stripblanks">window.ui</file>
