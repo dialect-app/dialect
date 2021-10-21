@@ -320,7 +320,6 @@
                                 </child>
                                 <child>
                                   <object class="GtkBox">
-                                    <property name="spacing">6</property>
                                     <child>
                                       <object class="GtkButton" id="clear_btn">
                                         <property name="action-name">win.clear</property>
@@ -426,7 +425,6 @@
                                 </child>
                                 <child>
                                   <object class="GtkBox">
-                                    <property name="spacing">6</property>
                                     <child>
                                       <object class="GtkSpinner" id="trans_spinner">
                                         <property name="tooltip-text" translatable="yes">Translating…</property>
