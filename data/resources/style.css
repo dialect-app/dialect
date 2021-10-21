@@ -9,6 +9,10 @@
   border-radius: 9px;
 }
 
+.translation-side-box :disabled {
+  background: @insensitive_bg_color;
+}
+
 .translation-side-box scrolledwindow {
   border-bottom: 1px solid @borders;
 }

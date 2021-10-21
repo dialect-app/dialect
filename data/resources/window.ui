@@ -241,6 +241,7 @@
                             <child>
                               <object class="GtkBox">
                                 <property name="orientation">vertical</property>
+                                <property name="overflow">hidden</property>
                                 <style>
                                   <class name="translation-side-box"/>
                                 </style>
@@ -377,6 +378,7 @@
                             <child>
                               <object class="GtkBox" id="dest_box">
                                 <property name="orientation">vertical</property>
+                                <property name="overflow">hidden</property>
                                 <style>
                                   <class name="translation-side-box"/>
                                 </style>
