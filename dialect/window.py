@@ -194,7 +194,7 @@ class DialectWindow(Adw.ApplicationWindow):
         def update_ui():
             # Supported features
             if not self.translator.supported_features['mistakes']:
-                self.mistakes.set_revealed(False)
+                self.mistakes.set_reveal_child(False)
 
             if not self.translator.supported_features['pronunciation']:
                 self.src_pron_revealer.set_reveal_child(False)
@@ -795,7 +795,7 @@ class DialectWindow(Adw.ApplicationWindow):
         return Gdk.EVENT_PROPAGATE
 
     def on_mistakes_clicked(self, _button, _data):
-        self.mistakes.set_revealed(False)
+        self.mistakes.set_reveal_child(False)
         self.src_buffer.set_text(self.trans_mistakes[1])
         # Run translation again
         self.translation(None)
@@ -946,9 +946,9 @@ class DialectWindow(Adw.ApplicationWindow):
         def on_mistakes():
             if self.trans_mistakes is not None and self.translator.supported_features['mistakes']:
                 self.mistakes_label.set_markup(_('Did you mean: ') + f'<a href="#">{self.trans_mistakes[0]}</a>')
-                self.mistakes.set_revealed(True)
-            elif self.mistakes.get_revealed():
-                self.mistakes.set_revealed(False)
+                self.mistakes.set_reveal_child(True)
+            elif self.mistakes.get_reveal_child():
+                self.mistakes.set_reveal_child(False)
 
         def on_pronunciation():
             reveal = Settings.get().show_pronunciation

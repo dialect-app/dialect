@@ -279,12 +279,9 @@
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkInfoBar" id="mistakes">
+                                  <object class="GtkRevealer" id="mistakes">
                                     <property name="can_focus">False</property>
-                                    <property name="revealed">False</property>
-                                    <style>
-                                      <class name="mistakes"/>
-                                    </style>
+                                    <property name="reveal-child">False</property>
                                     <child>
                                       <object class="GtkBox">
                                         <property name="can_focus">False</property>
@@ -303,6 +300,9 @@
                                             <property name="wrap-mode">word-char</property>
                                           </object>
                                         </child>
+                                        <style>
+                                          <class name="mistakes"/>
+                                        </style>
                                       </object>
                                     </child>
                                   </object>
