@@ -22,7 +22,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
     # Get widgets
     main_stack = Gtk.Template.Child()
-    error_message = Gtk.Template.Child()
+    error_page = Gtk.Template.Child()
     translator_box = Gtk.Template.Child()
     retry_backend_btn = Gtk.Template.Child()
 
@@ -257,7 +257,7 @@ class DialectWindow(Adw.ApplicationWindow):
             GLib.idle_add(self.main_stack.set_visible_child_name, 'error')
             GLib.idle_add(self.set_property, 'backend-loading', False)
 
-            self.error_message.set_label(str(exc))
+            self.error_page.set_description(str(exc))
             print('Error: ' + str(exc))
 
     def retry_load_translator(self, _button):
