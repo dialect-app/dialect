@@ -13,10 +13,6 @@
   border-bottom: 1px solid @borders;
 }
 
-.tools-box {
-  padding: 6px;
-}
-
 .mistakes {
   border-left: 1px solid @borders;
   border-right: 1px solid @borders;

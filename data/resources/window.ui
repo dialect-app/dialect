@@ -339,6 +339,9 @@
                                       <object class="GtkButton" id="src_voice_btn">
                                         <property name="action-name">win.listen-src</property>
                                         <property name="tooltip-text" translatable="yes">Listen</property>
+                                        <style>
+                                          <class name="flat"/>
+                                        </style>
                                       </object>
                                     </child>
                                     <child>
@@ -366,7 +369,7 @@
                                       </object>
                                     </child>
                                     <style>
-                                      <class name="tools-box"/>
+                                      <class name="toolbar"/>
                                     </style>
                                   </object>
                                 </child>
@@ -450,13 +453,13 @@
                                       <object class="GtkButton" id="dest_voice_btn">
                                         <property name="action-name">win.listen-dest</property>
                                         <property name="tooltip-text" translatable="yes">Listen</property>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
+                                        <style>
+                                          <class name="flat"/>
+                                        </style>
                                       </object>
                                     </child>
                                     <style>
-                                      <class name="tools-box"/>
+                                      <class name="toolbar"/>
                                     </style>
                                   </object>
                                 </child>
