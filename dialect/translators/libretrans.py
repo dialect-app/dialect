@@ -17,8 +17,15 @@ class Translator(TranslatorBase):
         'mistakes': False,
         'pronunciation': False,
         'change-instance': True,
+        'suggest': True,
     }
     instance_url = 'translate.astian.org'
+
+    _data = {
+        'q': None,
+        'source': None,
+        'target': None,
+    }
 
     def __init__(self, base_url=None, **kwargs):
         if base_url is not None:
@@ -38,16 +45,22 @@ class Translator(TranslatorBase):
         return 'https://' + self.instance_url + '/detect'
 
     @property
-    def translate_url(self):
-        if self.instance_url.startswith('localhost:'):
-            return 'http://' + self.instance_url + '/translate'
-        return 'https://' + self.instance_url + '/translate'
-
-    @property
     def lang_url(self):
         if self.instance_url.startswith('localhost:'):
             return 'http://' + self.instance_url + '/languages'
         return 'https://' + self.instance_url + '/languages'
+
+    @property
+    def suggest_url(self):
+        if self.instance_url.startswith('localhost:'):
+            return 'http://' + self.instance_url + '/suggest'
+        return 'https://' + self.instance_url + '/suggest'
+
+    @property
+    def translate_url(self):
+        if self.instance_url.startswith('localhost:'):
+            return 'http://' + self.instance_url + '/translate'
+        return 'https://' + self.instance_url + '/translate'
 
     @staticmethod
     def validate_instance_url(url):
@@ -80,15 +93,28 @@ class Translator(TranslatorBase):
         except Exception as exc:
             raise TranslationError(exc) from exc
 
+    def suggest(self, suggestion):
+        try:
+            data = self._data
+            data['s'] = suggestion
+            r = self.client.post(
+                self.suggest_url,
+                data=data,
+            )
+            return r.json()['success']  # need to convert to bool
+        except Exception as exc:
+            raise TranslationError(exc) from exc
+
     def translate(self, src_text, src, dest):
         try:
+            self._data = {
+                'q': src_text,
+                'source': src,
+                'target': dest,
+            }
             r = self.client.post(
                 self.translate_url,
-                data={
-                    'q': src_text,
-                    'source': src,
-                    'target': dest,
-                },
+                data=self._data,
             )
             return Translation(
                 r.json()['translatedText'],

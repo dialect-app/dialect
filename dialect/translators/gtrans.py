@@ -27,6 +27,7 @@ class Translator(TranslatorBase):
         'mistakes': True,
         'pronunciation': True,
         'change-instance': False,
+        'suggest': False,
     }
 
     def __init__(self, **kwargs):

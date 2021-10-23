@@ -11,6 +11,7 @@ class TranslatorBase:
         'mistakes': False,
         'pronunciation': False,
         'change-instance': False,
+        'suggest': False,
     }
     instance_url = ''
     src_langs = ['en', 'fr', 'es', 'de']
@@ -21,6 +22,9 @@ class TranslatorBase:
         pass
 
     def detect(self, src_text):
+        pass
+
+    def suggest(self, suggestion):
         pass
 
     def translate(self, src_text, src, dest):
