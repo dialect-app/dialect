@@ -230,15 +230,13 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         def spinner_start():
             self.backend.set_sensitive(False)
             self.backend_instance_row.set_sensitive(False)
-            self.backend_instance_save.remove(self.instance_save_image)
-            self.backend_instance_save.add(self.instance_save_spinner)
+            self.backend_instance_save.set_child(self.instance_save_spinner)
             self.instance_save_spinner.start()
 
         def spinner_end():
             self.backend.set_sensitive(True)
             self.backend_instance_row.set_sensitive(True)
-            self.backend_instance_save.remove(self.instance_save_spinner)
-            self.backend_instance_save.add(self.instance_save_image)
+            self.backend_instance_save.set_child(self.instance_save_image)
             self.backend_instance_label.set_label(Settings.get().get_instance_url(backend))
             self.instance_save_spinner.stop()
 
