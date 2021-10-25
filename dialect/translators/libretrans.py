@@ -17,7 +17,7 @@ class Translator(TranslatorBase):
         'mistakes': False,
         'pronunciation': False,
         'change-instance': True,
-        'suggest': True,
+        'suggestions': False,
     }
     instance_url = 'translate.astian.org'
 
@@ -37,6 +37,17 @@ class Translator(TranslatorBase):
 
         for lang in r.json():
             self.languages.append(lang['code'])
+
+        r_frontend_settings = self.client.get(self._frontend_settings_url)
+
+        if r_frontend_settings.json()['suggestions']:
+            self.supported_features['suggestions'] = True
+
+    @property
+    def _frontend_settings_url(self):
+        if self.instance_url.startswith('localhost:'):
+            return 'http://' + self.instance_url + '/frontend/settings'
+        return 'https://' + self.instance_url + '/frontend/settings'
 
     @property
     def detect_url(self):
@@ -101,7 +112,10 @@ class Translator(TranslatorBase):
                 self.suggest_url,
                 data=data,
             )
-            return r.json()['success']  # need to convert to bool
+            if 'success' in r.json():
+                return r.json()
+            else:
+                return False
         except Exception as exc:
             raise TranslationError(exc) from exc
 

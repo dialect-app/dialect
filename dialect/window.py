@@ -52,8 +52,10 @@ class DialectWindow(Adw.ApplicationWindow):
     dest_pron_revealer = Gtk.Template.Child()
     dest_pron_label = Gtk.Template.Child()
     dest_text = Gtk.Template.Child()
+    dest_toolbar_stack = Gtk.Template.Child()
     trans_spinner = Gtk.Template.Child()
     trans_warning = Gtk.Template.Child()
+    edit_btn = Gtk.Template.Child()
     copy_btn = Gtk.Template.Child()
     dest_voice_btn = Gtk.Template.Child()
 
@@ -186,6 +188,18 @@ class DialectWindow(Adw.ApplicationWindow):
         listen_dest_action.connect('activate', self.ui_dest_voice)
         self.add_action(listen_dest_action)
 
+        suggest_action = Gio.SimpleAction.new('suggest', None)
+        suggest_action.connect('activate', self.ui_suggest)
+        self.add_action(suggest_action)
+
+        suggest_ok_action = Gio.SimpleAction.new('suggest-ok', None)
+        suggest_ok_action.connect('activate', self.ui_suggest_ok)
+        self.add_action(suggest_ok_action)
+
+        suggest_cancel_action = Gio.SimpleAction.new('suggest-cancel', None)
+        suggest_cancel_action.connect('activate', self.ui_suggest_cancel)
+        self.add_action(suggest_cancel_action)
+
         listen_src_action = Gio.SimpleAction.new('listen-src', None)
         listen_src_action.connect('activate', self.ui_src_voice)
         self.add_action(listen_src_action)
@@ -195,6 +209,14 @@ class DialectWindow(Adw.ApplicationWindow):
             # Supported features
             if not self.translator.supported_features['mistakes']:
                 self.mistakes.set_reveal_child(False)
+
+            self.ui_suggest_cancel(None, None)
+            if not self.translator.supported_features['suggestions']:
+                self.edit_btn.set_visible(False)
+                self.lookup_action('suggest').set_enabled(False)
+            else:
+                self.edit_btn.set_visible(True)
+                self.lookup_action('suggest').set_enabled(True)
 
             if not self.translator.supported_features['pronunciation']:
                 self.src_pron_revealer.set_reveal_child(False)
@@ -697,6 +719,35 @@ class DialectWindow(Adw.ApplicationWindow):
 
         cancellable = Gio.Cancellable()
         clipboard.read_text_async(cancellable, on_paste)
+
+    def ui_suggest(self, _action, _param):
+        self.dest_toolbar_stack.set_visible_child_name('edit')
+
+    def ui_suggest_ok(self, _action, _param):
+        dest_text = self.dest_buffer.get_text(
+            self.dest_buffer.get_start_iter(),
+            self.dest_buffer.get_end_iter(),
+            True
+        )
+        threading.Thread(
+            target=self._suggest,
+            args=(dest_text,),
+            daemon=True
+        ).start()
+
+    def ui_suggest_cancel(self, _action, _param):
+        self.dest_toolbar_stack.set_visible_child_name('default')
+
+    def _suggest(self, text):
+        self.translator.suggest(text)
+        GLib.idle_add(
+            self.dest_toolbar_stack.set_visible_child_name,
+            'default'
+        )
+        GLib.idle_add(
+            self.send_notification,
+            _("New translation has been suggested!")
+        )
 
     def ui_src_voice(self, _action, _param):
         src_text = self.src_buffer.get_text(

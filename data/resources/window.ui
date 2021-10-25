@@ -418,8 +418,8 @@
                                     <property name="transition-type">crossfade</property>
                                     <child>
                                       <object class="GtkStackPage">
-                                        <property name="default">
-                                        <child>
+                                        <property name="name">default</property>
+                                        <property name="child">
                                           <object class="GtkBox">
                                             <child>
                                               <object class="GtkSpinner" id="trans_spinner">
@@ -444,6 +444,13 @@
                                               </object>
                                             </child>
                                             <child>
+                                              <object class="GtkButton" id="edit_btn">
+                                                <property name="action-name">win.suggest</property>
+                                                <property name="tooltip-text" translatable="yes">Suggest Translation</property>
+                                                <property name="icon-name">document-edit-symbolic</property>
+                                              </object>
+                                            </child>
+                                            <child>
                                               <object class="GtkButton" id="dest_voice_btn">
                                                 <property name="action-name">win.listen-dest</property>
                                                 <property name="tooltip-text" translatable="yes">Listen</property>
@@ -456,30 +463,36 @@
                                               <class name="toolbar"/>
                                             </style>
                                           </object>
-                                        </child>
+                                        </property>
                                       </object>
+                                    </child>
+                                    <child>
                                       <object class="GtkStackPage">
-                                        <property name="edit">
-                                        <child>
+                                        <property name="name">edit</property>
+                                        <property name="child">
                                           <object class="GtkBox">
                                             <child>
                                               <object class="GtkButton" id="cancel_btn">
-                                                <property name="tooltip-text" translatable="yes">Save</property>
-                                                <property name="icon-name">edit-copy-symbolic</property>
+                                                <property name="action-name">win.suggest-cancel</property>
+                                                <property name="label" translatable="yes">Cancel</property>
                                                 <property name="hexpand">True</property>
                                                 <property name="halign">end</property>
                                               </object>
                                             </child>
                                             <child>
                                               <object class="GtkButton" id="save_btn">
-                                                <property name="tooltip-text" translatable="yes">Cancel</property>
+                                                <property name="action-name">win.suggest-ok</property>
+                                                <property name="label" translatable="yes">Save</property>
+                                                <style>
+                                                  <class name="suggested-action"/>
+                                                </style>
                                               </object>
                                             </child>
                                             <style>
                                               <class name="toolbar"/>
                                             </style>
                                           </object>
-                                        </child>
+                                        </property>
                                       </object>
                                     </child>
                                   </object>

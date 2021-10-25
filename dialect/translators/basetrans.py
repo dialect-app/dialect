@@ -11,7 +11,7 @@ class TranslatorBase:
         'mistakes': False,
         'pronunciation': False,
         'change-instance': False,
-        'suggest': False,
+        'suggestions': False,
     }
     instance_url = ''
     src_langs = ['en', 'fr', 'es', 'de']
