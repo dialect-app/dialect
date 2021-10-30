@@ -724,6 +724,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
     def ui_suggest(self, _action, _param):
         self.dest_toolbar_stack.set_visible_child_name('edit')
+        self.dest_text.set_editable(True)
 
     def ui_suggest_ok(self, _action, _param):
         dest_text = self.dest_buffer.get_text(
@@ -749,6 +750,10 @@ class DialectWindow(Adw.ApplicationWindow):
         GLib.idle_add(
             self.send_notification,
             _("New translation has been suggested!")
+        )
+        GLib.idle_add(
+            self.dest_text.set_editable,
+            False
         )
 
     def ui_src_voice(self, _action, _param):
@@ -816,8 +821,10 @@ class DialectWindow(Adw.ApplicationWindow):
         modifiers = state & Gtk.accelerator_get_default_mod_mask()
         shift_mask = Gdk.ModifierType.SHIFT_MASK
         unicode_key_val = Gdk.keyval_to_unicode(keyval)
-        if (GLib.unichar_isgraph(chr(unicode_key_val)) and
-                modifiers in (shift_mask, 0) and not self.src_text.is_focus()):
+        if (GLib.unichar_isgraph(chr(unicode_key_val))
+                and modifiers in (shift_mask, 0)
+                and not self.dest_text.get_editable()
+                and not self.src_text.is_focus()):
             self.src_text.grab_focus()
             end_iter = self.src_buffer.get_end_iter()
             self.src_buffer.insert(end_iter, chr(unicode_key_val))
