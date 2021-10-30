@@ -12,6 +12,7 @@ from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk
 from dialect.define import APP_ID, PROFILE, MAX_LENGTH, RES_PATH, TRANS_NUMBER
 from dialect.lang_selector import DialectLangSelector
 from dialect.settings import Settings
+from dialect.shortcuts import DialectShortcutsWindow
 from dialect.translators import TRANSLATORS, get_lang_name
 from dialect.tts import TTS
 
@@ -143,6 +144,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.setup_headerbar()
         self.setup_translation()
         self.responsive_listener(launch=True)
+        self.set_help_overlay(DialectShortcutsWindow())
 
         # Load translator
         self.retry_backend_btn.connect('clicked', self.retry_load_translator)
