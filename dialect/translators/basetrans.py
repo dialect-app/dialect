@@ -28,7 +28,7 @@ class TranslatorBase:
         pass
 
     def translate(self, src_text, src, dest):
-        pass
+        return False
 
 
 class TranslationError(Exception):

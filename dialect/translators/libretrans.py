@@ -113,7 +113,7 @@ class Translator(TranslatorBase):
                 data=data,
             )
             if 'success' in r.json():
-                return r.json()
+                return r.json()['success']
             else:
                 return False
         except Exception as exc:

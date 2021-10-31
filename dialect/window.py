@@ -66,6 +66,7 @@ class DialectWindow(Adw.ApplicationWindow):
     dest_lang_btn2 = Gtk.Template.Child()
 
     notification_revealer = Gtk.Template.Child()
+    notification_icon = Gtk.Template.Child()
     notification_label = Gtk.Template.Child()
 
     src_key_ctrlr = Gtk.Template.Child()
@@ -474,16 +475,28 @@ class DialectWindow(Adw.ApplicationWindow):
             Settings.get().set_src_langs(self.translator.name, self.src_langs)
             Settings.get().set_dest_langs(self.translator.name, self.dest_langs)
 
-    def send_notification(self, text, timeout=5):
+    def send_notification(self, text, type='warning', timeout=5):
         """
         Display an in-app notification.
 
         Args:
             text (str): The text or message of the notification.
+            type (str, optional): The type of notification.
             timeout (int, optional): The time before the notification disappears. Defaults to 5.
         """
         self.notification_label.set_text(text)
         self.notification_revealer.set_reveal_child(True)
+
+        if type == 'warning':
+            self.notification_image.set_from_icon_name('dialog-warning-symbolic')
+        elif type == 'error':
+            self.notification_image.set_from_icon_name('dialog-error-symbolic')
+        elif type == 'question':
+            self.notification_image.set_from_icon_name('dialog-question-symbolic')
+        elif type == 'success':
+            self.notification_image.set_from_icon_name('success-symbolic')
+        else:
+            self.notification_image.set_from_icon_name('dialog-information-symbolic')
 
         GLib.timeout_add_seconds(
             timeout,
@@ -742,15 +755,23 @@ class DialectWindow(Adw.ApplicationWindow):
         self.dest_toolbar_stack.set_visible_child_name('default')
 
     def _suggest(self, text):
-        self.translator.suggest(text)
+        success = self.translator.suggest(text)
         GLib.idle_add(
             self.dest_toolbar_stack.set_visible_child_name,
             'default'
         )
-        GLib.idle_add(
-            self.send_notification,
-            _("New translation has been suggested!")
-        )
+        if success:
+            GLib.idle_add(
+                self.send_notification,
+                _("New translation has been suggested!"),
+                type='success'
+            )
+        else:
+            GLib.idle_add(
+                self.send_notification,
+                _("Suggestion failed."),
+                type='error'
+            )
         GLib.idle_add(
             self.dest_text.set_editable,
             False
