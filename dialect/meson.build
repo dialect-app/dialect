@@ -33,6 +33,7 @@ sources = [
   'preferences.py',
   'lang_selector.py',
   'settings.py',
+  'shortcuts.py',
 ]
 # Install sources
 install_data(sources, install_dir: moduledir)

@@ -16,7 +16,7 @@
       </item>
       <item>
         <attribute name="label" translatable="yes">Keyboard Shortcuts</attribute>
-        <attribute name="action">app.shortcuts</attribute>
+        <attribute name="action">win.show-help-overlay</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">About Dialect</attribute>
@@ -414,41 +414,87 @@
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkBox">
+                                  <object class="GtkStack" id="dest_toolbar_stack">
+                                    <property name="transition-type">crossfade</property>
                                     <child>
-                                      <object class="GtkSpinner" id="trans_spinner">
-                                        <property name="tooltip-text" translatable="yes">Translating…</property>
-                                        <property name="margin-start">8</property>
+                                      <object class="GtkStackPage">
+                                        <property name="name">default</property>
+                                        <property name="child">
+                                          <object class="GtkBox">
+                                            <child>
+                                              <object class="GtkSpinner" id="trans_spinner">
+                                                <property name="tooltip-text" translatable="yes">Translating…</property>
+                                                <property name="margin-start">8</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkImage" id="trans_warning">
+                                                <property name="tooltip-text" translatable="yes">Could not translate the text</property>
+                                                <property name="margin-start">8</property>
+                                                <property name="icon-name">dialog-warning-symbolic</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkButton" id="copy_btn">
+                                                <property name="action-name">win.copy</property>
+                                                <property name="tooltip-text" translatable="yes">Copy</property>
+                                                <property name="icon-name">edit-copy-symbolic</property>
+                                                <property name="hexpand">True</property>
+                                                <property name="halign">end</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkButton" id="edit_btn">
+                                                <property name="action-name">win.suggest</property>
+                                                <property name="tooltip-text" translatable="yes">Suggest Translation</property>
+                                                <property name="icon-name">document-edit-symbolic</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkButton" id="dest_voice_btn">
+                                                <property name="action-name">win.listen-dest</property>
+                                                <property name="tooltip-text" translatable="yes">Listen</property>
+                                                <style>
+                                                  <class name="flat"/>
+                                                </style>
+                                              </object>
+                                            </child>
+                                            <style>
+                                              <class name="toolbar"/>
+                                            </style>
+                                          </object>
+                                        </property>
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GtkImage" id="trans_warning">
-                                        <property name="tooltip-text" translatable="yes">Could not translate the text</property>
-                                        <property name="margin-start">8</property>
-                                        <property name="icon-name">dialog-warning-symbolic</property>
+                                      <object class="GtkStackPage">
+                                        <property name="name">edit</property>
+                                        <property name="child">
+                                          <object class="GtkBox">
+                                            <child>
+                                              <object class="GtkButton" id="cancel_btn">
+                                                <property name="action-name">win.suggest-cancel</property>
+                                                <property name="label" translatable="yes">Cancel</property>
+                                                <property name="hexpand">True</property>
+                                                <property name="halign">end</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkButton" id="save_btn">
+                                                <property name="action-name">win.suggest-ok</property>
+                                                <property name="label" translatable="yes">Save</property>
+                                                <style>
+                                                  <class name="suggested-action"/>
+                                                </style>
+                                              </object>
+                                            </child>
+                                            <style>
+                                              <class name="toolbar"/>
+                                            </style>
+                                          </object>
+                                        </property>
                                       </object>
                                     </child>
-                                    <child>
-                                      <object class="GtkButton" id="copy_btn">
-                                        <property name="action-name">win.copy</property>
-                                        <property name="tooltip-text" translatable="yes">Copy</property>
-                                        <property name="icon-name">edit-copy-symbolic</property>
-                                        <property name="hexpand">True</property>
-                                        <property name="halign">end</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkButton" id="dest_voice_btn">
-                                        <property name="action-name">win.listen-dest</property>
-                                        <property name="tooltip-text" translatable="yes">Listen</property>
-                                        <style>
-                                          <class name="flat"/>
-                                        </style>
-                                      </object>
-                                    </child>
-                                    <style>
-                                      <class name="toolbar"/>
-                                    </style>
                                   </object>
                                 </child>
                               </object>
@@ -533,7 +579,7 @@
                             <property name="valign">center</property>
                             <property name="spacing">12</property>
                             <child>
-                              <object class="GtkImage">
+                              <object class="GtkImage" id="notification_icon">
                                 <property name="icon-name">dialog-warning-symbolic</property>
                               </object>
                             </child>

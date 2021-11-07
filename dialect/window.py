@@ -12,6 +12,7 @@ from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk
 from dialect.define import APP_ID, PROFILE, MAX_LENGTH, RES_PATH, TRANS_NUMBER
 from dialect.lang_selector import DialectLangSelector
 from dialect.settings import Settings
+from dialect.shortcuts import DialectShortcutsWindow
 from dialect.translators import TRANSLATORS, get_lang_name
 from dialect.tts import TTS
 
@@ -52,8 +53,10 @@ class DialectWindow(Adw.ApplicationWindow):
     dest_pron_revealer = Gtk.Template.Child()
     dest_pron_label = Gtk.Template.Child()
     dest_text = Gtk.Template.Child()
+    dest_toolbar_stack = Gtk.Template.Child()
     trans_spinner = Gtk.Template.Child()
     trans_warning = Gtk.Template.Child()
+    edit_btn = Gtk.Template.Child()
     copy_btn = Gtk.Template.Child()
     dest_voice_btn = Gtk.Template.Child()
 
@@ -63,6 +66,7 @@ class DialectWindow(Adw.ApplicationWindow):
     dest_lang_btn2 = Gtk.Template.Child()
 
     notification_revealer = Gtk.Template.Child()
+    notification_icon = Gtk.Template.Child()
     notification_label = Gtk.Template.Child()
 
     src_key_ctrlr = Gtk.Template.Child()
@@ -90,6 +94,8 @@ class DialectWindow(Adw.ApplicationWindow):
     # Pronunciations
     trans_src_pron = None
     trans_dest_pron = None
+    # Suggestions
+    before_suggest = None
 
     mobile_mode = False  # UI mode
 
@@ -141,6 +147,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.setup_headerbar()
         self.setup_translation()
         self.responsive_listener(launch=True)
+        self.set_help_overlay(DialectShortcutsWindow())
 
         # Load translator
         self.retry_backend_btn.connect('clicked', self.retry_load_translator)
@@ -186,6 +193,19 @@ class DialectWindow(Adw.ApplicationWindow):
         listen_dest_action.connect('activate', self.ui_dest_voice)
         self.add_action(listen_dest_action)
 
+        suggest_action = Gio.SimpleAction.new('suggest', None)
+        suggest_action.set_enabled(False)
+        suggest_action.connect('activate', self.ui_suggest)
+        self.add_action(suggest_action)
+
+        suggest_ok_action = Gio.SimpleAction.new('suggest-ok', None)
+        suggest_ok_action.connect('activate', self.ui_suggest_ok)
+        self.add_action(suggest_ok_action)
+
+        suggest_cancel_action = Gio.SimpleAction.new('suggest-cancel', None)
+        suggest_cancel_action.connect('activate', self.ui_suggest_cancel)
+        self.add_action(suggest_cancel_action)
+
         listen_src_action = Gio.SimpleAction.new('listen-src', None)
         listen_src_action.connect('activate', self.ui_src_voice)
         self.add_action(listen_src_action)
@@ -195,6 +215,12 @@ class DialectWindow(Adw.ApplicationWindow):
             # Supported features
             if not self.translator.supported_features['mistakes']:
                 self.mistakes.set_reveal_child(False)
+
+            self.ui_suggest_cancel(None, None)
+            if not self.translator.supported_features['suggestions']:
+                self.edit_btn.set_visible(False)
+            else:
+                self.edit_btn.set_visible(True)
 
             if not self.translator.supported_features['pronunciation']:
                 self.src_pron_revealer.set_reveal_child(False)
@@ -450,16 +476,28 @@ class DialectWindow(Adw.ApplicationWindow):
             Settings.get().set_src_langs(self.translator.name, self.src_langs)
             Settings.get().set_dest_langs(self.translator.name, self.dest_langs)
 
-    def send_notification(self, text, timeout=5):
+    def send_notification(self, text, type='warning', timeout=5):
         """
         Display an in-app notification.
 
         Args:
             text (str): The text or message of the notification.
+            type (str, optional): The type of notification.
             timeout (int, optional): The time before the notification disappears. Defaults to 5.
         """
         self.notification_label.set_text(text)
         self.notification_revealer.set_reveal_child(True)
+
+        if type == 'warning':
+            self.notification_icon.set_from_icon_name('dialog-warning-symbolic')
+        elif type == 'error':
+            self.notification_icon.set_from_icon_name('dialog-error-symbolic')
+        elif type == 'question':
+            self.notification_icon.set_from_icon_name('dialog-question-symbolic')
+        elif type == 'success':
+            self.notification_icon.set_from_icon_name('success-symbolic')
+        else:
+            self.notification_icon.set_from_icon_name('dialog-information-symbolic')
 
         GLib.timeout_add_seconds(
             timeout,
@@ -698,6 +736,58 @@ class DialectWindow(Adw.ApplicationWindow):
         cancellable = Gio.Cancellable()
         clipboard.read_text_async(cancellable, on_paste)
 
+    def ui_suggest(self, _action, _param):
+        self.dest_toolbar_stack.set_visible_child_name('edit')
+        self.before_suggest = self.dest_buffer.get_text(
+            self.dest_buffer.get_start_iter(),
+            self.dest_buffer.get_end_iter(),
+            True
+        )
+        self.dest_text.set_editable(True)
+
+    def ui_suggest_ok(self, _action, _param):
+        dest_text = self.dest_buffer.get_text(
+            self.dest_buffer.get_start_iter(),
+            self.dest_buffer.get_end_iter(),
+            True
+        )
+        threading.Thread(
+            target=self._suggest,
+            args=(dest_text,),
+            daemon=True
+        ).start()
+        self.before_suggest = None
+
+    def ui_suggest_cancel(self, _action, _param):
+        self.dest_toolbar_stack.set_visible_child_name('default')
+        if self.before_suggest is not None:
+            self.dest_buffer.set_text(self.before_suggest)
+            self.before_suggest = None
+        self.dest_text.set_editable(False)
+
+    def _suggest(self, text):
+        success = self.translator.suggest(text)
+        GLib.idle_add(
+            self.dest_toolbar_stack.set_visible_child_name,
+            'default'
+        )
+        if success:
+            GLib.idle_add(
+                self.send_notification,
+                _("New translation has been suggested!"),
+                type='success'
+            )
+        else:
+            GLib.idle_add(
+                self.send_notification,
+                _("Suggestion failed."),
+                type='error'
+            )
+        GLib.idle_add(
+            self.dest_text.set_editable,
+            False
+        )
+
     def ui_src_voice(self, _action, _param):
         src_text = self.src_buffer.get_text(
             self.src_buffer.get_start_iter(),
@@ -763,8 +853,10 @@ class DialectWindow(Adw.ApplicationWindow):
         modifiers = state & Gtk.accelerator_get_default_mod_mask()
         shift_mask = Gdk.ModifierType.SHIFT_MASK
         unicode_key_val = Gdk.keyval_to_unicode(keyval)
-        if (GLib.unichar_isgraph(chr(unicode_key_val)) and
-                modifiers in (shift_mask, 0) and not self.src_text.is_focus()):
+        if (GLib.unichar_isgraph(chr(unicode_key_val))
+                and modifiers in (shift_mask, 0)
+                and not self.dest_text.get_editable()
+                and not self.src_text.is_focus()):
             self.src_text.grab_focus()
             end_iter = self.src_buffer.get_end_iter()
             self.src_buffer.insert(end_iter, chr(unicode_key_val))
@@ -814,6 +906,10 @@ class DialectWindow(Adw.ApplicationWindow):
     def on_dest_text_changed(self, buffer):
         sensitive = buffer.get_char_count() != 0
         self.lookup_action('copy').set_enabled(sensitive)
+        self.lookup_action('suggest').set_enabled(
+            self.translator.supported_features['suggestions']
+            and sensitive
+        )
         if not self.voice_loading and self.tts_langs:
             self.lookup_action('listen-dest').set_enabled(
                 self.dest_lang_selector.get_property('selected') in self.tts_langs
