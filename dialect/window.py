@@ -153,7 +153,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.retry_backend_btn.connect('clicked', self.retry_load_translator)
         threading.Thread(
             target=self.load_translator,
-            args=[Settings.get().backend, True],
+            args=[Settings.get().active_translator, True],
             daemon=True
         ).start()
         # Get languages available for speech
@@ -255,14 +255,14 @@ class DialectWindow(Adw.ApplicationWindow):
             # Translator object
             if TRANSLATORS[backend].supported_features['change-instance']:
                 self.translator = TRANSLATORS[backend](
-                    base_url=Settings.get().get_instance_url(TRANSLATORS[backend].name)
+                    base_url=Settings.get().instance_url
                 )
             else:
                 self.translator = TRANSLATORS[backend]()
 
             # Get saved languages
-            self.src_langs = Settings.get().get_src_langs(self.translator.name)
-            self.dest_langs = Settings.get().get_dest_langs(self.translator.name)
+            self.src_langs = Settings.get().src_langs
+            self.dest_langs = Settings.get().dest_langs
 
             # Update UI
             GLib.idle_add(update_ui)
@@ -289,7 +289,7 @@ class DialectWindow(Adw.ApplicationWindow):
     def retry_load_translator(self, _button):
         threading.Thread(
             target=self.load_translator,
-            args=[Settings.get().backend],
+            args=[Settings.get().active_translator],
             daemon=True
         ).start()
 
@@ -473,8 +473,9 @@ class DialectWindow(Adw.ApplicationWindow):
             size = self.get_default_size()
             Settings.get().window_size = (size.width, size.height)
         if self.translator is not None:
-            Settings.get().set_src_langs(self.translator.name, self.src_langs)
-            Settings.get().set_dest_langs(self.translator.name, self.dest_langs)
+            Settings.get().src_langs = self.src_langs
+            Settings.get().dest_langs = self.dest_langs
+            Settings.get().save_translator_settings()
 
     def send_notification(self, text, type='warning', timeout=5):
         """

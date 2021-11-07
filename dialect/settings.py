@@ -21,9 +21,12 @@ class Settings(Gio.Settings):
     """
 
     instance = None
+    translator = None
 
     def __init__(self):
         Gio.Settings.__init__(self)
+        self.init_translators_settings()
+        self.migrate_legacy()
 
     @staticmethod
     def new():
@@ -39,6 +42,89 @@ class Settings(Gio.Settings):
             Settings.instance = Settings.new()
 
         return Settings.instance
+
+    def init_translators_settings(self):
+        """Intialize translators settings with its default values."""
+        self.translators_list = list(TRANSLATORS.keys())
+        for name, instance in TRANSLATORS.items():
+            settings = self.get_translator_settings(name)
+            if not settings.get_boolean('init'):
+                settings.set_strv('src-langs', instance.src_langs)
+                settings.set_strv('dest-langs', instance.dest_langs)
+                settings.set_string('instance-url', instance.instance_url)
+                settings.set_string('api-key', instance.api_key)
+                settings.set_boolean('init', True)
+
+    @property
+    def translators_list(self):
+        return self.get_child('translators').get_strv('list')
+
+    @translators_list.setter
+    def translators_list(self, translators):
+        self.get_child('translators').set_strv('list', translators)
+
+    @property
+    def active_translator(self):
+        return self.get_child('translators').get_string('active')
+
+    @active_translator.setter
+    def active_translator(self, translator):
+        self.get_child('translators').set_string('active', translator)
+        self.translator = None
+
+    def get_translator_settings(self, translator=None):
+        def get_settings(name):
+            path = self.get_child('translators').get_property('path')
+            if not path.endswith('/'):
+                path += '/'
+            path += name + '/'
+            return Gio.Settings(APP_ID + '.translator', path)
+
+        if translator is not None:
+            translator = get_settings(translator)
+            return translator
+        if self.translator is None:
+            self.translator = get_settings(self.active_translator)
+            self.translator.delay()
+        return self.translator
+
+    def save_translator_settings(self):
+        if self.translator is not None:
+            self.translator.apply()
+
+    @property
+    def src_langs(self):
+        return self.get_translator_settings().get_strv('src-langs')
+
+    @src_langs.setter
+    def src_langs(self, src_langs):
+        self.get_translator_settings().set_strv('src-langs', src_langs)
+
+    @property
+    def dest_langs(self):
+        return self.get_translator_settings().get_strv('dest-langs')
+
+    @dest_langs.setter
+    def dest_langs(self, dest_langs):
+        self.get_translator_settings().set_strv('dest-langs', dest_langs)
+
+    @property
+    def instance_url(self):
+        return self.get_translator_settings().get_string('instance-url')
+
+    @instance_url.setter
+    def instance_url(self, url):
+        self.get_translator_settings().set_string('instance-url', url)
+        self.save_translator_settings()
+
+    @property
+    def api_key(self):
+        return self.get_translator_settings().get_string('api-key')
+
+    @api_key.setter
+    def api_key(self, api_key):
+        self.get_translator_settings().set_string('api-key', api_key)
+        self.save_translator_settings()
 
     @property
     def window_size(self):
@@ -117,6 +203,9 @@ class Settings(Gio.Settings):
     def src_auto(self, state):
         self.set_boolean('src-auto', state)
 
+    def migrate_legacy(self):
+        pass
+
     @property
     def backend(self):
         """Return the user's preferred backend."""
@@ -169,7 +258,7 @@ class Settings(Gio.Settings):
 
     def reset_instance_url(self, backend):
         self._delete_str_key(f'{backend}-instance')  # Set deprecated key to unused state.
-        self._set_backend_setting(backend, 'instance-url', TRANSLATORS[backend].instance_url)
+        self.instance_url = TRANSLATORS[self.active_translator].instance_url
 
     def get_dest_langs(self, backend):
         # Dialect 1.2.0 and below used separate keys for each
@@ -191,7 +280,7 @@ class Settings(Gio.Settings):
 
     def reset_dest_langs(self, backend):
         self._delete_arr_key(f'{backend}-dest-langs')  # Set deprecated key to unused state.
-        self._set_backend_setting(backend, 'dest-langs', TRANSLATORS[backend].dest_langs)
+        self.dest_langs = TRANSLATORS[backend].dest_langs
 
     def get_src_langs(self, backend):
         # Dialect 1.2.0 and below used separate keys for each
@@ -213,7 +302,7 @@ class Settings(Gio.Settings):
 
     def reset_src_langs(self, backend):
         self._delete_arr_key(f'{backend}-src-langs')  # Set deprecated key to unused state.
-        self._set_backend_setting(backend, 'src-langs', TRANSLATORS[backend].src_langs)
+        self.src_langs = TRANSLATORS[backend].src_langs
 
     @property
     def backend_settings(self):

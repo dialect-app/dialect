@@ -64,7 +64,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         selected_backend_index = 0
         for index, value in enumerate(backend_options):
             self.backend_model.insert(index, value)
-            if value.name == Settings.get().backend:
+            if value.name == Settings.get().active_translator:
                 selected_backend_index = index
         self.backend.set_model(self.backend_model)
 
@@ -140,7 +140,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         Settings.get().unbind(self.src_auto, 'active')
 
     def _on_settings_changed(self, _settings, key):
-        backend = Settings.get().backend
+        backend = Settings.get().active_translator
         if key == 'backend-settings':
             if TRANSLATORS[backend].supported_features['change-instance']:
                 # Update backend
@@ -180,7 +180,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
 
     def _switch_backends(self, row, _value):
         backend = self.backend_model[row.get_selected()].name
-        Settings.get().backend = backend
+        Settings.get().active_translator = backend
         self.__check_instance_support()
         self.parent.change_backends(backend)
 
@@ -189,13 +189,13 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         self.backend_instance_row.set_sensitive(not window.get_property('backend-loading'))
 
     def _on_edit_backend_instance(self, _button):
-        backend = Settings.get().backend
+        backend = Settings.get().active_translator
         self.backend_instance_stack.set_visible_child_name('edit')
-        self.backend_instance.set_text(Settings.get().get_instance_url(backend))
+        self.backend_instance.set_text(Settings.get().instance_url)
 
     def _on_save_backend_instance(self, _button):
-        backend = Settings.get().backend
-        old_value = Settings.get().get_instance_url(backend)
+        backend = Settings.get().active_translator
+        old_value = Settings.get().instance_url
         new_value = self.backend_instance.get_text()
 
         url = re.compile(r"https?://(www\.)?")
@@ -212,17 +212,18 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             self.backend_instance_stack.set_visible_child_name('view')
 
     def _on_reset_backend_instance(self, _button):
-        backend = Settings.get().backend
+        backend = Settings.get().active_translator
         Settings.get().reset_instance_url(backend)
+        self.backend_instance_label.set_label(Settings.get().instance_url)
         self.backend_instance_stack.set_visible_child_name('view')
         Gtk.StyleContext.remove_class(self.backend_instance.get_style_context(), 'error')
         self.error_popover.popdown()
 
     def __check_instance_support(self):
-        backend = Settings.get().backend
+        backend = Settings.get().active_translator
         if TRANSLATORS[backend].supported_features['change-instance']:
             self.backend_instance_row.set_visible(True)
-            self.backend_instance_label.set_label(Settings.get().get_instance_url(backend))
+            self.backend_instance_label.set_label(Settings.get().instance_url)
         else:
             self.backend_instance_row.set_visible(False)
 
@@ -237,14 +238,14 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             self.backend.set_sensitive(True)
             self.backend_instance_row.set_sensitive(True)
             self.backend_instance_save.set_child(self.instance_save_image)
-            self.backend_instance_label.set_label(Settings.get().get_instance_url(backend))
+            self.backend_instance_label.set_label(Settings.get().instance_url)
             self.instance_save_spinner.stop()
 
         GLib.idle_add(spinner_start)
-        backend = Settings.get().backend
+        backend = Settings.get().active_translator
         validate = TRANSLATORS[backend].validate_instance_url(url)
         if validate:
-            Settings.get().set_instance_url(backend, url)
+            Settings.get().instance_url = url
             GLib.idle_add(Gtk.StyleContext.remove_class, self.backend_instance.get_style_context(), 'error')
             GLib.idle_add(self.backend_instance_stack.set_visible_child_name, 'view')
             GLib.idle_add(self.error_popover.popdown)
