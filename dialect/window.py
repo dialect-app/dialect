@@ -194,6 +194,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.add_action(listen_dest_action)
 
         suggest_action = Gio.SimpleAction.new('suggest', None)
+        suggest_action.set_enabled(False)
         suggest_action.connect('activate', self.ui_suggest)
         self.add_action(suggest_action)
 
@@ -218,10 +219,8 @@ class DialectWindow(Adw.ApplicationWindow):
             self.ui_suggest_cancel(None, None)
             if not self.translator.supported_features['suggestions']:
                 self.edit_btn.set_visible(False)
-                self.lookup_action('suggest').set_enabled(False)
             else:
                 self.edit_btn.set_visible(True)
-                self.lookup_action('suggest').set_enabled(True)
 
             if not self.translator.supported_features['pronunciation']:
                 self.src_pron_revealer.set_reveal_child(False)
@@ -490,15 +489,15 @@ class DialectWindow(Adw.ApplicationWindow):
         self.notification_revealer.set_reveal_child(True)
 
         if type == 'warning':
-            self.notification_image.set_from_icon_name('dialog-warning-symbolic')
+            self.notification_icon.set_from_icon_name('dialog-warning-symbolic')
         elif type == 'error':
-            self.notification_image.set_from_icon_name('dialog-error-symbolic')
+            self.notification_icon.set_from_icon_name('dialog-error-symbolic')
         elif type == 'question':
-            self.notification_image.set_from_icon_name('dialog-question-symbolic')
+            self.notification_icon.set_from_icon_name('dialog-question-symbolic')
         elif type == 'success':
-            self.notification_image.set_from_icon_name('success-symbolic')
+            self.notification_icon.set_from_icon_name('success-symbolic')
         else:
-            self.notification_image.set_from_icon_name('dialog-information-symbolic')
+            self.notification_icon.set_from_icon_name('dialog-information-symbolic')
 
         GLib.timeout_add_seconds(
             timeout,
@@ -907,6 +906,10 @@ class DialectWindow(Adw.ApplicationWindow):
     def on_dest_text_changed(self, buffer):
         sensitive = buffer.get_char_count() != 0
         self.lookup_action('copy').set_enabled(sensitive)
+        self.lookup_action('suggest').set_enabled(
+            self.translator.supported_features['suggestions']
+            and sensitive
+        )
         if not self.voice_loading and self.tts_langs:
             self.lookup_action('listen-dest').set_enabled(
                 self.dest_lang_selector.get_property('selected') in self.tts_langs
