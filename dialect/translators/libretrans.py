@@ -40,8 +40,7 @@ class Translator(TranslatorBase):
 
         r_frontend_settings = self.client.get(self._frontend_settings_url)
 
-        if r_frontend_settings.json()['suggestions']:
-            self.supported_features['suggestions'] = True
+        self.supported_features['suggestions'] = r_frontend_settings.json().get('suggestions', False)
 
     @property
     def _frontend_settings_url(self):

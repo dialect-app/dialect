@@ -94,6 +94,8 @@ class DialectWindow(Adw.ApplicationWindow):
     # Pronunciations
     trans_src_pron = None
     trans_dest_pron = None
+    # Suggestions
+    before_suggest = None
 
     mobile_mode = False  # UI mode
 
@@ -737,6 +739,11 @@ class DialectWindow(Adw.ApplicationWindow):
 
     def ui_suggest(self, _action, _param):
         self.dest_toolbar_stack.set_visible_child_name('edit')
+        self.before_suggest = self.dest_buffer.get_text(
+            self.dest_buffer.get_start_iter(),
+            self.dest_buffer.get_end_iter(),
+            True
+        )
         self.dest_text.set_editable(True)
 
     def ui_suggest_ok(self, _action, _param):
@@ -750,9 +757,14 @@ class DialectWindow(Adw.ApplicationWindow):
             args=(dest_text,),
             daemon=True
         ).start()
+        self.before_suggest = None
 
     def ui_suggest_cancel(self, _action, _param):
         self.dest_toolbar_stack.set_visible_child_name('default')
+        if self.before_suggest is not None:
+            self.dest_buffer.set_text(self.before_suggest)
+            self.before_suggest = None
+        self.dest_text.set_editable(False)
 
     def _suggest(self, text):
         success = self.translator.suggest(text)
