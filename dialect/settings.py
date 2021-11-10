@@ -25,8 +25,6 @@ class Settings(Gio.Settings):
 
     def __init__(self):
         Gio.Settings.__init__(self)
-        self.init_translators_settings()
-        self.migrate_legacy()
 
     @staticmethod
     def new():
@@ -40,6 +38,8 @@ class Settings(Gio.Settings):
         """Return an active instance of Settings."""
         if Settings.instance is None:
             Settings.instance = Settings.new()
+            Settings.instance.init_translators_settings()
+            Settings.instance.migrate_legacy()
 
         return Settings.instance
 
