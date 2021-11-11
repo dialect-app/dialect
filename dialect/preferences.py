@@ -144,8 +144,8 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         if key == 'backend-settings':
             if TRANSLATORS[backend].supported_features['change-instance']:
                 # Update backend
-                Settings.get().reset_src_langs(backend)
-                Settings.get().reset_dest_langs(backend)
+                Settings.get().reset_src_langs()
+                Settings.get().reset_dest_langs()
                 self.parent.change_backends(backend)
 
     def _toggle_dark_mode(self, switch, _active):
@@ -213,7 +213,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
 
     def _on_reset_backend_instance(self, _button):
         backend = Settings.get().active_translator
-        Settings.get().reset_instance_url(backend)
+        Settings.get().reset_instance_url()
         self.backend_instance_label.set_label(Settings.get().instance_url)
         self.backend_instance_stack.set_visible_child_name('view')
         Gtk.StyleContext.remove_class(self.backend_instance.get_style_context(), 'error')
