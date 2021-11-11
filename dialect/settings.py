@@ -221,113 +221,28 @@ class Settings(Gio.Settings):
         self.set_boolean('src-auto', state)
 
     def migrate_legacy(self):
-        pass
+        backend = self.get_string('backend-name')
+        if backend:
+            # Migrate active translator
+            if check_backend_availability(backend):
+                self.active_translator = backend
 
-    @property
-    def backend(self):
-        """Return the user's preferred backend."""
-        # Dialect 1.2.0 and below used the backend key and
-        # stored the index of the chosen backend as an int.
-        value = self.get_int('backend')
+            # Migrate old backend settings
+            json_settings = json.loads(self.get_string('backend-settings'))
+            for name, data in json_settings.items():
+                settings = self.get_translator_settings(name)
+                if settings.get_boolean('init'):
+                    if data.get('instance-url'):
+                        settings.set_string('instance-url', data.get('instance-url'))
 
-        if value == -1:
-            value = self.get_string('backend-name')
-        else:
-            if value == 0:
-                value = 'google'
-            elif value == 1:
-                value = 'libretranslate'
-
-        if check_backend_availability(value):
-            return value
-
-        self.backend = get_fallback_backend_name()
-        return get_fallback_backend_name()
-
-    @backend.setter
-    def backend(self, name):
-        """
-        Set the user's preferred backend.
-
-        :param name: name of backend
-        :type name: string
-        """
-        self._delete_int_key('backend')  # Set deprecated key to unused state.
-        self.set_string('backend-name', name)
-
-    def get_instance_url(self, backend):
-        # Dialect 1.2.0 and below used separate keys for each
-        # backend-specific setting.
-        instance_url = self.get_string(f'{backend}-instance')
-        if instance_url:
-            return instance_url
-
-        settings = self.backend_settings.get(backend)
-
-        if settings is not None and settings.get('instance-url'):
-            return settings.get('instance-url')
-
-        return TRANSLATORS[backend].instance_url
-
-    def set_instance_url(self, backend, instance_url):
-        self._delete_str_key(f'{backend}-instance')  # Set deprecated key to unused state.
-        self._set_backend_setting(backend, 'instance-url', instance_url)
-
-    def get_dest_langs(self, backend):
-        # Dialect 1.2.0 and below used separate keys for each
-        # backend-specific setting.
-        dest_langs = list(self.get_value(f'{backend}-dest-langs'))
-        if dest_langs:
-            return dest_langs
-
-        settings = self.backend_settings.get(backend)
-
-        if settings is not None and settings.get('dest-langs'):
-            return settings.get('dest-langs')
-
-        return TRANSLATORS[backend].dest_langs
-
-    def set_dest_langs(self, backend, langs):
-        self._delete_arr_key(f'{backend}-dest-langs')  # Set deprecated key to unused state.
-        self._set_backend_setting(backend, 'dest-langs', langs)
-
-    def get_src_langs(self, backend):
-        # Dialect 1.2.0 and below used separate keys for each
-        # backend-specific setting.
-        src_langs = list(self.get_value(f'{backend}-src-langs'))
-        if src_langs:
-            return src_langs
-
-        settings = self.backend_settings.get(backend)
-
-        if settings is not None and settings.get('src-langs'):
-            return settings.get('src-langs')
-
-        return TRANSLATORS[backend].src_langs
-
-    def set_src_langs(self, backend, langs):
-        self._delete_arr_key(f'{backend}-src-langs')  # Set deprecated key to unused state.
-        self._set_backend_setting(backend, 'src-langs', langs)
-
-    @property
-    def backend_settings(self):
-        return json.loads(self.get_string('backend-settings'))
-
-    @backend_settings.setter
-    def backend_settings(self, value):
-        self.set_string('backend-settings', json.dumps(value))
-
-    def _set_backend_setting(self, backend, key, value):
-        """
-        Sets the backend settings with key and value.
-        """
-        settings = self.backend_settings
-
-        if backend not in settings:
-            settings[backend] = {}
-
-        settings[backend][key] = value
-        self.backend_settings = settings
+            self._delete_int_key('backend')
+            self._delete_str_key('libretranslate-instance')
+            self._delete_arr_key('libretranslate-src-langs')
+            self._delete_arr_key('google-src-langs')
+            self._delete_arr_key('libretranslate-dest-langs')
+            self._delete_arr_key('google-dest-langs')
+            self._delete_str_key('backend-name')
+            self._delete_str_key('backend-settings')
 
     def _delete_arr_key(self, key):
         val = self.get_strv(key)

@@ -26,10 +26,14 @@
         <default>-1</default>
     </key>
     <key type="s" name="backend-name">
-        <default>"google"</default>
+        <!-- Deprecated option -->
+        <description>DEPRECATED: This key is deprecated and normally ignored.</description>
+        <default>""</default>
     </key>
     <key type="s" name="backend-settings">
-        <default>"{}"</default>
+        <!-- Deprecated option -->
+        <description>DEPRECATED: This key is deprecated and normally ignored.</description>
+        <default>""</default>
     </key>
     <key type="s" name="tts-name">
         <default>"google"</default>
