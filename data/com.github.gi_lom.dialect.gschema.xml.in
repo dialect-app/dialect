@@ -26,10 +26,14 @@
         <default>-1</default>
     </key>
     <key type="s" name="backend-name">
-        <default>"google"</default>
+        <!-- Deprecated option -->
+        <description>DEPRECATED: This key is deprecated and normally ignored.</description>
+        <default>""</default>
     </key>
     <key type="s" name="backend-settings">
-        <default>"{}"</default>
+        <!-- Deprecated option -->
+        <description>DEPRECATED: This key is deprecated and normally ignored.</description>
+        <default>""</default>
     </key>
     <key type="s" name="tts-name">
         <default>"google"</default>
@@ -57,6 +61,42 @@
     <key type="s" name="libretranslate-instance">
         <!-- Deprecated option -->
         <description>DEPRECATED: This key is deprecated and normally ignored.</description>
+        <default>""</default>
+    </key>
+
+    <child name="translators" schema="@app-id@.TranslatorsList" />
+  </schema>
+
+  <!-- Settings list schema -->
+  <schema id="@app-id@.SettingsList">
+    <key name="list" type="as">
+      <default>[]</default>
+    </key>
+    <key name="active" type="s">
+      <default>""</default>
+    </key>
+  </schema>
+
+  <!-- Translators list schema -->
+  <schema id="@app-id@.TranslatorsList" extends="@app-id@.SettingsList">
+    <override name="active">"google"</override>
+  </schema>
+
+  <!-- Translator schema -->
+  <schema id="@app-id@.translator">
+    <key type="b" name="init">
+        <default>false</default>
+    </key>
+    <key type="as" name="src-langs">
+        <default>[]</default>
+    </key>
+    <key type="as" name="dest-langs">
+        <default>[]</default>
+    </key>
+    <key type="s" name="instance-url">
+        <default>""</default>
+    </key>
+    <key type="s" name="api-key">
         <default>""</default>
     </key>
   </schema>

@@ -153,7 +153,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.retry_backend_btn.connect('clicked', self.retry_load_translator)
         threading.Thread(
             target=self.load_translator,
-            args=[Settings.get().backend, True],
+            args=[Settings.get().active_translator, True],
             daemon=True
         ).start()
         # Get languages available for speech
@@ -236,11 +236,11 @@ class DialectWindow(Adw.ApplicationWindow):
             # Update selected langs
             self.src_lang_selector.set_property(
                 'selected',
-                'auto' if Settings.get().src_auto else self._fix_cases(self.src_langs[0])
+                'auto' if Settings.get().src_auto else self.src_langs[0]
             )
             self.dest_lang_selector.set_property(
                 'selected',
-                self._fix_cases(self.dest_langs[0])
+                self.dest_langs[0]
             )
 
             self.no_retranslate = False
@@ -255,14 +255,14 @@ class DialectWindow(Adw.ApplicationWindow):
             # Translator object
             if TRANSLATORS[backend].supported_features['change-instance']:
                 self.translator = TRANSLATORS[backend](
-                    base_url=Settings.get().get_instance_url(TRANSLATORS[backend].name)
+                    base_url=Settings.get().instance_url
                 )
             else:
                 self.translator = TRANSLATORS[backend]()
 
             # Get saved languages
-            self.src_langs = Settings.get().get_src_langs(self.translator.name)
-            self.dest_langs = Settings.get().get_dest_langs(self.translator.name)
+            self.src_langs = Settings.get().src_langs
+            self.dest_langs = Settings.get().dest_langs
 
             # Update UI
             GLib.idle_add(update_ui)
@@ -289,7 +289,7 @@ class DialectWindow(Adw.ApplicationWindow):
     def retry_load_translator(self, _button):
         threading.Thread(
             target=self.load_translator,
-            args=[Settings.get().backend],
+            args=[Settings.get().active_translator],
             daemon=True
         ).start()
 
@@ -473,8 +473,9 @@ class DialectWindow(Adw.ApplicationWindow):
             size = self.get_default_size()
             Settings.get().window_size = (size.width, size.height)
         if self.translator is not None:
-            Settings.get().set_src_langs(self.translator.name, self.src_langs)
-            Settings.get().set_dest_langs(self.translator.name, self.dest_langs)
+            Settings.get().src_langs = self.src_langs
+            Settings.get().dest_langs = self.dest_langs
+            Settings.get().save_translator_settings()
 
     def send_notification(self, text, type='warning', timeout=5):
         """
@@ -540,8 +541,8 @@ class DialectWindow(Adw.ApplicationWindow):
             self.dest_voice_spinner.stop()
 
     def on_src_lang_changed(self, _obj, _param):
-        code = self._fix_cases(self.src_lang_selector.get_property('selected'))
-        dest_code = self._fix_cases(self.dest_lang_selector.get_property('selected'))
+        code = self.src_lang_selector.get_property('selected')
+        dest_code = self.dest_lang_selector.get_property('selected')
         src_text = self.src_buffer.get_text(
             self.src_buffer.get_start_iter(),
             self.src_buffer.get_end_iter(),
@@ -549,10 +550,8 @@ class DialectWindow(Adw.ApplicationWindow):
         )
 
         if code == dest_code:
-            code = self._fix_cases(
-                self.dest_langs[1] if code == self.src_langs[0] else dest_code
-            )
-            self.dest_lang_selector.set_property('selected', self._fix_cases(self.src_langs[0]))
+            code = self.dest_langs[1] if code == self.src_langs[0] else dest_code
+            self.dest_lang_selector.set_property('selected', self.src_langs[0])
 
         # Disable or enable listen function.
         if self.tts_langs and Settings.get().tts != '':
@@ -579,7 +578,6 @@ class DialectWindow(Adw.ApplicationWindow):
         self.src_lang_selector.clear_recent()
         self.src_lang_selector.insert_recent('auto', _('Auto'))
         for code in self.src_langs:
-            code = self._fix_cases(code)
             self.src_lang_selector.insert_recent(code, get_lang_name(code))
 
         # Refresh list
@@ -590,8 +588,8 @@ class DialectWindow(Adw.ApplicationWindow):
             self.translation(None)
 
     def on_dest_lang_changed(self, _obj, _param):
-        code = self._fix_cases(self.dest_lang_selector.get_property('selected'))
-        src_code = self._fix_cases(self.src_lang_selector.get_property('selected'))
+        code = self.dest_lang_selector.get_property('selected')
+        src_code = self.src_lang_selector.get_property('selected')
         dest_text = self.dest_buffer.get_text(
             self.dest_buffer.get_start_iter(),
             self.dest_buffer.get_end_iter(),
@@ -599,8 +597,7 @@ class DialectWindow(Adw.ApplicationWindow):
         )
 
         if code == src_code:
-            code = self._fix_cases(src_code)
-            self.src_lang_selector.set_property('selected', self._fix_cases(self.dest_langs[0]))
+            self.src_lang_selector.set_property('selected', self.dest_langs[0])
 
         # Disable or enable listen function.
         if self.tts_langs and Settings.get().tts != '':
@@ -623,7 +620,6 @@ class DialectWindow(Adw.ApplicationWindow):
         # Rewrite recent langs
         self.dest_lang_selector.clear_recent()
         for code in self.dest_langs:
-            code = self._fix_cases(code)
             self.dest_lang_selector.insert_recent(code, get_lang_name(code))
 
         # Refresh list
@@ -1126,7 +1122,3 @@ class DialectWindow(Adw.ApplicationWindow):
             GLib.idle_add(on_trans_success)
         GLib.idle_add(on_trans_done)
         self.active_thread = None
-
-    @staticmethod
-    def _fix_cases(code):
-        return code.replace('cn', 'CN').replace('tw', 'TW')

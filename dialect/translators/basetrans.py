@@ -14,6 +14,7 @@ class TranslatorBase:
         'suggestions': False,
     }
     instance_url = ''
+    api_key = ''
     src_langs = ['en', 'fr', 'es', 'de']
     dest_langs = ['fr', 'es', 'de', 'en']
 
