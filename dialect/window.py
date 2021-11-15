@@ -65,9 +65,8 @@ class DialectWindow(Adw.ApplicationWindow):
     switch_btn2 = Gtk.Template.Child()
     dest_lang_btn2 = Gtk.Template.Child()
 
-    notification_revealer = Gtk.Template.Child()
-    notification_icon = Gtk.Template.Child()
-    notification_label = Gtk.Template.Child()
+    toast = None  # for notification management
+    toast_overlay = Gtk.Template.Child()
 
     src_key_ctrlr = Gtk.Template.Child()
     win_key_ctrlr = Gtk.Template.Child()
@@ -477,34 +476,18 @@ class DialectWindow(Adw.ApplicationWindow):
             Settings.get().dest_langs = self.dest_langs
             Settings.get().save_translator_settings()
 
-    def send_notification(self, text, type='warning', timeout=5):
+    def send_notification(self, text, queue=False):
         """
         Display an in-app notification.
 
         Args:
             text (str): The text or message of the notification.
-            type (str, optional): The type of notification.
-            timeout (int, optional): The time before the notification disappears. Defaults to 5.
+            queue (bool, optional): If True, the notification will be queued.
         """
-        self.notification_label.set_text(text)
-        self.notification_revealer.set_reveal_child(True)
-
-        if type == 'warning':
-            self.notification_icon.set_from_icon_name('dialog-warning-symbolic')
-        elif type == 'error':
-            self.notification_icon.set_from_icon_name('dialog-error-symbolic')
-        elif type == 'question':
-            self.notification_icon.set_from_icon_name('dialog-question-symbolic')
-        elif type == 'success':
-            self.notification_icon.set_from_icon_name('success-symbolic')
-        else:
-            self.notification_icon.set_from_icon_name('dialog-information-symbolic')
-
-        GLib.timeout_add_seconds(
-            timeout,
-            self.notification_revealer.set_reveal_child,
-            False
-        )
+        if not queue and self.toast is not None:
+            self.toast.dismiss()
+        self.toast = Adw.Toast.new(text)
+        self.toast_overlay.add_toast(self.toast)
 
     def toggle_voice_spinner(self, active=True):
         if active:
@@ -770,14 +753,12 @@ class DialectWindow(Adw.ApplicationWindow):
         if success:
             GLib.idle_add(
                 self.send_notification,
-                _("New translation has been suggested!"),
-                type='success'
+                _("New translation has been suggested!")
             )
         else:
             GLib.idle_add(
                 self.send_notification,
-                _("Suggestion failed."),
-                type='error'
+                _("Suggestion failed.")
             )
         GLib.idle_add(
             self.dest_text.set_editable,

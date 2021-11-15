@@ -212,7 +212,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkOverlay">
+                  <object class="AdwToastOverlay" id="toast_overlay">
                     <property name="vexpand">True</property>
                     <child>
                       <object class="GtkBox">
@@ -564,34 +564,6 @@
                                 </style>
                               </object>
                             </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child type="overlay">
-                      <object class="GtkRevealer" id="notification_revealer">
-                        <property name="halign">center</property>
-                        <property name="valign">start</property>
-                        <property name="transition-type">none</property>
-                        <child>
-                          <object class="GtkBox" id="notification_box">
-                            <property name="halign">start</property>
-                            <property name="valign">center</property>
-                            <property name="spacing">12</property>
-                            <child>
-                              <object class="GtkImage" id="notification_icon">
-                                <property name="icon-name">dialog-warning-symbolic</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="notification_label">
-                                <property name="halign">start</property>
-                                <property name="label" translatable="yes">No network connection detected.</property>
-                              </object>
-                            </child>
-                            <style>
-                              <class name="app-notification"/>
-                            </style>
                           </object>
                         </child>
                       </object>
