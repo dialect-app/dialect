@@ -292,7 +292,7 @@ class DialectWindow(Adw.ApplicationWindow):
             daemon=True
         ).start()
 
-    def on_listen_failed(self):
+    def on_listen_failed(self, called_from):
         self.src_voice_btn.set_child(self.src_voice_warning)
         self.src_voice_spinner.stop()
 
@@ -303,7 +303,18 @@ class DialectWindow(Adw.ApplicationWindow):
         self.src_voice_btn.set_tooltip_text(tooltip_text)
         self.dest_voice_btn.set_tooltip_text(tooltip_text)
 
-        self.send_notification(_('A network issue has occured.\nPlease try again.'))
+        if called_from is not None:
+            action = {
+                'label': _('Retry'),
+                'name': 'win.listen-src' if called_from == 'src' else 'win.listen-dest',
+            }
+        else:
+            action = None
+
+        self.send_notification(
+            _('A network issue has occured. Please try again.'),
+            action=action
+        )
 
         src_text = self.src_buffer.get_text(
             self.src_buffer.get_start_iter(),
@@ -329,7 +340,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.lookup_action('listen-src').set_enabled(src_text != '')
             self.lookup_action('listen-dest').set_enabled(dest_text != '')
 
-    def load_lang_speech(self, listen=False, text=None, language=None):
+    def load_lang_speech(self, listen=False, text=None, language=None, called_from=None):
         """
         Load the language list for TTS.
 
@@ -345,7 +356,7 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.voice_download(text, language)
 
         except RuntimeError as exc:
-            GLib.idle_add(self.on_listen_failed)
+            GLib.idle_add(self.on_listen_failed, called_from)
             print('Error: ' + str(exc))
         finally:
             if not listen:
@@ -476,7 +487,7 @@ class DialectWindow(Adw.ApplicationWindow):
             Settings.get().dest_langs = self.dest_langs
             Settings.get().save_translator_settings()
 
-    def send_notification(self, text, queue=False):
+    def send_notification(self, text, queue=False, action=None):
         """
         Display an in-app notification.
 
@@ -487,6 +498,9 @@ class DialectWindow(Adw.ApplicationWindow):
         if not queue and self.toast is not None:
             self.toast.dismiss()
         self.toast = Adw.Toast.new(text)
+        if action is not None:
+            self.toast.set_button_label(action['label'])
+            self.toast.set_action_name(action['name'])
         self.toast_overlay.add_toast(self.toast)
 
     def toggle_voice_spinner(self, active=True):
@@ -772,7 +786,7 @@ class DialectWindow(Adw.ApplicationWindow):
             True
         )
         src_language = self.src_lang_selector.get_property('selected')
-        self._voice(src_text, src_language)
+        self._voice(src_text, src_language, 'src')
 
     def ui_dest_voice(self, _action, _param):
         dest_text = self.dest_buffer.get_text(
@@ -781,21 +795,21 @@ class DialectWindow(Adw.ApplicationWindow):
             True
         )
         dest_language = self.dest_lang_selector.get_property('selected')
-        self._voice(dest_text, dest_language)
+        self._voice(dest_text, dest_language, 'dest')
 
-    def _voice(self, text, lang):
+    def _voice(self, text, lang, called_from):
         if text != '':
             self.toggle_voice_spinner(True)
             if self.tts_langs:
                 threading.Thread(
                     target=self.voice_download,
-                    args=(text, lang),
+                    args=(text, lang, called_from),
                     daemon=True
                 ).start()
             else:
                 threading.Thread(
                     target=self.load_lang_speech,
-                    args=(True, text, lang),
+                    args=(True, text, lang, called_from),
                     daemon=True
                 ).start()
 
@@ -808,7 +822,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.player_event.set()
             print('Some error occured while trying to play.')
 
-    def voice_download(self, text, language):
+    def voice_download(self, text, language, called_from):
         try:
             self.voice_loading = True
 
@@ -820,7 +834,7 @@ class DialectWindow(Adw.ApplicationWindow):
         except Exception as exc:
             print(exc)
             print('Audio download failed.')
-            GLib.idle_add(self.on_listen_failed)
+            GLib.idle_add(self.on_listen_failed, called_from)
         else:
             GLib.idle_add(self.toggle_voice_spinner, False)
         finally:
@@ -1001,7 +1015,7 @@ class DialectWindow(Adw.ApplicationWindow):
     def run_translation(self):
         def on_trans_failed():
             self.trans_warning.show()
-            self.send_notification(_('Translation failed.\nPlease check for network issues.'))
+            self.send_notification(_('Translation failed. Please check for network issues.'))
             self.lookup_action('copy').set_enabled(False)
             self.lookup_action('listen-src').set_enabled(False)
             self.lookup_action('listen-dest').set_enabled(False)
