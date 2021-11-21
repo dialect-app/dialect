@@ -350,7 +350,7 @@
                                     <child>
                                       <object class="GtkButton" id="translate_btn">
                                         <property name="label" translatable="yes">Translate</property>
-                                        <property name="sensitive">False</property>
+                                        <property name="action-name">win.translation</property>
                                         <style>
                                           <class name="suggested-action"/>
                                         </style>

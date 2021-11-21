@@ -209,6 +209,11 @@ class DialectWindow(Adw.ApplicationWindow):
         listen_src_action.connect('activate', self.ui_src_voice)
         self.add_action(listen_src_action)
 
+        translation_action = Gio.SimpleAction.new('translation', None)
+        translation_action.set_enabled(False)
+        translation_action.connect('activate', self.translation)
+        self.add_action(translation_action)
+
     def load_translator(self, backend, launch=False):
         def update_ui():
             # Supported features
@@ -388,8 +393,6 @@ class DialectWindow(Adw.ApplicationWindow):
         # Detect typing
         self.src_key_ctrlr.connect('key-pressed', self.update_trans_button)
         self.win_key_ctrlr.connect('key-pressed', self.on_key_event)
-        # Translate button
-        self.translate_btn.connect('clicked', self.translation)
         # "Did you mean" links
         self.mistakes_label.connect('activate-link', self.on_mistakes_clicked)
 
@@ -476,7 +479,7 @@ class DialectWindow(Adw.ApplicationWindow):
         # Set text to src buffer
         self.src_buffer.set_text(text)
         # Run translation
-        self.translation(None)
+        self.translation()
 
     def save_settings(self, *args, **kwargs):
         if not self.is_maximized():
@@ -582,7 +585,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Translate again
         if not self.no_retranslate:
-            self.translation(None)
+            self.translation()
 
     def on_dest_lang_changed(self, _obj, _param):
         code = self.dest_lang_selector.get_property('selected')
@@ -624,7 +627,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Translate again
         if not self.no_retranslate:
-            self.translation(None)
+            self.translation()
 
     """
     User interface functions
@@ -664,7 +667,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Re-enable widgets
         self.langs_button_box.set_sensitive(True)
-        self.translate_btn.set_sensitive(self.src_buffer.get_char_count() != 0)
+        self.lookup_action('translation').set_enabled(self.src_buffer.get_char_count() != 0)
 
     def switch_auto_lang(self, dest_language, src_text, dest_text):
         src_language = self.translator.detect(src_text).lang
@@ -677,7 +680,7 @@ class DialectWindow(Adw.ApplicationWindow):
     def ui_switch(self, _action, _param):
         # Get variables
         self.langs_button_box.set_sensitive(False)
-        self.translate_btn.set_sensitive(False)
+        self.lookup_action('translation').set_enabled(False)
         src_language = self.src_lang_selector.get_property('selected')
         dest_language = self.dest_lang_selector.get_property('selected')
         src_text = self.src_buffer.get_text(
@@ -865,12 +868,12 @@ class DialectWindow(Adw.ApplicationWindow):
             if control_mask == modifiers:
                 if keyval in enter_keys:
                     if not Settings.get().translate_accel_value:
-                        self.translation(None)
+                        self.translation()
                         return Gdk.EVENT_STOP
                     return Gdk.EVENT_PROPAGATE
             elif keyval in enter_keys:
                 if Settings.get().translate_accel_value:
-                    self.translation(None)
+                    self.translation()
                     return Gdk.EVENT_STOP
                 return Gdk.EVENT_PROPAGATE
 
@@ -880,11 +883,11 @@ class DialectWindow(Adw.ApplicationWindow):
         self.mistakes.set_reveal_child(False)
         self.src_buffer.set_text(self.trans_mistakes[1])
         # Run translation again
-        self.translation(None)
+        self.translation()
 
     def on_src_text_changed(self, buffer):
         sensitive = buffer.get_char_count() != 0
-        self.translate_btn.set_sensitive(sensitive)
+        self.lookup_action('translation').set_enabled(sensitive)
         self.lookup_action('clear').set_enabled(sensitive)
         if not self.voice_loading and self.tts_langs:
             self.lookup_action('listen-src').set_enabled(
@@ -922,7 +925,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.src_buffer.set_text(src_text[:MAX_LENGTH])
         self.char_counter.set_text(f'{str(buffer.get_char_count())}/{MAX_LENGTH}')
         if Settings.get().live_translation:
-            self.translation(None)
+            self.translation()
 
     # The history part
     def reset_return_forward_btns(self):
@@ -969,7 +972,7 @@ class DialectWindow(Adw.ApplicationWindow):
             return True
         return False
 
-    def translation(self, _button):
+    def translation(self, _action=None, _param=None):
         # If it's like the last translation then it's useless to continue
         if not self.appeared_before():
             src_text = self.src_buffer.get_text(
@@ -1015,10 +1018,16 @@ class DialectWindow(Adw.ApplicationWindow):
     def run_translation(self):
         def on_trans_failed():
             self.trans_warning.show()
-            self.send_notification(_('Translation failed. Please check for network issues.'))
             self.lookup_action('copy').set_enabled(False)
             self.lookup_action('listen-src').set_enabled(False)
             self.lookup_action('listen-dest').set_enabled(False)
+            self.send_notification(
+                _('Translation failed. Please check for network issues.'),
+                action={
+                    'label': _('Retry'),
+                    'name': 'win.translation',
+                }
+            )
 
         def on_trans_success():
             self.trans_warning.hide()
