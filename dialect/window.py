@@ -917,15 +917,13 @@ class DialectWindow(Adw.ApplicationWindow):
 
     def user_action_ended(self, buffer):
         # If the text is over the highest number of characters allowed, it is truncated.
-        # This is done for avoiding exceeding the limit imposed by Google.
+        # This is done for avoiding exceeding the limit imposed by translation services.
         if buffer.get_char_count() >= MAX_LENGTH:
             self.send_notification(_('5000 characters limit reached!'))
-            src_text = buffer.get_text(
-                buffer.get_start_iter(),
-                buffer.get_end_iter(),
-                True
+            buffer.delete(
+                buffer.get_iter_at_offset(MAX_LENGTH),
+                buffer.get_end_iter()
             )
-            self.src_buffer.set_text(src_text[:MAX_LENGTH])
         self.char_counter.set_text(f'{str(buffer.get_char_count())}/{MAX_LENGTH}')
         if Settings.get().live_translation:
             self.translation()
