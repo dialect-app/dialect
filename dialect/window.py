@@ -490,13 +490,14 @@ class DialectWindow(Adw.ApplicationWindow):
             Settings.get().dest_langs = self.dest_langs
             Settings.get().save_translator_settings()
 
-    def send_notification(self, text, queue=False, action=None):
+    def send_notification(self, text, queue=False, action=None, timeout=5, priority=Adw.ToastPriority.NORMAL):
         """
         Display an in-app notification.
 
         Args:
             text (str): The text or message of the notification.
             queue (bool, optional): If True, the notification will be queued.
+            action (dict, optional): A dict containing the action to be called.
         """
         if not queue and self.toast is not None:
             self.toast.dismiss()
@@ -504,6 +505,8 @@ class DialectWindow(Adw.ApplicationWindow):
         if action is not None:
             self.toast.set_button_label(action['label'])
             self.toast.set_action_name(action['name'])
+        self.toast.set_timeout(timeout)
+        self.toast.set_priority(priority)
         self.toast_overlay.add_toast(self.toast)
 
     def toggle_voice_spinner(self, active=True):
