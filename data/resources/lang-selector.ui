@@ -15,7 +15,9 @@
           <object class="GtkBox" id="search_box">
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkSearchEntry" id="search"></object>
+              <object class="GtkSearchEntry" id="search">
+                <property name="placeholder-text" translatable="yes">Search Languages…</property>
+              </object>
             </child>
             <style>
               <class name="search_box"/>
