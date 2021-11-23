@@ -3,18 +3,14 @@
   padding: 12px;
 }
 
-.translation-side-box {
-  background: @theme_base_color;
-  border: 1px solid @borders;
-  border-radius: 9px;
-}
-
-.translation-side-box :disabled {
-  background: @insensitive_bg_color;
-}
-
 .translation-side-box scrolledwindow {
   border-bottom: 1px solid @borders;
+}
+
+.translation-side-box textview,
+.translation-side-box text {
+  background: none;
+  color: inherit;
 }
 
 .mistakes {
@@ -25,29 +21,27 @@
 
 .pronunciation {
   border-bottom: 1px solid @borders;
-  border-top: 0;
 }
 
-.lang-selector contents {
-  background: @theme_base_color;
-}
-.lang-selector arrow {
-  background: @popover_bg_color;
-}
 .search_box {
   background: @popover_bg_color;
   border-bottom: 1px solid @borders;
   padding: 6px;
 }
+
+.lang-selector listview {
+  padding: 6px;
+  padding-top: 4px;
+}
+
 .lang-selector row {
-  border-radius: 0px;
-  padding: 2px 12px;
+  margin-top: 2px;
+}
+
+.lang-selector separator {
+  margin: 0 6px;
 }
 
 .bottom-bar {
-  background: @theme_base_color;
-  border: 1px solid @borders;
-  border-bottom: 0;
-  border-left: 0;
-  border-right: 0;
+  border-top: 1px solid @borders;
 }

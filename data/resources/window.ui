@@ -231,6 +231,7 @@
                                 <property name="orientation">vertical</property>
                                 <property name="overflow">hidden</property>
                                 <style>
+                                  <class name="card"/>
                                   <class name="translation-side-box"/>
                                 </style>
                                 <child>
@@ -368,6 +369,7 @@
                                 <property name="orientation">vertical</property>
                                 <property name="overflow">hidden</property>
                                 <style>
+                                  <class name="card"/>
                                   <class name="translation-side-box"/>
                                 </style>
                                 <child>
