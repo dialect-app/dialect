@@ -240,8 +240,8 @@
                                     <property name="child">
                                       <object class="GtkTextView" id="src_text">
                                         <property name="wrap-mode">word-char</property>
-                                        <property name="margin-start">9</property>
-                                        <property name="margin-end">9</property>
+                                        <property name="left-margin">9</property>
+                                        <property name="right-margin">9</property>
                                         <property name="top-margin">9</property>
                                         <property name="bottom-margin">9</property>
                                         <child>
@@ -379,8 +379,8 @@
                                       <object class="GtkTextView" id="dest_text">
                                         <property name="editable">False</property>
                                         <property name="wrap-mode">word-char</property>
-                                        <property name="margin-start">9</property>
-                                        <property name="margin-end">9</property>
+                                        <property name="left-margin">9</property>
+                                        <property name="right-margin">9</property>
                                         <property name="top-margin">9</property>
                                         <property name="bottom-margin">9</property>
                                       </object>
