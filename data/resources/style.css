@@ -10,7 +10,10 @@
 }
 
 .mistakes {
-  padding: 12px;
+  padding-right: 12px;
+  padding-left: 12px;
+  padding-top: 9px;
+  padding-bottom: 9px;
   background-color: mix(@accent_bg_color, @window_bg_color, 0.7);
 }
 
