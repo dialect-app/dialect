@@ -90,6 +90,12 @@ class Dialect(Adw.Application):
     def do_startup(self):
         Adw.Application.do_startup(self)
 
+        # Load saved dark mode
+        if Settings.get().dark_mode:
+            self.get_style_manager().set_color_scheme(
+                Adw.ColorScheme.FORCE_DARK
+            )
+
         Gst.init(None)  # Init Gst
 
     def setup_actions(self):

@@ -130,14 +130,6 @@ class DialectWindow(Adw.ApplicationWindow):
         if PROFILE == 'Devel':
             self.get_style_context().add_class('devel')
 
-        # Load saved dark mode
-        style_manager = self.app.get_style_manager()
-        style_manager.set_color_scheme(
-            Adw.ColorScheme.FORCE_DARK
-            if Settings.get().dark_mode
-            else Adw.ColorScheme.DEFAULT
-        )
-
         # Connect responsive design function
         self.connect('notify::default-width', self.responsive_listener)
         self.connect('notify::maximized', self.responsive_listener)
