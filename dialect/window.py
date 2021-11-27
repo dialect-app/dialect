@@ -65,9 +65,8 @@ class DialectWindow(Adw.ApplicationWindow):
     switch_btn2 = Gtk.Template.Child()
     dest_lang_btn2 = Gtk.Template.Child()
 
-    notification_revealer = Gtk.Template.Child()
-    notification_icon = Gtk.Template.Child()
-    notification_label = Gtk.Template.Child()
+    toast = None  # for notification management
+    toast_overlay = Gtk.Template.Child()
 
     src_key_ctrlr = Gtk.Template.Child()
     win_key_ctrlr = Gtk.Template.Child()
@@ -202,6 +201,11 @@ class DialectWindow(Adw.ApplicationWindow):
         listen_src_action.connect('activate', self.ui_src_voice)
         self.add_action(listen_src_action)
 
+        translation_action = Gio.SimpleAction.new('translation', None)
+        translation_action.set_enabled(False)
+        translation_action.connect('activate', self.translation)
+        self.add_action(translation_action)
+
     def load_translator(self, backend, launch=False):
         def update_ui():
             # Supported features
@@ -285,7 +289,7 @@ class DialectWindow(Adw.ApplicationWindow):
             daemon=True
         ).start()
 
-    def on_listen_failed(self):
+    def on_listen_failed(self, called_from):
         self.src_voice_btn.set_child(self.src_voice_warning)
         self.src_voice_spinner.stop()
 
@@ -296,7 +300,18 @@ class DialectWindow(Adw.ApplicationWindow):
         self.src_voice_btn.set_tooltip_text(tooltip_text)
         self.dest_voice_btn.set_tooltip_text(tooltip_text)
 
-        self.send_notification(_('A network issue has occured.\nPlease try again.'))
+        if called_from is not None:
+            action = {
+                'label': _('Retry'),
+                'name': 'win.listen-src' if called_from == 'src' else 'win.listen-dest',
+            }
+        else:
+            action = None
+
+        self.send_notification(
+            _('A network issue has occured. Please try again.'),
+            action=action
+        )
 
         src_text = self.src_buffer.get_text(
             self.src_buffer.get_start_iter(),
@@ -322,7 +337,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.lookup_action('listen-src').set_enabled(src_text != '')
             self.lookup_action('listen-dest').set_enabled(dest_text != '')
 
-    def load_lang_speech(self, listen=False, text=None, language=None):
+    def load_lang_speech(self, listen=False, text=None, language=None, called_from=None):
         """
         Load the language list for TTS.
 
@@ -338,7 +353,7 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.voice_download(text, language)
 
         except RuntimeError as exc:
-            GLib.idle_add(self.on_listen_failed)
+            GLib.idle_add(self.on_listen_failed, called_from)
             print('Error: ' + str(exc))
         finally:
             if not listen:
@@ -370,8 +385,6 @@ class DialectWindow(Adw.ApplicationWindow):
         # Detect typing
         self.src_key_ctrlr.connect('key-pressed', self.update_trans_button)
         self.win_key_ctrlr.connect('key-pressed', self.on_key_event)
-        # Translate button
-        self.translate_btn.connect('clicked', self.translation)
         # "Did you mean" links
         self.mistakes_label.connect('activate-link', self.on_mistakes_clicked)
 
@@ -458,7 +471,7 @@ class DialectWindow(Adw.ApplicationWindow):
         # Set text to src buffer
         self.src_buffer.set_text(text)
         # Run translation
-        self.translation(None)
+        self.translation()
 
     def save_settings(self, *args, **kwargs):
         if not self.is_maximized():
@@ -469,34 +482,24 @@ class DialectWindow(Adw.ApplicationWindow):
             Settings.get().dest_langs = self.dest_langs
             Settings.get().save_translator_settings()
 
-    def send_notification(self, text, type='warning', timeout=5):
+    def send_notification(self, text, queue=False, action=None, timeout=5, priority=Adw.ToastPriority.NORMAL):
         """
         Display an in-app notification.
 
         Args:
             text (str): The text or message of the notification.
-            type (str, optional): The type of notification.
-            timeout (int, optional): The time before the notification disappears. Defaults to 5.
+            queue (bool, optional): If True, the notification will be queued.
+            action (dict, optional): A dict containing the action to be called.
         """
-        self.notification_label.set_text(text)
-        self.notification_revealer.set_reveal_child(True)
-
-        if type == 'warning':
-            self.notification_icon.set_from_icon_name('dialog-warning-symbolic')
-        elif type == 'error':
-            self.notification_icon.set_from_icon_name('dialog-error-symbolic')
-        elif type == 'question':
-            self.notification_icon.set_from_icon_name('dialog-question-symbolic')
-        elif type == 'success':
-            self.notification_icon.set_from_icon_name('success-symbolic')
-        else:
-            self.notification_icon.set_from_icon_name('dialog-information-symbolic')
-
-        GLib.timeout_add_seconds(
-            timeout,
-            self.notification_revealer.set_reveal_child,
-            False
-        )
+        if not queue and self.toast is not None:
+            self.toast.dismiss()
+        self.toast = Adw.Toast.new(text)
+        if action is not None:
+            self.toast.set_button_label(action['label'])
+            self.toast.set_action_name(action['name'])
+        self.toast.set_timeout(timeout)
+        self.toast.set_priority(priority)
+        self.toast_overlay.add_toast(self.toast)
 
     def toggle_voice_spinner(self, active=True):
         if active:
@@ -577,7 +580,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Translate again
         if not self.no_retranslate:
-            self.translation(None)
+            self.translation()
 
     def on_dest_lang_changed(self, _obj, _param):
         code = self.dest_lang_selector.get_property('selected')
@@ -619,7 +622,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Translate again
         if not self.no_retranslate:
-            self.translation(None)
+            self.translation()
 
     """
     User interface functions
@@ -659,7 +662,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Re-enable widgets
         self.langs_button_box.set_sensitive(True)
-        self.translate_btn.set_sensitive(self.src_buffer.get_char_count() != 0)
+        self.lookup_action('translation').set_enabled(self.src_buffer.get_char_count() != 0)
 
     def switch_auto_lang(self, dest_language, src_text, dest_text):
         src_language = self.translator.detect(src_text).lang
@@ -672,7 +675,7 @@ class DialectWindow(Adw.ApplicationWindow):
     def ui_switch(self, _action, _param):
         # Get variables
         self.langs_button_box.set_sensitive(False)
-        self.translate_btn.set_sensitive(False)
+        self.lookup_action('translation').set_enabled(False)
         src_language = self.src_lang_selector.get_property('selected')
         dest_language = self.dest_lang_selector.get_property('selected')
         src_text = self.src_buffer.get_text(
@@ -762,14 +765,12 @@ class DialectWindow(Adw.ApplicationWindow):
         if success:
             GLib.idle_add(
                 self.send_notification,
-                _("New translation has been suggested!"),
-                type='success'
+                _("New translation has been suggested!")
             )
         else:
             GLib.idle_add(
                 self.send_notification,
-                _("Suggestion failed."),
-                type='error'
+                _("Suggestion failed.")
             )
         GLib.idle_add(
             self.dest_text.set_editable,
@@ -783,7 +784,7 @@ class DialectWindow(Adw.ApplicationWindow):
             True
         )
         src_language = self.src_lang_selector.get_property('selected')
-        self._voice(src_text, src_language)
+        self._voice(src_text, src_language, 'src')
 
     def ui_dest_voice(self, _action, _param):
         dest_text = self.dest_buffer.get_text(
@@ -792,21 +793,21 @@ class DialectWindow(Adw.ApplicationWindow):
             True
         )
         dest_language = self.dest_lang_selector.get_property('selected')
-        self._voice(dest_text, dest_language)
+        self._voice(dest_text, dest_language, 'dest')
 
-    def _voice(self, text, lang):
+    def _voice(self, text, lang, called_from):
         if text != '':
             self.toggle_voice_spinner(True)
             if self.tts_langs:
                 threading.Thread(
                     target=self.voice_download,
-                    args=(text, lang),
+                    args=(text, lang, called_from),
                     daemon=True
                 ).start()
             else:
                 threading.Thread(
                     target=self.load_lang_speech,
-                    args=(True, text, lang),
+                    args=(True, text, lang, called_from),
                     daemon=True
                 ).start()
 
@@ -819,7 +820,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.player_event.set()
             print('Some error occured while trying to play.')
 
-    def voice_download(self, text, language):
+    def voice_download(self, text, language, called_from):
         try:
             self.voice_loading = True
 
@@ -831,7 +832,7 @@ class DialectWindow(Adw.ApplicationWindow):
         except Exception as exc:
             print(exc)
             print('Audio download failed.')
-            GLib.idle_add(self.on_listen_failed)
+            GLib.idle_add(self.on_listen_failed, called_from)
         else:
             GLib.idle_add(self.toggle_voice_spinner, False)
         finally:
@@ -862,12 +863,12 @@ class DialectWindow(Adw.ApplicationWindow):
             if control_mask == modifiers:
                 if keyval in enter_keys:
                     if not Settings.get().translate_accel_value:
-                        self.translation(None)
+                        self.translation()
                         return Gdk.EVENT_STOP
                     return Gdk.EVENT_PROPAGATE
             elif keyval in enter_keys:
                 if Settings.get().translate_accel_value:
-                    self.translation(None)
+                    self.translation()
                     return Gdk.EVENT_STOP
                 return Gdk.EVENT_PROPAGATE
 
@@ -877,11 +878,11 @@ class DialectWindow(Adw.ApplicationWindow):
         self.mistakes.set_reveal_child(False)
         self.src_buffer.set_text(self.trans_mistakes[1])
         # Run translation again
-        self.translation(None)
+        self.translation()
 
     def on_src_text_changed(self, buffer):
         sensitive = buffer.get_char_count() != 0
-        self.translate_btn.set_sensitive(sensitive)
+        self.lookup_action('translation').set_enabled(sensitive)
         self.lookup_action('clear').set_enabled(sensitive)
         if not self.voice_loading and self.tts_langs:
             self.lookup_action('listen-src').set_enabled(
@@ -908,18 +909,16 @@ class DialectWindow(Adw.ApplicationWindow):
 
     def user_action_ended(self, buffer):
         # If the text is over the highest number of characters allowed, it is truncated.
-        # This is done for avoiding exceeding the limit imposed by Google.
+        # This is done for avoiding exceeding the limit imposed by translation services.
         if buffer.get_char_count() >= MAX_LENGTH:
             self.send_notification(_('5000 characters limit reached!'))
-            src_text = buffer.get_text(
-                buffer.get_start_iter(),
-                buffer.get_end_iter(),
-                True
+            buffer.delete(
+                buffer.get_iter_at_offset(MAX_LENGTH),
+                buffer.get_end_iter()
             )
-            self.src_buffer.set_text(src_text[:MAX_LENGTH])
         self.char_counter.set_text(f'{str(buffer.get_char_count())}/{MAX_LENGTH}')
         if Settings.get().live_translation:
-            self.translation(None)
+            self.translation()
 
     # The history part
     def reset_return_forward_btns(self):
@@ -966,7 +965,7 @@ class DialectWindow(Adw.ApplicationWindow):
             return True
         return False
 
-    def translation(self, _button):
+    def translation(self, _action=None, _param=None):
         # If it's like the last translation then it's useless to continue
         if not self.appeared_before():
             src_text = self.src_buffer.get_text(
@@ -1012,10 +1011,16 @@ class DialectWindow(Adw.ApplicationWindow):
     def run_translation(self):
         def on_trans_failed():
             self.trans_warning.show()
-            self.send_notification(_('Translation failed.\nPlease check for network issues.'))
             self.lookup_action('copy').set_enabled(False)
             self.lookup_action('listen-src').set_enabled(False)
             self.lookup_action('listen-dest').set_enabled(False)
+            self.send_notification(
+                _('Translation failed. Please check for network issues.'),
+                action={
+                    'label': _('Retry'),
+                    'name': 'win.translation',
+                }
+            )
 
         def on_trans_success():
             self.trans_warning.hide()
