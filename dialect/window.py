@@ -398,11 +398,11 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Voice buttons prep-work
         self.src_voice_warning = Gtk.Image.new_from_icon_name('dialog-warning-symbolic')
-        self.src_voice_image = Gtk.Image.new_from_icon_name('audio-speakers-symbolic')
+        self.src_voice_image = Gtk.Image.new_from_icon_name('audio-volume-high-symbolic')
         self.src_voice_spinner = Gtk.Spinner()  # For use while audio is running or still loading.
 
         self.dest_voice_warning = Gtk.Image.new_from_icon_name('dialog-warning-symbolic')
-        self.dest_voice_image = Gtk.Image.new_from_icon_name('audio-speakers-symbolic')
+        self.dest_voice_image = Gtk.Image.new_from_icon_name('audio-volume-high-symbolic')
         self.dest_voice_spinner = Gtk.Spinner()
 
         self.toggle_voice_spinner(True)
@@ -627,6 +627,7 @@ class DialectWindow(Adw.ApplicationWindow):
     """
     User interface functions
     """
+
     def ui_return(self, _action, _param):
         """Go back one step in history."""
         if self.current_history != TRANS_NUMBER:

@@ -7,7 +7,7 @@ import re
 import threading
 from gettext import gettext as _
 
-from gi.repository import Adw, Gio, GLib, GObject, Gtk
+from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gtk
 
 from dialect.define import RES_PATH
 from dialect.settings import Settings
@@ -104,7 +104,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         self.backend_instance_reset.connect('clicked', self._on_reset_backend_instance)
         self.__check_instance_support()
 
-        self.instance_save_image = Gtk.Image.new_from_icon_name('emblem-ok-symbolic')
+        self.instance_save_image = Gtk.Image.new_from_icon_name('checkmark-symbolic')
         self.backend_instance_save.set_child(self.instance_save_image)
         self.instance_save_spinner = Gtk.Spinner()
         self.instance_save_image.show()

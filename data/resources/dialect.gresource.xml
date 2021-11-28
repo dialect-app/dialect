@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/com/github/gi_lom/dialect">
+    <file preprocess="xml-stripblanks">icons/scalable/actions/checkmark-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/edit-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/flip-horizontal-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/spellcheck-symbolic.svg</file>
+
     <file compressed="true">style.css</file>
     <file compressed="true" preprocess="xml-stripblanks">shortcuts.ui</file>
 
