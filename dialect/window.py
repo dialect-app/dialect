@@ -880,6 +880,8 @@ class DialectWindow(Adw.ApplicationWindow):
         # Run translation again
         self.translation()
 
+        return Gdk.EVENT_STOP
+
     def on_src_text_changed(self, buffer):
         sensitive = buffer.get_char_count() != 0
         self.lookup_action('translation').set_enabled(sensitive)
