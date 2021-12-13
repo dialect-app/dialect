@@ -235,7 +235,7 @@
                                   <class name="translation-side-box"/>
                                 </style>
                                 <child>
-                                  <object class="GtkScrolledWindow">
+                                  <object class="GtkScrolledWindow" id="src_scroller">
                                     <property name="vexpand">True</property>
                                     <property name="child">
                                       <object class="GtkTextView" id="src_text">
@@ -377,7 +377,7 @@
                                   <class name="translation-side-box"/>
                                 </style>
                                 <child>
-                                  <object class="GtkScrolledWindow">
+                                  <object class="GtkScrolledWindow" id="dest_scroller">
                                     <property name="vexpand">True</property>
                                     <property name="child">
                                       <object class="GtkTextView" id="dest_text">
