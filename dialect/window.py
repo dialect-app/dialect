@@ -390,12 +390,14 @@ class DialectWindow(Adw.ApplicationWindow):
         # "Did you mean" links
         self.mistakes_label.connect('activate-link', self.on_mistakes_clicked)
         self.src_scroller.get_vadjustment().connect('value-changed', self.on_src_scrolled)
+        self.src_scroller.get_vadjustment().connect('changed', self.on_src_scrolled)
 
         # Right buffer
         self.dest_buffer = self.dest_text.get_buffer()
         self.dest_buffer.set_text('')
         self.dest_buffer.connect('changed', self.on_dest_text_changed)
         self.dest_scroller.get_vadjustment().connect('value-changed', self.on_dest_scrolled)
+        self.dest_scroller.get_vadjustment().connect('changed', self.on_dest_scrolled)
         # Translation progress spinner
         self.trans_spinner.hide()
         self.trans_warning.hide()
