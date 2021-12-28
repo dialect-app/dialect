@@ -189,12 +189,10 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         self.backend_instance_row.set_sensitive(not window.get_property('backend-loading'))
 
     def _on_edit_backend_instance(self, _button):
-        backend = Settings.get().active_translator
         self.backend_instance_stack.set_visible_child_name('edit')
         self.backend_instance.set_text(Settings.get().instance_url)
 
     def _on_save_backend_instance(self, _button):
-        backend = Settings.get().active_translator
         old_value = Settings.get().instance_url
         new_value = self.backend_instance.get_text()
 
@@ -212,11 +210,10 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             self.backend_instance_stack.set_visible_child_name('view')
 
     def _on_reset_backend_instance(self, _button):
-        backend = Settings.get().active_translator
         Settings.get().reset_instance_url()
         self.backend_instance_label.set_label(Settings.get().instance_url)
         self.backend_instance_stack.set_visible_child_name('view')
-        Gtk.StyleContext.remove_class(self.backend_instance.get_style_context(), 'error')
+        self.backend_instance.get_style_context().remove_class('error')
         self.error_popover.popdown()
 
     def __check_instance_support(self):
@@ -246,15 +243,15 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         validate = TRANSLATORS[backend].validate_instance_url(url)
         if validate:
             Settings.get().instance_url = url
-            GLib.idle_add(Gtk.StyleContext.remove_class, self.backend_instance.get_style_context(), 'error')
+            GLib.idle_add(self.backend_instance.get_style_context().remove_class, 'error')
             GLib.idle_add(self.backend_instance_stack.set_visible_child_name, 'view')
-            GLib.idle_add(self.error_popover.popdown)
+            # GLib.idle_add(self.error_popover.popdown)
         else:
-            GLib.idle_add(Gtk.StyleContext.add_class, self.backend_instance.get_style_context(), 'error')
+            GLib.idle_add(self.backend_instance.get_style_context().add_class, 'error')
             error_text = _('Not a valid {backend} instance')
             error_text = error_text.format(backend=TRANSLATORS[backend].prettyname)
             GLib.idle_add(self.error_label.set_label, error_text)
-            GLib.idle_add(self.error_popover.popup)
+            # GLib.idle_add(self.error_popover.popup)
 
         GLib.idle_add(spinner_end)
 
