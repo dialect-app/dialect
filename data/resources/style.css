@@ -17,6 +17,11 @@
   background-color: mix(@accent_bg_color, @window_bg_color, 0.7);
 }
 
+.pronunciation {
+  border-top: 1px solid @borders;
+  border-bottom: 1px solid @borders;
+}
+
 .search_box {
   background: @popover_bg_color;
   border-bottom: 1px solid @borders;
