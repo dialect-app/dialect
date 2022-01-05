@@ -1053,7 +1053,8 @@ class DialectWindow(Adw.ApplicationWindow):
 
         def on_mistakes():
             if self.trans_mistakes is not None and self.translator.supported_features['mistakes']:
-                self.mistakes_label.set_markup(_('Did you mean: ') + f'<a href="#">{self.trans_mistakes[0]}</a>')
+                mistake_text = self.trans_mistakes[0].replace("<em>", "<b>").replace("</em>", "</b>")
+                self.mistakes_label.set_markup(_('Did you mean: ') + f'<a href="#">{mistake_text}</a>')
                 self.mistakes.set_reveal_child(True)
             elif self.mistakes.get_reveal_child():
                 self.mistakes.set_reveal_child(False)
