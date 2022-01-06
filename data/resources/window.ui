@@ -259,8 +259,6 @@
                                       <object class="GtkBox">
                                         <property name="can_focus">False</property>
                                         <property name="orientation">horizontal</property>
-                                        <property name="margin-top">4</property>
-                                        <property name="margin-bottom">4</property>
                                         <property name="spacing">8</property>
                                         <child>
                                           <object class="GtkImage">
@@ -276,7 +274,6 @@
                                           </object>
                                         </child>
                                         <style>
-                                          <class name="card"/>
                                           <class name="mistakes"/>
                                         </style>
                                       </object>
@@ -289,7 +286,6 @@
                                     <property name="reveal-child">False</property>
                                     <child>
                                       <object class="GtkScrolledWindow">
-                                        <property name="margin-top">2</property>
                                         <property name="margin-bottom">2</property>
                                         <child>
                                           <object class="GtkLabel" id="src_pron_label">
@@ -306,7 +302,6 @@
                                         </child>
                                         <style>
                                           <class name="pronunciation"/>
-                                          <class name="card"/>
                                         </style>
                                       </object>
                                     </child>
@@ -397,7 +392,6 @@
                                     <property name="reveal-child">False</property>
                                     <child>
                                       <object class="GtkScrolledWindow">
-                                        <property name="margin-top">2</property>
                                         <property name="margin-bottom">2</property>
                                         <child>
                                           <object class="GtkLabel" id="dest_pron_label">
@@ -414,7 +408,6 @@
                                         </child>
                                         <style>
                                           <class name="pronunciation"/>
-                                          <class name="card"/>
                                         </style>
                                       </object>
                                     </child>

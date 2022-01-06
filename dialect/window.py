@@ -542,13 +542,15 @@ class DialectWindow(Adw.ApplicationWindow):
             self.dest_voice_spinner.stop()
 
     def on_src_scrolled(self, vadj):
-        if vadj.get_value() + vadj.get_page_size() != vadj.get_upper():
+        if (vadj.get_value() + vadj.get_page_size() != vadj.get_upper()
+                or (self.src_pron_revealer.get_reveal_child() or self.mistakes.get_reveal_child())):
             self.src_scroller.get_style_context().add_class("scroller-border")
         else:
             self.src_scroller.get_style_context().remove_class("scroller-border")
 
     def on_dest_scrolled(self, vadj):
-        if vadj.get_value() + vadj.get_page_size() != vadj.get_upper():
+        if (vadj.get_value() + vadj.get_page_size() != vadj.get_upper()
+                or self.dest_pron_revealer.get_reveal_child()):
             self.dest_scroller.get_style_context().add_class("scroller-border")
         else:
             self.dest_scroller.get_style_context().remove_class("scroller-border")
