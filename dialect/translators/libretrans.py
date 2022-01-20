@@ -2,6 +2,7 @@
 # Copyright 2021 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+import logging
 import httpx
 
 from dialect.translators.basetrans import Detected, TranslatorBase, TranslationError, Translation
@@ -99,6 +100,12 @@ class Translator(TranslatorBase):
                     'q': src_text,
                 },
             )
+            error = r.json().get('error', None)
+            if error:
+                logging.error(error)
+                # We don't raise here because we don't know if there will ever be a case where an error
+                # is reported but a language and confidence is still given.
+                # Can be changed if we ever get confirmation.
             return Detected(r.json()[0]['language'], r.json()[0]['confidence'])
         except Exception as exc:
             raise TranslationError(exc) from exc
@@ -111,10 +118,7 @@ class Translator(TranslatorBase):
                 self.suggest_url,
                 data=data,
             )
-            if 'success' in r.json():
-                return r.json()['success']
-            else:
-                return False
+            return r.json().get('success', False)
         except Exception as exc:
             raise TranslationError(exc) from exc
 
@@ -129,6 +133,11 @@ class Translator(TranslatorBase):
                 self.translate_url,
                 data=self._data,
             )
+            error = r.json().get('error', None)
+            if error:
+                logging.error(error)
+                # We don't raise here because we don't know if there will ever be a case where an error
+                # is reported but a translatedText is still given. Can be changed if we ever get confirmation.
             return Translation(
                 r.json()['translatedText'],
                 {

@@ -3,6 +3,7 @@
 # Copyright 2020-2021 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+import logging
 import threading
 from gettext import gettext as _
 from tempfile import NamedTemporaryFile
@@ -282,7 +283,7 @@ class DialectWindow(Adw.ApplicationWindow):
             GLib.idle_add(self.set_property, 'backend-loading', False)
 
             self.error_page.set_description(str(exc))
-            print('Error: ' + str(exc))
+            logging.error('Error: ' + str(exc))
 
     def retry_load_translator(self, _button):
         threading.Thread(
@@ -356,7 +357,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         except RuntimeError as exc:
             GLib.idle_add(self.on_listen_failed, called_from)
-            print('Error: ' + str(exc))
+            logging.error('Error: ' + str(exc))
         finally:
             if not listen:
                 self.voice_loading = False
@@ -647,6 +648,7 @@ class DialectWindow(Adw.ApplicationWindow):
     """
     User interface functions
     """
+
     def ui_return(self, _action, _param):
         """Go back one step in history."""
         if self.current_history != TRANS_NUMBER:
@@ -838,7 +840,7 @@ class DialectWindow(Adw.ApplicationWindow):
         elif message.type == Gst.MessageType.ERROR:
             self.player.set_state(Gst.State.NULL)
             self.player_event.set()
-            print('Some error occured while trying to play.')
+            logging.error('Some error occured while trying to play.')
 
     def voice_download(self, text, language, called_from):
         try:
@@ -850,8 +852,8 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.player.set_state(Gst.State.PLAYING)
                 self.player_event.wait()
         except Exception as exc:
-            print(exc)
-            print('Audio download failed.')
+            logging.error(exc)
+            logging.error('Audio download failed.')
             GLib.idle_add(self.on_listen_failed, called_from)
         else:
             GLib.idle_add(self.toggle_voice_spinner, False)
@@ -1115,7 +1117,7 @@ class DialectWindow(Adw.ApplicationWindow):
                         self.trans_dest_pron = translation.extra_data['dest-pronunciation']
                         self.trans_failed = False
                     except Exception as exc:
-                        print(exc)
+                        logging.error(exc)
                         self.trans_mistakes = None
                         self.trans_pronunciation = None
                         self.trans_failed = True
