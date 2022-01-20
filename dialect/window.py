@@ -935,7 +935,7 @@ class DialectWindow(Adw.ApplicationWindow):
         # If the text is over the highest number of characters allowed, it is truncated.
         # This is done for avoiding exceeding the limit imposed by translation services.
         if buffer.get_char_count() >= MAX_LENGTH:
-            self.send_notification(_('5000 characters limit reached!'))
+            self.send_notification(_('{} characters limit reached!').format(MAX_LENGTH))
             buffer.delete(
                 buffer.get_iter_at_offset(MAX_LENGTH),
                 buffer.get_end_iter()
