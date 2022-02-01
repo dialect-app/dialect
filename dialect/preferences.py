@@ -196,7 +196,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         old_value = Settings.get().instance_url
         new_value = self.backend_instance.get_text()
 
-        url = re.compile(r"https?://(www\.)?")
+        url = re.compile(r'https?://(www\.)?')
         new_value = url.sub('', new_value).strip().strip('/')
 
         if new_value != old_value:

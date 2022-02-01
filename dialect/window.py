@@ -545,16 +545,16 @@ class DialectWindow(Adw.ApplicationWindow):
     def on_src_scrolled(self, vadj):
         if (vadj.get_value() + vadj.get_page_size() != vadj.get_upper()
                 or (self.src_pron_revealer.get_reveal_child() or self.mistakes.get_reveal_child())):
-            self.src_scroller.get_style_context().add_class("scroller-border")
+            self.src_scroller.get_style_context().add_class('scroller-border')
         else:
-            self.src_scroller.get_style_context().remove_class("scroller-border")
+            self.src_scroller.get_style_context().remove_class('scroller-border')
 
     def on_dest_scrolled(self, vadj):
         if (vadj.get_value() + vadj.get_page_size() != vadj.get_upper()
                 or self.dest_pron_revealer.get_reveal_child()):
-            self.dest_scroller.get_style_context().add_class("scroller-border")
+            self.dest_scroller.get_style_context().add_class('scroller-border')
         else:
-            self.dest_scroller.get_style_context().remove_class("scroller-border")
+            self.dest_scroller.get_style_context().remove_class('scroller-border')
 
     def on_src_lang_changed(self, _obj, _param):
         code = self.src_lang_selector.get_property('selected')
@@ -787,12 +787,12 @@ class DialectWindow(Adw.ApplicationWindow):
         if success:
             GLib.idle_add(
                 self.send_notification,
-                _("New translation has been suggested!")
+                _('New translation has been suggested!')
             )
         else:
             GLib.idle_add(
                 self.send_notification,
-                _("Suggestion failed.")
+                _('Suggestion failed.')
             )
         GLib.idle_add(
             self.dest_text.set_editable,
@@ -1057,7 +1057,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         def on_mistakes():
             if self.trans_mistakes is not None and self.translator.supported_features['mistakes']:
-                mistake_text = self.trans_mistakes[0].replace("<em>", "<b>").replace("</em>", "</b>")
+                mistake_text = self.trans_mistakes[0].replace('<em>', '<b>').replace('</em>', '</b>')
                 self.mistakes_label.set_markup(_('Did you mean: ') + f'<a href="#">{mistake_text}</a>')
                 self.mistakes.set_reveal_child(True)
             elif self.mistakes.get_reveal_child():
