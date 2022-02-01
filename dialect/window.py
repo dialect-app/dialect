@@ -254,7 +254,8 @@ class DialectWindow(Adw.ApplicationWindow):
             # Translator object
             if TRANSLATORS[backend].supported_features['change-instance']:
                 self.translator = TRANSLATORS[backend](
-                    base_url=Settings.get().instance_url
+                    base_url=Settings.get().instance_url,
+                    api_key=Settings.get().api_key,
                 )
             else:
                 self.translator = TRANSLATORS[backend]()

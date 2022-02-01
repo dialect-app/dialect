@@ -145,6 +145,78 @@
               </object>
             </child>
             <child>
+              <object class="AdwActionRow" id="api_key_row">
+                <property name="title" translatable="yes">API Key</property>
+                <property name="subtitle" translatable="yes">Enter an API key for the translation service.</property>
+                <child>
+                  <object class="GtkStack" id="api_key_stack">
+                    <property name="transition-type">crossfade</property>
+                    <child>
+                      <object class="GtkStackPage">
+                        <property name="name">view</property>
+                        <property name="child">
+                          <object class="GtkBox">
+                            <property name="spacing">6</property>
+                            <property name="valign">center</property>
+                            <property name="halign">end</property>
+                            <child>
+                              <object class="GtkLabel" id="api_key_label">
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="api_key_edit">
+                                <property name="tooltip-text" translatable="yes">Edit</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">document-edit-symbolic</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkStackPage">
+                        <property name="name">edit</property>
+                        <property name="child">
+                          <object class="GtkBox" id="api_key_edit_box">
+                            <property name="valign">center</property>
+                            <style>
+                              <class name="linked"/>
+                            </style>
+                            <child>
+                              <object class="GtkEntry" id="api_key">
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="api_key_reset">
+                                <property name="tooltip-text" translatable="yes">Reset to default</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">view-refresh-symbolic</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="api_key_save">
+                                <property name="tooltip-text" translatable="yes">Save</property>
+                                <style>
+                                  <class name="suggested-action"/>
+                                </style>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
               <object class="AdwActionRow" id="tts_row">
                 <property name="title" translatable="yes">Text-to-Speech</property>
                 <property name="subtitle" translatable="yes">Use Google for TTS.</property>

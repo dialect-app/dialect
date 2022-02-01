@@ -28,6 +28,8 @@ class Translator(TranslatorBase):
         'pronunciation': True,
         'change-instance': False,
         'suggestions': False,
+        'api-key-supported': False,
+        'api-key-required': False,
     }
 
     def __init__(self, **kwargs):

@@ -12,6 +12,8 @@ class TranslatorBase:
         'pronunciation': False,
         'change-instance': False,
         'suggestions': False,
+        'api-key-supported': False,
+        'api-key-required': False,
     }
     instance_url = ''
     api_key = ''
@@ -20,6 +22,10 @@ class TranslatorBase:
 
     @staticmethod
     def validate_instance_url(url):
+        pass
+
+    @staticmethod
+    def validate_api_key(api_key, url=None):
         pass
 
     def detect(self, src_text):
