@@ -275,17 +275,17 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         def spinner_start():
             self.backend.set_sensitive(False)
             self.backend_instance_row.set_sensitive(False)
+            self.api_key_row.set_sensitive(False)
             self.backend_instance_save.set_child(self.instance_save_spinner)
             self.instance_save_spinner.start()
-            self.api_key_row.set_sensitive(False)
 
         def spinner_end():
             self.backend.set_sensitive(True)
             self.backend_instance_row.set_sensitive(True)
+            self.api_key_row.set_sensitive(True)
             self.backend_instance_save.set_child(self.instance_save_image)
             self.backend_instance_label.set_label(Settings.get().instance_url)
             self.instance_save_spinner.stop()
-            self.api_key_row.set_sensitive(True)
 
         GLib.idle_add(spinner_start)
         backend = Settings.get().active_translator

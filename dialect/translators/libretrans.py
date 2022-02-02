@@ -3,7 +3,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
-import httpx
+import json
+
+from gi.repository import GLib, Soup
 
 from dialect.translators.basetrans import Detected, TranslatorBase, TranslationError, Translation
 
@@ -37,18 +39,17 @@ class Translator(TranslatorBase):
             self.instance_url = base_url
 
         self.api_key = api_key
-        self.client = httpx.Client()
+        self.session = Soup.Session()
 
-        r = self.client.get(self.lang_url)
-
-        for lang in r.json():
+        lang_response_data = self._get(self.lang_url) or []
+        for lang in lang_response_data:
             self.languages.append(lang['code'])
 
-        r_frontend_settings = self.client.get(self._frontend_settings_url)
+        frontend_settings_response_data = self._get(self._frontend_settings_url)
 
-        self.supported_features['suggestions'] = r_frontend_settings.json().get('suggestions', False)
-        self.supported_features['api-key-supported'] = r_frontend_settings.json().get('apiKeys', False)
-        self.supported_features['api-key-required'] = r_frontend_settings.json().get('keyRequired', False)
+        self.supported_features['suggestions'] = frontend_settings_response_data.get('suggestions', False)
+        self.supported_features['api-key-supported'] = frontend_settings_response_data.get('apiKeys', False)
+        self.supported_features['api-key-required'] = frontend_settings_response_data.get('keyRequired', False)
 
     @property
     def _frontend_settings_url(self):
@@ -89,23 +90,32 @@ class Translator(TranslatorBase):
             spec_url = 'https://' + url + '/spec'
             frontend_settings_url = 'https://' + url + '/frontend/settings'
 
-        client = httpx.Client()
+        session = Soup.Session()
         try:
-            r_validation = client.get(spec_url)
-            r_frontend_settings = client.get(frontend_settings_url)
+            validation_message = Soup.Message.new('GET', spec_url)
+            validation_response = session.send_and_read(validation_message, None)
+            validation_response_data = json.loads(
+                validation_response.get_data()
+            ) if validation_response else {}
+
+            frontend_settings_message = Soup.Message.new('GET', frontend_settings_url)
+            frontend_settings_response = session.send_and_read(frontend_settings_message, None)
+            frontend_settings_response_data = json.loads(
+                frontend_settings_response.get_data()
+            ) if frontend_settings_response else {}
 
             data = {
-                'validation-success': r_validation.json()['info']['title'] == 'LibreTranslate',
-                'api-key-supported': r_frontend_settings.json().get('apiKeys', False),
-                'api-key-required': r_frontend_settings.json().get('keyRequired', False),
+                'validation-success': validation_response_data['info']['title'] == 'LibreTranslate',
+                'api-key-supported': frontend_settings_response_data.get('apiKeys', False),
+                'api-key-required': frontend_settings_response_data.get('keyRequired', False),
             }
 
-            validation_error = r_validation.json().get('error', None)
+            validation_error = validation_response_data.get('error', None)
             if validation_error:
                 # FIXME: Does this ever happen?
                 logging.error(f'validation_error: {validation_error}')
 
-            frontend_settings_error = r_frontend_settings.json().get('error', None)
+            frontend_settings_error = frontend_settings_response_data.get('error', None)
             if frontend_settings_error:
                 # FIXME: Does this ever happen?
                 logging.error(f'frontend_settings_error: {frontend_settings_error}')
@@ -126,7 +136,7 @@ class Translator(TranslatorBase):
         else:
             translate_url = 'https://' + url + '/translate'
 
-        client = httpx.Client()
+        session = Soup.Session()
         try:
             _data = {
                 'q': 'hello',
@@ -134,11 +144,17 @@ class Translator(TranslatorBase):
                 'target': 'es',
                 'api_key': api_key,
             }
-            r = client.post(
-                translate_url,
-                data=_data,
-            )
-            error = r.json().get('error', None)
+
+            translate_message = Soup.Message.new('POST', translate_url)
+            translate_data_bytes = json.dumps(_data).encode('utf-8')
+            translate_data_glib_bytes = GLib.Bytes.new(translate_data_bytes)
+            translate_message.set_request_body_from_bytes('application/json', translate_data_glib_bytes)
+            translate_response = session.send_and_read(translate_message, None)
+            translate_response_data = json.loads(
+                translate_response.get_data()
+            ) if translate_response else {}
+
+            error = translate_response_data.get('error', None)
             if error:
                 logging.error(error)
                 return False
@@ -156,17 +172,14 @@ class Translator(TranslatorBase):
             }
             if self.api_key:
                 data['api_key'] = self.api_key
-            r = self.client.post(
-                self.detect_url,
-                data=data,
-            )
-            error = r.json().get('error', None)
+            detect_response_data = self._post(self.detect_url, data)
+            error = detect_response_data.get('error', None)
             if error:
                 logging.error(error)
                 # We don't raise here because we don't know if there will ever be a case where an error
                 # is reported but a language and confidence is still given.
                 # Can be changed if we ever get confirmation.
-            return Detected(r.json()[0]['language'], r.json()[0]['confidence'])
+            return Detected(detect_response_data[0]['language'], detect_response_data[0]['confidence'])
         except Exception as exc:
             raise TranslationError(exc) from exc
 
@@ -176,11 +189,11 @@ class Translator(TranslatorBase):
             data['s'] = suggestion
             if self.api_key:
                 data['api_key'] = self.api_key
-            r = self.client.post(
-                self.suggest_url,
-                data=data,
-            )
-            return r.json().get('success', False)
+            suggest_response_data = self._post(self.suggest_url, data)
+            error = suggest_response_data.get('error', None)
+            if error:
+                logging.error(error)
+            return suggest_response_data.get('success', False)
         except Exception as exc:
             raise TranslationError(exc) from exc
 
@@ -193,17 +206,17 @@ class Translator(TranslatorBase):
             }
             if self.api_key:
                 self._data['api_key'] = self.api_key
-            r = self.client.post(
+            response_data = self._post(
                 self.translate_url,
-                data=self._data,
+                self._data,
             )
-            error = r.json().get('error', None)
+            error = response_data.get('error', None)
             if error:
                 logging.error(error)
                 # We don't raise here because we don't know if there will ever be a case where an error
                 # is reported but a translatedText is still given. Can be changed if we ever get confirmation.
             return Translation(
-                r.json()['translatedText'],
+                response_data['translatedText'],
                 {
                     'possible-mistakes': None,
                     'src-pronunciation': None,
@@ -212,3 +225,22 @@ class Translator(TranslatorBase):
             )
         except Exception as exc:
             raise TranslationError(exc) from exc
+
+    def _get(self, url):
+        message = Soup.Message.new('GET', url)
+        response = self.session.send_and_read(message, None)
+        response_data = json.loads(
+            response.get_data()
+        ) if response else {}
+        return response_data
+
+    def _post(self, url, data):
+        message = Soup.Message.new('POST', url)
+        data_bytes = json.dumps(data).encode('utf-8')
+        data_glib_bytes = GLib.Bytes.new(data_bytes)
+        message.set_request_body_from_bytes('application/json', data_glib_bytes)
+        response = self.session.send_and_read(message, None)
+        response_data = json.loads(
+            response.get_data()
+        ) if response else {}
+        return response_data
