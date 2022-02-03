@@ -47,7 +47,6 @@ sudo dnf install dialect
 - Googletrans `python-googletrans`
 - gTTS `python-gtts`
 - D-Bus `python-dbus`
-- HTTPX `python-httpx`
 
 If official packages are not available for any of the python dependencies, you can install them from pip:
 

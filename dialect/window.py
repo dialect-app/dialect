@@ -3,6 +3,7 @@
 # Copyright 2020-2021 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+import logging
 import threading
 from gettext import gettext as _
 from tempfile import NamedTemporaryFile
@@ -253,7 +254,8 @@ class DialectWindow(Adw.ApplicationWindow):
             # Translator object
             if TRANSLATORS[backend].supported_features['change-instance']:
                 self.translator = TRANSLATORS[backend](
-                    base_url=Settings.get().instance_url
+                    base_url=Settings.get().instance_url,
+                    api_key=Settings.get().api_key,
                 )
             else:
                 self.translator = TRANSLATORS[backend]()
@@ -282,7 +284,7 @@ class DialectWindow(Adw.ApplicationWindow):
             GLib.idle_add(self.set_property, 'backend-loading', False)
 
             self.error_page.set_description(str(exc))
-            print('Error: ' + str(exc))
+            logging.error('Error: ' + str(exc))
 
     def retry_load_translator(self, _button):
         threading.Thread(
@@ -356,7 +358,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         except RuntimeError as exc:
             GLib.idle_add(self.on_listen_failed, called_from)
-            print('Error: ' + str(exc))
+            logging.error('Error: ' + str(exc))
         finally:
             if not listen:
                 self.voice_loading = False
@@ -544,16 +546,16 @@ class DialectWindow(Adw.ApplicationWindow):
     def on_src_scrolled(self, vadj):
         if (vadj.get_value() + vadj.get_page_size() != vadj.get_upper()
                 or (self.src_pron_revealer.get_reveal_child() or self.mistakes.get_reveal_child())):
-            self.src_scroller.get_style_context().add_class("scroller-border")
+            self.src_scroller.get_style_context().add_class('scroller-border')
         else:
-            self.src_scroller.get_style_context().remove_class("scroller-border")
+            self.src_scroller.get_style_context().remove_class('scroller-border')
 
     def on_dest_scrolled(self, vadj):
         if (vadj.get_value() + vadj.get_page_size() != vadj.get_upper()
                 or self.dest_pron_revealer.get_reveal_child()):
-            self.dest_scroller.get_style_context().add_class("scroller-border")
+            self.dest_scroller.get_style_context().add_class('scroller-border')
         else:
-            self.dest_scroller.get_style_context().remove_class("scroller-border")
+            self.dest_scroller.get_style_context().remove_class('scroller-border')
 
     def on_src_lang_changed(self, _obj, _param):
         code = self.src_lang_selector.get_property('selected')
@@ -647,6 +649,7 @@ class DialectWindow(Adw.ApplicationWindow):
     """
     User interface functions
     """
+
     def ui_return(self, _action, _param):
         """Go back one step in history."""
         if self.current_history != TRANS_NUMBER:
@@ -785,12 +788,12 @@ class DialectWindow(Adw.ApplicationWindow):
         if success:
             GLib.idle_add(
                 self.send_notification,
-                _("New translation has been suggested!")
+                _('New translation has been suggested!')
             )
         else:
             GLib.idle_add(
                 self.send_notification,
-                _("Suggestion failed.")
+                _('Suggestion failed.')
             )
         GLib.idle_add(
             self.dest_text.set_editable,
@@ -838,7 +841,7 @@ class DialectWindow(Adw.ApplicationWindow):
         elif message.type == Gst.MessageType.ERROR:
             self.player.set_state(Gst.State.NULL)
             self.player_event.set()
-            print('Some error occured while trying to play.')
+            logging.error('Some error occured while trying to play.')
 
     def voice_download(self, text, language, called_from):
         try:
@@ -850,8 +853,8 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.player.set_state(Gst.State.PLAYING)
                 self.player_event.wait()
         except Exception as exc:
-            print(exc)
-            print('Audio download failed.')
+            logging.error(exc)
+            logging.error('Audio download failed.')
             GLib.idle_add(self.on_listen_failed, called_from)
         else:
             GLib.idle_add(self.toggle_voice_spinner, False)
@@ -933,7 +936,7 @@ class DialectWindow(Adw.ApplicationWindow):
         # If the text is over the highest number of characters allowed, it is truncated.
         # This is done for avoiding exceeding the limit imposed by translation services.
         if buffer.get_char_count() >= MAX_LENGTH:
-            self.send_notification(_('5000 characters limit reached!'))
+            self.send_notification(_('{} characters limit reached!').format(MAX_LENGTH))
             buffer.delete(
                 buffer.get_iter_at_offset(MAX_LENGTH),
                 buffer.get_end_iter()
@@ -1055,7 +1058,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         def on_mistakes():
             if self.trans_mistakes is not None and self.translator.supported_features['mistakes']:
-                mistake_text = self.trans_mistakes[0].replace("<em>", "<b>").replace("</em>", "</b>")
+                mistake_text = self.trans_mistakes[0].replace('<em>', '<b>').replace('</em>', '</b>')
                 self.mistakes_label.set_markup(_('Did you mean: ') + f'<a href="#">{mistake_text}</a>')
                 self.mistakes.set_reveal_child(True)
             elif self.mistakes.get_reveal_child():
@@ -1115,7 +1118,7 @@ class DialectWindow(Adw.ApplicationWindow):
                         self.trans_dest_pron = translation.extra_data['dest-pronunciation']
                         self.trans_failed = False
                     except Exception as exc:
-                        print(exc)
+                        logging.error(exc)
                         self.trans_mistakes = None
                         self.trans_pronunciation = None
                         self.trans_failed = True

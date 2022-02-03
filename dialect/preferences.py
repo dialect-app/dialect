@@ -36,6 +36,14 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
     backend_instance_save = Gtk.Template.Child()
     backend_instance_reset = Gtk.Template.Child()
     backend_instance_edit_box = Gtk.Template.Child()
+    api_key = Gtk.Template.Child()
+    api_key_row = Gtk.Template.Child()
+    api_key_stack = Gtk.Template.Child()
+    api_key_label = Gtk.Template.Child()
+    api_key_edit = Gtk.Template.Child()
+    api_key_save = Gtk.Template.Child()
+    api_key_reset = Gtk.Template.Child()
+    api_key_edit_box = Gtk.Template.Child()
     tts = Gtk.Template.Child()
     tts_row = Gtk.Template.Child()
     search_provider = Gtk.Template.Child()
@@ -102,13 +110,20 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         self.backend_instance_edit.connect('clicked', self._on_edit_backend_instance)
         self.backend_instance_save.connect('clicked', self._on_save_backend_instance)
         self.backend_instance_reset.connect('clicked', self._on_reset_backend_instance)
-        self.__check_instance_support()
+
+        self.api_key_edit.connect('clicked', self._on_edit_api_key)
+        self.api_key_save.connect('clicked', self._on_save_api_key)
+        self.api_key_reset.connect('clicked', self._on_reset_api_key)
+
+        self.__check_instance_or_api_key_support()
 
         self.instance_save_image = Gtk.Image.new_from_icon_name('emblem-ok-symbolic')
         self.backend_instance_save.set_child(self.instance_save_image)
         self.instance_save_spinner = Gtk.Spinner()
-        self.instance_save_image.show()
-        self.instance_save_spinner.show()
+
+        self.api_key_save_image = Gtk.Image.new_from_icon_name('emblem-ok-symbolic')
+        self.api_key_save.set_child(self.api_key_save_image)
+        self.api_key_save_spinner = Gtk.Spinner()
 
         self.error_popover = Gtk.Popover(
             pointing_to=self.backend_instance.get_allocation(),
@@ -141,12 +156,12 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
 
     def _on_settings_changed(self, _settings, key):
         backend = Settings.get().active_translator
-        if key == 'backend-settings':
-            if TRANSLATORS[backend].supported_features['change-instance']:
-                # Update backend
+        if key in ('instance-url', 'api-key'):
+            # Update backend
+            if key == 'instance-url' and TRANSLATORS[backend].supported_features['change-instance']:
                 Settings.get().reset_src_langs()
                 Settings.get().reset_dest_langs()
-                self.parent.change_backends(backend)
+            self.parent.change_backends(backend)
 
     def _toggle_dark_mode(self, switch, _active):
         active = switch.get_active()
@@ -181,12 +196,13 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
     def _switch_backends(self, row, _value):
         backend = self.backend_model[row.get_selected()].name
         Settings.get().active_translator = backend
-        self.__check_instance_support()
+        self.__check_instance_or_api_key_support()
         self.parent.change_backends(backend)
 
     def _on_backend_loading(self, window, _value):
         self.backend.set_sensitive(not window.get_property('backend-loading'))
         self.backend_instance_row.set_sensitive(not window.get_property('backend-loading'))
+        self.api_key_row.set_sensitive(not window.get_property('backend-loading'))
 
     def _on_edit_backend_instance(self, _button):
         self.backend_instance_stack.set_visible_child_name('edit')
@@ -196,7 +212,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         old_value = Settings.get().instance_url
         new_value = self.backend_instance.get_text()
 
-        url = re.compile(r"https?://(www\.)?")
+        url = re.compile(r'https?://(www\.)?')
         new_value = url.sub('', new_value).strip().strip('/')
 
         if new_value != old_value:
@@ -216,7 +232,32 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         self.backend_instance.get_style_context().remove_class('error')
         self.error_popover.popdown()
 
-    def __check_instance_support(self):
+    def _on_edit_api_key(self, _button):
+        self.api_key_stack.set_visible_child_name('edit')
+        self.api_key.set_text(Settings.get().api_key)
+
+    def _on_save_api_key(self, _button):
+        old_value = Settings.get().api_key
+        new_value = self.api_key.get_text()
+
+        if new_value != old_value:
+            # Validate
+            threading.Thread(
+                target=self.__validate_new_api_key,
+                args=[new_value],
+                daemon=True
+            ).start()
+        else:
+            self.api_key_stack.set_visible_child_name('view')
+
+    def _on_reset_api_key(self, _button):
+        Settings.get().reset_api_key()
+        self.api_key_label.set_label(Settings.get().api_key or 'None')
+        self.api_key_stack.set_visible_child_name('view')
+        self.api_key.get_style_context().remove_class('error')
+        self.error_popover.popdown()
+
+    def __check_instance_or_api_key_support(self):
         backend = Settings.get().active_translator
         if TRANSLATORS[backend].supported_features['change-instance']:
             self.backend_instance_row.set_visible(True)
@@ -224,34 +265,81 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         else:
             self.backend_instance_row.set_visible(False)
 
+        if TRANSLATORS[backend].supported_features['api-key-supported']:
+            self.api_key_row.set_visible(True)
+            self.api_key_label.set_label(Settings.get().api_key or 'None')
+        else:
+            self.api_key_row.set_visible(False)
+
     def __validate_new_backend_instance(self, url):
         def spinner_start():
             self.backend.set_sensitive(False)
             self.backend_instance_row.set_sensitive(False)
+            self.api_key_row.set_sensitive(False)
             self.backend_instance_save.set_child(self.instance_save_spinner)
             self.instance_save_spinner.start()
 
         def spinner_end():
             self.backend.set_sensitive(True)
             self.backend_instance_row.set_sensitive(True)
+            self.api_key_row.set_sensitive(True)
             self.backend_instance_save.set_child(self.instance_save_image)
             self.backend_instance_label.set_label(Settings.get().instance_url)
             self.instance_save_spinner.stop()
 
         GLib.idle_add(spinner_start)
         backend = Settings.get().active_translator
-        validate = TRANSLATORS[backend].validate_instance_url(url)
-        if validate:
+        result = TRANSLATORS[backend].validate_instance_url(url)
+        if result['validation-success']:
             Settings.get().instance_url = url
             GLib.idle_add(self.backend_instance.get_style_context().remove_class, 'error')
             GLib.idle_add(self.backend_instance_stack.set_visible_child_name, 'view')
             # GLib.idle_add(self.error_popover.popdown)
+            if result['api-key-supported']:
+                Settings.get().reset_api_key()
+                self.api_key_row.set_visible(True)
+                self.api_key_label.set_label(Settings.get().api_key or 'None')
+            else:
+                self.api_key_row.set_visible(False)
         else:
             GLib.idle_add(self.backend_instance.get_style_context().add_class, 'error')
             error_text = _('Not a valid {backend} instance')
             error_text = error_text.format(backend=TRANSLATORS[backend].prettyname)
             GLib.idle_add(self.error_label.set_label, error_text)
             # GLib.idle_add(self.error_popover.popup)
+            self.api_key_row.set_visible(False)
+            self.api_key_label.set_label('None')
+
+        GLib.idle_add(spinner_end)
+
+    def __validate_new_api_key(self, api_key):
+        def spinner_start():
+            self.backend.set_sensitive(False)
+            self.backend_instance_row.set_sensitive(False)
+            self.api_key_row.set_sensitive(False)
+            self.api_key_save.set_child(self.api_key_save_spinner)
+            self.api_key_save_spinner.start()
+
+        def spinner_end():
+            self.backend.set_sensitive(True)
+            self.backend_instance_row.set_sensitive(True)
+            self.api_key_row.set_sensitive(True)
+            self.api_key_save.set_child(self.api_key_save_image)
+            self.api_key_label.set_label(Settings.get().api_key or 'None')
+            self.instance_save_spinner.stop()
+
+        GLib.idle_add(spinner_start)
+        backend = Settings.get().active_translator
+        result = TRANSLATORS[backend].validate_api_key(api_key, Settings.get().instance_url)
+        if result:
+            Settings.get().api_key = api_key
+            GLib.idle_add(self.api_key.get_style_context().remove_class, 'error')
+            GLib.idle_add(self.api_key_stack.set_visible_child_name, 'view')
+        else:
+            GLib.idle_add(self.api_key.get_style_context().add_class, 'error')
+            error_text = _('Not a valid {backend} API key')
+            error_text = error_text.format(backend=TRANSLATORS[backend].prettyname)
+            GLib.idle_add(self.error_label.set_label, error_text)
 
         GLib.idle_add(spinner_end)
 

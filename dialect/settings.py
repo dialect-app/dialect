@@ -78,12 +78,17 @@ class Settings(Gio.Settings):
         self.translator = None
 
     def get_translator_settings(self, translator=None):
+        def on_changed(_settings, key):
+            self.emit('changed', key)
+
         def get_settings(name):
             path = self.get_child('translators').get_property('path')
             if not path.endswith('/'):
                 path += '/'
             path += name + '/'
-            return Gio.Settings(APP_ID + '.translator', path)
+            settings = Gio.Settings(APP_ID + '.translator', path)
+            settings.connect('changed', on_changed)
+            return settings
 
         if translator is not None:
             translator = get_settings(translator)
