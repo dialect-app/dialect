@@ -32,6 +32,7 @@ sources = [
   'window.py',
   'preferences.py',
   'lang_selector.py',
+  'session.py',
   'settings.py',
   'shortcuts.py',
 ]

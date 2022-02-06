@@ -7,9 +7,10 @@ import re
 import threading
 from gettext import gettext as _
 
-from gi.repository import Adw, Gio, GLib, GObject, Gtk
+from gi.repository import Adw, Gio, GLib, GObject, Gtk, Soup
 
 from dialect.define import RES_PATH
+from dialect.session import Session
 from dialect.settings import Settings
 from dialect.translators import TRANSLATORS
 from dialect.tts import TTS
@@ -161,7 +162,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             if key == 'instance-url' and TRANSLATORS[backend].supported_features['change-instance']:
                 Settings.get().reset_src_langs()
                 Settings.get().reset_dest_langs()
-            self.parent.change_backends(backend)
+            self.parent.reload_backends()
 
     def _toggle_dark_mode(self, switch, _active):
         active = switch.get_active()
@@ -197,7 +198,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         backend = self.backend_model[row.get_selected()].name
         Settings.get().active_translator = backend
         self.__check_instance_or_api_key_support()
-        self.parent.change_backends(backend)
+        self.parent.reload_backends()
 
     def _on_backend_loading(self, window, _value):
         self.backend.set_sensitive(not window.get_property('backend-loading'))
@@ -209,19 +210,75 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         self.backend_instance.set_text(Settings.get().instance_url)
 
     def _on_save_backend_instance(self, _button):
+        def on_finished():
+            self.backend.set_sensitive(True)
+            self.backend_instance_row.set_sensitive(True)
+            self.api_key_row.set_sensitive(True)
+            self.backend_instance_save.set_child(self.instance_save_image)
+            self.backend_instance_label.set_label(Settings.get().instance_url)
+            self.instance_save_spinner.stop()
+
+        def on_validation_response(data):
+            backend = Settings.get().active_translator
+            valid = TRANSLATORS[backend].validate_instance(data)
+            if valid:
+                Settings.get().instance_url = self.new_instance_url
+                self.backend_instance.get_style_context().remove_class('error')
+                self.backend_instance_stack.set_visible_child_name('view')
+                # self.error_popover.popdown()
+            else:
+                self.backend_instance.get_style_context().add_class('error')
+                error_text = _('Not a valid {backend} instance')
+                error_text = error_text.format(backend=TRANSLATORS[backend].prettyname)
+                self.error_label.set_label(error_text)
+                # self.error_popover.popup()
+                self.api_key_row.set_visible(False)
+                self.api_key_label.set_label('None')
+
+        def on_settings_response(data):
+            backend = Settings.get().active_translator
+            settings = TRANSLATORS[backend].get_instance_settings(data)
+            if settings['api-key-supported']:
+                Settings.get().reset_api_key()
+                self.api_key_row.set_visible(True)
+                self.api_key_label.set_label(Settings.get().api_key or 'None')
+            else:
+                self.api_key_row.set_visible(False)
+
         old_value = Settings.get().instance_url
         new_value = self.backend_instance.get_text()
 
         url = re.compile(r'https?://(www\.)?')
-        new_value = url.sub('', new_value).strip().strip('/')
+        self.new_instance_url = url.sub('', new_value).strip().strip('/')
 
-        if new_value != old_value:
-            # Validate
-            threading.Thread(
-                target=self.__validate_new_backend_instance,
-                args=[new_value],
-                daemon=True
-            ).start()
+        # Validate
+        if self.new_instance_url != old_value:
+            # Progress feedback
+            self.backend.set_sensitive(False)
+            self.backend_instance_row.set_sensitive(False)
+            self.api_key_row.set_sensitive(False)
+            self.backend_instance_save.set_child(self.instance_save_spinner)
+            self.instance_save_spinner.start()
+
+            backend = Settings.get().active_translator
+            validation_url = TRANSLATORS[backend].format_instance_url(
+                self.new_instance_url,
+                TRANSLATORS[backend].validation_path
+            )
+            settings_url = TRANSLATORS[backend].format_instance_url(
+                self.new_instance_url,
+                TRANSLATORS[backend].settings_path
+            )
+            validation_message = Soup.Message.new('GET', validation_url)
+            settings_message = Soup.Message.new('GET', settings_url)
+
+            Session.get().multiple(
+                [
+                    [validation_message, on_validation_response],
+                    [settings_message, on_settings_response]
+                ],
+                on_finished
+            )
         else:
             self.backend_instance_stack.set_visible_child_name('view')
 
@@ -270,47 +327,6 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             self.api_key_label.set_label(Settings.get().api_key or 'None')
         else:
             self.api_key_row.set_visible(False)
-
-    def __validate_new_backend_instance(self, url):
-        def spinner_start():
-            self.backend.set_sensitive(False)
-            self.backend_instance_row.set_sensitive(False)
-            self.api_key_row.set_sensitive(False)
-            self.backend_instance_save.set_child(self.instance_save_spinner)
-            self.instance_save_spinner.start()
-
-        def spinner_end():
-            self.backend.set_sensitive(True)
-            self.backend_instance_row.set_sensitive(True)
-            self.api_key_row.set_sensitive(True)
-            self.backend_instance_save.set_child(self.instance_save_image)
-            self.backend_instance_label.set_label(Settings.get().instance_url)
-            self.instance_save_spinner.stop()
-
-        GLib.idle_add(spinner_start)
-        backend = Settings.get().active_translator
-        result = TRANSLATORS[backend].validate_instance_url(url)
-        if result['validation-success']:
-            Settings.get().instance_url = url
-            GLib.idle_add(self.backend_instance.get_style_context().remove_class, 'error')
-            GLib.idle_add(self.backend_instance_stack.set_visible_child_name, 'view')
-            # GLib.idle_add(self.error_popover.popdown)
-            if result['api-key-supported']:
-                Settings.get().reset_api_key()
-                self.api_key_row.set_visible(True)
-                self.api_key_label.set_label(Settings.get().api_key or 'None')
-            else:
-                self.api_key_row.set_visible(False)
-        else:
-            GLib.idle_add(self.backend_instance.get_style_context().add_class, 'error')
-            error_text = _('Not a valid {backend} instance')
-            error_text = error_text.format(backend=TRANSLATORS[backend].prettyname)
-            GLib.idle_add(self.error_label.set_label, error_text)
-            # GLib.idle_add(self.error_popover.popup)
-            self.api_key_row.set_visible(False)
-            self.api_key_label.set_label('None')
-
-        GLib.idle_add(spinner_end)
 
     def __validate_new_api_key(self, api_key):
         def spinner_start():

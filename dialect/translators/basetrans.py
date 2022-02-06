@@ -20,22 +20,43 @@ class TranslatorBase:
     src_langs = ['en', 'fr', 'es', 'de']
     dest_langs = ['fr', 'es', 'de', 'en']
 
+    validation_path = ''
+    settings_path = ''
+
     @staticmethod
-    def validate_instance_url(url):
+    def format_instance_url(url, path, http=False):
+        protocol = 'https://'
+        if url.startswith('localhost:') or http:
+            protocol = 'http://'
+
+        return protocol + url + path
+
+    @staticmethod
+    def validate_instance(data):
+        pass
+
+    @staticmethod
+    def get_instance_settings(data):
         pass
 
     @staticmethod
     def validate_api_key(api_key, url=None):
         pass
 
-    def detect(self, src_text):
+    def format_detection(self, text):
         pass
+
+    def get_detect(self, data):
+        return None
 
     def suggest(self, suggestion):
         pass
 
-    def translate(self, src_text, src, dest):
-        return False
+    def format_translation(self, text, src, dest):
+        pass
+
+    def get_translation(self, data):
+        pass
 
 
 class TranslationError(Exception):
