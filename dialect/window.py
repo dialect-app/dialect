@@ -1140,7 +1140,7 @@ class DialectWindow(Adw.ApplicationWindow):
             )
         else:
             self.trans_warning.hide()
-        
+
         self.trans_spinner.stop()
         self.trans_spinner.hide()
         self.dest_box.set_sensitive(True)

@@ -7,6 +7,7 @@ import logging
 
 from gi.repository import GLib, Soup
 
+
 class Session(Soup.Session):
     """
     Dialect soup sessions handler
@@ -52,7 +53,7 @@ class Session(Soup.Session):
             logging.warning(type(exc))
         return data_glib_bytes
 
-    def multiple(self, messages, callback):
+    def multiple(self, messages, callback=None):
         """Keep track of multiple async operations."""
         def on_task_response(session, result, message_callback):
             response = session.send_and_read_finish(result)
@@ -61,7 +62,7 @@ class Session(Soup.Session):
             message_callback(data)
 
             # If all tasks are done, run main callback
-            if len(messages) == 0:
+            if callback is not None and len(messages) == 0:
                 callback()
 
         for msg in messages:

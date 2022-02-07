@@ -103,12 +103,12 @@ class Translator(TranslatorBase):
             'api-key-required': False,
         }
 
-        if data and data is not None:
+        if data:
             settings = {
                 'api-key-supported': data.get('apiKeys', False),
                 'api-key-required': data.get('keyRequired', False),
             }
-        
+
         return settings
 
     @staticmethod
