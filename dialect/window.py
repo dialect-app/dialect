@@ -656,7 +656,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.current_history -= 1
             self.history_update()
 
-    def add_history_entry(self, src_language, dest_language, src_text, dest_text):
+    def add_history_entry(self, src_text, src_language, dest_language, dest_text):
         """Add a history entry to the history list."""
         new_history_trans = {
             'Languages': [src_language, dest_language],
