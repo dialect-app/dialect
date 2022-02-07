@@ -90,7 +90,6 @@ class DialectWindow(Adw.ApplicationWindow):
 
     # Translation-related variables
     no_retranslate = False  # used to prevent unnecessary re-translations
-    trans_queue = []  # for pending translations
     next_trans = {}  # for ongoing translation
     ongoing_trans = False  # for ongoing translation
     trans_failed = False  # for monitoring connectivity issues
@@ -972,10 +971,10 @@ class DialectWindow(Adw.ApplicationWindow):
             and self.translator.history[self.current_history]['Text'][0] == src_text
             and not self.trans_failed
         ) or (
-            len(self.trans_queue) == 1
-            and (self.trans_queue[0].get('src_language') == src_language or 'auto')
-            and self.trans_queue[0].get('dest_language') == dest_language
-            and self.trans_queue[0].get('src_text') == src_text
+            self.next_trans
+            and (self.next_trans.get('src') == src_language or 'auto')
+            and self.next_trans.get('dest') == dest_language
+            and self.next_trans.get('text') == src_text
         ):
             return True
         return False
