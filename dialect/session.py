@@ -10,7 +10,7 @@ from gi.repository import GLib, Soup
 
 class Session(Soup.Session):
     """
-    Dialect soup sessions handler
+    Dialect soup session handler
     """
 
     instance = None
@@ -33,14 +33,29 @@ class Session(Soup.Session):
         return Session.instance
 
     @staticmethod
+    def get_response(session, result, empty_is_error=True):
+        try:
+            response = session.send_and_read_finish(result)
+            data = Session.get().read_response(response)
+
+            if data and 'error' in data:
+                raise ResponseError(data.get('error'))
+            if not data and empty_is_error:
+                raise ResponseError('Response is empty')
+
+            return data
+        except GLib.GError as exc:
+            raise ResponseError(exc.message) from exc
+
+    @staticmethod
     def read_response(response):
-        response_data = None
+        response_data = {}
         try:
             response_data = json.loads(
                 response.get_data()
             ) if response else {}
         except Exception as exc:
-            logging.warning(type(exc))
+            logging.warning(exc)
         return response_data
 
     @staticmethod
@@ -50,7 +65,7 @@ class Session(Soup.Session):
             data_bytes = json.dumps(data).encode('utf-8')
             data_glib_bytes = GLib.Bytes.new(data_bytes)
         except Exception as exc:
-            logging.warning(type(exc))
+            logging.warning(exc)
         return data_glib_bytes
 
     def multiple(self, messages, callback=None):
@@ -69,3 +84,12 @@ class Session(Soup.Session):
             # msg[0]: Soup.Message
             # msg[1]: message callback
             self.send_and_read_async(msg[0], 0, None, on_task_response, msg[1])
+
+
+class ResponseError(Exception):
+    """Exception raised when response fails."""
+
+    def __init__(self, cause, message='Response has failed'):
+        self.cause = cause
+        self.message = message
+        super().__init__(self.message)
