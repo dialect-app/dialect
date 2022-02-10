@@ -28,6 +28,8 @@ class DialectWindow(Adw.ApplicationWindow):
     error_page = Gtk.Template.Child()
     translator_box = Gtk.Template.Child()
     retry_backend_btn = Gtk.Template.Child()
+    key_page = Gtk.Template.Child()
+    rmv_key_btn = Gtk.Template.Child()
 
     title_stack = Gtk.Template.Child()
     langs_button_box = Gtk.Template.Child()
@@ -146,6 +148,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Load translator
         self.retry_backend_btn.connect('clicked', self.retry_load_translator)
+        self.rmv_key_btn.connect('clicked', self.remove_key_and_reload)
         self.load_translator(True)
         # Get languages available for speech
         if Settings.get().tts != '':
@@ -209,7 +212,7 @@ class DialectWindow(Adw.ApplicationWindow):
     def load_translator(self, launch=False):
         def on_loaded(success, error=''):
             if success:
-            # Supported features
+                # Supported features
                 if not self.translator.supported_features['mistakes']:
                     self.mistakes.set_reveal_child(False)
 
@@ -242,13 +245,13 @@ class DialectWindow(Adw.ApplicationWindow):
 
                 self.no_retranslate = False
 
-                self.main_stack.set_visible_child_name('translate')
                 self.set_property('backend-loading', False)
+
+                self.check_apikey()
             else:
                 # Show error view
                 self.main_stack.set_visible_child_name('error')
                 self.set_property('backend-loading', False)
-
                 self.error_page.set_description(error)
 
         backend = Settings.get().active_translator
@@ -281,8 +284,44 @@ class DialectWindow(Adw.ApplicationWindow):
             if self.launch_text != '':
                self.translate(self.launch_text, self.launch_langs['src'], self.launch_langs['dest'])
 
+    def check_apikey(self):
+        def on_response(session, result):
+            try:
+                _data = Session.get_response(session, result)
+                self.main_stack.set_visible_child_name('translate')
+            except Exception as exc:
+                logging.warning(exc)
+                self.key_page.set_title(_('The provided API key is invalid'))
+                if self.translator.supported_features['api-key-required']:
+                    self.key_page.set_description(_('Please set a valid API key in the preferences.'))
+                else:
+                    self.key_page.set_description(_('Please set a valid API key or unset the API key in the preferences.'))
+                    self.rmv_key_btn.set_visible(True)
+                self.main_stack.set_visible_child_name('api-key')
+
+        if self.translator.supported_features['api-key-supported']:
+            if Settings.get().api_key:
+                validation_url = self.translator.format_instance_url(
+                    Settings.get().instance_url,
+                    self.translator.api_test_path
+                )
+                (data, headers) = self.translator.format_api_key_test(Settings.get().api_key)
+                message = Session.create_post_message(validation_url, data, headers)
+                Session.get().send_and_read_async(message, 0, None, on_response)
+            elif not Settings.get().api_key and self.translator.supported_features['api-key-required']:
+                self.key_page.set_title(_('API key is required to use the service'))
+                self.key_page.set_description(_('Please set an API key in the preferences.'))
+                self.main_stack.set_visible_child_name('api-key')
+            else:
+                self.main_stack.set_visible_child_name('translate')
+        else:
+            self.main_stack.set_visible_child_name('translate')
 
     def retry_load_translator(self, _button):
+        self.load_translator()
+
+    def remove_key_and_reload(self, _button):
+        Settings.get().reset_api_key()
         self.load_translator()
 
     def on_listen_failed(self, called_from):

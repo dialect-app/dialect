@@ -297,6 +297,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
 
     def _on_reset_backend_instance(self, _button):
         Settings.get().reset_instance_url()
+        Settings.get().reset_api_key()
         self.backend_instance_label.set_label(Settings.get().instance_url)
         self.backend_instance_stack.set_visible_child_name('view')
         self.backend_instance.get_style_context().remove_class('error')
@@ -346,7 +347,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             backend = Settings.get().active_translator
             validation_url = TRANSLATORS[backend].format_instance_url(
                 Settings.get().instance_url,
-                TRANSLATORS[backend].validation_path
+                TRANSLATORS[backend].api_test_path
             )
             (data, headers) = TRANSLATORS[backend].format_api_key_test(self.new_api_key)
             message = Session.create_post_message(validation_url, data, headers)
