@@ -30,6 +30,7 @@ class Translator(TranslatorBase):
 
     validation_path = '/spec'
     settings_path = '/frontend/settings'
+    api_test_path = '/translate'
 
     _data = {
         'q': None,
@@ -125,6 +126,17 @@ class Translator(TranslatorBase):
             }
 
         return settings
+
+    @staticmethod
+    def format_api_key_test(api_key):
+        data = {
+            'q': 'hello',
+            'source': 'en',
+            'target': 'es',
+            'api_key': api_key,
+        }
+
+        return (data, {})
 
     @staticmethod
     def validate_api_key(api_key, url='translate.api.skitzen.com'):
