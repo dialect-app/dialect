@@ -2,6 +2,7 @@
 # Copyright 2020-2021 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+import logging
 import os
 import re
 import threading
@@ -218,9 +219,15 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             self.backend_instance_label.set_label(Settings.get().instance_url)
             self.instance_save_spinner.stop()
 
-        def on_validation_response(data):
-            backend = Settings.get().active_translator
-            valid = TRANSLATORS[backend].validate_instance(data)
+        def on_validation_response(session, result):
+            valid = False
+            try:
+                data = Session.get_response(session, result)
+                backend = Settings.get().active_translator
+                valid = TRANSLATORS[backend].validate_instance(data)
+            except Exception as exc:
+                logging.error(exc)
+
             if valid:
                 Settings.get().instance_url = self.new_instance_url
                 self.backend_instance.get_style_context().remove_class('error')
@@ -235,14 +242,20 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
                 self.api_key_row.set_visible(False)
                 self.api_key_label.set_label('None')
 
-        def on_settings_response(data):
-            backend = Settings.get().active_translator
-            settings = TRANSLATORS[backend].get_instance_settings(data)
-            if settings['api-key-supported']:
-                Settings.get().reset_api_key()
-                self.api_key_row.set_visible(True)
-                self.api_key_label.set_label(Settings.get().api_key or 'None')
-            else:
+        def on_settings_response(session, result):
+            try:
+                data = Session.get_response(session, result)
+                backend = Settings.get().active_translator
+                settings = TRANSLATORS[backend].get_instance_settings(data)
+                if settings['api-key-supported']:
+                    Settings.get().reset_api_key()
+                    self.api_key_row.set_visible(True)
+                    self.api_key_label.set_label(Settings.get().api_key or 'None')
+                else:
+                    self.api_key_row.set_visible(False)
+                
+            except Exception as exc:
+                logging.error(exc)
                 self.api_key_row.set_visible(False)
 
         old_value = Settings.get().instance_url

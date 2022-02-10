@@ -36,7 +36,7 @@ class Session(Soup.Session):
     def get_response(session, result, empty_is_error=True):
         try:
             response = session.send_and_read_finish(result)
-            data = Session.get().read_response(response)
+            data = Session.read_response(response)
 
             if data and 'error' in data:
                 raise ResponseError(data.get('error'))
@@ -80,10 +80,8 @@ class Session(Soup.Session):
     def multiple(self, messages, callback=None):
         """Keep track of multiple async operations."""
         def on_task_response(session, result, message_callback):
-            response = session.send_and_read_finish(result)
-            data = Session.get().read_response(response)
             messages.pop()
-            message_callback(data)
+            message_callback(session, result)
 
             # If all tasks are done, run main callback
             if callback is not None and len(messages) == 0:

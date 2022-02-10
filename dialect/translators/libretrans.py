@@ -40,20 +40,35 @@ class Translator(TranslatorBase):
 
     def __init__(self, callback, base_url=None, api_key='', **kwargs):
         def on_loaded():
-            callback()
+            callback(self.langs_success and self.settings_success, self.error)
 
-        def on_langs_response(data):
-            for lang in data:
-                self.languages.append(lang['code'])
+        def on_langs_response(session, result):
+            try:
+                data = Session.get_response(session, result)
+                for lang in data:
+                    self.languages.append(lang['code'])
+                self.langs_success = True
+            except Exception as exc:
+                logging.error(exc)
+                self.error = exc.cause
 
-        def on_settings_response(data):
-            self.supported_features['suggestions'] = data.get('suggestions', False)
-            self.supported_features['api-key-supported'] = data.get('apiKeys', False)
-            self.supported_features['api-key-required'] = data.get('keyRequired', False)
+        def on_settings_response(session, result):
+            try:
+                data = Session.get_response(session, result)
+                self.supported_features['suggestions'] = data.get('suggestions', False)
+                self.supported_features['api-key-supported'] = data.get('apiKeys', False)
+                self.supported_features['api-key-required'] = data.get('keyRequired', False)
+                self.settings_success = True
+            except Exception as exc:
+                logging.error(exc)
+                self.error = exc.cause
+
+        self.langs_success = False
+        self.settings_success = False
+        self.error = ''
 
         if base_url is not None:
             self.instance_url = base_url
-
         self.api_key = api_key
 
         lang_message = Soup.Message.new('GET', self.lang_url)

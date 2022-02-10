@@ -207,81 +207,80 @@ class DialectWindow(Adw.ApplicationWindow):
         self.add_action(translation_action)
 
     def load_translator(self, launch=False):
-        def on_loaded():
+        def on_loaded(success, error=''):
+            if success:
             # Supported features
-            if not self.translator.supported_features['mistakes']:
-                self.mistakes.set_reveal_child(False)
+                if not self.translator.supported_features['mistakes']:
+                    self.mistakes.set_reveal_child(False)
 
-            self.ui_suggest_cancel(None, None)
-            if not self.translator.supported_features['suggestions']:
-                self.edit_btn.set_visible(False)
+                self.ui_suggest_cancel(None, None)
+                if not self.translator.supported_features['suggestions']:
+                    self.edit_btn.set_visible(False)
+                else:
+                    self.edit_btn.set_visible(True)
+
+                if not self.translator.supported_features['pronunciation']:
+                    self.src_pron_revealer.set_reveal_child(False)
+                    self.dest_pron_revealer.set_reveal_child(False)
+                    self.app.lookup_action('pronunciation').set_enabled(False)
+                else:
+                    self.app.lookup_action('pronunciation').set_enabled(True)
+
+                self.no_retranslate = True
+                # Update langs list
+                self.src_lang_selector.set_languages(self.translator.languages)
+                self.dest_lang_selector.set_languages(self.translator.languages)
+                # Update selected langs
+                self.src_lang_selector.set_property(
+                    'selected',
+                    'auto' if Settings.get().src_auto else self.src_langs[0]
+                )
+                self.dest_lang_selector.set_property(
+                    'selected',
+                    self.dest_langs[0]
+                )
+
+                self.no_retranslate = False
+
+                self.main_stack.set_visible_child_name('translate')
+                self.set_property('backend-loading', False)
             else:
-                self.edit_btn.set_visible(True)
+                # Show error view
+                self.main_stack.set_visible_child_name('error')
+                self.set_property('backend-loading', False)
 
-            if not self.translator.supported_features['pronunciation']:
-                self.src_pron_revealer.set_reveal_child(False)
-                self.dest_pron_revealer.set_reveal_child(False)
-                self.app.lookup_action('pronunciation').set_enabled(False)
-            else:
-                self.app.lookup_action('pronunciation').set_enabled(True)
-
-            self.no_retranslate = True
-            # Update langs list
-            self.src_lang_selector.set_languages(self.translator.languages)
-            self.dest_lang_selector.set_languages(self.translator.languages)
-            # Update selected langs
-            self.src_lang_selector.set_property(
-                'selected',
-                'auto' if Settings.get().src_auto else self.src_langs[0]
-            )
-            self.dest_lang_selector.set_property(
-                'selected',
-                self.dest_langs[0]
-            )
-
-            self.no_retranslate = False
-
-            self.main_stack.set_visible_child_name('translate')
-            self.set_property('backend-loading', False)
+                self.error_page.set_description(error)
 
         backend = Settings.get().active_translator
 
         # Show loading view
         self.main_stack.set_visible_child_name('loading')
 
-        try:
-            # Translator object
-            if TRANSLATORS[backend].supported_features['change-instance']:
-                self.translator = TRANSLATORS[backend](
-                    on_loaded,
-                    base_url=Settings.get().instance_url,
-                    api_key=Settings.get().api_key,
-                )
-            else:
-                self.translator = TRANSLATORS[backend](on_loaded)
+        # Translator object
+        if TRANSLATORS[backend].supported_features['change-instance']:
+            self.translator = TRANSLATORS[backend](
+                on_loaded,
+                base_url=Settings.get().instance_url,
+                api_key=Settings.get().api_key,
+            )
+        else:
+            self.translator = TRANSLATORS[backend](on_loaded)
 
-            # Get saved languages
-            self.src_langs = Settings.get().src_langs
-            self.dest_langs = Settings.get().dest_langs
+        # Get saved languages
+        self.src_langs = Settings.get().src_langs
+        self.dest_langs = Settings.get().dest_langs
 
-            if launch:
-                self.no_retranslate = True
-                if self.launch_langs['src'] is not None:
-                    self.src_lang_selector.set_property('selected', self.launch_langs['src'])
-                if self.launch_langs['dest'] is not None and self.launch_langs['dest'] in self.translator.languages:
-                    self.dest_lang_selector.set_property('selected', self.launch_langs['dest'])
-                self.no_retranslate = False
+        if launch:
+            self.no_retranslate = True
+            if self.launch_langs['src'] is not None:
+                self.src_lang_selector.set_property('selected', self.launch_langs['src'])
+            if self.launch_langs['dest'] is not None and self.launch_langs['dest'] in self.translator.languages:
+                self.dest_lang_selector.set_property('selected', self.launch_langs['dest'])
+            self.no_retranslate = False
 
-                if self.launch_text != '':
-                    GLib.idle_add(self.translate, self.launch_text, self.launch_langs['src'], self.launch_langs['dest'])
+            if self.launch_text != '':
+               self.translate(self.launch_text, self.launch_langs['src'], self.launch_langs['dest'])
 
-        except Exception as exc:
-            # Show error view
-            self.main_stack.set_visible_child_name('error')
-            self.set_property('backend-loading', False)
-
-            self.error_page.set_description(str(exc))
-            logging.error('Error: ' + str(exc))
 
     def retry_load_translator(self, _button):
         self.load_translator()
@@ -1005,10 +1004,7 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.next_trans = {}
 
             # Show feedback for start of translation.
-            self.trans_spinner.show()
-            self.trans_spinner.start()
-            self.dest_box.set_sensitive(False)
-            self.langs_button_box.set_sensitive(False)
+            self.translation_loading()
 
             if src_language == 'auto' and src_text != '':
                 self.ongoing_trans = True
@@ -1049,34 +1045,38 @@ class DialectWindow(Adw.ApplicationWindow):
                     self.trans_dest_pron = None
 
                     if not self.ongoing_trans:
-                        self.trans_spinner.stop()
-                        self.trans_spinner.hide()
-                        self.dest_box.set_sensitive(True)
-                        self.langs_button_box.set_sensitive(True)
+                        self.translation_done()
                         self.dest_buffer.set_text('')
 
     def on_language_detect(self, session, result):
-        response = session.send_and_read_finish(result)
-        data = Session.get().read_response(response)
-        lang = self.translator.get_detect(data).lang
+        try:
+            data = Session.get_response(session, result)
+            lang = self.translator.get_detect(data).lang
+            if lang in self.translator.languages:
+                self.no_retranslate = True
+                self.src_lang_selector.set_property('selected', lang)
+                self.no_retranslate = False
+                if lang not in self.src_langs:
+                    self.src_langs[0] = lang
+                if self.next_trans:
+                    self.next_trans['src'] = lang
 
-        if lang in self.translator.languages:
-            self.no_retranslate = True
-            self.src_lang_selector.set_property('selected', lang)
-            self.no_retranslate = False
-            if lang not in self.src_langs:
-                self.src_langs[0] = lang
-            if self.next_trans:
-                self.next_trans['src'] = lang
+            self.trans_failed = False
+            self.ongoing_trans = False
+            self.translation()
 
-        self.ongoing_trans = False
-        self.translation()
+        except Exception as exc:
+            logging.error(exc)
+            self.trans_failed = True
+            self.ongoing_trans = False
+            self.translation_done()
+
+        self.translation_failed(self.trans_failed)
 
     def on_translation_response(self, session, result, original):
         dest_text = ""
         try:
-            response = session.send_and_read_finish(result)
-            data = Session.get().read_response(response)
+            data = Session.get_response(session, result)
             translation = self.translator.get_translation(data)
 
             dest_text = translation.text
@@ -1086,19 +1086,19 @@ class DialectWindow(Adw.ApplicationWindow):
             self.trans_failed = False
 
             self.dest_buffer.set_text(dest_text)
+
+            # Finally, everything is saved in history
+            self.add_history_entry(
+                original[0],
+                original[1],
+                original[2],
+                dest_text
+            )
         except Exception as exc:
             logging.error(exc)
             self.trans_mistakes = None
             self.trans_pronunciation = None
             self.trans_failed = True
-
-        # Finally, everything is saved in history
-        self.add_history_entry(
-            original[0],
-            original[1],
-            original[2],
-            dest_text
-        )
 
         # Mistakes
         if self.trans_mistakes is not None and self.translator.supported_features['mistakes']:
@@ -1123,7 +1123,28 @@ class DialectWindow(Adw.ApplicationWindow):
             elif self.dest_pron_revealer.get_reveal_child():
                 self.dest_pron_revealer.set_reveal_child(False)
 
-        if self.trans_failed:
+        self.translation_failed(self.trans_failed)
+
+        if self.next_trans:
+            self.translation()
+        else:
+            self.translation_done()
+        self.ongoing_trans = False
+
+    def translation_loading(self):
+        self.trans_spinner.show()
+        self.trans_spinner.start()
+        self.dest_box.set_sensitive(False)
+        self.langs_button_box.set_sensitive(False)
+
+    def translation_done(self):
+        self.trans_spinner.stop()
+        self.trans_spinner.hide()
+        self.dest_box.set_sensitive(True)
+        self.langs_button_box.set_sensitive(True)
+
+    def translation_failed(self, failed):
+        if failed:
             self.trans_warning.show()
             self.lookup_action('copy').set_enabled(False)
             self.lookup_action('listen-src').set_enabled(False)
@@ -1137,15 +1158,6 @@ class DialectWindow(Adw.ApplicationWindow):
             )
         else:
             self.trans_warning.hide()
-
-        self.trans_spinner.stop()
-        self.trans_spinner.hide()
-        self.dest_box.set_sensitive(True)
-        self.langs_button_box.set_sensitive(True)
-
-        self.ongoing_trans = False
-        if self.next_trans:
-            self.translation()
 
     def reload_backends(self):
         self.set_property('backend-loading', True)
