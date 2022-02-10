@@ -68,6 +68,15 @@ class Session(Soup.Session):
             logging.warning(exc)
         return data_glib_bytes
 
+    @staticmethod
+    def create_post_message(url, data, headers={}):
+        message = Soup.Message.new('POST', url)
+        data = Session.encode_data(data)
+        message.set_request_body_from_bytes('application/json', data)
+        for name, value in headers.items():
+            message.request_headers.append(name, value)
+        return message
+
     def multiple(self, messages, callback=None):
         """Keep track of multiple async operations."""
         def on_task_response(session, result, message_callback):

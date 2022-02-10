@@ -1015,11 +1015,10 @@ class DialectWindow(Adw.ApplicationWindow):
 
                 # Format data
                 (data, headers) = self.translator.format_detection(src_text)
-                data = Session.encode_data(data)
-                message = Soup.Message.new('POST', self.translator.detect_url)
-                message.set_request_body_from_bytes('application/json', data)
-                for name, value in headers.items():
-                    message.request_headers.append(name, value)
+                message = Session.create_post_message(
+                    self.translator.detect_url,
+                    data, headers
+                )
 
                 Session.get().send_and_read_async(message, 0, None, self.on_language_detect)
 
@@ -1031,11 +1030,10 @@ class DialectWindow(Adw.ApplicationWindow):
 
                     # Format data
                     (data, headers) = self.translator.format_translation(src_text, src_language, dest_language)
-                    data = Session.encode_data(data)
-                    message = Soup.Message.new('POST', self.translator.translate_url)
-                    message.set_request_body_from_bytes('application/json', data)
-                    for name, value in headers.items():
-                        message.request_headers.append(name, value)
+                    message = Session.create_post_message(
+                        self.translator.translate_url,
+                        data, headers
+                    )
 
                     Session.get().send_and_read_async(
                         message,
