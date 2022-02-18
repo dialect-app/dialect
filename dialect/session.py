@@ -23,6 +23,7 @@ class Session(Soup.Session):
         """Create a new instance of Session."""
         s_session = Soup.Session()
         s_session.__class__ = Session
+        s_session.set_user_agent('Dialect App')
         return s_session
 
     @staticmethod
