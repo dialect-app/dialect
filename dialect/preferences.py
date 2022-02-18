@@ -206,19 +206,19 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         self.backend_instance_row.set_sensitive(not window.get_property('backend-loading'))
         self.api_key_row.set_sensitive(not window.get_property('backend-loading'))
 
+        # Show or hide api key entry
+        if not window.get_property('backend-loading') and window.translator:
+            if window.translator.supported_features['api-key-supported']:
+                self.api_key_row.set_visible(True)
+                self.api_key_label.set_label(Settings.get().api_key or 'None')
+            else:
+                self.api_key_row.set_visible(False)
+
     def _on_edit_backend_instance(self, _button):
         self.backend_instance_stack.set_visible_child_name('edit')
         self.backend_instance.set_text(Settings.get().instance_url)
 
     def _on_save_backend_instance(self, _button):
-        def on_finished():
-            self.backend.set_sensitive(True)
-            self.backend_instance_row.set_sensitive(True)
-            self.api_key_row.set_sensitive(True)
-            self.backend_instance_save.set_child(self.instance_save_image)
-            self.backend_instance_label.set_label(Settings.get().instance_url)
-            self.instance_save_spinner.stop()
-
         def on_validation_response(session, result):
             valid = False
             try:
@@ -242,21 +242,12 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
                 self.api_key_row.set_visible(False)
                 self.api_key_label.set_label('None')
 
-        def on_settings_response(session, result):
-            try:
-                data = Session.get_response(session, result)
-                backend = Settings.get().active_translator
-                settings = TRANSLATORS[backend].get_instance_settings(data)
-                if settings['api-key-supported']:
-                    Settings.get().reset_api_key()
-                    self.api_key_row.set_visible(True)
-                    self.api_key_label.set_label(Settings.get().api_key or 'None')
-                else:
-                    self.api_key_row.set_visible(False)
-                
-            except Exception as exc:
-                logging.error(exc)
-                self.api_key_row.set_visible(False)
+            self.backend.set_sensitive(True)
+            self.backend_instance_row.set_sensitive(True)
+            self.api_key_row.set_sensitive(True)
+            self.backend_instance_save.set_child(self.instance_save_image)
+            self.backend_instance_label.set_label(Settings.get().instance_url)
+            self.instance_save_spinner.stop()
 
         old_value = Settings.get().instance_url
         new_value = self.backend_instance.get_text()
@@ -278,20 +269,9 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
                 self.new_instance_url,
                 TRANSLATORS[backend].validation_path
             )
-            settings_url = TRANSLATORS[backend].format_instance_url(
-                self.new_instance_url,
-                TRANSLATORS[backend].settings_path
-            )
             validation_message = Soup.Message.new('GET', validation_url)
-            settings_message = Soup.Message.new('GET', settings_url)
 
-            Session.get().multiple(
-                [
-                    [validation_message, on_validation_response],
-                    [settings_message, on_settings_response]
-                ],
-                on_finished
-            )
+            Session.get().send_and_read_async(validation_message, 0, None, on_validation_response)
         else:
             self.backend_instance_stack.set_visible_child_name('view')
 
