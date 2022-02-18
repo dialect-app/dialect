@@ -1007,12 +1007,6 @@ class DialectWindow(Adw.ApplicationWindow):
             and (self.translator.history[self.current_history]['Languages'][0] == src_language or 'auto')
             and self.translator.history[self.current_history]['Languages'][1] == dest_language
             and self.translator.history[self.current_history]['Text'][0] == src_text
-            and not self.trans_failed
-        ) or (
-            self.next_trans
-            and (self.next_trans.get('src') == src_language or 'auto')
-            and self.next_trans.get('dest') == dest_language
-            and self.next_trans.get('text') == src_text
         ):
             return True
         return False
@@ -1047,7 +1041,6 @@ class DialectWindow(Adw.ApplicationWindow):
 
             if src_language == 'auto' and src_text != '':
                 self.ongoing_trans = True
-
                 # Format data
                 (data, headers) = self.translator.format_detection(src_text)
                 message = Session.create_post_message(
@@ -1082,10 +1075,10 @@ class DialectWindow(Adw.ApplicationWindow):
                     self.trans_mistakes = None
                     self.trans_src_pron = None
                     self.trans_dest_pron = None
+                    self.dest_buffer.set_text('')
 
                     if not self.ongoing_trans:
                         self.translation_done()
-                        self.dest_buffer.set_text('')
 
     def on_language_detect(self, session, result):
         try:
@@ -1164,11 +1157,11 @@ class DialectWindow(Adw.ApplicationWindow):
 
         self.translation_failed(self.trans_failed)
 
+        self.ongoing_trans = False
         if self.next_trans:
             self.translation()
         else:
             self.translation_done()
-        self.ongoing_trans = False
 
     def translation_loading(self):
         self.trans_spinner.show()
