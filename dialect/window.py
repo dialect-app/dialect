@@ -91,7 +91,6 @@ class DialectWindow(Adw.ApplicationWindow):
     current_history = 0  # for history management
 
     # Translation-related variables
-    no_retranslate = False  # used to prevent unnecessary re-translations
     next_trans = {}  # for ongoing translation
     ongoing_trans = False  # for ongoing translation
     trans_failed = False  # for monitoring connectivity issues
@@ -229,21 +228,15 @@ class DialectWindow(Adw.ApplicationWindow):
                 else:
                     self.app.lookup_action('pronunciation').set_enabled(True)
 
-                self.no_retranslate = True
                 # Update langs list
                 self.src_lang_selector.set_languages(self.translator.languages)
                 self.dest_lang_selector.set_languages(self.translator.languages)
                 # Update selected langs
-                self.src_lang_selector.set_property(
-                    'selected',
-                    'auto' if Settings.get().src_auto else self.src_langs[0]
+                self.src_lang_selector.set_selected(
+                    'auto' if Settings.get().src_auto else self.src_langs[0],
+                    notify=False
                 )
-                self.dest_lang_selector.set_property(
-                    'selected',
-                    self.dest_langs[0]
-                )
-
-                self.no_retranslate = False
+                self.dest_lang_selector.set_selected(self.dest_langs[0], notify=False)
 
                 self.set_property('backend-loading', False)
 
@@ -274,12 +267,10 @@ class DialectWindow(Adw.ApplicationWindow):
         self.dest_langs = Settings.get().dest_langs
 
         if launch:
-            self.no_retranslate = True
             if self.launch_langs['src'] is not None:
-                self.src_lang_selector.set_property('selected', self.launch_langs['src'])
+                self.src_lang_selector.set_selected(self.launch_langs['src'], notify=False)
             if self.launch_langs['dest'] is not None and self.launch_langs['dest'] in self.translator.languages:
-                self.dest_lang_selector.set_property('selected', self.launch_langs['dest'])
-            self.no_retranslate = False
+                self.dest_lang_selector.set_selected(self.launch_langs['dest'], notify=False)
 
             if self.launch_text != '':
                 self.translate(self.launch_text, self.launch_langs['src'], self.launch_langs['dest'])
@@ -402,6 +393,8 @@ class DialectWindow(Adw.ApplicationWindow):
         self.src_lang_selector = DialectLangSelector()
         self.src_lang_selector.connect('notify::selected',
                                        self.on_src_lang_changed)
+        self.src_lang_selector.connect('user-selection-changed',
+                                       self.translation)
         # Set popover selector to button
         self.src_lang_btn.set_popover(self.src_lang_selector)
 
@@ -409,6 +402,8 @@ class DialectWindow(Adw.ApplicationWindow):
         self.dest_lang_selector = DialectLangSelector()
         self.dest_lang_selector.connect('notify::selected',
                                         self.on_dest_lang_changed)
+        self.dest_lang_selector.connect('user-selection-changed',
+                                        self.translation)
         # Set popover selector to button
         self.dest_lang_btn.set_popover(self.dest_lang_selector)
 
@@ -505,11 +500,11 @@ class DialectWindow(Adw.ApplicationWindow):
         """
         # Set src lang to Auto
         if src_lang is None:
-            self.src_lang_selector.set_property('selected', 'auto')
+            self.src_lang_selector.set_selected('auto', notify=False)
         else:
-            self.src_lang_selector.set_property('selected', src_lang)
+            self.src_lang_selector.set_selected(src_lang, notify=False)
         if dest_lang is not None and dest_lang in self.translator.languages:
-            self.dest_lang_selector.set_property('selected', dest_lang)
+            self.dest_lang_selector.set_selected(dest_lang)
         # Set text to src buffer
         self.src_buffer.set_text(text)
         # Run translation
@@ -602,7 +597,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         if code == dest_code:
             code = self.dest_langs[1] if code == self.src_langs[0] else dest_code
-            self.dest_lang_selector.set_property('selected', self.src_langs[0])
+            self.dest_lang_selector.set_selected(self.src_langs[0], notify=False)
 
         # Disable or enable listen function.
         if self.tts_langs and Settings.get().tts != '':
@@ -634,10 +629,6 @@ class DialectWindow(Adw.ApplicationWindow):
         # Refresh list
         self.src_lang_selector.refresh_selected()
 
-        # Translate again
-        if not self.no_retranslate:
-            self.translation()
-
     def on_dest_lang_changed(self, _obj, _param):
         code = self.dest_lang_selector.get_property('selected')
         src_code = self.src_lang_selector.get_property('selected')
@@ -648,7 +639,7 @@ class DialectWindow(Adw.ApplicationWindow):
         )
 
         if code == src_code:
-            self.src_lang_selector.set_property('selected', self.dest_langs[0])
+            self.src_lang_selector.set_selected(self.dest_langs[0], notify=False)
 
         # Disable or enable listen function.
         if self.tts_langs and Settings.get().tts != '':
@@ -675,10 +666,6 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Refresh list
         self.dest_lang_selector.refresh_selected()
-
-        # Translate again
-        if not self.no_retranslate:
-            self.translation()
 
     """
     User interface functions
@@ -711,8 +698,8 @@ class DialectWindow(Adw.ApplicationWindow):
         GLib.idle_add(self.reset_return_forward_btns)
 
     def switch_all(self, src_language, dest_language, src_text, dest_text):
-        self.src_lang_selector.set_property('selected', dest_language)
-        self.dest_lang_selector.set_property('selected', src_language)
+        self.src_lang_selector.set_selected(dest_language, notify=False)
+        self.dest_lang_selector.set_selected(src_language, notify=False)
         self.src_buffer.set_text(dest_text)
         self.dest_buffer.set_text(src_text)
         self.add_history_entry(src_language, dest_language, src_text, dest_text)
@@ -988,12 +975,8 @@ class DialectWindow(Adw.ApplicationWindow):
     def history_update(self):
         self.reset_return_forward_btns()
         lang_hist = self.translator.history[self.current_history]
-        self.no_retranslate = True
-        self.src_lang_selector.set_property('selected',
-                                            lang_hist['Languages'][0])
-        self.dest_lang_selector.set_property('selected',
-                                             lang_hist['Languages'][1])
-        self.no_retranslate = False
+        self.src_lang_selector.set_selected(lang_hist['Languages'][0], notify=False)
+        self.dest_lang_selector.set_selected(lang_hist['Languages'][1], notify=False)
         self.src_buffer.set_text(lang_hist['Text'][0])
         self.dest_buffer.set_text(lang_hist['Text'][1])
 
@@ -1088,9 +1071,7 @@ class DialectWindow(Adw.ApplicationWindow):
             data = Session.get_response(session, result)
             lang = self.translator.get_detect(data).lang
             if lang in self.translator.languages:
-                self.no_retranslate = True
-                self.src_lang_selector.set_property('selected', lang)
-                self.no_retranslate = False
+                self.src_lang_selector.set_selected(lang, notify=False)
                 if lang not in self.src_langs:
                     self.src_langs[0] = lang
                 if self.next_trans:

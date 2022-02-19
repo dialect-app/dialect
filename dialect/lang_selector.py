@@ -13,6 +13,9 @@ from dialect.translators import get_lang_name
 @Gtk.Template(resource_path=f'{RES_PATH}/lang-selector.ui')
 class DialectLangSelector(Gtk.Popover):
     __gtype_name__ = 'DialectLangSelector'
+    __gsignals__ = {
+        'user-selection-changed': (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())
+    }
 
     # Get widgets
     search = Gtk.Template.Child()
@@ -55,6 +58,14 @@ class DialectLangSelector(Gtk.Popover):
         self.lang_list.set_model(selection_model)
         self.lang_list.set_factory(self.factory)
 
+    def get_selected(self):
+        return self.get_property('selected')
+
+    def set_selected(self, lang_code, notify=True):
+        self.set_property('selected', lang_code)
+        if notify:
+            self.emit('user-selection-changed')
+
     def set_languages(self, languages):
         # Clear list
         self.lang_model.remove_all()
@@ -80,7 +91,7 @@ class DialectLangSelector(Gtk.Popover):
         model = list_view.get_model()
         lang = model.get_selected_item()
         # Set selected property
-        self.set_property('selected', lang.code)
+        self.set_selected(lang.code)
 
     def _closed(self, _popover):
         # Reset scroll
