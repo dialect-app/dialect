@@ -8,7 +8,7 @@ import threading
 from gettext import gettext as _
 from tempfile import NamedTemporaryFile
 
-from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk, Soup
+from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk
 
 from dialect.define import APP_ID, PROFILE, MAX_LENGTH, RES_PATH, TRANS_NUMBER
 from dialect.lang_selector import DialectLangSelector
@@ -282,12 +282,13 @@ class DialectWindow(Adw.ApplicationWindow):
             self.no_retranslate = False
 
             if self.launch_text != '':
-               self.translate(self.launch_text, self.launch_langs['src'], self.launch_langs['dest'])
+                self.translate(self.launch_text, self.launch_langs['src'], self.launch_langs['dest'])
 
     def check_apikey(self):
         def on_response(session, result):
             try:
-                _data = Session.get_response(session, result)
+                data = Session.get_response(session, result)
+                self.translator.get_translation(data)
                 self.main_stack.set_visible_child_name('translate')
             except Exception as exc:
                 logging.warning(exc)
@@ -295,7 +296,9 @@ class DialectWindow(Adw.ApplicationWindow):
                 if self.translator.supported_features['api-key-required']:
                     self.key_page.set_description(_('Please set a valid API key in the preferences.'))
                 else:
-                    self.key_page.set_description(_('Please set a valid API key or unset the API key in the preferences.'))
+                    self.key_page.set_description(
+                        _('Please set a valid API key or unset the API key in the preferences.')
+                    )
                     self.rmv_key_btn.set_visible(True)
                 self.main_stack.set_visible_child_name('api-key')
 
