@@ -786,11 +786,19 @@ class DialectWindow(Adw.ApplicationWindow):
             self.dest_buffer.get_end_iter(),
             True
         )
-        threading.Thread(
-            target=self._suggest,
-            args=(dest_text,),
-            daemon=True
-        ).start()
+
+        (data, headers) = self.translator.format_suggestion(
+            self.translator.history[self.current_history]['Text'][0],
+            self.translator.history[self.current_history]['Languages'][0],
+            self.translator.history[self.current_history]['Languages'][1],
+            dest_text
+        )
+        message = Session.create_post_message(
+            self.translator.suggest_url,
+            data, headers
+        )
+        Session.get().send_and_read_async(message, 0, None, self.on_suggest_response)
+
         self.before_suggest = None
 
     def ui_suggest_cancel(self, _action, _param):
@@ -800,26 +808,21 @@ class DialectWindow(Adw.ApplicationWindow):
             self.before_suggest = None
         self.dest_text.set_editable(False)
 
-    def _suggest(self, text):
-        success = self.translator.suggest(text)
-        GLib.idle_add(
-            self.dest_toolbar_stack.set_visible_child_name,
-            'default'
-        )
+    def on_suggest_response(self, session, result):
+        success = False
+        self.dest_toolbar_stack.set_visible_child_name('default')
+        try:
+            data = Session.get_response(session, result)
+            success = self.translator.get_suggestion(data)
+        except Exception as exc:
+            logging.error(exc)
+
         if success:
-            GLib.idle_add(
-                self.send_notification,
-                _('New translation has been suggested!')
-            )
+            self.send_notification(_('New translation has been suggested!'))
         else:
-            GLib.idle_add(
-                self.send_notification,
-                _('Suggestion failed.')
-            )
-        GLib.idle_add(
-            self.dest_text.set_editable,
-            False
-        )
+            self.send_notification(_('Suggestion failed.'))
+
+        self.dest_text.set_editable(False)
 
     def ui_src_voice(self, _action, _param):
         src_text = self.src_buffer.get_text(

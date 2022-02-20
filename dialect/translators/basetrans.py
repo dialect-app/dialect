@@ -49,7 +49,10 @@ class TranslatorBase:
     def get_detect(self, data):
         return None
 
-    def suggest(self, suggestion):
+    def format_suggestion(self, text, src, dest, suggestion):
+        pass
+
+    def get_suggestion(self, data):
         pass
 
     def format_translation(self, text, src, dest):

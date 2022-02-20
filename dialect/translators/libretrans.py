@@ -32,13 +32,6 @@ class Translator(TranslatorBase):
     settings_path = '/frontend/settings'
     api_test_path = '/translate'
 
-    _data = {
-        'q': None,
-        'source': None,
-        'target': None,
-        'api_key': api_key,
-    }
-
     def __init__(self, callback, base_url=None, api_key='', **kwargs):
         def on_loaded():
             callback(self.langs_success and self.settings_success, self.error)
@@ -185,19 +178,20 @@ class Translator(TranslatorBase):
     def get_detect(self, data):
         return Detected(data[0]['language'], data[0]['confidence'])
 
-    def suggest(self, suggestion):
-        try:
-            data = self._data
-            data['s'] = suggestion
-            if self.api_key:
-                data['api_key'] = self.api_key
-            suggest_response_data = self._post(self.suggest_url, data)
-            error = suggest_response_data.get('error', None)
-            if error:
-                logging.error(error)
-            return suggest_response_data.get('success', False)
-        except Exception as exc:
-            raise TranslationError(exc) from exc
+    def format_suggestion(self, text, src, dest, suggestion):
+        data = {
+            'q': text,
+            'source': src,
+            'target': dest,
+            's': suggestion,
+        }
+        if self.api_key:
+            data['api_key'] = self.api_key
+
+        return (data, {})
+
+    def get_suggestion(self, data):
+        return data.get('success', False)
 
     def format_translation(self, text, src, dest):
         data = {
@@ -219,22 +213,3 @@ class Translator(TranslatorBase):
                 'dest-pronunciation': None,
             },
         )
-
-    def _get(self, url):
-        message = Soup.Message.new('GET', url)
-        response = self.session.send_and_read(message, None)
-        response_data = json.loads(
-            response.get_data()
-        ) if response else {}
-        return response_data
-
-    def _post(self, url, data):
-        message = Soup.Message.new('POST', url)
-        data_bytes = json.dumps(data).encode('utf-8')
-        data_glib_bytes = GLib.Bytes.new(data_bytes)
-        message.set_request_body_from_bytes('application/json', data_glib_bytes)
-        response = self.session.send_and_read(message, None)
-        response_data = json.loads(
-            response.get_data()
-        ) if response else {}
-        return response_data
