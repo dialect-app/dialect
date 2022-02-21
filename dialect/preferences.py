@@ -221,9 +221,9 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
     def _on_save_backend_instance(self, _button):
         def on_validation_response(session, result):
             valid = False
+            backend = Settings.get().active_translator
             try:
                 data = Session.get_response(session, result)
-                backend = Settings.get().active_translator
                 valid = TRANSLATORS[backend].validate_instance(data)
             except Exception as exc:
                 logging.error(exc)

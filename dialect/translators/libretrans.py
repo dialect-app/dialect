@@ -5,9 +5,9 @@
 import logging
 import json
 
-from gi.repository import GLib, Soup
+from gi.repository import Soup
 
-from dialect.translators.basetrans import Detected, TranslatorBase, TranslationError, Translation
+from dialect.translators.basetrans import Detected, TranslatorBase, Translation
 from dialect.session import Session
 
 
@@ -29,7 +29,6 @@ class Translator(TranslatorBase):
     api_key = ''
 
     validation_path = '/spec'
-    settings_path = '/frontend/settings'
     api_test_path = '/translate'
 
     def __init__(self, callback, base_url=None, api_key='', **kwargs):
@@ -106,21 +105,6 @@ class Translator(TranslatorBase):
         return valid
 
     @staticmethod
-    def get_instance_settings(data):
-        settings = {
-            'api-key-supported': False,
-            'api-key-required': False,
-        }
-
-        if data:
-            settings = {
-                'api-key-supported': data.get('apiKeys', False),
-                'api-key-required': data.get('keyRequired', False),
-            }
-
-        return settings
-
-    @staticmethod
     def format_api_key_test(api_key):
         data = {
             'q': 'hello',
@@ -130,41 +114,6 @@ class Translator(TranslatorBase):
         }
 
         return (data, {})
-
-    @staticmethod
-    def validate_api_key(api_key, url='translate.api.skitzen.com'):
-        if url.startswith('localhost:'):
-            translate_url = 'http://' + url + '/translate'
-        else:
-            translate_url = 'https://' + url + '/translate'
-
-        session = Soup.Session()
-        try:
-            _data = {
-                'q': 'hello',
-                'source': 'en',
-                'target': 'es',
-                'api_key': api_key,
-            }
-
-            translate_message = Soup.Message.new('POST', translate_url)
-            translate_data_bytes = json.dumps(_data).encode('utf-8')
-            translate_data_glib_bytes = GLib.Bytes.new(translate_data_bytes)
-            translate_message.set_request_body_from_bytes('application/json', translate_data_glib_bytes)
-            translate_response = session.send_and_read(translate_message, None)
-            translate_response_data = json.loads(
-                translate_response.get_data()
-            ) if translate_response else {}
-
-            error = translate_response_data.get('error', None)
-            if error:
-                logging.error(error)
-                return False
-
-            return True
-        except Exception as exc:
-            logging.warning(type(exc))
-            return False
 
     def format_detection(self, text):
         data = {

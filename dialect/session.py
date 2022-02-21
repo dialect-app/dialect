@@ -101,3 +101,6 @@ class ResponseError(Exception):
         self.cause = cause
         self.message = message
         super().__init__(self.message)
+
+    def __str__(self):
+        return f'{self.message}: {self.cause}'

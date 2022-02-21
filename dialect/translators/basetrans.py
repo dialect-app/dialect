@@ -21,7 +21,7 @@ class TranslatorBase:
     dest_langs = ['fr', 'es', 'de', 'en']
 
     validation_path = ''
-    settings_path = ''
+    api_test_path = ''
 
     @staticmethod
     def format_instance_url(url, path, http=False):
@@ -33,14 +33,6 @@ class TranslatorBase:
 
     @staticmethod
     def validate_instance(data):
-        pass
-
-    @staticmethod
-    def get_instance_settings(data):
-        pass
-
-    @staticmethod
-    def validate_api_key(api_key, url=None):
         pass
 
     def format_detection(self, text):
