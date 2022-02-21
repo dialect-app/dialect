@@ -85,7 +85,6 @@
                     </child>
                     <child>
                       <object class="AdwStatusPage" id="error_page">
-                        <property name="title">Could not load the translator service</property>
                         <property name="vexpand">True</property>
                         <property name="child">
                           <object class="GtkBox">

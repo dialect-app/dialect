@@ -12,10 +12,11 @@ from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk
 
 from dialect.define import APP_ID, PROFILE, MAX_LENGTH, RES_PATH, TRANS_NUMBER
 from dialect.lang_selector import DialectLangSelector
-from dialect.session import Session
+from dialect.session import Session, ResponseEmpty, ResponseError
 from dialect.settings import Settings
 from dialect.shortcuts import DialectShortcutsWindow
 from dialect.translators import TRANSLATORS, get_lang_name
+from dialect.translators.basetrans import ApiKeyRequired, InvalidApiKey, TranslatorError
 from dialect.tts import TTS
 
 
@@ -209,7 +210,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.add_action(translation_action)
 
     def load_translator(self, launch=False):
-        def on_loaded(success, error=''):
+        def on_loaded(success, error='', network_error=False):
             if success:
                 # Supported features
                 if not self.translator.supported_features['mistakes']:
@@ -243,9 +244,8 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.check_apikey()
             else:
                 # Show error view
-                self.main_stack.set_visible_child_name('error')
+                self.loading_failed(error, network_error)
                 self.set_property('backend-loading', False)
-                self.error_page.set_description(error)
 
         backend = Settings.get().active_translator
 
@@ -281,7 +281,7 @@ class DialectWindow(Adw.ApplicationWindow):
                 data = Session.get_response(session, result)
                 self.translator.get_translation(data)
                 self.main_stack.set_visible_child_name('translate')
-            except Exception as exc:
+            except InvalidApiKey as exc:
                 logging.warning(exc)
                 self.key_page.set_title(_('The provided API key is invalid'))
                 if self.translator.supported_features['api-key-required']:
@@ -292,6 +292,12 @@ class DialectWindow(Adw.ApplicationWindow):
                     )
                     self.rmv_key_btn.set_visible(True)
                 self.main_stack.set_visible_child_name('api-key')
+            except (TranslatorError, ResponseEmpty) as exc:
+                logging.warning(exc)
+                self.loading_failed(str(exc))
+            except Exception as exc:
+                logging.warning(exc)
+                self.loading_failed(str(exc), True)
 
         if self.translator.supported_features['api-key-supported']:
             if Settings.get().api_key:
@@ -310,6 +316,31 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.main_stack.set_visible_child_name('translate')
         else:
             self.main_stack.set_visible_child_name('translate')
+
+    def loading_failed(self, details='', network=False):
+        self.main_stack.set_visible_child_name('error')
+
+        service = self.translator.prettyname
+        url = self.translator.instance_url
+
+        title = _('Failed loading the translation service')
+        description = _('Please report this in the Dialect bug tracker if the issue persists.')
+        if self.translator.supported_features['change-instance']:
+            description = _('Failed loading "{url}", check if the instance address is correct or report in the Dialect bug tracker if the issue persists.')
+            description = description.format(url=url)
+
+        if network:
+            title = _('Could’t connect to the translation service')
+            description = _('We can’t connect to the server. Please check for network issues.')
+            if self.translator.supported_features['change-instance']:
+                description = _('We can’t connect to the {service} instance "{url}".\n Please check for network issues or if the address is correct.')
+                description = description.format(service=service, url=url)
+
+        if details:
+            description = description + '\n\n<small><tt>' + details + '</tt></small>'
+
+        self.error_page.set_title(title)
+        self.error_page.set_description(description)
 
     def retry_load_translator(self, _button):
         self.load_translator()
@@ -1070,6 +1101,7 @@ class DialectWindow(Adw.ApplicationWindow):
                         self.translation_done()
 
     def on_language_detect(self, session, result):
+        error = ''
         try:
             data = Session.get_response(session, result)
             lang = self.translator.get_detect(data).lang
@@ -1083,17 +1115,34 @@ class DialectWindow(Adw.ApplicationWindow):
             self.trans_failed = False
             self.ongoing_trans = False
             self.translation()
-
+        except ResponseError as exc:
+            logging.error(exc)
+            error = 'network'
+            self.trans_failed = True
+        except InvalidApiKey as exc:
+            logging.error(exc)
+            error = 'invalid-api'
+            self.trans_failed = True
+        except ApiKeyRequired as exc:
+            logging.error(exc)
+            error = 'api-required'
+            self.trans_failed = True
         except Exception as exc:
             logging.error(exc)
             self.trans_failed = True
+        finally:
             self.ongoing_trans = False
             self.translation_done()
 
-        self.translation_failed(self.trans_failed)
+        self.translation_failed(self.trans_failed, error)
 
     def on_translation_response(self, session, result, original):
-        dest_text = ""
+        error = ''
+        dest_text = ''
+
+        self.trans_mistakes = None
+        self.trans_src_pron = None
+        self.trans_dest_pron = None
         try:
             data = Session.get_response(session, result)
             translation = self.translator.get_translation(data)
@@ -1113,10 +1162,20 @@ class DialectWindow(Adw.ApplicationWindow):
                 original[2],
                 dest_text
             )
+        except ResponseError as exc:
+            logging.error(exc)
+            error = 'network'
+            self.trans_failed = True
+        except InvalidApiKey as exc:
+            logging.error(exc)
+            error = 'invalid-api'
+            self.trans_failed = True
+        except ApiKeyRequired as exc:
+            logging.error(exc)
+            error = 'api-required'
+            self.trans_failed = True
         except Exception as exc:
             logging.error(exc)
-            self.trans_mistakes = None
-            self.trans_pronunciation = None
             self.trans_failed = True
 
         # Mistakes
@@ -1142,7 +1201,7 @@ class DialectWindow(Adw.ApplicationWindow):
             elif self.dest_pron_revealer.get_reveal_child():
                 self.dest_pron_revealer.set_reveal_child(False)
 
-        self.translation_failed(self.trans_failed)
+        self.translation_failed(self.trans_failed, error)
 
         self.ongoing_trans = False
         if self.next_trans:
@@ -1162,19 +1221,45 @@ class DialectWindow(Adw.ApplicationWindow):
         self.dest_box.set_sensitive(True)
         self.langs_button_box.set_sensitive(True)
 
-    def translation_failed(self, failed):
+    def translation_failed(self, failed, error=''):
         if failed:
             self.trans_warning.show()
             self.lookup_action('copy').set_enabled(False)
             self.lookup_action('listen-src').set_enabled(False)
             self.lookup_action('listen-dest').set_enabled(False)
-            self.send_notification(
-                _('Translation failed. Please check for network issues.'),
-                action={
-                    'label': _('Retry'),
-                    'name': 'win.translation',
-                }
-            )
+
+            if error == 'network':
+                self.send_notification(
+                    _('Translation failed, check for network issues'),
+                    action={
+                        'label': _('Retry'),
+                        'name': 'win.translation',
+                    }
+                )
+            elif error == 'invalid-api':
+                self.send_notification(
+                    _('The provided API key is invalid'),
+                    action={
+                        'label': _('Preferences'),
+                        'name': 'app.preferences',
+                    }
+                )
+            elif error == 'api-required':
+                self.send_notification(
+                    _('API key is required to use the service'),
+                    action={
+                        'label': _('Preferences'),
+                        'name': 'app.preferences',
+                    }
+                )
+            else:
+                self.send_notification(
+                    _('Translation failed'),
+                    action={
+                        'label': _('Retry'),
+                        'name': 'win.translation',
+                    }
+                )
         else:
             self.trans_warning.hide()
 

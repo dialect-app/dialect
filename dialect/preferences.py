@@ -291,7 +291,8 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         def on_response(session, result):
             valid = False
             try:
-                _data = Session.get_response(session, result)
+                data = Session.get_response(session, result)
+                self.parent.translator.get_translation(data)
                 valid = True
             except Exception as exc:
                 logging.warning(exc)

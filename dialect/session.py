@@ -34,15 +34,13 @@ class Session(Soup.Session):
         return Session.instance
 
     @staticmethod
-    def get_response(session, result, empty_is_error=True):
+    def get_response(session, result, fail_if_empty=True):
         try:
             response = session.send_and_read_finish(result)
             data = Session.read_response(response)
 
-            if data and 'error' in data:
-                raise ResponseError(data.get('error'))
-            if not data and empty_is_error:
-                raise ResponseError('Response is empty')
+            if not data and fail_if_empty:
+                raise ResponseEmpty()
 
             return data
         except GLib.GError as exc:
@@ -104,3 +102,11 @@ class ResponseError(Exception):
 
     def __str__(self):
         return f'{self.message}: {self.cause}'
+
+
+class ResponseEmpty(Exception):
+    """Exception raised when response is empty."""
+
+    def __init__(self, message='Response is empty'):
+        self.message = message
+        super().__init__(self.message)

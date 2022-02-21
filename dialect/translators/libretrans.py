@@ -3,12 +3,15 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
-import json
 
 from gi.repository import Soup
 
-from dialect.translators.basetrans import Detected, TranslatorBase, Translation
-from dialect.session import Session
+from dialect.translators.basetrans import (
+    ApiKeyRequired, BatchSizeExceeded, CharactersLimitExceeded, Detected,
+    InvalidLangCode, InvalidApiKey, TranslatorBase, Translation,
+    TranslationError, TranslatorError
+)
+from dialect.session import Session, ResponseEmpty
 
 
 class Translator(TranslatorBase):
@@ -33,31 +36,42 @@ class Translator(TranslatorBase):
 
     def __init__(self, callback, base_url=None, api_key='', **kwargs):
         def on_loaded():
-            callback(self.langs_success and self.settings_success, self.error)
+            callback(self.langs_success and self.settings_success, self.error, self.network_error)
 
         def on_langs_response(session, result):
             try:
                 data = Session.get_response(session, result)
+                self._check_errors(data)
                 for lang in data:
                     self.languages.append(lang['code'])
                 self.langs_success = True
+            except (TranslatorError, ResponseEmpty) as exc:
+                logging.warning(exc)
+                self.error = str(exc)
             except Exception as exc:
-                logging.error(exc)
-                self.error = exc.cause
+                logging.warning(exc)
+                self.error = str(exc)
+                self.network_error = True
 
         def on_settings_response(session, result):
             try:
                 data = Session.get_response(session, result)
+                self._check_errors(data)
                 self.supported_features['suggestions'] = data.get('suggestions', False)
                 self.supported_features['api-key-supported'] = data.get('apiKeys', False)
                 self.supported_features['api-key-required'] = data.get('keyRequired', False)
                 self.settings_success = True
+            except (TranslatorError, ResponseEmpty) as exc:
+                logging.warning(exc)
+                self.error = str(exc)
             except Exception as exc:
-                logging.error(exc)
-                self.error = exc.cause
+                logging.warning(exc)
+                self.error = str(exc)
+                self.network_error = True
 
         self.langs_success = False
         self.settings_success = False
+        self.network_error = False
         self.error = ''
 
         if base_url is not None:
@@ -125,6 +139,7 @@ class Translator(TranslatorBase):
         return (data, {})
 
     def get_detect(self, data):
+        self._check_errors(data)
         return Detected(data[0]['language'], data[0]['confidence'])
 
     def format_suggestion(self, text, src, dest, suggestion):
@@ -140,6 +155,7 @@ class Translator(TranslatorBase):
         return (data, {})
 
     def get_suggestion(self, data):
+        self._check_errors(data)
         return data.get('success', False)
 
     def format_translation(self, text, src, dest):
@@ -154,6 +170,7 @@ class Translator(TranslatorBase):
         return (data, {})
 
     def get_translation(self, data):
+        self._check_errors(data)
         return Translation(
             data['translatedText'],
             {
@@ -162,3 +179,23 @@ class Translator(TranslatorBase):
                 'dest-pronunciation': None,
             },
         )
+
+    def _check_errors(self, data):
+        """Raises a proper Exception if an error is found in the data."""
+        if 'error' in data:
+            error = data['error']
+
+            if error == 'Please contact the server operator to obtain an API key':
+                raise ApiKeyRequired(error)
+            elif error == 'Invalid API key':
+                raise InvalidApiKey(error)
+            elif 'is not supported' in error:
+                raise InvalidLangCode(error)
+            elif 'exceeds text limit' in error:
+                raise BatchSizeExceeded(error)
+            elif 'exceeds character limit' in error:
+                raise CharactersLimitExceeded(error)
+            elif 'Cannot translate text' in error or 'format is not supported' in error:
+                raise TranslationError(error)
+            else:
+                raise TranslatorError(error)
