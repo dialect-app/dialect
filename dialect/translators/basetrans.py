@@ -20,31 +20,113 @@ class TranslatorBase:
     src_langs = ['en', 'fr', 'es', 'de']
     dest_langs = ['fr', 'es', 'de', 'en']
 
-    @staticmethod
-    def validate_instance_url(url):
-        pass
+    validation_path = ''
+    api_test_path = ''
 
     @staticmethod
-    def validate_api_key(api_key, url=None):
+    def format_instance_url(url, path, http=False):
+        protocol = 'https://'
+        if url.startswith('localhost:') or http:
+            protocol = 'http://'
+
+        return protocol + url + path
+
+    @staticmethod
+    def validate_instance(data):
         pass
 
-    def detect(self, src_text):
+    def format_detection(self, text):
         pass
 
-    def suggest(self, suggestion):
+    def get_detect(self, data):
+        return None
+
+    def format_suggestion(self, text, src, dest, suggestion):
         pass
 
-    def translate(self, src_text, src, dest):
-        return False
+    def get_suggestion(self, data):
+        pass
+
+    def format_translation(self, text, src, dest):
+        pass
+
+    def get_translation(self, data):
+        pass
 
 
-class TranslationError(Exception):
+class TranslatorError(Exception):
+    """Base Exception for Translator related errors."""
+
+    def __init__(self, cause, message='Translator Error'):
+        self.cause = cause
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f'{self.message}: {self.cause}'
+
+
+class ApiKeyRequired(TranslatorError):
+    """Exception raised when API key is required."""
+
+    def __init__(self, cause, message='API Key Required'):
+        self.cause = cause
+        self.message = message
+        super().__init__(self.cause, self.message)
+
+
+class InvalidApiKey(TranslatorError):
+    """Exception raised when an invalid API key is found."""
+
+    def __init__(self, cause, message='Invalid API Key'):
+        self.cause = cause
+        self.message = message
+        super().__init__(self.cause, self.message)
+
+
+class InvalidLangCode(TranslatorError):
+    """Exception raised when an invalid lang code is sent."""
+
+    def __init__(self, cause, message='Invalid Lang Code'):
+        self.cause = cause
+        self.message = message
+        super().__init__(self.cause, self.message)
+
+
+class BatchSizeExceeded(TranslatorError):
+    """Exception raised when the batch size limit has been exceeded."""
+
+    def __init__(self, cause, message='Batch Size Exceeded'):
+        self.cause = cause
+        self.message = message
+        super().__init__(self.cause, self.message)
+
+
+class CharactersLimitExceeded(TranslatorError):
+    """Exception raised when the char limit has been exceeded."""
+
+    def __init__(self, cause, message='Characters Limit Exceeded'):
+        self.cause = cause
+        self.message = message
+        super().__init__(self.cause, self.message)
+
+
+class ServiceLimitReached(TranslatorError):
+    """Exception raised when the service limit has been reached."""
+
+    def __init__(self, cause, message='Service Limit Reached'):
+        self.cause = cause
+        self.message = message
+        super().__init__(self.cause, self.message)
+
+
+class TranslationError(TranslatorError):
     """Exception raised when translation fails."""
 
     def __init__(self, cause, message='Translation has failed'):
         self.cause = cause
         self.message = message
-        super().__init__(self.message)
+        super().__init__(self.cause, self.message)
 
 
 class Translation:

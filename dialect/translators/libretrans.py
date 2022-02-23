@@ -3,11 +3,15 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
-import json
 
-from gi.repository import GLib, Soup
+from gi.repository import Soup
 
-from dialect.translators.basetrans import Detected, TranslatorBase, TranslationError, Translation
+from dialect.translators.basetrans import (
+    ApiKeyRequired, BatchSizeExceeded, CharactersLimitExceeded, Detected,
+    InvalidLangCode, InvalidApiKey, TranslatorBase, Translation,
+    TranslationError, TranslatorError
+)
+from dialect.session import Session, ResponseEmpty
 
 
 class Translator(TranslatorBase):
@@ -27,220 +31,171 @@ class Translator(TranslatorBase):
     instance_url = 'translate.api.skitzen.com'
     api_key = ''
 
-    _data = {
-        'q': None,
-        'source': None,
-        'target': None,
-        'api_key': api_key,
-    }
+    validation_path = '/spec'
+    api_test_path = '/translate'
 
-    def __init__(self, base_url=None, api_key='', **kwargs):
+    def __init__(self, callback, base_url=None, api_key='', **kwargs):
+        def on_loaded():
+            callback(self.langs_success and self.settings_success, self.error, self.network_error)
+
+        def on_langs_response(session, result):
+            try:
+                data = Session.get_response(session, result)
+                self._check_errors(data)
+                for lang in data:
+                    self.languages.append(lang['code'])
+                self.langs_success = True
+            except (TranslatorError, ResponseEmpty) as exc:
+                logging.warning(exc)
+                self.error = str(exc)
+            except Exception as exc:
+                logging.warning(exc)
+                self.error = str(exc)
+                self.network_error = True
+
+        def on_settings_response(session, result):
+            try:
+                data = Session.get_response(session, result)
+                self._check_errors(data)
+                self.supported_features['suggestions'] = data.get('suggestions', False)
+                self.supported_features['api-key-supported'] = data.get('apiKeys', False)
+                self.supported_features['api-key-required'] = data.get('keyRequired', False)
+                self.settings_success = True
+            except (TranslatorError, ResponseEmpty) as exc:
+                logging.warning(exc)
+                self.error = str(exc)
+            except Exception as exc:
+                logging.warning(exc)
+                self.error = str(exc)
+                self.network_error = True
+
+        self.langs_success = False
+        self.settings_success = False
+        self.network_error = False
+        self.error = ''
+
         if base_url is not None:
             self.instance_url = base_url
-
         self.api_key = api_key
-        self.session = Soup.Session()
 
-        lang_response_data = self._get(self.lang_url) or []
-        for lang in lang_response_data:
-            self.languages.append(lang['code'])
+        lang_message = Soup.Message.new('GET', self.lang_url)
+        settings_message = Soup.Message.new('GET', self._frontend_settings_url)
 
-        frontend_settings_response_data = self._get(self._frontend_settings_url)
-
-        self.supported_features['suggestions'] = frontend_settings_response_data.get('suggestions', False)
-        self.supported_features['api-key-supported'] = frontend_settings_response_data.get('apiKeys', False)
-        self.supported_features['api-key-required'] = frontend_settings_response_data.get('keyRequired', False)
+        Session.get().multiple(
+            [
+                [lang_message, on_langs_response],
+                [settings_message, on_settings_response]
+            ],
+            on_loaded
+        )
 
     @property
     def _frontend_settings_url(self):
-        if self.instance_url.startswith('localhost:'):
-            return 'http://' + self.instance_url + '/frontend/settings'
-        return 'https://' + self.instance_url + '/frontend/settings'
+        return self.format_instance_url(self.instance_url, '/frontend/settings')
 
     @property
     def detect_url(self):
-        if self.instance_url.startswith('localhost:'):
-            return 'http://' + self.instance_url + '/detect'
-        return 'https://' + self.instance_url + '/detect'
+        return self.format_instance_url(self.instance_url, '/detect')
 
     @property
     def lang_url(self):
-        if self.instance_url.startswith('localhost:'):
-            return 'http://' + self.instance_url + '/languages'
-        return 'https://' + self.instance_url + '/languages'
+        return self.format_instance_url(self.instance_url, '/languages')
 
     @property
     def suggest_url(self):
-        if self.instance_url.startswith('localhost:'):
-            return 'http://' + self.instance_url + '/suggest'
-        return 'https://' + self.instance_url + '/suggest'
+        return self.format_instance_url(self.instance_url, '/suggest')
 
     @property
     def translate_url(self):
-        if self.instance_url.startswith('localhost:'):
-            return 'http://' + self.instance_url + '/translate'
-        return 'https://' + self.instance_url + '/translate'
+        return self.format_instance_url(self.instance_url, '/translate')
 
     @staticmethod
-    def validate_instance_url(url):
-        if url.startswith('localhost:'):
-            spec_url = 'http://' + url + '/spec'
-            frontend_settings_url = 'http://' + url + '/frontend/settings'
-        else:
-            spec_url = 'https://' + url + '/spec'
-            frontend_settings_url = 'https://' + url + '/frontend/settings'
+    def validate_instance(data):
+        valid = False
 
-        session = Soup.Session()
-        try:
-            validation_message = Soup.Message.new('GET', spec_url)
-            validation_response = session.send_and_read(validation_message, None)
-            validation_response_data = json.loads(
-                validation_response.get_data()
-            ) if validation_response else {}
+        if data and data is not None:
+            valid = data['info']['title'] == 'LibreTranslate'
 
-            frontend_settings_message = Soup.Message.new('GET', frontend_settings_url)
-            frontend_settings_response = session.send_and_read(frontend_settings_message, None)
-            frontend_settings_response_data = json.loads(
-                frontend_settings_response.get_data()
-            ) if frontend_settings_response else {}
-
-            data = {
-                'validation-success': validation_response_data['info']['title'] == 'LibreTranslate',
-                'api-key-supported': frontend_settings_response_data.get('apiKeys', False),
-                'api-key-required': frontend_settings_response_data.get('keyRequired', False),
-            }
-
-            validation_error = validation_response_data.get('error', None)
-            if validation_error:
-                # FIXME: Does this ever happen?
-                logging.error(f'validation_error: {validation_error}')
-
-            frontend_settings_error = frontend_settings_response_data.get('error', None)
-            if frontend_settings_error:
-                # FIXME: Does this ever happen?
-                logging.error(f'frontend_settings_error: {frontend_settings_error}')
-
-            return data
-        except Exception as exc:
-            logging.warning(type(exc))
-            return {
-                'validation-success': False,
-                'api-key-supported': False,
-                'api-key-required': False,
-            }
+        return valid
 
     @staticmethod
-    def validate_api_key(api_key, url='translate.api.skitzen.com'):
-        if url.startswith('localhost:'):
-            translate_url = 'http://' + url + '/translate'
-        else:
-            translate_url = 'https://' + url + '/translate'
+    def format_api_key_test(api_key):
+        data = {
+            'q': 'hello',
+            'source': 'en',
+            'target': 'es',
+            'api_key': api_key,
+        }
 
-        session = Soup.Session()
-        try:
-            _data = {
-                'q': 'hello',
-                'source': 'en',
-                'target': 'es',
-                'api_key': api_key,
-            }
+        return (data, {})
 
-            translate_message = Soup.Message.new('POST', translate_url)
-            translate_data_bytes = json.dumps(_data).encode('utf-8')
-            translate_data_glib_bytes = GLib.Bytes.new(translate_data_bytes)
-            translate_message.set_request_body_from_bytes('application/json', translate_data_glib_bytes)
-            translate_response = session.send_and_read(translate_message, None)
-            translate_response_data = json.loads(
-                translate_response.get_data()
-            ) if translate_response else {}
+    def format_detection(self, text):
+        data = {
+            'q': text,
+        }
+        if self.api_key:
+            data['api_key'] = self.api_key
 
-            error = translate_response_data.get('error', None)
-            if error:
-                logging.error(error)
-                return False
+        return (data, {})
 
-            return True
-        except Exception as exc:
-            logging.warning(type(exc))
-            return False
+    def get_detect(self, data):
+        self._check_errors(data)
+        return Detected(data[0]['language'], data[0]['confidence'])
 
-    def detect(self, src_text):
-        """Detect the language using the same mechanisms that LibreTranslate uses but locally."""
-        try:
-            data = {
-                'q': src_text,
-            }
-            if self.api_key:
-                data['api_key'] = self.api_key
-            detect_response_data = self._post(self.detect_url, data)
-            error = detect_response_data.get('error', None)
-            if error:
-                logging.error(error)
-                # We don't raise here because we don't know if there will ever be a case where an error
-                # is reported but a language and confidence is still given.
-                # Can be changed if we ever get confirmation.
-            return Detected(detect_response_data[0]['language'], detect_response_data[0]['confidence'])
-        except Exception as exc:
-            raise TranslationError(exc) from exc
+    def format_suggestion(self, text, src, dest, suggestion):
+        data = {
+            'q': text,
+            'source': src,
+            'target': dest,
+            's': suggestion,
+        }
+        if self.api_key:
+            data['api_key'] = self.api_key
 
-    def suggest(self, suggestion):
-        try:
-            data = self._data
-            data['s'] = suggestion
-            if self.api_key:
-                data['api_key'] = self.api_key
-            suggest_response_data = self._post(self.suggest_url, data)
-            error = suggest_response_data.get('error', None)
-            if error:
-                logging.error(error)
-            return suggest_response_data.get('success', False)
-        except Exception as exc:
-            raise TranslationError(exc) from exc
+        return (data, {})
 
-    def translate(self, src_text, src, dest):
-        try:
-            self._data = {
-                'q': src_text,
-                'source': src,
-                'target': dest,
-            }
-            if self.api_key:
-                self._data['api_key'] = self.api_key
-            response_data = self._post(
-                self.translate_url,
-                self._data,
-            )
-            error = response_data.get('error', None)
-            if error:
-                logging.error(error)
-                # We don't raise here because we don't know if there will ever be a case where an error
-                # is reported but a translatedText is still given. Can be changed if we ever get confirmation.
-            return Translation(
-                response_data['translatedText'],
-                {
-                    'possible-mistakes': None,
-                    'src-pronunciation': None,
-                    'dest-pronunciation': None,
-                },
-            )
-        except Exception as exc:
-            raise TranslationError(exc) from exc
+    def get_suggestion(self, data):
+        self._check_errors(data)
+        return data.get('success', False)
 
-    def _get(self, url):
-        message = Soup.Message.new('GET', url)
-        response = self.session.send_and_read(message, None)
-        response_data = json.loads(
-            response.get_data()
-        ) if response else {}
-        return response_data
+    def format_translation(self, text, src, dest):
+        data = {
+            'q': text,
+            'source': src,
+            'target': dest,
+        }
+        if self.api_key:
+            data['api_key'] = self.api_key
 
-    def _post(self, url, data):
-        message = Soup.Message.new('POST', url)
-        data_bytes = json.dumps(data).encode('utf-8')
-        data_glib_bytes = GLib.Bytes.new(data_bytes)
-        message.set_request_body_from_bytes('application/json', data_glib_bytes)
-        response = self.session.send_and_read(message, None)
-        response_data = json.loads(
-            response.get_data()
-        ) if response else {}
-        return response_data
+        return (data, {})
+
+    def get_translation(self, data):
+        self._check_errors(data)
+        return Translation(
+            data['translatedText'],
+            {
+                'possible-mistakes': None,
+                'src-pronunciation': None,
+                'dest-pronunciation': None,
+            },
+        )
+
+    def _check_errors(self, data):
+        """Raises a proper Exception if an error is found in the data."""
+        if 'error' in data:
+            error = data['error']
+
+            if error == 'Please contact the server operator to obtain an API key':
+                raise ApiKeyRequired(error)
+            elif error == 'Invalid API key':
+                raise InvalidApiKey(error)
+            elif 'is not supported' in error:
+                raise InvalidLangCode(error)
+            elif 'exceeds text limit' in error:
+                raise BatchSizeExceeded(error)
+            elif 'exceeds character limit' in error:
+                raise CharactersLimitExceeded(error)
+            elif 'Cannot translate text' in error or 'format is not supported' in error:
+                raise TranslationError(error)
+            else:
+                raise TranslatorError(error)

@@ -12,9 +12,11 @@ from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk
 
 from dialect.define import APP_ID, PROFILE, MAX_LENGTH, RES_PATH, TRANS_NUMBER
 from dialect.lang_selector import DialectLangSelector
+from dialect.session import Session, ResponseEmpty, ResponseError
 from dialect.settings import Settings
 from dialect.shortcuts import DialectShortcutsWindow
 from dialect.translators import TRANSLATORS, get_lang_name
+from dialect.translators.basetrans import ApiKeyRequired, InvalidApiKey, TranslatorError
 from dialect.tts import TTS
 
 
@@ -27,6 +29,8 @@ class DialectWindow(Adw.ApplicationWindow):
     error_page = Gtk.Template.Child()
     translator_box = Gtk.Template.Child()
     retry_backend_btn = Gtk.Template.Child()
+    key_page = Gtk.Template.Child()
+    rmv_key_btn = Gtk.Template.Child()
 
     title_stack = Gtk.Template.Child()
     langs_button_box = Gtk.Template.Child()
@@ -88,9 +92,8 @@ class DialectWindow(Adw.ApplicationWindow):
     current_history = 0  # for history management
 
     # Translation-related variables
-    no_retranslate = False  # used to prevent unnecessary re-translations
-    trans_queue = []  # for pending translations
-    active_thread = None  # for ongoing translation
+    next_trans = {}  # for ongoing translation
+    ongoing_trans = False  # for ongoing translation
     trans_failed = False  # for monitoring connectivity issues
     trans_mistakes = None  # "mistakes" suggestions
     # Pronunciations
@@ -145,11 +148,8 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Load translator
         self.retry_backend_btn.connect('clicked', self.retry_load_translator)
-        threading.Thread(
-            target=self.load_translator,
-            args=[Settings.get().active_translator, True],
-            daemon=True
-        ).start()
+        self.rmv_key_btn.connect('clicked', self.remove_key_and_reload)
+        self.load_translator(True)
         # Get languages available for speech
         if Settings.get().tts != '':
             threading.Thread(target=self.load_lang_speech, daemon=True).start()
@@ -209,89 +209,145 @@ class DialectWindow(Adw.ApplicationWindow):
         translation_action.connect('activate', self.translation)
         self.add_action(translation_action)
 
-    def load_translator(self, backend, launch=False):
-        def update_ui():
-            # Supported features
-            if not self.translator.supported_features['mistakes']:
-                self.mistakes.set_reveal_child(False)
+    def load_translator(self, launch=False):
+        def on_loaded(success, error='', network_error=False):
+            if success:
+                # Supported features
+                if not self.translator.supported_features['mistakes']:
+                    self.mistakes.set_reveal_child(False)
 
-            self.ui_suggest_cancel(None, None)
-            if not self.translator.supported_features['suggestions']:
-                self.edit_btn.set_visible(False)
+                self.ui_suggest_cancel(None, None)
+                if not self.translator.supported_features['suggestions']:
+                    self.edit_btn.set_visible(False)
+                else:
+                    self.edit_btn.set_visible(True)
+
+                if not self.translator.supported_features['pronunciation']:
+                    self.src_pron_revealer.set_reveal_child(False)
+                    self.dest_pron_revealer.set_reveal_child(False)
+                    self.app.lookup_action('pronunciation').set_enabled(False)
+                else:
+                    self.app.lookup_action('pronunciation').set_enabled(True)
+
+                # Update langs list
+                self.src_lang_selector.set_languages(self.translator.languages)
+                self.dest_lang_selector.set_languages(self.translator.languages)
+                # Update selected langs
+                self.src_lang_selector.set_selected(
+                    'auto' if Settings.get().src_auto else self.src_langs[0],
+                    notify=False
+                )
+                self.dest_lang_selector.set_selected(self.dest_langs[0], notify=False)
+
+                self.set_property('backend-loading', False)
+
+                self.check_apikey()
             else:
-                self.edit_btn.set_visible(True)
+                # Show error view
+                self.loading_failed(error, network_error)
+                self.set_property('backend-loading', False)
 
-            if not self.translator.supported_features['pronunciation']:
-                self.src_pron_revealer.set_reveal_child(False)
-                self.dest_pron_revealer.set_reveal_child(False)
-                self.app.lookup_action('pronunciation').set_enabled(False)
-            else:
-                self.app.lookup_action('pronunciation').set_enabled(True)
-
-            self.no_retranslate = True
-            # Update langs list
-            self.src_lang_selector.set_languages(self.translator.languages)
-            self.dest_lang_selector.set_languages(self.translator.languages)
-            # Update selected langs
-            self.src_lang_selector.set_property(
-                'selected',
-                'auto' if Settings.get().src_auto else self.src_langs[0]
-            )
-            self.dest_lang_selector.set_property(
-                'selected',
-                self.dest_langs[0]
-            )
-
-            self.no_retranslate = False
-
-            self.main_stack.set_visible_child_name('translate')
-            self.set_property('backend-loading', False)
+        backend = Settings.get().active_translator
 
         # Show loading view
-        GLib.idle_add(self.main_stack.set_visible_child_name, 'loading')
+        self.main_stack.set_visible_child_name('loading')
 
-        try:
-            # Translator object
-            if TRANSLATORS[backend].supported_features['change-instance']:
-                self.translator = TRANSLATORS[backend](
-                    base_url=Settings.get().instance_url,
-                    api_key=Settings.get().api_key,
+        # Translator object
+        if TRANSLATORS[backend].supported_features['change-instance']:
+            self.translator = TRANSLATORS[backend](
+                on_loaded,
+                base_url=Settings.get().instance_url,
+                api_key=Settings.get().api_key,
+            )
+        else:
+            self.translator = TRANSLATORS[backend](on_loaded)
+
+        # Get saved languages
+        self.src_langs = Settings.get().src_langs
+        self.dest_langs = Settings.get().dest_langs
+
+        if launch:
+            if self.launch_langs['src'] is not None:
+                self.src_lang_selector.set_selected(self.launch_langs['src'], notify=False)
+            if self.launch_langs['dest'] is not None and self.launch_langs['dest'] in self.translator.languages:
+                self.dest_lang_selector.set_selected(self.launch_langs['dest'], notify=False)
+
+            if self.launch_text != '':
+                self.translate(self.launch_text, self.launch_langs['src'], self.launch_langs['dest'])
+
+    def check_apikey(self):
+        def on_response(session, result):
+            try:
+                data = Session.get_response(session, result)
+                self.translator.get_translation(data)
+                self.main_stack.set_visible_child_name('translate')
+            except InvalidApiKey as exc:
+                logging.warning(exc)
+                self.key_page.set_title(_('The provided API key is invalid'))
+                if self.translator.supported_features['api-key-required']:
+                    self.key_page.set_description(_('Please set a valid API key in the preferences.'))
+                else:
+                    self.key_page.set_description(
+                        _('Please set a valid API key or unset the API key in the preferences.')
+                    )
+                    self.rmv_key_btn.set_visible(True)
+                self.main_stack.set_visible_child_name('api-key')
+            except (TranslatorError, ResponseEmpty) as exc:
+                logging.warning(exc)
+                self.loading_failed(str(exc))
+            except Exception as exc:
+                logging.warning(exc)
+                self.loading_failed(str(exc), True)
+
+        if self.translator.supported_features['api-key-supported']:
+            if Settings.get().api_key:
+                validation_url = self.translator.format_instance_url(
+                    Settings.get().instance_url,
+                    self.translator.api_test_path
                 )
+                (data, headers) = self.translator.format_api_key_test(Settings.get().api_key)
+                message = Session.create_post_message(validation_url, data, headers)
+                Session.get().send_and_read_async(message, 0, None, on_response)
+            elif not Settings.get().api_key and self.translator.supported_features['api-key-required']:
+                self.key_page.set_title(_('API key is required to use the service'))
+                self.key_page.set_description(_('Please set an API key in the preferences.'))
+                self.main_stack.set_visible_child_name('api-key')
             else:
-                self.translator = TRANSLATORS[backend]()
+                self.main_stack.set_visible_child_name('translate')
+        else:
+            self.main_stack.set_visible_child_name('translate')
 
-            # Get saved languages
-            self.src_langs = Settings.get().src_langs
-            self.dest_langs = Settings.get().dest_langs
+    def loading_failed(self, details='', network=False):
+        self.main_stack.set_visible_child_name('error')
 
-            # Update UI
-            GLib.idle_add(update_ui)
+        service = self.translator.prettyname
+        url = self.translator.instance_url
 
-            if launch:
-                self.no_retranslate = True
-                if self.launch_langs['src'] is not None:
-                    self.src_lang_selector.set_property('selected', self.launch_langs['src'])
-                if self.launch_langs['dest'] is not None and self.launch_langs['dest'] in self.translator.languages:
-                    self.dest_lang_selector.set_property('selected', self.launch_langs['dest'])
-                self.no_retranslate = False
+        title = _('Failed loading the translation service')
+        description = _('Please report this in the Dialect bug tracker if the issue persists.')
+        if self.translator.supported_features['change-instance']:
+            description = _('Failed loading "{url}", check if the instance address is correct or report in the Dialect bug tracker if the issue persists.')
+            description = description.format(url=url)
 
-                if self.launch_text != '':
-                    GLib.idle_add(self.translate, self.launch_text, self.launch_langs['src'], self.launch_langs['dest'])
+        if network:
+            title = _('Could’t connect to the translation service')
+            description = _('We can’t connect to the server. Please check for network issues.')
+            if self.translator.supported_features['change-instance']:
+                description = _('We can’t connect to the {service} instance "{url}".\n Please check for network issues or if the address is correct.')
+                description = description.format(service=service, url=url)
 
-        except Exception as exc:
-            # Show error view
-            GLib.idle_add(self.main_stack.set_visible_child_name, 'error')
-            GLib.idle_add(self.set_property, 'backend-loading', False)
+        if details:
+            description = description + '\n\n<small><tt>' + details + '</tt></small>'
 
-            self.error_page.set_description(str(exc))
-            logging.error('Error: ' + str(exc))
+        self.error_page.set_title(title)
+        self.error_page.set_description(description)
 
     def retry_load_translator(self, _button):
-        threading.Thread(
-            target=self.load_translator,
-            args=[Settings.get().active_translator],
-            daemon=True
-        ).start()
+        self.load_translator()
+
+    def remove_key_and_reload(self, _button):
+        Settings.get().reset_api_key()
+        self.load_translator()
 
     def on_listen_failed(self, called_from):
         self.src_voice_btn.set_child(self.src_voice_warning)
@@ -368,6 +424,8 @@ class DialectWindow(Adw.ApplicationWindow):
         self.src_lang_selector = DialectLangSelector()
         self.src_lang_selector.connect('notify::selected',
                                        self.on_src_lang_changed)
+        self.src_lang_selector.connect('user-selection-changed',
+                                       self.translation)
         # Set popover selector to button
         self.src_lang_btn.set_popover(self.src_lang_selector)
 
@@ -375,6 +433,8 @@ class DialectWindow(Adw.ApplicationWindow):
         self.dest_lang_selector = DialectLangSelector()
         self.dest_lang_selector.connect('notify::selected',
                                         self.on_dest_lang_changed)
+        self.dest_lang_selector.connect('user-selection-changed',
+                                        self.translation)
         # Set popover selector to button
         self.dest_lang_btn.set_popover(self.dest_lang_selector)
 
@@ -471,11 +531,11 @@ class DialectWindow(Adw.ApplicationWindow):
         """
         # Set src lang to Auto
         if src_lang is None:
-            self.src_lang_selector.set_property('selected', 'auto')
+            self.src_lang_selector.set_selected('auto', notify=False)
         else:
-            self.src_lang_selector.set_property('selected', src_lang)
+            self.src_lang_selector.set_selected(src_lang, notify=False)
         if dest_lang is not None and dest_lang in self.translator.languages:
-            self.dest_lang_selector.set_property('selected', dest_lang)
+            self.dest_lang_selector.set_selected(dest_lang)
         # Set text to src buffer
         self.src_buffer.set_text(text)
         # Run translation
@@ -568,7 +628,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         if code == dest_code:
             code = self.dest_langs[1] if code == self.src_langs[0] else dest_code
-            self.dest_lang_selector.set_property('selected', self.src_langs[0])
+            self.dest_lang_selector.set_selected(self.src_langs[0], notify=False)
 
         # Disable or enable listen function.
         if self.tts_langs and Settings.get().tts != '':
@@ -600,10 +660,6 @@ class DialectWindow(Adw.ApplicationWindow):
         # Refresh list
         self.src_lang_selector.refresh_selected()
 
-        # Translate again
-        if not self.no_retranslate:
-            self.translation()
-
     def on_dest_lang_changed(self, _obj, _param):
         code = self.dest_lang_selector.get_property('selected')
         src_code = self.src_lang_selector.get_property('selected')
@@ -614,7 +670,7 @@ class DialectWindow(Adw.ApplicationWindow):
         )
 
         if code == src_code:
-            self.src_lang_selector.set_property('selected', self.dest_langs[0])
+            self.src_lang_selector.set_selected(self.dest_langs[0], notify=False)
 
         # Disable or enable listen function.
         if self.tts_langs and Settings.get().tts != '':
@@ -642,10 +698,6 @@ class DialectWindow(Adw.ApplicationWindow):
         # Refresh list
         self.dest_lang_selector.refresh_selected()
 
-        # Translate again
-        if not self.no_retranslate:
-            self.translation()
-
     """
     User interface functions
     """
@@ -662,7 +714,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.current_history -= 1
             self.history_update()
 
-    def add_history_entry(self, src_language, dest_language, src_text, dest_text):
+    def add_history_entry(self, src_text, src_language, dest_language, dest_text):
         """Add a history entry to the history list."""
         new_history_trans = {
             'Languages': [src_language, dest_language],
@@ -677,8 +729,8 @@ class DialectWindow(Adw.ApplicationWindow):
         GLib.idle_add(self.reset_return_forward_btns)
 
     def switch_all(self, src_language, dest_language, src_text, dest_text):
-        self.src_lang_selector.set_property('selected', dest_language)
-        self.dest_lang_selector.set_property('selected', src_language)
+        self.src_lang_selector.set_selected(dest_language, notify=False)
+        self.dest_lang_selector.set_selected(src_language, notify=False)
         self.src_buffer.set_text(dest_text)
         self.dest_buffer.set_text(src_text)
         self.add_history_entry(src_language, dest_language, src_text, dest_text)
@@ -765,11 +817,19 @@ class DialectWindow(Adw.ApplicationWindow):
             self.dest_buffer.get_end_iter(),
             True
         )
-        threading.Thread(
-            target=self._suggest,
-            args=(dest_text,),
-            daemon=True
-        ).start()
+
+        (data, headers) = self.translator.format_suggestion(
+            self.translator.history[self.current_history]['Text'][0],
+            self.translator.history[self.current_history]['Languages'][0],
+            self.translator.history[self.current_history]['Languages'][1],
+            dest_text
+        )
+        message = Session.create_post_message(
+            self.translator.suggest_url,
+            data, headers
+        )
+        Session.get().send_and_read_async(message, 0, None, self.on_suggest_response)
+
         self.before_suggest = None
 
     def ui_suggest_cancel(self, _action, _param):
@@ -779,26 +839,21 @@ class DialectWindow(Adw.ApplicationWindow):
             self.before_suggest = None
         self.dest_text.set_editable(False)
 
-    def _suggest(self, text):
-        success = self.translator.suggest(text)
-        GLib.idle_add(
-            self.dest_toolbar_stack.set_visible_child_name,
-            'default'
-        )
+    def on_suggest_response(self, session, result):
+        success = False
+        self.dest_toolbar_stack.set_visible_child_name('default')
+        try:
+            data = Session.get_response(session, result)
+            success = self.translator.get_suggestion(data)
+        except Exception as exc:
+            logging.error(exc)
+
         if success:
-            GLib.idle_add(
-                self.send_notification,
-                _('New translation has been suggested!')
-            )
+            self.send_notification(_('New translation has been suggested!'))
         else:
-            GLib.idle_add(
-                self.send_notification,
-                _('Suggestion failed.')
-            )
-        GLib.idle_add(
-            self.dest_text.set_editable,
-            False
-        )
+            self.send_notification(_('Suggestion failed.'))
+
+        self.dest_text.set_editable(False)
 
     def ui_src_voice(self, _action, _param):
         src_text = self.src_buffer.get_text(
@@ -954,19 +1009,11 @@ class DialectWindow(Adw.ApplicationWindow):
     def history_update(self):
         self.reset_return_forward_btns()
         lang_hist = self.translator.history[self.current_history]
-        self.no_retranslate = True
-        self.src_lang_selector.set_property('selected',
-                                            lang_hist['Languages'][0])
-        self.dest_lang_selector.set_property('selected',
-                                             lang_hist['Languages'][1])
-        self.no_retranslate = False
+        self.src_lang_selector.set_selected(lang_hist['Languages'][0], notify=False)
+        self.dest_lang_selector.set_selected(lang_hist['Languages'][1], notify=False)
         self.src_buffer.set_text(lang_hist['Text'][0])
         self.dest_buffer.set_text(lang_hist['Text'][1])
 
-    def set_no_retranslate(self, state):
-        self.no_retranslate = state
-
-    # THE TRANSLATION AND SAVING TO HISTORY PART
     def appeared_before(self):
         src_language = self.src_lang_selector.get_property('selected')
         dest_language = self.dest_lang_selector.get_property('selected')
@@ -980,12 +1027,6 @@ class DialectWindow(Adw.ApplicationWindow):
             and (self.translator.history[self.current_history]['Languages'][0] == src_language or 'auto')
             and self.translator.history[self.current_history]['Languages'][1] == dest_language
             and self.translator.history[self.current_history]['Text'][0] == src_text
-            and not self.trans_failed
-        ) or (
-            len(self.trans_queue) == 1
-            and (self.trans_queue[0].get('src_language') == src_language or 'auto')
-            and self.trans_queue[0].get('dest_language') == dest_language
-            and self.trans_queue[0].get('src_text') == src_text
         ):
             return True
         return False
@@ -1001,147 +1042,232 @@ class DialectWindow(Adw.ApplicationWindow):
             src_language = self.src_lang_selector.get_property('selected')
             dest_language = self.dest_lang_selector.get_property('selected')
 
-            if self.trans_queue:
-                self.trans_queue.pop(0)
-            self.trans_queue.append({
-                'src_text': src_text,
-                'src_language': src_language,
-                'dest_language': dest_language
-            })
-
-            # Check if there are any active threads.
-            if self.active_thread is None:
-                # Show feedback for start of translation.
-                self.trans_spinner.show()
-                self.trans_spinner.start()
-                self.dest_box.set_sensitive(False)
-                self.langs_button_box.set_sensitive(False)
-                # If there is no active thread, create one and start it.
-                self.active_thread = threading.Thread(target=self.run_translation, daemon=True)
-                self.active_thread.start()
-
-    def change_backends(self, backend):
-        self.set_property('backend-loading', True)
-
-        # Save previous backend settings
-        self.save_settings()
-
-        # Load translator
-        threading.Thread(
-            target=self.load_translator,
-            args=[backend],
-            daemon=True
-        ).start()
-
-    def run_translation(self):
-        def on_trans_failed():
-            self.trans_warning.show()
-            self.lookup_action('copy').set_enabled(False)
-            self.lookup_action('listen-src').set_enabled(False)
-            self.lookup_action('listen-dest').set_enabled(False)
-            self.send_notification(
-                _('Translation failed. Please check for network issues.'),
-                action={
-                    'label': _('Retry'),
-                    'name': 'win.translation',
+            if self.ongoing_trans:
+                self.next_trans = {
+                    'text': src_text,
+                    'src': src_language,
+                    'dest': dest_language
                 }
-            )
+                return
 
-        def on_trans_success():
-            self.trans_warning.hide()
+            if self.next_trans:
+                src_text = self.next_trans['text']
+                src_language = self.next_trans['src']
+                dest_language = self.next_trans['dest']
+                self.next_trans = {}
 
-        def on_trans_done():
-            self.trans_spinner.stop()
-            self.trans_spinner.hide()
-            self.dest_box.set_sensitive(True)
-            self.langs_button_box.set_sensitive(True)
+            # Show feedback for start of translation.
+            self.translation_loading()
 
-        def on_mistakes():
-            if self.trans_mistakes is not None and self.translator.supported_features['mistakes']:
-                mistake_text = self.trans_mistakes[0].replace('<em>', '<b>').replace('</em>', '</b>')
-                self.mistakes_label.set_markup(_('Did you mean: ') + f'<a href="#">{mistake_text}</a>')
-                self.mistakes.set_reveal_child(True)
-            elif self.mistakes.get_reveal_child():
-                self.mistakes.set_reveal_child(False)
-
-        def on_pronunciation():
-            reveal = Settings.get().show_pronunciation
-            if self.translator.supported_features['pronunciation']:
-                if self.trans_src_pron is not None:
-                    self.src_pron_label.set_text(self.trans_src_pron)
-                    self.src_pron_revealer.set_reveal_child(reveal)
-                elif self.src_pron_revealer.get_reveal_child():
-                    self.src_pron_revealer.set_reveal_child(False)
-
-                if self.trans_dest_pron is not None:
-                    self.dest_pron_label.set_text(self.trans_dest_pron)
-                    self.dest_pron_revealer.set_reveal_child(reveal)
-                elif self.dest_pron_revealer.get_reveal_child():
-                    self.dest_pron_revealer.set_reveal_child(False)
-
-        while self.trans_queue:
-            # If the first language is revealed automatically, let's set it
-            trans_dict = self.trans_queue.pop(0)
-            src_text = trans_dict['src_text']
-            src_language = trans_dict['src_language']
-            dest_language = trans_dict['dest_language']
             if src_language == 'auto' and src_text != '':
-                try:
-                    src_language = self.translator.detect(src_text).lang
-                    if isinstance(src_language, list):
-                        src_language = src_language[0]
-                    if src_language in self.translator.languages:
-                        GLib.idle_add(self.set_no_retranslate, True)
-                        GLib.idle_add(self.src_lang_selector.set_property,
-                                      'selected', src_language)
-                        GLib.idle_add(self.set_no_retranslate, False)
-                        if src_language not in self.src_langs:
-                            self.src_langs[0] = src_language
-                    else:
-                        src_language = 'auto'
-                except Exception:
-                    self.trans_failed = True
+                self.ongoing_trans = True
+                # Format data
+                (data, headers) = self.translator.format_detection(src_text)
+                message = Session.create_post_message(
+                    self.translator.detect_url,
+                    data, headers
+                )
+
+                Session.get().send_and_read_async(message, 0, None, self.on_language_detect)
+
+                return
             # If the two languages are the same, nothing is done
             if src_language != dest_language:
-                dest_text = ''
-                # THIS IS WHERE THE TRANSLATION HAPPENS. The try is necessary to circumvent a bug of the used API
                 if src_text != '':
-                    try:
-                        translation = self.translator.translate(
-                            src_text,
-                            src=src_language,
-                            dest=dest_language
-                        )
-                        dest_text = translation.text
-                        self.trans_mistakes = translation.extra_data['possible-mistakes']
-                        self.trans_src_pron = translation.extra_data['src-pronunciation']
-                        self.trans_dest_pron = translation.extra_data['dest-pronunciation']
-                        self.trans_failed = False
-                    except Exception as exc:
-                        logging.error(exc)
-                        self.trans_mistakes = None
-                        self.trans_pronunciation = None
-                        self.trans_failed = True
+                    self.ongoing_trans = True
 
-                    # Finally, everything is saved in history
-                    self.add_history_entry(
-                        src_language,
-                        dest_language,
-                        src_text,
-                        dest_text
+                    # Format data
+                    (data, headers) = self.translator.format_translation(src_text, src_language, dest_language)
+                    message = Session.create_post_message(
+                        self.translator.translate_url,
+                        data, headers
+                    )
+
+                    Session.get().send_and_read_async(
+                        message,
+                        0,
+                        None,
+                        self.on_translation_response,
+                        (src_text, src_language, dest_language)
                     )
                 else:
                     self.trans_failed = False
                     self.trans_mistakes = None
                     self.trans_src_pron = None
                     self.trans_dest_pron = None
-                GLib.idle_add(self.dest_buffer.set_text, dest_text)
-                GLib.idle_add(on_mistakes)
-                GLib.idle_add(on_pronunciation)
+                    self.dest_buffer.set_text('')
 
-        if self.trans_failed:
-            GLib.idle_add(on_trans_failed)
+                    if not self.ongoing_trans:
+                        self.translation_done()
+
+    def on_language_detect(self, session, result):
+        error = ''
+        try:
+            data = Session.get_response(session, result)
+            lang = self.translator.get_detect(data).lang
+            if lang in self.translator.languages:
+                self.src_lang_selector.set_selected(lang, notify=False)
+                if lang not in self.src_langs:
+                    self.src_langs[0] = lang
+                if self.next_trans:
+                    self.next_trans['src'] = lang
+
+            self.trans_failed = False
+            self.ongoing_trans = False
+            self.translation()
+        except ResponseError as exc:
+            logging.error(exc)
+            error = 'network'
+            self.trans_failed = True
+        except InvalidApiKey as exc:
+            logging.error(exc)
+            error = 'invalid-api'
+            self.trans_failed = True
+        except ApiKeyRequired as exc:
+            logging.error(exc)
+            error = 'api-required'
+            self.trans_failed = True
+        except Exception as exc:
+            logging.error(exc)
+            self.trans_failed = True
+        finally:
+            self.ongoing_trans = False
+            self.translation_done()
+
+        self.translation_failed(self.trans_failed, error)
+
+    def on_translation_response(self, session, result, original):
+        error = ''
+        dest_text = ''
+
+        self.trans_mistakes = None
+        self.trans_src_pron = None
+        self.trans_dest_pron = None
+        try:
+            data = Session.get_response(session, result)
+            translation = self.translator.get_translation(data)
+
+            dest_text = translation.text
+            self.trans_mistakes = translation.extra_data['possible-mistakes']
+            self.trans_src_pron = translation.extra_data['src-pronunciation']
+            self.trans_dest_pron = translation.extra_data['dest-pronunciation']
+            self.trans_failed = False
+
+            self.dest_buffer.set_text(dest_text)
+
+            # Finally, everything is saved in history
+            self.add_history_entry(
+                original[0],
+                original[1],
+                original[2],
+                dest_text
+            )
+        except ResponseError as exc:
+            logging.error(exc)
+            error = 'network'
+            self.trans_failed = True
+        except InvalidApiKey as exc:
+            logging.error(exc)
+            error = 'invalid-api'
+            self.trans_failed = True
+        except ApiKeyRequired as exc:
+            logging.error(exc)
+            error = 'api-required'
+            self.trans_failed = True
+        except Exception as exc:
+            logging.error(exc)
+            self.trans_failed = True
+
+        # Mistakes
+        if self.trans_mistakes is not None and self.translator.supported_features['mistakes']:
+            mistake_text = self.trans_mistakes[0].replace('<em>', '<b>').replace('</em>', '</b>')
+            self.mistakes_label.set_markup(_('Did you mean: ') + f'<a href="#">{mistake_text}</a>')
+            self.mistakes.set_reveal_child(True)
+        elif self.mistakes.get_reveal_child():
+            self.mistakes.set_reveal_child(False)
+
+        # Pronunciation
+        reveal = Settings.get().show_pronunciation
+        if self.translator.supported_features['pronunciation']:
+            if self.trans_src_pron is not None:
+                self.src_pron_label.set_text(self.trans_src_pron)
+                self.src_pron_revealer.set_reveal_child(reveal)
+            elif self.src_pron_revealer.get_reveal_child():
+                self.src_pron_revealer.set_reveal_child(False)
+
+            if self.trans_dest_pron is not None:
+                self.dest_pron_label.set_text(self.trans_dest_pron)
+                self.dest_pron_revealer.set_reveal_child(reveal)
+            elif self.dest_pron_revealer.get_reveal_child():
+                self.dest_pron_revealer.set_reveal_child(False)
+
+        self.translation_failed(self.trans_failed, error)
+
+        self.ongoing_trans = False
+        if self.next_trans:
+            self.translation()
         else:
-            GLib.idle_add(on_trans_success)
-        GLib.idle_add(on_trans_done)
-        self.active_thread = None
+            self.translation_done()
+
+    def translation_loading(self):
+        self.trans_spinner.show()
+        self.trans_spinner.start()
+        self.dest_box.set_sensitive(False)
+        self.langs_button_box.set_sensitive(False)
+
+    def translation_done(self):
+        self.trans_spinner.stop()
+        self.trans_spinner.hide()
+        self.dest_box.set_sensitive(True)
+        self.langs_button_box.set_sensitive(True)
+
+    def translation_failed(self, failed, error=''):
+        if failed:
+            self.trans_warning.show()
+            self.lookup_action('copy').set_enabled(False)
+            self.lookup_action('listen-src').set_enabled(False)
+            self.lookup_action('listen-dest').set_enabled(False)
+
+            if error == 'network':
+                self.send_notification(
+                    _('Translation failed, check for network issues'),
+                    action={
+                        'label': _('Retry'),
+                        'name': 'win.translation',
+                    }
+                )
+            elif error == 'invalid-api':
+                self.send_notification(
+                    _('The provided API key is invalid'),
+                    action={
+                        'label': _('Preferences'),
+                        'name': 'app.preferences',
+                    }
+                )
+            elif error == 'api-required':
+                self.send_notification(
+                    _('API key is required to use the service'),
+                    action={
+                        'label': _('Preferences'),
+                        'name': 'app.preferences',
+                    }
+                )
+            else:
+                self.send_notification(
+                    _('Translation failed'),
+                    action={
+                        'label': _('Retry'),
+                        'name': 'win.translation',
+                    }
+                )
+        else:
+            self.trans_warning.hide()
+
+    def reload_backends(self):
+        self.set_property('backend-loading', True)
+
+        # Save previous backend settings
+        self.save_settings()
+
+        # Load translator
+        self.load_translator()
