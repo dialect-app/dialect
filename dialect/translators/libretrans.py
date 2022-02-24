@@ -20,6 +20,7 @@ class Translator(TranslatorBase):
     client = None
     history = []
     languages = []
+    chars_limit = 0
     supported_features = {
         'mistakes': False,
         'pronunciation': False,
@@ -60,6 +61,7 @@ class Translator(TranslatorBase):
                 self.supported_features['suggestions'] = data.get('suggestions', False)
                 self.supported_features['api-key-supported'] = data.get('apiKeys', False)
                 self.supported_features['api-key-required'] = data.get('keyRequired', False)
+                self.chars_limit = data.get('charLimit', 0)
                 self.settings_success = True
             except (TranslatorError, ResponseEmpty) as exc:
                 logging.warning(exc)
