@@ -10,7 +10,7 @@ from tempfile import NamedTemporaryFile
 
 from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk
 
-from dialect.define import APP_ID, PROFILE, MAX_LENGTH, RES_PATH, TRANS_NUMBER
+from dialect.define import APP_ID, PROFILE, RES_PATH, TRANS_NUMBER
 from dialect.lang_selector import DialectLangSelector
 from dialect.session import Session, ResponseEmpty, ResponseError
 from dialect.settings import Settings
@@ -238,6 +238,10 @@ class DialectWindow(Adw.ApplicationWindow):
                     notify=False
                 )
                 self.dest_lang_selector.set_selected(self.dest_langs[0], notify=False)
+                # Update chars limit
+                self.char_counter.set_text(
+                    f'{str(self.src_buffer.get_char_count())}/{self.translator.chars_limit}'
+                )
 
                 self.set_property('backend-loading', False)
 
@@ -990,13 +994,13 @@ class DialectWindow(Adw.ApplicationWindow):
     def user_action_ended(self, buffer):
         # If the text is over the highest number of characters allowed, it is truncated.
         # This is done for avoiding exceeding the limit imposed by translation services.
-        if buffer.get_char_count() >= MAX_LENGTH:
-            self.send_notification(_('{} characters limit reached!').format(MAX_LENGTH))
+        if buffer.get_char_count() >= self.translator.chars_limit:
+            self.send_notification(_('{} characters limit reached!').format(self.translator.chars_limit))
             buffer.delete(
-                buffer.get_iter_at_offset(MAX_LENGTH),
+                buffer.get_iter_at_offset(self.translator.chars_limit),
                 buffer.get_end_iter()
             )
-        self.char_counter.set_text(f'{str(buffer.get_char_count())}/{MAX_LENGTH}')
+        self.char_counter.set_text(f'{str(buffer.get_char_count())}/{self.translator.chars_limit}')
         if Settings.get().live_translation:
             self.translation()
 

@@ -23,6 +23,7 @@ class Translator(TranslatorBase):
         'te', 'th', 'tr', 'uk', 'ur', 'ug', 'uz', 'vi', 'cy', 'xh', 'yi', 'yo',
         'zu'
     ]
+    chars_limit = 5000
     supported_features = {
         'mistakes': True,
         'pronunciation': True,

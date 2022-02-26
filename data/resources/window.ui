@@ -387,7 +387,6 @@
                                       <object class="GtkLabel" id="char_counter">
                                         <property name="margin-start">4</property>
                                         <property name="margin-end">4</property>
-                                        <property name="label">0/5000</property>
                                         <property name="hexpand">True</property>
                                         <property name="halign">end</property>
                                         <attributes>
