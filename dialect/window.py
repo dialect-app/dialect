@@ -233,8 +233,9 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.src_lang_selector.set_languages(self.translator.languages)
                 self.dest_lang_selector.set_languages(self.translator.languages)
                 # Update selected langs
+                set_auto = Settings.get().src_auto and self.translator.supported_features['detection']
                 self.src_lang_selector.set_selected(
-                    'auto' if Settings.get().src_auto else self.src_langs[0],
+                    'auto' if set_auto else self.src_langs[0],
                     notify=False
                 )
                 self.dest_lang_selector.set_selected(self.dest_langs[0], notify=False)
@@ -652,12 +653,15 @@ class DialectWindow(Adw.ApplicationWindow):
             elif len(self.src_langs) == 4:
                 self.src_langs.pop()
             self.src_langs.insert(0, code)
-        else:
+        elif code == 'auto' and self.translator.supported_features['detection']:
             self.src_lang_label.set_label(_('Auto'))
+        else:
+            self.src_lang_label.set_label(get_lang_name(code))
 
         # Rewrite recent langs
         self.src_lang_selector.clear_recent()
-        self.src_lang_selector.insert_recent('auto', _('Auto'))
+        if self.translator.supported_features['detection']:
+            self.src_lang_selector.insert_recent('auto', _('Auto'))
         for code in self.src_langs:
             self.src_lang_selector.insert_recent(code, get_lang_name(code))
 
@@ -1063,18 +1067,6 @@ class DialectWindow(Adw.ApplicationWindow):
             # Show feedback for start of translation.
             self.translation_loading()
 
-            if src_language == 'auto' and src_text != '':
-                self.ongoing_trans = True
-                # Format data
-                (data, headers) = self.translator.format_detection(src_text)
-                message = Session.create_post_message(
-                    self.translator.detect_url,
-                    data, headers
-                )
-
-                Session.get().send_and_read_async(message, 0, None, self.on_language_detect)
-
-                return
             # If the two languages are the same, nothing is done
             if src_language != dest_language:
                 if src_text != '':
@@ -1149,7 +1141,15 @@ class DialectWindow(Adw.ApplicationWindow):
         self.trans_dest_pron = None
         try:
             data = Session.get_response(session, result)
-            translation = self.translator.get_translation(data)
+            (translation, lang) = self.translator.get_translation(data)
+
+            if lang and self.src_lang_selector.get_property('selected') == 'auto':
+                if Settings.get().live_translation:
+                    lang = get_lang_name(lang)
+                    label = _('Auto')
+                    self.src_lang_label.set_label(f'{label} ({lang})')
+                else:
+                    self.src_lang_selector.set_selected(lang, notify=False)
 
             dest_text = translation.text
             self.trans_mistakes = translation.extra_data['possible-mistakes']
