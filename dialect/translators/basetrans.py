@@ -9,6 +9,7 @@ class TranslatorBase:
     languages = ['en']
     chars_limit = 0
     supported_features = {
+        'detection': False,
         'mistakes': False,
         'pronunciation': False,
         'change-instance': False,
@@ -35,12 +36,6 @@ class TranslatorBase:
     @staticmethod
     def validate_instance(data):
         pass
-
-    def format_detection(self, text):
-        pass
-
-    def get_detect(self, data):
-        return None
 
     def format_suggestion(self, text, src, dest, suggestion):
         pass
@@ -141,12 +136,3 @@ class Translation:
     def __init__(self, text, extra_data):
         self.text = text
         self.extra_data = extra_data
-
-
-class Detected:
-    lang = ''
-    confidence = 0.0
-
-    def __init__(self, lang, confidence):
-        self.lang = lang
-        self.confidence = confidence

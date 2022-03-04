@@ -7,7 +7,7 @@ import logging
 from gi.repository import Soup
 
 from dialect.translators.basetrans import (
-    ApiKeyRequired, BatchSizeExceeded, CharactersLimitExceeded, Detected,
+    ApiKeyRequired, BatchSizeExceeded, CharactersLimitExceeded,
     InvalidLangCode, InvalidApiKey, TranslatorBase, Translation,
     TranslationError, TranslatorError
 )
@@ -22,6 +22,7 @@ class Translator(TranslatorBase):
     languages = []
     chars_limit = 0
     supported_features = {
+        'detection': True,
         'mistakes': False,
         'pronunciation': False,
         'change-instance': True,
@@ -131,19 +132,6 @@ class Translator(TranslatorBase):
 
         return (data, {})
 
-    def format_detection(self, text):
-        data = {
-            'q': text,
-        }
-        if self.api_key:
-            data['api_key'] = self.api_key
-
-        return (data, {})
-
-    def get_detect(self, data):
-        self._check_errors(data)
-        return Detected(data[0]['language'], data[0]['confidence'])
-
     def format_suggestion(self, text, src, dest, suggestion):
         data = {
             'q': text,
@@ -173,7 +161,7 @@ class Translator(TranslatorBase):
 
     def get_translation(self, data):
         self._check_errors(data)
-        return Translation(
+        translation = Translation(
             data['translatedText'],
             {
                 'possible-mistakes': None,
@@ -181,6 +169,8 @@ class Translator(TranslatorBase):
                 'dest-pronunciation': None,
             },
         )
+
+        return (translation, None)
 
     def _check_errors(self, data):
         """Raises a proper Exception if an error is found in the data."""
