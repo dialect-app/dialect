@@ -7,7 +7,7 @@ import logging
 from gi.repository import Soup
 
 from dialect.translators.basetrans import (
-    ApiKeyRequired, BatchSizeExceeded, CharactersLimitExceeded, Detected,
+    ApiKeyRequired, BatchSizeExceeded, CharactersLimitExceeded,
     InvalidLangCode, InvalidApiKey, TranslatorBase, Translation,
     TranslationError, TranslatorError
 )

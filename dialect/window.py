@@ -1096,42 +1096,6 @@ class DialectWindow(Adw.ApplicationWindow):
                     if not self.ongoing_trans:
                         self.translation_done()
 
-    def on_language_detect(self, session, result):
-        error = ''
-        try:
-            data = Session.get_response(session, result)
-            lang = self.translator.get_detect(data).lang
-            if lang in self.translator.languages:
-                self.src_lang_selector.set_selected(lang, notify=False)
-                if lang not in self.src_langs:
-                    self.src_langs[0] = lang
-                if self.next_trans:
-                    self.next_trans['src'] = lang
-
-            self.trans_failed = False
-            self.ongoing_trans = False
-            self.translation()
-        except ResponseError as exc:
-            logging.error(exc)
-            error = 'network'
-            self.trans_failed = True
-        except InvalidApiKey as exc:
-            logging.error(exc)
-            error = 'invalid-api'
-            self.trans_failed = True
-        except ApiKeyRequired as exc:
-            logging.error(exc)
-            error = 'api-required'
-            self.trans_failed = True
-        except Exception as exc:
-            logging.error(exc)
-            self.trans_failed = True
-        finally:
-            self.ongoing_trans = False
-            self.translation_done()
-
-        self.translation_failed(self.trans_failed, error)
-
     def on_translation_response(self, session, result, original):
         error = ''
         dest_text = ''
