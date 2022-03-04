@@ -331,7 +331,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
                 TRANSLATORS[backend].api_test_path
             )
             (data, headers) = TRANSLATORS[backend].format_api_key_test(self.new_api_key)
-            message = Session.create_post_message(validation_url, data, headers)
+            message = Session.create_message('POST', validation_url, data, headers)
 
             Session.get().send_and_read_async(message, 0, None, on_response)
         else:

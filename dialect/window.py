@@ -311,7 +311,7 @@ class DialectWindow(Adw.ApplicationWindow):
                     self.translator.api_test_path
                 )
                 (data, headers) = self.translator.format_api_key_test(Settings.get().api_key)
-                message = Session.create_post_message(validation_url, data, headers)
+                message = Session.create_message('POST', validation_url, data, headers)
                 Session.get().send_and_read_async(message, 0, None, on_response)
             elif not Settings.get().api_key and self.translator.supported_features['api-key-required']:
                 self.key_page.set_title(_('API key is required to use the service'))
@@ -832,7 +832,8 @@ class DialectWindow(Adw.ApplicationWindow):
             self.translator.history[self.current_history]['Languages'][1],
             dest_text
         )
-        message = Session.create_post_message(
+        message = Session.create_message(
+            'POST',
             self.translator.suggest_url,
             data, headers
         )
@@ -1073,11 +1074,14 @@ class DialectWindow(Adw.ApplicationWindow):
                     self.ongoing_trans = True
 
                     # Format data
-                    (data, headers) = self.translator.format_translation(src_text, src_language, dest_language)
-                    message = Session.create_post_message(
-                        self.translator.translate_url,
-                        data, headers
+                    url = self.translator.translate_url.format(
+                        text=src_text, src=src_language, dest=dest_language
                     )
+                    (method, data, headers) = self.translator.format_translation(
+                        src_text, src_language, dest_language
+                    )
+
+                    message = Session.create_message(method, url, data, headers)
 
                     Session.get().send_and_read_async(
                         message,
