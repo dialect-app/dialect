@@ -17,7 +17,6 @@ from dialect.session import Session, ResponseEmpty
 class Translator(TranslatorBase):
     name = 'libretranslate'
     prettyname = 'LibreTranslate'
-    client = None
     history = []
     languages = []
     chars_limit = 0
@@ -142,7 +141,7 @@ class Translator(TranslatorBase):
         if self.api_key:
             data['api_key'] = self.api_key
 
-        return (data, {})
+        return ('POST', data, {})
 
     def get_suggestion(self, data):
         self._check_errors(data)
