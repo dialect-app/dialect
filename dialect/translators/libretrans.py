@@ -141,7 +141,7 @@ class Translator(TranslatorBase):
         if self.api_key:
             data['api_key'] = self.api_key
 
-        return ('POST', data, {})
+        return (data, {})
 
     def get_suggestion(self, data):
         self._check_errors(data)
@@ -156,7 +156,7 @@ class Translator(TranslatorBase):
         if self.api_key:
             data['api_key'] = self.api_key
 
-        return (data, {})
+        return ('POST', data, {})
 
     def get_translation(self, data):
         self._check_errors(data)
