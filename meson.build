@@ -1,6 +1,6 @@
 project('dialect',
           version: '2.0.0',
-    meson_version: '>= 0.50.0',
+    meson_version: '>= 0.59.0',
   default_options: [ 'warning_level=2',
                    ],
 )
@@ -28,7 +28,7 @@ else
 endif
 
 conf = configuration_data()
-conf.set('PYTHON', python.find_installation('python3').path())
+conf.set('PYTHON', python.find_installation('python3').full_path())
 conf.set('PROFILE', profile)
 conf.set('VERSION', meson.project_version() + version_suffix)
 conf.set('APP_ID', application_id)
@@ -46,14 +46,20 @@ else
     message('Found python3 binary')
 endif
 
-dependency('gobject-introspection-1.0', version: '>= 1.35.0')
-dependency('gtk+-3.0', version: '>= 3.22')
 dependency('glib-2.0')
-dependency('pygobject-3.0', version: '>= 3.29.1')
+dependency('gobject-introspection-1.0', version: '>= 1.35.0')
+dependency('gstreamer-1.0', version: '>= 1.18')
+dependency('gtk4', version: '>= 4.6')
+dependency('libadwaita-1', version: '>= 1.0')
+dependency('libsoup-3.0')
+dependency('pygobject-3.0', version: '>= 3.40')
 
 subdir('data')
 subdir('dialect')
 subdir('po')
 
-meson.add_install_script('build-aux/meson/postinstall.py')
-
+gnome.post_install(
+  gtk_update_icon_cache: true,
+  glib_compile_schemas: true,
+  update_desktop_database: true,
+)
