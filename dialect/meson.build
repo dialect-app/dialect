@@ -18,7 +18,7 @@ configure_file(
   install_dir: moduledir
 )
 
-launcher = join_paths(meson.build_root(), 'dialect', meson.project_name())
+launcher = join_paths(meson.project_build_root(), 'dialect', meson.project_name())
 run_target('run',
   command: [launcher]
 )

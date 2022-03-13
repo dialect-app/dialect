@@ -1,6 +1,6 @@
 project('dialect',
           version: '2.0.0',
-    meson_version: '>= 0.50.0',
+    meson_version: '>= 0.59.0',
   default_options: [ 'warning_level=2',
                    ],
 )
@@ -28,7 +28,7 @@ else
 endif
 
 conf = configuration_data()
-conf.set('PYTHON', python.find_installation('python3').path())
+conf.set('PYTHON', python.find_installation('python3').full_path())
 conf.set('PROFILE', profile)
 conf.set('VERSION', meson.project_version() + version_suffix)
 conf.set('APP_ID', application_id)
