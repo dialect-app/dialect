@@ -62,11 +62,11 @@ class Translator(TranslatorBase):
 
     @property
     def lang_url(self):
-        return self.format_instance_url(self.instance_url, '/api/v1/languages/')
+        return self.format_url(self.instance_url, '/api/v1/languages/')
 
     @property
     def translate_url(self):
-        return self.format_instance_url(self.instance_url, '/api/v1/{src}/{dest}/{text}')
+        return self.format_url(self.instance_url, '/api/v1/{src}/{dest}/{text}')
 
     @staticmethod
     def validate_instance(data):
@@ -78,7 +78,7 @@ class Translator(TranslatorBase):
         return valid
 
     def format_translation(self, _text, _src, _dest):
-        return ('GET', {}, {})
+        return ('GET', {}, {}, False)
 
     def get_translation(self, data):
         self._check_errors(data)

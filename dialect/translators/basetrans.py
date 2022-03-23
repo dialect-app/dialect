@@ -1,5 +1,5 @@
-# Copyright 2021 Mufeed Ali
-# Copyright 2021 Rafael Mardojai CM
+# Copyright 2021-2022 Mufeed Ali
+# Copyright 2021-2022 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 class TranslatorBase:
@@ -26,7 +26,7 @@ class TranslatorBase:
     api_test_path = ''
 
     @staticmethod
-    def format_instance_url(url, path, http=False):
+    def format_url(url, path, http=False):
         protocol = 'https://'
         if url.startswith('localhost:') or http:
             protocol = 'http://'

@@ -1,5 +1,5 @@
-# Copyright 2021 Mufeed Ali
-# Copyright 2021 Rafael Mardojai CM
+# Copyright 2021-2022 Mufeed Ali
+# Copyright 2021-2022 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 class TextToSpeechBase:
