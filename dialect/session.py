@@ -23,7 +23,6 @@ class Session(Soup.Session):
         """Create a new instance of Session."""
         s_session = Soup.Session()
         s_session.__class__ = Session
-        s_session.set_user_agent('Dialect App')
         return s_session
 
     @staticmethod
@@ -82,7 +81,6 @@ class Session(Soup.Session):
             data = Session.encode_data(data)
             message.set_request_body_from_bytes('application/json', data)
         if headers:
-            message.get_request_headers().clear()
             for name, value in headers.items():
                 message.get_request_headers().append(name, value)
         return message
