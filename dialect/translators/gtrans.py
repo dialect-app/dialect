@@ -8,11 +8,7 @@ import random
 import re
 from typing import List
 
-from dialect.translators.basetrans import (
-    ApiKeyRequired, BatchSizeExceeded, CharactersLimitExceeded,
-    InvalidLangCode, InvalidApiKey, TranslatorBase, Translation,
-    TranslationError, TranslatorError
-)
+from dialect.translators.basetrans import TranslatorBase, Translation, TranslationError, TranslatorError
 
 RPC_ID = 'MkEWBc'
 
@@ -103,7 +99,7 @@ class Translator(TranslatorBase):
         'te', 'th', 'tr', 'uk', 'ur', 'ug', 'uz', 'vi', 'cy', 'xh', 'yi', 'yo',
         'zu'
     ]
-    chars_limit = 5000
+    chars_limit = 2332  # Yes, it's oddly specific. But tested and confirmed.
     supported_features = {
         'detection': True,
         'mistakes': True,
@@ -124,7 +120,7 @@ class Translator(TranslatorBase):
         pass
 
     @staticmethod
-    def _build_rpc_request(text: str, dest: str, src: str):
+    def _build_rpc_request(text: str, src: str, dest: str):
         return json.dumps([[
             [
                 RPC_ID,
@@ -158,7 +154,7 @@ class Translator(TranslatorBase):
 
     def format_translation(self, text, src, dest):
         data = {
-            'f.req': self._build_rpc_request(text, dest, src),
+            'f.req': self._build_rpc_request(text, src, dest),
         }
         return ('POST', data, self._headers, True)
 
@@ -209,30 +205,30 @@ class Translator(TranslatorBase):
         src = None
         try:
             src = parsed[2]
-        except TypeError:
+        except (IndexError, TypeError):
             pass
         if src == 'auto':
             try:
                 src = parsed[0][2]
-            except TypeError:
+            except (IndexError, TypeError):
                 pass
 
         origin_pronunciation = None
         try:
             origin_pronunciation = parsed[0][0]
-        except TypeError:
+        except (IndexError, TypeError):
             pass
 
         pronunciation = None
         try:
             pronunciation = parsed[1][0][0][1]
-        except TypeError:
+        except (IndexError, TypeError):
             pass
 
         mistake = None
         try:
             mistake = parsed[0][1][0][0][1]
-        except TypeError:
+        except (IndexError, TypeError):
             pass
 
         result = Translation(
