@@ -95,7 +95,7 @@ class DialectWindow(Adw.ApplicationWindow):
     next_trans = {}  # for ongoing translation
     ongoing_trans = False  # for ongoing translation
     trans_failed = False  # for monitoring connectivity issues
-    trans_mistakes = None  # "mistakes" suggestions
+    trans_mistakes = [None, None]  # "mistakes" suggestions
     # Pronunciations
     trans_src_pron = None
     trans_dest_pron = None
@@ -1152,7 +1152,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.trans_failed = True
 
         # Mistakes
-        if self.trans_mistakes is not None and self.translator.supported_features['mistakes']:
+        if not self.trans_mistakes == [None, None] and self.translator.supported_features['mistakes']:
             mistake_text = self.trans_mistakes[0].replace('<em>', '<b>').replace('</em>', '</b>')
             self.mistakes_label.set_markup(_('Did you mean: ') + f'<a href="#">{mistake_text}</a>')
             self.mistakes.set_reveal_child(True)

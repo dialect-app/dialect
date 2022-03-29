@@ -237,14 +237,14 @@ class Translator(TranslatorBase):
         result = Translation(
             translated,
             {
-                'possibly-mistakes': [mistake, self._strip_html_tags(mistake)],
+                'possible-mistakes': [mistake, self._strip_html_tags(mistake)],
                 'src-pronunciation': origin_pronunciation,
                 'dest-pronunciation': pronunciation,
             }
         )
         return (result, src)
 
-    def strip_html_tags(text):
+    def _strip_html_tags(self, text):
         """Strip html tags"""
         if text is None:
             return None
