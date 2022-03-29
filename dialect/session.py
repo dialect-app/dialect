@@ -83,6 +83,8 @@ class Session(Soup.Session):
         if headers:
             for name, value in headers.items():
                 message.get_request_headers().append(name, value)
+        if 'User-Agent' not in headers:
+            message.get_request_headers().append('User-Agent', 'Dialect App')
         return message
 
     def multiple(self, messages, callback=None):

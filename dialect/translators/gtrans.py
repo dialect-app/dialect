@@ -165,8 +165,9 @@ class Translator(TranslatorBase):
     def get_translation(self, data):
         token_found = False
         square_bracket_counts = [0, 0]
-        data = data.decode('utf-8')
         resp = ''
+        data = data.decode('utf-8')
+
         for line in data.split('\n'):
             token_found = token_found or f'"{RPC_ID}"' in line[:30]
             if not token_found:
