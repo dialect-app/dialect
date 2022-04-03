@@ -99,7 +99,7 @@ class Translator(TranslatorBase):
         'te', 'th', 'tr', 'uk', 'ur', 'ug', 'uz', 'vi', 'cy', 'xh', 'yi', 'yo',
         'zu'
     ]
-    chars_limit = 2332  # Yes, it's oddly specific. But tested and confirmed.
+    chars_limit = 2000
     supported_features = {
         'detection': True,
         'mistakes': True,
