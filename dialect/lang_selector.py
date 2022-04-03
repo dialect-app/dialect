@@ -4,7 +4,7 @@
 
 import re
 
-from gi.repository import Gio, GObject, Gtk
+from gi.repository import Gio, Gdk, GObject, Gtk
 
 from dialect.define import RES_PATH
 from dialect.translators import get_lang_name
@@ -31,32 +31,31 @@ class DialectLangSelector(Gtk.Popover):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        # Connect popover closed signal
+        # Connect popover open/close signal
+        self.connect('show', self._show)
         self.connect('closed', self._closed)
-        # Connect list signals
-        self.recent_list.connect('activate', self._activated)
-        self.lang_list.connect('activate', self._activated)
-        # Connect search entry changed signal
-        self.search.connect('changed', self._update_search)
 
-        self.factory = Gtk.BuilderListItemFactory.new_from_resource(
-            None, f'{RES_PATH}/lang-row.ui'
-        )
+        # Connect list signals
+        self.recent_list.connect('row-activated', self._activated)
+        self.lang_list.connect('row-activated', self._activated)
+
+        # Setup search entry
+        self.search.set_key_capture_widget(self)
+        key_events = Gtk.EventControllerKey.new()
+        key_events.connect('key-pressed', self._on_key_pressed)
+        self.search.add_controller(key_events)
+        # Connect search entry signals
+        self.search.connect('changed', self._on_search)
+        self.search.connect('activate', self._on_search_activate)
 
         self.recent_model = Gio.ListStore.new(LangObject)
-        selection_model = Gtk.SingleSelection.new(self.recent_model)
-        selection_model.set_autoselect(False)
-        self.recent_list.set_model(selection_model)
-        self.recent_list.set_factory(self.factory)
+        self.recent_list.bind_model(self.recent_model, self._create_lang_row)
 
         self.lang_model = Gio.ListStore.new(LangObject)
         self.filter = Gtk.CustomFilter()
         self.filter.set_filter_func(self._filter_func)
         fitler_model = Gtk.FilterListModel.new(self.lang_model, self.filter)
-        selection_model = Gtk.SingleSelection.new(fitler_model)
-        selection_model.set_autoselect(False)
-        self.lang_list.set_model(selection_model)
-        self.lang_list.set_factory(self.factory)
+        self.lang_list.bind_model(fitler_model, self._create_lang_row)
 
     def get_selected(self):
         return self.get_property('selected')
@@ -85,13 +84,14 @@ class DialectLangSelector(Gtk.Popover):
         for item in self.lang_model:
             item.set_property('selected', (item.code == self.selected))
 
-    def _activated(self, list_view, index):
+    def _activated(self, _list, row):
         # Close popover
         self.popdown()
-        model = list_view.get_model()
-        lang = model.get_selected_item()
         # Set selected property
-        self.set_selected(lang.code)
+        self.set_selected(row.lang.code)
+
+    def _show(self, _popover):
+        self.search.grab_focus()
 
     def _closed(self, _popover):
         # Reset scroll
@@ -100,11 +100,14 @@ class DialectLangSelector(Gtk.Popover):
         # Clear search
         self.search.set_text('')
 
+    def _create_lang_row(self, lang):
+        return DialectLangRow(lang)
+
     def _filter_func(self, item):
         search = self.search.get_text()
         return bool(re.search(search, item.name, re.IGNORECASE))
 
-    def _update_search(self, _entry):
+    def _on_search(self, _entry):
         search = self.search.get_text()
         if search != '':
             self.revealer.set_reveal_child(False)
@@ -112,6 +115,21 @@ class DialectLangSelector(Gtk.Popover):
             self.revealer.set_reveal_child(True)
 
         self.filter.emit('changed', Gtk.FilterChange.DIFFERENT)
+
+    def _on_search_activate(self, _entry):
+        if self.search.get_text():
+            row = self.lang_list.get_row_at_index(0)
+            if row:
+                self.lang_list.emit('row-activated', row)
+        return Gdk.EVENT_PROPAGATE
+
+    def _on_key_pressed(self, _controller, keyval, _keycode, _mod):
+        # Close popover if ESQ key is pressed in search entry
+        if keyval == Gdk.KEY_Escape:
+            self.popdown()
+        # Prevent search entry unfocusing when down key is pressed
+        elif keyval == Gdk.KEY_Down:
+            return Gdk.EVENT_STOP
 
 
 class LangObject(GObject.Object):
@@ -127,3 +145,24 @@ class LangObject(GObject.Object):
         self.set_property('code', code)
         self.set_property('name', name)
         self.set_property('selected', selected)
+
+
+@Gtk.Template(resource_path=f'{RES_PATH}/lang-row.ui')
+class DialectLangRow(Gtk.ListBoxRow):
+    __gtype_name__ = 'DialectLangRow'
+
+    # Widgets
+    name = Gtk.Template.Child()
+    selection = Gtk.Template.Child()
+
+    def __init__(self, lang):
+        super().__init__()
+        self.lang = lang
+        self.name.set_label(self.lang.name)
+
+        self.lang.bind_property(
+            'selected',
+            self.selection,
+            'visible',
+            GObject.BindingFlags.SYNC_CREATE
+        )
