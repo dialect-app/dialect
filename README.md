@@ -39,8 +39,8 @@ sudo dnf install dialect
 
 - Python 3 `python`
 - PyGObject `python-gobject`
-- GTK3 `gtk3`
-- libhandy (>= 0.90.0) `libhandy`
+- GTK4 `gtk4`
+- libadwaita (>= 1.1.0) `libadwaita`
 - GStreamer 1.0 `gstreamer`
 - Meson `meson`
 - Ninja `ninja`

@@ -115,6 +115,8 @@ class Translator(TranslatorBase):
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
         'Referer': 'https://translate.google.com',
     }
+    _src_lang = None
+    _dest_lang = None
 
     def __init__(self, **kwargs):
         pass
@@ -156,90 +158,109 @@ class Translator(TranslatorBase):
         data = {
             'f.req': self._build_rpc_request(text, src, dest),
         }
+        self._src_lang = src
+        self._dest_lang = dest
         return ('POST', data, self._headers, True)
 
     def get_translation(self, data):
-        token_found = False
-        square_bracket_counts = [0, 0]
-        resp = ''
-        data = data.decode('utf-8')
-
-        for line in data.split('\n'):
-            token_found = token_found or f'"{RPC_ID}"' in line[:30]
-            if not token_found:
-                continue
-
-            is_in_string = False
-            for index, char in enumerate(line):
-                if char == '\"' and line[max(0, index - 1)] != '\\':
-                    is_in_string = not is_in_string
-                if not is_in_string:
-                    if char == '[':
-                        square_bracket_counts[0] += 1
-                    elif char == ']':
-                        square_bracket_counts[1] += 1
-
-            resp += line
-            if square_bracket_counts[0] == square_bracket_counts[1]:
-                break
-
-        data = json.loads(resp)
-        parsed = json.loads(data[0][2])
-        # not sure
-        should_spacing = parsed[1][0][0][3]
-        translated_parts = None
-        translated = None
         try:
-            translated_parts = list(
-                map(lambda part: TranslatedPart(part[0], part[1] if len(part) >= 2 else []), parsed[1][0][0][5])
-            )
-        except TypeError:
-            translated_parts = [
-                TranslatedPart(
-                    parsed[1][0][1][0],
-                    [parsed[1][0][0][0], parsed[1][0][1][0]]
-                )
-            ]
-        translated = (' ' if should_spacing else '').join(map(lambda part: part.text, translated_parts))
+            token_found = False
+            square_bracket_counts = [0, 0]
+            resp = ''
+            data = data.decode('utf-8')
 
-        src = None
-        try:
-            src = parsed[2]
-        except (IndexError, TypeError):
-            pass
-        if src == 'auto':
+            for line in data.split('\n'):
+                token_found = token_found or f'"{RPC_ID}"' in line[:30]
+                if not token_found:
+                    continue
+
+                is_in_string = False
+                for index, char in enumerate(line):
+                    if char == '\"' and line[max(0, index - 1)] != '\\':
+                        is_in_string = not is_in_string
+                    if not is_in_string:
+                        if char == '[':
+                            square_bracket_counts[0] += 1
+                        elif char == ']':
+                            square_bracket_counts[1] += 1
+
+                resp += line
+                if square_bracket_counts[0] == square_bracket_counts[1]:
+                    break
+
+            data = json.loads(resp)
+            parsed = json.loads(data[0][2])
+            should_spacing = parsed[1][0][0][3]
+            translated_parts = None
+            translated = None
             try:
-                src = parsed[0][2]
+                translated_parts = list(
+                    map(lambda part: TranslatedPart(part[0], part[1] if len(part) >= 2 else []), parsed[1][0][0][5])
+                )
+            except TypeError:
+                translated_parts = [
+                    TranslatedPart(
+                        parsed[1][0][1][0],
+                        [parsed[1][0][0][0], parsed[1][0][1][0]]
+                    )
+                ]
+            translated = (' ' if should_spacing else '').join(map(lambda part: part.text, translated_parts))
+
+            src = None
+            try:
+                src = parsed[1][-1][1]
             except (IndexError, TypeError):
                 pass
 
-        origin_pronunciation = None
-        try:
-            origin_pronunciation = parsed[0][0]
-        except (IndexError, TypeError):
-            pass
+            if not src == self._src_lang:
+                raise TranslationError('source language mismatch')
 
-        pronunciation = None
-        try:
-            pronunciation = parsed[1][0][0][1]
-        except (IndexError, TypeError):
-            pass
+            if src == 'auto':
+                try:
+                    src = parsed[0][2]
+                except (IndexError, TypeError):
+                    pass
 
-        mistake = None
-        try:
-            mistake = parsed[0][1][0][0][1]
-        except (IndexError, TypeError):
-            pass
+            dest = None
+            try:
+                dest = parsed[1][-1][2]
+            except (IndexError, TypeError):
+                pass
 
-        result = Translation(
-            translated,
-            {
-                'possible-mistakes': [mistake, self._strip_html_tags(mistake)],
-                'src-pronunciation': origin_pronunciation,
-                'dest-pronunciation': pronunciation,
-            }
-        )
-        return (result, src)
+            if not dest == self._dest_lang:
+                raise TranslationError('destination language mismatch')
+
+            origin_pronunciation = None
+            try:
+                origin_pronunciation = parsed[0][0]
+            except (IndexError, TypeError):
+                pass
+
+            pronunciation = None
+            try:
+                pronunciation = parsed[1][0][0][1]
+            except (IndexError, TypeError):
+                pass
+
+            mistake = None
+            try:
+                mistake = parsed[0][1][0][0][1]
+            except (IndexError, TypeError):
+                pass
+
+            result = Translation(
+                translated,
+                {
+                    'possible-mistakes': [mistake, self._strip_html_tags(mistake)],
+                    'src-pronunciation': origin_pronunciation,
+                    'dest-pronunciation': pronunciation,
+                }
+            )
+            return (result, src)
+        except TranslationError as e:
+            raise e
+        except Exception as e:
+            raise TranslatorError(str(e))
 
     def _strip_html_tags(self, text):
         """Strip html tags"""

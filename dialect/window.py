@@ -1093,7 +1093,7 @@ class DialectWindow(Adw.ApplicationWindow):
                     )
                 else:
                     self.trans_failed = False
-                    self.trans_mistakes = None
+                    self.trans_mistakes = [None, None]
                     self.trans_src_pron = None
                     self.trans_dest_pron = None
                     self.dest_buffer.set_text('')
@@ -1152,7 +1152,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.trans_failed = True
 
         # Mistakes
-        if not self.trans_mistakes == [None, None] and self.translator.supported_features['mistakes']:
+        if self.translator.supported_features['mistakes'] and not self.trans_mistakes == [None, None]:
             mistake_text = self.trans_mistakes[0].replace('<em>', '<b>').replace('</em>', '</b>')
             self.mistakes_label.set_markup(_('Did you mean: ') + f'<a href="#">{mistake_text}</a>')
             self.mistakes.set_reveal_child(True)
