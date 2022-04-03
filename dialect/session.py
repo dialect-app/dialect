@@ -1,5 +1,5 @@
-# Copyright 2021 Mufeed Ali
-# Copyright 2021 Rafael Mardojai CM
+# Copyright 2021-2022 Mufeed Ali
+# Copyright 2021-2022 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import json
@@ -23,7 +23,6 @@ class Session(Soup.Session):
         """Create a new instance of Session."""
         s_session = Soup.Session()
         s_session.__class__ = Session
-        s_session.set_user_agent('Dialect App')
         return s_session
 
     @staticmethod
@@ -34,9 +33,13 @@ class Session(Soup.Session):
         return Session.instance
 
     @staticmethod
-    def get_response(session, result, fail_if_empty=True):
+    def get_response(session, result, fail_if_empty=True, raw=False):
         try:
             response = session.send_and_read_finish(result)
+
+            if raw:
+                return response.get_data()
+
             data = Session.read_response(response)
 
             if not data and fail_if_empty:
@@ -68,13 +71,20 @@ class Session(Soup.Session):
         return data_glib_bytes
 
     @staticmethod
-    def create_message(method, url, data={}, headers={}):
-        message = Soup.Message.new(method, url)
-        if data:
+    def create_message(method, url, data={}, headers={}, form=False):
+        if form and data:
+            form_data = Soup.form_encode_hash(data)
+            message = Soup.Message.new_from_encoded_form(method, url, form_data)
+        else:
+            message = Soup.Message.new(method, url)
+        if data and not form:
             data = Session.encode_data(data)
             message.set_request_body_from_bytes('application/json', data)
-        for name, value in headers.items():
-            message.request_headers.append(name, value)
+        if headers:
+            for name, value in headers.items():
+                message.get_request_headers().append(name, value)
+        if 'User-Agent' not in headers:
+            message.get_request_headers().append('User-Agent', 'Dialect App')
         return message
 
     def multiple(self, messages, callback=None):

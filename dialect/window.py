@@ -1,6 +1,6 @@
 # Copyright 2020 gi-lom
-# Copyright 2020-2021 Mufeed Ali
-# Copyright 2020-2021 Rafael Mardojai CM
+# Copyright 2020-2022 Mufeed Ali
+# Copyright 2020-2022 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
@@ -95,7 +95,7 @@ class DialectWindow(Adw.ApplicationWindow):
     next_trans = {}  # for ongoing translation
     ongoing_trans = False  # for ongoing translation
     trans_failed = False  # for monitoring connectivity issues
-    trans_mistakes = None  # "mistakes" suggestions
+    trans_mistakes = [None, None]  # "mistakes" suggestions
     # Pronunciations
     trans_src_pron = None
     trans_dest_pron = None
@@ -254,22 +254,23 @@ class DialectWindow(Adw.ApplicationWindow):
 
         backend = Settings.get().active_translator
 
+        # Get saved languages
+        self.src_langs = Settings.get().src_langs
+        self.dest_langs = Settings.get().dest_langs
+
         # Show loading view
         self.main_stack.set_visible_child_name('loading')
 
         # Translator object
         if TRANSLATORS[backend].supported_features['change-instance']:
             self.translator = TRANSLATORS[backend](
-                on_loaded,
+                callback=on_loaded,
                 base_url=Settings.get().instance_url,
                 api_key=Settings.get().api_key,
             )
         else:
-            self.translator = TRANSLATORS[backend](on_loaded)
-
-        # Get saved languages
-        self.src_langs = Settings.get().src_langs
-        self.dest_langs = Settings.get().dest_langs
+            self.translator = TRANSLATORS[backend]()
+            on_loaded(True)  # Assume successful loading.
 
         if launch:
             if self.launch_langs['src'] is not None:
@@ -306,7 +307,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         if self.translator.supported_features['api-key-supported']:
             if Settings.get().api_key:
-                validation_url = self.translator.format_instance_url(
+                validation_url = self.translator.format_url(
                     Settings.get().instance_url,
                     self.translator.api_test_path
                 )
@@ -1077,22 +1078,22 @@ class DialectWindow(Adw.ApplicationWindow):
                     url = self.translator.translate_url.format(
                         text=src_text, src=src_language, dest=dest_language
                     )
-                    (method, data, headers) = self.translator.format_translation(
+                    (method, data, headers, raw) = self.translator.format_translation(
                         src_text, src_language, dest_language
                     )
 
-                    message = Session.create_message(method, url, data, headers)
+                    message = Session.create_message(method, url, data, headers, raw)
 
                     Session.get().send_and_read_async(
                         message,
                         0,
                         None,
                         self.on_translation_response,
-                        (src_text, src_language, dest_language)
+                        (src_text, src_language, dest_language, raw)
                     )
                 else:
                     self.trans_failed = False
-                    self.trans_mistakes = None
+                    self.trans_mistakes = [None, None]
                     self.trans_src_pron = None
                     self.trans_dest_pron = None
                     self.dest_buffer.set_text('')
@@ -1108,7 +1109,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.trans_src_pron = None
         self.trans_dest_pron = None
         try:
-            data = Session.get_response(session, result)
+            data = Session.get_response(session, result, raw=original[3])
             (translation, lang) = self.translator.get_translation(data)
 
             if lang and self.src_lang_selector.get_property('selected') == 'auto':
@@ -1151,7 +1152,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.trans_failed = True
 
         # Mistakes
-        if self.trans_mistakes is not None and self.translator.supported_features['mistakes']:
+        if self.translator.supported_features['mistakes'] and not self.trans_mistakes == [None, None]:
             mistake_text = self.trans_mistakes[0].replace('<em>', '<b>').replace('</em>', '</b>')
             self.mistakes_label.set_markup(_('Did you mean: ') + f'<a href="#">{mistake_text}</a>')
             self.mistakes.set_reveal_child(True)

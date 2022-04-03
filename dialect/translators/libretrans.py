@@ -1,5 +1,5 @@
-# Copyright 2021 Mufeed Ali
-# Copyright 2021 Rafael Mardojai CM
+# Copyright 2021-2022 Mufeed Ali
+# Copyright 2021-2022 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
@@ -93,23 +93,23 @@ class Translator(TranslatorBase):
 
     @property
     def _frontend_settings_url(self):
-        return self.format_instance_url(self.instance_url, '/frontend/settings')
+        return self.format_url(self.instance_url, '/frontend/settings')
 
     @property
     def detect_url(self):
-        return self.format_instance_url(self.instance_url, '/detect')
+        return self.format_url(self.instance_url, '/detect')
 
     @property
     def lang_url(self):
-        return self.format_instance_url(self.instance_url, '/languages')
+        return self.format_url(self.instance_url, '/languages')
 
     @property
     def suggest_url(self):
-        return self.format_instance_url(self.instance_url, '/suggest')
+        return self.format_url(self.instance_url, '/suggest')
 
     @property
     def translate_url(self):
-        return self.format_instance_url(self.instance_url, '/translate')
+        return self.format_url(self.instance_url, '/translate')
 
     @staticmethod
     def validate_instance(data):
@@ -156,7 +156,7 @@ class Translator(TranslatorBase):
         if self.api_key:
             data['api_key'] = self.api_key
 
-        return ('POST', data, {})
+        return ('POST', data, {}, False)
 
     def get_translation(self, data):
         self._check_errors(data)

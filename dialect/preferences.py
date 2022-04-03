@@ -1,5 +1,5 @@
-# Copyright 2020-2021 Mufeed Ali
-# Copyright 2020-2021 Rafael Mardojai CM
+# Copyright 2020-2022 Mufeed Ali
+# Copyright 2020-2022 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
@@ -8,7 +8,7 @@ import re
 import threading
 from gettext import gettext as _
 
-from gi.repository import Adw, Gio, GLib, GObject, Gtk, Soup
+from gi.repository import Adw, Gio, GObject, Gtk, Soup
 
 from dialect.define import RES_PATH
 from dialect.session import Session
@@ -265,7 +265,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             self.instance_save_spinner.start()
 
             backend = Settings.get().active_translator
-            validation_url = TRANSLATORS[backend].format_instance_url(
+            validation_url = TRANSLATORS[backend].format_url(
                 self.new_instance_url,
                 TRANSLATORS[backend].validation_path
             )
@@ -326,7 +326,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             self.api_key_save_spinner.start()
 
             backend = Settings.get().active_translator
-            validation_url = TRANSLATORS[backend].format_instance_url(
+            validation_url = TRANSLATORS[backend].format_url(
                 Settings.get().instance_url,
                 TRANSLATORS[backend].api_test_path
             )

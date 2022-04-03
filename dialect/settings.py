@@ -1,5 +1,5 @@
-# Copyright 2021 Mufeed Ali
-# Copyright 2021 Rafael Mardojai CM
+# Copyright 2021-2022 Mufeed Ali
+# Copyright 2021-2022 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import json
@@ -120,7 +120,7 @@ class Settings(Gio.Settings):
     @dest_langs.setter
     def dest_langs(self, dest_langs):
         self.get_translator_settings().set_strv('dest-langs', dest_langs)
-    
+
     def reset_dest_langs(self):
         self.dest_langs = TRANSLATORS[self.active_translator].dest_langs
 
