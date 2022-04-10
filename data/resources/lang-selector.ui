@@ -37,8 +37,8 @@
                       <object class="GtkBox">
                         <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkListView" id="recent_list">
-                            <property name="single-click-activate">True</property>
+                          <object class="GtkListBox" id="recent_list">
+                            <property name="selection-mode">single</property>
                           </object>
                         </child>
                         <child>
@@ -49,8 +49,8 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkListView" id="lang_list">
-                    <property name="single-click-activate">True</property>
+                  <object class="GtkListBox" id="lang_list">
+                    <property name="selection-mode">single</property>
                   </object>
                 </child>
               </object>
