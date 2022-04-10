@@ -1105,7 +1105,7 @@ class DialectWindow(Adw.ApplicationWindow):
         error = ''
         dest_text = ''
 
-        self.trans_mistakes = None
+        self.trans_mistakes = [None, None]
         self.trans_src_pron = None
         self.trans_dest_pron = None
         try:

@@ -195,7 +195,13 @@ class Translator(TranslatorBase):
             translated = None
             try:
                 translated_parts = list(
-                    map(lambda part: TranslatedPart(part[0], part[1] if len(part) >= 2 else []), parsed[1][0][0][5])
+                    map(
+                        lambda part: TranslatedPart(
+                            part[0] if len(part) > 0 else '',
+                            part[1] if len(part) >= 2 else []
+                        ),
+                        parsed[1][0][0][5]
+                    )
                 )
             except TypeError:
                 translated_parts = [
