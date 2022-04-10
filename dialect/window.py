@@ -568,12 +568,16 @@ class DialectWindow(Adw.ApplicationWindow):
         if not queue and self.toast is not None:
             self.toast.dismiss()
         self.toast = Adw.Toast.new(text)
+        self.toast.connect('dismissed', self._toast_dismissed)
         if action is not None:
             self.toast.set_button_label(action['label'])
             self.toast.set_action_name(action['name'])
         self.toast.set_timeout(timeout)
         self.toast.set_priority(priority)
         self.toast_overlay.add_toast(self.toast)
+
+    def _toast_dismissed(self, toast):
+        self.toast = None
 
     def toggle_voice_spinner(self, active=True):
         if active:
@@ -1105,7 +1109,7 @@ class DialectWindow(Adw.ApplicationWindow):
         error = ''
         dest_text = ''
 
-        self.trans_mistakes = None
+        self.trans_mistakes = [None, None]
         self.trans_src_pron = None
         self.trans_dest_pron = None
         try:
