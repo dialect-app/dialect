@@ -79,7 +79,7 @@ class Settings(Gio.Settings):
 
     def get_translator_settings(self, translator=None):
         def on_changed(_settings, key):
-            self.emit('changed', key)
+            self.emit('changed', 'translator-' + key)
 
         def get_settings(name):
             path = self.get_child('translators').get_property('path')
