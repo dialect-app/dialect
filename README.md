@@ -1,4 +1,4 @@
-<img height="128" src="data/com.github.gi_lom.dialect.svg" align="left"/>
+<img height="128" src="data/app.drey.Dialect.svg" align="left"/>
 
 # Dialect
 
@@ -8,7 +8,7 @@ A translation app for GNOME.
 
 ## Features
 
-- Translation based on the [googletrans](https://github.com/ssut/py-googletrans) Python API, an unofficial API for Google Translate
+- Translation based on Google Translate
 - Translation based on the LibreTranslate API, allowing you to use any public instance
 - Translation history
 - Automatic language detection
@@ -19,7 +19,7 @@ A translation app for GNOME.
 
 ### Flathub
 
-<a href='https://flathub.org/apps/details/com.github.gi_lom.dialect'><img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+<a href='https://flathub.org/apps/details/app.drey.Dialect'><img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
 
 ### AUR
 
@@ -44,14 +44,13 @@ sudo dnf install dialect
 - GStreamer 1.0 `gstreamer`
 - Meson `meson`
 - Ninja `ninja`
-- Googletrans `python-googletrans`
 - gTTS `python-gtts`
 - D-Bus `python-dbus`
 
 If official packages are not available for any of the python dependencies, you can install them from pip:
 
 ```bash
-pip install googletrans gtts
+pip install gtts
 ```
 
 ### Building from Git

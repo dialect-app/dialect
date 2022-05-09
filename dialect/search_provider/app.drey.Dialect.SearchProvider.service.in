@@ -1,3 +1,3 @@
 [D-BUS Service]
-Name=com.github.gi_lom.dialect.SearchProvider
+Name=app.drey.Dialect.SearchProvider
 Exec=@pkgdatadir@/search_provider

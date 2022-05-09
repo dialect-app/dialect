@@ -6,7 +6,7 @@
 
 APP_ID = '@APP_ID@'
 PROFILE = '@PROFILE@'
-RES_PATH = '/com/github/gi_lom/dialect'
+RES_PATH = '/app/drey/Dialect'
 VERSION = '@VERSION@'
 
 TRANS_NUMBER = 10  # number of translations to save in history

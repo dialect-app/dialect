@@ -17,6 +17,6 @@ jobs:
     - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v4
       with:
         bundle: "dialect-devel.flatpak"
-        manifest-path: "build-aux/flatpak/com.github.gi_lom.dialect.Devel.json"
+        manifest-path: "build-aux/flatpak/app.drey.Dialect.Devel.json"
         run-tests: "true"
         cache-key: flatpak-builder-${{ github.sha }}

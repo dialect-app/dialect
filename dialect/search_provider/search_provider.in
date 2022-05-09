@@ -18,14 +18,14 @@ from dialect.settings import Settings
 from dialect.translators import TRANSLATORS
 from dialect.translators.basetrans import ApiKeyRequired, InvalidApiKey
 
-APP_ID = 'com.github.gi_lom.dialect'
+APP_ID = 'app.drey.Dialect'
 
 search_bus_name = 'org.gnome.Shell.SearchProvider2'
 sbn = dict(dbus_interface=search_bus_name)
 
 
 class TranslateService(dbus.service.Object):
-    bus_name = 'com.github.gi_lom.dialect.SearchProvider'
+    bus_name = 'app.drey.Dialect.SearchProvider'
     _object_path = '/' + bus_name.replace('.', '/')
 
     def __init__(self):

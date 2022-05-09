@@ -151,7 +151,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.rmv_key_btn.connect('clicked', self.remove_key_and_reload)
         self.load_translator(True)
         # Get languages available for speech
-        if Settings.get().tts != '':
+        if Settings.get().active_tts != '':
             threading.Thread(target=self.load_lang_speech, daemon=True).start()
 
     def setup_actions(self):
@@ -411,7 +411,7 @@ class DialectWindow(Adw.ApplicationWindow):
         """
         try:
             self.voice_loading = True
-            self.tts = TTS[Settings.get().tts]()
+            self.tts = TTS[Settings.get().active_tts]()
             self.tts_langs = self.tts.languages
             if not listen:
                 GLib.idle_add(self.toggle_voice_spinner, False)
@@ -481,8 +481,8 @@ class DialectWindow(Adw.ApplicationWindow):
 
         self.toggle_voice_spinner(True)
 
-        self.src_voice_btn.set_visible(Settings.get().tts != '')
-        self.dest_voice_btn.set_visible(Settings.get().tts != '')
+        self.src_voice_btn.set_visible(Settings.get().active_tts != '')
+        self.dest_voice_btn.set_visible(Settings.get().active_tts != '')
 
     def responsive_listener(self, _window=None, _param=None, launch=False):
         if launch:
@@ -641,7 +641,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.dest_lang_selector.set_selected(self.src_langs[0], notify=False)
 
         # Disable or enable listen function.
-        if self.tts_langs and Settings.get().tts != '':
+        if self.tts_langs and Settings.get().active_tts != '':
             self.lookup_action('listen-src').set_enabled(
                 code in self.tts_langs and src_text != ''
             )
@@ -686,7 +686,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.src_lang_selector.set_selected(self.dest_langs[0], notify=False)
 
         # Disable or enable listen function.
-        if self.tts_langs and Settings.get().tts != '':
+        if self.tts_langs and Settings.get().active_tts != '':
             self.lookup_action('listen-dest').set_enabled(
                 code in self.tts_langs and dest_text != ''
             )

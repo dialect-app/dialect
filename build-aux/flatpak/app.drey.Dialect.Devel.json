@@ -1,5 +1,5 @@
 {
-    "app-id" : "com.github.gi_lom.dialect.Devel",
+    "app-id" : "app.drey.Dialect.Devel",
     "runtime" : "org.gnome.Platform",
     "runtime-version" : "master",
     "sdk" : "org.gnome.Sdk",
@@ -11,7 +11,7 @@
         "--socket=fallback-x11",
         "--socket=wayland",
         "--socket=pulseaudio",
-        "--own-name=com.github.gi_lom.dialect.SearchProvider"
+        "--own-name=app.drey.Dialect.SearchProvider"
     ],
     "modules" : [
         "pypi-dependencies.json",
