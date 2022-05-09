@@ -2,7 +2,7 @@ serarch_provider_dir = join_paths(get_option('prefix'), get_option('datadir'), '
 service_dir = join_paths(get_option('prefix'), get_option('datadir'), 'dbus-1', 'services')
 
 install_data(
-  'com.github.gi_lom.dialect.SearchProvider.ini',
+  'com.github.gi_lom.dialect.search-provider.ini',
   install_dir: serarch_provider_dir,
 )
 

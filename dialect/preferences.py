@@ -158,9 +158,9 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
 
     def _on_settings_changed(self, _settings, key):
         backend = Settings.get().active_translator
-        if key in ('instance-url', 'api-key'):
+        if key in ('translator-instance-url', 'translator-api-key'):
             # Update backend
-            if key == 'instance-url' and TRANSLATORS[backend].supported_features['change-instance']:
+            if key == 'translator-instance-url' and TRANSLATORS[backend].supported_features['change-instance']:
                 Settings.get().reset_src_langs()
                 Settings.get().reset_dest_langs()
             self.parent.reload_backends()
