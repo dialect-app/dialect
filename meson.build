@@ -8,7 +8,7 @@ project('dialect',
 python = import('python')
 i18n = import('i18n')
 
-base_id = 'com.github.gi_lom.dialect'
+base_id = 'app.drey.Dialect'
 pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
 moduledir = join_paths(pkgdatadir, 'dialect')
 

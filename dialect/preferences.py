@@ -90,7 +90,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
 
         # Setup TTS
         self.tts_row.set_visible(len(TTS) >= 1)
-        self.tts.set_active(Settings.get().tts != '')
+        self.tts.set_active(Settings.get().active_tts != '')
 
         # Toggle dark mode
         self.dark_mode.connect('notify::active', self._toggle_dark_mode)
@@ -187,7 +187,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         self.parent.dest_voice_btn.set_sensitive(False)
         self.parent.dest_voice_btn.set_visible(switch.get_active())
 
-        Settings.get().tts = value
+        Settings.get().active_tts = value
 
         if switch.get_active():
             threading.Thread(

@@ -2,13 +2,13 @@ serarch_provider_dir = join_paths(get_option('prefix'), get_option('datadir'), '
 service_dir = join_paths(get_option('prefix'), get_option('datadir'), 'dbus-1', 'services')
 
 install_data(
-  'com.github.gi_lom.dialect.search-provider.ini',
+  'app.drey.Dialect.SearchProvider.ini',
   install_dir: serarch_provider_dir,
 )
 
 configure_file(
-  input: 'com.github.gi_lom.dialect.SearchProvider.service.in',
-  output: 'com.github.gi_lom.dialect.SearchProvider.service',
+  input: 'app.drey.Dialect.SearchProvider.service.in',
+  output: 'app.drey.Dialect.SearchProvider.service',
   configuration: conf,
   install_dir: service_dir,
 )

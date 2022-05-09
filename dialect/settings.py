@@ -32,7 +32,6 @@ class Settings(Gio.Settings):
         g_settings = Gio.Settings.new(APP_ID)
         g_settings.__class__ = Settings
         g_settings.init_translators_settings()
-        g_settings.migrate_legacy()
         return g_settings
 
     @staticmethod
@@ -176,18 +175,20 @@ class Settings(Gio.Settings):
         return self.get_int('translate-accel')
 
     @property
-    def tts(self):
+    def active_tts(self):
         """Return the user's preferred TTS service."""
-        value = self.get_string('tts-name')
-        if value not in TTS.keys():
+        value = self.get_child('tts').get_string('active')
+
+        if value != '' and value not in TTS.keys():
             value = ''
-            self.tts = value
+            self.active_tts = value
+
         return value
 
-    @tts.setter
-    def tts(self, value):
+    @active_tts.setter
+    def active_tts(self, tts):
         """Set the user's preferred TTS service."""
-        self.set_string('tts-name', value)
+        self.get_child('tts').set_string('active', tts)
 
     @property
     def dark_mode(self):
@@ -224,50 +225,3 @@ class Settings(Gio.Settings):
     @src_auto.setter
     def src_auto(self, state):
         self.set_boolean('src-auto', state)
-
-    def migrate_legacy(self):
-        backend = self.get_string('backend-name')
-        if backend:
-            # Migrate active translator
-            if check_backend_availability(backend):
-                self.active_translator = backend
-
-            # Migrate old backend settings
-            json_settings = json.loads(self.get_string('backend-settings'))
-            for name, data in json_settings.items():
-                settings = self.get_translator_settings(name)
-                if settings.get_boolean('init'):
-                    if data.get('instance-url'):
-                        settings.set_string('instance-url', data.get('instance-url'))
-
-            self._delete_int_key('backend')
-            self._delete_str_key('libretranslate-instance')
-            self._delete_arr_key('libretranslate-src-langs')
-            self._delete_arr_key('google-src-langs')
-            self._delete_arr_key('libretranslate-dest-langs')
-            self._delete_arr_key('google-dest-langs')
-            self._delete_str_key('backend-name')
-            self._delete_str_key('backend-settings')
-
-    def _delete_arr_key(self, key):
-        val = self.get_strv(key)
-        if val != []:
-            self.set_value(key, GLib.Variant('as', []))
-
-    def _delete_enum_key(self, key):
-        val = self.get_enum(key)
-        if val > -1:
-            self.set_enum(key, -1)
-
-    def _delete_int_key(self, key):
-        val = self.get_int(key)
-        if val > -1:
-            self.set_int(key, -1)
-
-    def _delete_str_key(self, key):
-        val = self.get_string(key)
-        if val != '':
-            self.set_value(
-                key,
-                GLib.Variant('s', '')
-            )

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/com/github/gi_lom/dialect">
+  <gresource prefix="/app/drey/Dialect">
     <file compressed="true">style.css</file>
     <file compressed="true" preprocess="xml-stripblanks">shortcuts.ui</file>
 
