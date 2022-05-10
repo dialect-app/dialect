@@ -21,10 +21,12 @@ if get_option('profile') == 'development'
     version_suffix = '-@0@'.format(vcs_tag)
   endif
   application_id = '@0@.@1@'.format(base_id, profile)
+  object_path = '/app/drey/Dialect/Devel/SearchProvider'
 else
   profile = ''
   version_suffix = ''
   application_id = base_id
+  object_path = '/app/drey/Dialect/SearchProvider'
 endif
 
 conf = configuration_data()
@@ -33,6 +35,7 @@ conf.set('PROFILE', profile)
 conf.set('VERSION', meson.project_version() + version_suffix)
 conf.set('APP_ID', application_id)
 conf.set('BIN', join_paths(get_option('prefix'), get_option('bindir'), meson.project_name()))
+conf.set('object_path', object_path)
 conf.set('pkgdatadir', pkgdatadir)
 conf.set('datadir', get_option('datadir'))
 conf.set('prefix', get_option('prefix'))

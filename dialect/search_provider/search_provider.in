@@ -18,15 +18,13 @@ from dialect.settings import Settings
 from dialect.translators import get_lang_name, TRANSLATORS
 from dialect.translators.basetrans import ApiKeyRequired, InvalidApiKey
 
-APP_ID = 'app.drey.Dialect'
-
 search_bus_name = 'org.gnome.Shell.SearchProvider2'
 sbn = dict(dbus_interface=search_bus_name)
 
 
 class TranslateService(dbus.service.Object):
-    bus_name = 'app.drey.Dialect.SearchProvider'
-    _object_path = '/' + bus_name.replace('.', '/')
+    bus_name = '@APP_ID@.SearchProvider'
+    _object_path = '@object_path@'
 
     def __init__(self):
         # init dbus
