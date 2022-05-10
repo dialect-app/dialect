@@ -207,6 +207,14 @@ class Settings(Gio.Settings):
         self.set_boolean('live-translation', state)
 
     @property
+    def sp_translation(self):
+        return self.get_boolean('sp-translation')
+
+    @sp_translation.setter
+    def sp_translation(self, state):
+        self.set_boolean('sp-translation', state)
+
+    @property
     def show_pronunciation(self):
         return self.get_boolean('show-pronunciation')
 

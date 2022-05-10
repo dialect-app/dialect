@@ -189,7 +189,7 @@ class TranslateService(dbus.service.Object):
             self.translation()
 
     def is_live_enabled(self):
-        return Settings.get().live_translation
+        return Settings.get().live_translation and Settings.get().sp_translation
 
     def _get_translator(self):
         backend = Settings.get().active_translator
