@@ -15,7 +15,7 @@ from gi.repository import GLib
 
 from dialect.session import Session, ResponseError
 from dialect.settings import Settings
-from dialect.translators import TRANSLATORS
+from dialect.translators import get_lang_name, TRANSLATORS
 from dialect.translators.basetrans import ApiKeyRequired, InvalidApiKey
 
 APP_ID = 'app.drey.Dialect'
@@ -71,7 +71,7 @@ class TranslateService(dbus.service.Object):
                 pass
 
             name = self.translations[translate_id]
-            lang = self.translator.languages[self.dest_language].capitalize()
+            lang = get_lang_name(self.dest_language)
             self.translations.clear()
 
             return [
