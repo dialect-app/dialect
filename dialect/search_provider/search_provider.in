@@ -51,11 +51,12 @@ class TranslateService(dbus.service.Object):
         on start of input
         """
         self.live_enabled = self.is_live_enabled()
+        backend = Settings.get().active_translator
         text = ' '.join(terms)
         if self.live_enabled:
             self.translation(text)
         else:
-            self.translations[text] = _(f'Translate “{text}” with {Settings.get().active_translator.prettyname}')
+            self.translations[text] = _(f'Translate “{text}” with {TRANSLATORS[backend].prettyname}')
         return [text]
 
     @dbus.service.method(in_signature='as', out_signature='aa{sv}', **sbn)
@@ -96,11 +97,12 @@ class TranslateService(dbus.service.Object):
         Join separate terms in one ID line, start translation and send this line back
         on update of text
         """
+        backend = Settings.get().active_translator
         text = ' '.join(new_terms)
         if self.live_enabled:
             self.translation(text)
         else:
-            self.translations[text] = _(f'Translate “{text}” with {Settings.get().active_translator.prettyname}')
+            self.translations[text] = _(f'Translate “{text}” with {TRANSLATORS[backend].prettyname}')
         return [text]
 
     @dbus.service.method(in_signature='sasu', **sbn)
