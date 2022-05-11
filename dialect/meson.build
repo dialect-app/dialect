@@ -35,6 +35,7 @@ sources = [
   'session.py',
   'settings.py',
   'shortcuts.py',
+  'theme_switcher.py',
 ]
 # Install sources
 install_data(sources, install_dir: moduledir)

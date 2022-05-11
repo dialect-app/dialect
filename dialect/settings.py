@@ -191,12 +191,12 @@ class Settings(Gio.Settings):
         self.get_child('tts').set_string('active', tts)
 
     @property
-    def dark_mode(self):
-        return self.get_boolean('dark-mode')
+    def color_scheme(self):
+        return self.get_string('color-scheme')
 
-    @dark_mode.setter
-    def dark_mode(self, state):
-        self.set_boolean('dark-mode', state)
+    @color_scheme.setter
+    def color_scheme(self, scheme):
+        self.set_string('dark-mode', scheme)
 
     @property
     def live_translation(self):
