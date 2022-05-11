@@ -56,7 +56,10 @@ class TranslateService(dbus.service.Object):
         if self.live_enabled:
             self.translation(text)
         else:
-            self.translations[text] = _(f'Translate “{text}” with {TRANSLATORS[backend].prettyname}')
+            self.translations[text] = _('Translate “{text}” with {backend_name}').format(
+                text=text,
+                backend_name=TRANSLATORS[backend].prettyname
+            )
         return [text]
 
     @dbus.service.method(in_signature='as', out_signature='aa{sv}', **sbn)
@@ -102,7 +105,10 @@ class TranslateService(dbus.service.Object):
         if self.live_enabled:
             self.translation(text)
         else:
-            self.translations[text] = _(f'Translate “{text}” with {TRANSLATORS[backend].prettyname}')
+            self.translations[text] = _('Translate “{text}” with {backend_name}').format(
+                text=text,
+                backend_name=TRANSLATORS[backend].prettyname
+            )
         return [text]
 
     @dbus.service.method(in_signature='sasu', **sbn)
