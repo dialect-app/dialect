@@ -175,7 +175,7 @@ class TranslateService(dbus.service.Object):
 
     def on_translation_response(self, session, result, original):
         try:
-            data = Session.get_response(session, result, raw=original[3])
+            data = Session.get_response(session, result, raw=original[1])
             (translation, _lang) = self.translator.get_translation(data)
             self.translations[original[0]] = translation.text
         except ResponseError as exc:
