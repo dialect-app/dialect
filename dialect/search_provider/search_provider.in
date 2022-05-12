@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
-from gettext import gettext as _
+import gettext
 
 import dbus
 import dbus.service
@@ -24,6 +24,8 @@ from dialect.translators.basetrans import ApiKeyRequired, InvalidApiKey
 search_bus_name = 'org.gnome.Shell.SearchProvider2'
 sbn = dict(dbus_interface=search_bus_name)
 
+gettext.install('dialect', '@localedir@')
+_ = gettext.gettext
 
 class TranslateService(dbus.service.Object):
     bus_name = '@APP_ID@.SearchProvider'
