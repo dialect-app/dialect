@@ -11,9 +11,12 @@ from gettext import gettext as _
 import dbus
 import dbus.service
 from dbus.mainloop.glib import DBusGMainLoop
+
+import gi
+gi.require_version('Soup', '3.0')
 from gi.repository import GLib
 
-from dialect.session import Session, ResponseError
+from dialect.session import Session
 from dialect.settings import Settings
 from dialect.translators import get_lang_name, TRANSLATORS
 from dialect.translators.basetrans import ApiKeyRequired, InvalidApiKey
@@ -32,17 +35,20 @@ class TranslateService(dbus.service.Object):
         bus_name = dbus.service.BusName(self.bus_name, bus=self.session_bus)
         dbus.service.Object.__init__(self, bus_name, self._object_path)
 
-        self.live_enabled = False
+        self.loaded = False
 
-        # Translations running now
-        self.translations = dict()
-        Settings.get().connect('changed', self._on_settings_changed)
+        # Live translation enabled
+        self.live_enabled = self.is_live_enabled()
 
-        self.dest_language = None
-        self.ongoing_trans = False
-        self.next_trans = {}
+        # Translations store
+        self.translations = {}
+        self.src_language = 'auto'
+        #src_language_saved = Settings.get().src_langs[0]
+        self.dest_language = Settings.get().dest_langs[0]
 
+        # Translator
         self.translator = self._get_translator()
+        Settings.get().connect('changed', self._on_settings_changed)
 
     @dbus.service.method(in_signature='as', out_signature='as', **sbn)
     def GetInitialResultSet(self, terms):
@@ -50,10 +56,12 @@ class TranslateService(dbus.service.Object):
         Join separate terms in one ID line, start translation and send this line back
         on start of input
         """
-        self.live_enabled = self.is_live_enabled()
-        backend = Settings.get().active_translator
         text = ' '.join(terms)
+        backend = Settings.get().active_translator
+
         if self.live_enabled:
+            if not self.loaded:
+                return self.GetInitialResultSet(terms)
             self.translation(text)
         else:
             self.translations[text] = _('Translate “{text}” with {backend_name}').format(
@@ -62,30 +70,33 @@ class TranslateService(dbus.service.Object):
             )
         return [text]
 
+    @dbus.service.method(in_signature='asas', out_signature='as', **sbn)
+    def GetSubsearchResultSet(self, _previous_results, new_terms):
+        return self.GetInitialResultSet(new_terms)
+
     @dbus.service.method(in_signature='as', out_signature='aa{sv}', **sbn)
     def GetResultMetas(self, ids):
         """Send translated text"""
         translate_id = ids[0]
 
-        # wait for the translation to finish
         if translate_id in self.translations:
-            while self.translations[translate_id] == '':
-                pass
-
-            name = self.translations[translate_id]
+            text = self.translations[translate_id]
             lang = get_lang_name(self.dest_language)
+            backend = Settings.get().active_translator
+            description = f'{lang} — {TRANSLATORS[backend].prettyname}' if self.live_enabled else ''
+
             self.translations.clear()
 
             return [
                 dict(
                     id=id,
-                    name=name,
-                    description=lang or '',
+                    name=text,
+                    description=description,
                 )
                 for id in ids
             ]
 
-        # if there is no translation of this text send the original text
+        # If there is no translation of this text send the original text
         return [
             dict(
                 id=id,
@@ -94,33 +105,12 @@ class TranslateService(dbus.service.Object):
             for id in ids
         ]
 
-    @dbus.service.method(in_signature='asas', out_signature='as', **sbn)
-    def GetSubsearchResultSet(self, previous_results, new_terms):
-        """
-        Join separate terms in one ID line, start translation and send this line back
-        on update of text
-        """
-        backend = Settings.get().active_translator
-        text = ' '.join(new_terms)
-        if self.live_enabled:
-            self.translation(text)
-        else:
-            self.translations[text] = _('Translate “{text}” with {backend_name}').format(
-                text=text,
-                backend_name=TRANSLATORS[backend].prettyname
-            )
-        return [text]
-
     @dbus.service.method(in_signature='sasu', **sbn)
-    def ActivateResult(self, id, terms, timestamp):
-        text = ' '.join(terms)
-        GLib.spawn_async_with_pipes(
-            None, ['@BIN@', '--text', text], None,
-            GLib.SpawnFlags.SEARCH_PATH, None
-        )
+    def ActivateResult(self, _id, terms, timestamp):
+        self.LaunchSearch(terms, timestamp)
 
     @dbus.service.method(in_signature='asu', terms='as', timestamp='u', **sbn)
-    def LaunchSearch(self, terms, timestamp):
+    def LaunchSearch(self, terms, _timestamp):
         text = ' '.join(terms)
         GLib.spawn_async_with_pipes(
             None, ['@BIN@', '--text', text], None,
@@ -129,70 +119,36 @@ class TranslateService(dbus.service.Object):
 
     def translation(self, src_text=None):
         """Start a new translation"""
-        src_language = 'auto'
-        src_language_saved = Settings.get().src_langs[0]
-        self.dest_language = Settings.get().dest_langs[0]
-
-        if self.ongoing_trans:
-            self.next_trans = {
-                'text': src_text,
-                'src': src_language,
-                'src-saved': src_language_saved,
-                'dest': self.dest_language
-            }
-            return
-
-        if self.next_trans:
-            src_text = self.next_trans['text']
-            src_language = self.next_trans['src']
-            src_language_saved = self.next_trans['src-saved']
-            self.dest_language = self.next_trans['dest']
-            self.next_trans = {}
-
-        self.translations[src_text] = ''
 
         # If the two languages are the same, nothing is done
-        if src_language != self.dest_language and src_text != '':
-            self.ongoing_trans = True
-
+        if self.src_language != self.dest_language and src_text != '':
             # Format data
             url = self.translator.translate_url.format(
-                text=src_text, src=src_language, dest=self.dest_language
+                text=src_text, src=self.src_language, dest=self.dest_language
             )
             (method, data, headers, raw) = self.translator.format_translation(
-                src_text, src_language, self.dest_language
+                src_text, self.src_language, self.dest_language
             )
 
             message = Session.create_message(method, url, data, headers, raw)
+            response = Session.get().send_and_read(message, None)
 
-            Session.get().send_and_read_async(
-                message,
-                0,
-                None,
-                self.on_translation_response,
-                (src_text, raw)
-            )
+            if response:
+                try:
+                    data = Session.read_response(response, fail_if_empty=True, raw=raw)
+                    (translation, _lang) = self.translator.get_translation(data)
 
-    def on_translation_response(self, session, result, original):
-        try:
-            data = Session.get_response(session, result, raw=original[1])
-            (translation, _lang) = self.translator.get_translation(data)
-            self.translations[original[0]] = translation.text
-        except ResponseError as exc:
-            logging.error(exc)
-            self.translations[original[0]] = _('Translation failed, check for network issues')
-        except InvalidApiKey as exc:
-            logging.error(exc)
-            self.translations[original[0]] = _('The provided API key is invalid')
-        except ApiKeyRequired as exc:
-            logging.error(exc)
-            self.translations[original[0]] = _('API key is required to use the service')
-        except Exception as exc:
-            logging.error(exc)
-
-        self.ongoing_trans = False
-        if self.next_trans:
-            self.translation()
+                    self.translations[src_text] = translation.text
+                except InvalidApiKey as exc:
+                    logging.error(exc)
+                    self.translations[src_text] = _('The provided API key is invalid')
+                except ApiKeyRequired as exc:
+                    logging.error(exc)
+                    self.translations[src_text] = _('API key is required to use the service')
+                except Exception as exc:
+                    logging.error(exc)
+            else:
+                self.translations[src_text] = _('Translation failed, check for network issues')
 
     def is_live_enabled(self):
         return Settings.get().live_translation and Settings.get().sp_translation
@@ -201,15 +157,24 @@ class TranslateService(dbus.service.Object):
         backend = Settings.get().active_translator
         if TRANSLATORS[backend].supported_features['change-instance']:
             translator = TRANSLATORS[backend](
-                base_url=Settings.get().instance_url
+                self._on_loaded,
+                base_url=Settings.get().instance_url,
+                api_key=Settings.get().api_key
             )
         else:
             translator = TRANSLATORS[backend]()
+            self.loaded = True
         return translator
+
+    def _on_loaded(self, success, _error='', _network_error=False):
+        self.loaded = success
 
     def _on_settings_changed(self, _settings, key):
         if key.startswith('translator-'):
+            self.loaded = False
             self.translator = self._get_translator()
+        if key == 'live-translation' or key == 'sp-translation':
+            self.live_enabled = self.is_live_enabled()
 
 
 if __name__ == "__main__":
