@@ -24,8 +24,6 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
     parent = NotImplemented
 
     # Get preferences widgets
-    appearance = Gtk.Template.Child()
-    dark_mode = Gtk.Template.Child()
     live_translation = Gtk.Template.Child()
     sp_translation = Gtk.Template.Child()
     translate_accel = Gtk.Template.Child()
@@ -62,11 +60,6 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         # Disable search, we have few preferences
         self.set_search_enabled(False)
 
-        # Show dark mode preference
-        self.style_manager = self.parent.app.get_style_manager()
-        if not self.style_manager.get_system_supports_color_schemes():
-            self.appearance.set_visible(True)
-
         # Setup backends combo row
         self.backend_model = Gio.ListStore.new(BackendObject)
         backend_options = [
@@ -80,8 +73,6 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         self.backend.set_model(self.backend_model)
 
         # Bind preferences with GSettings
-        Settings.get().bind('dark-mode', self.dark_mode, 'active',
-                            Gio.SettingsBindFlags.DEFAULT)
         Settings.get().bind('live-translation', self.live_translation, 'enable-expansion',
                             Gio.SettingsBindFlags.DEFAULT)
         Settings.get().bind('sp-translation', self.sp_translation, 'active',
@@ -94,9 +85,6 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         # Setup TTS
         self.tts_row.set_visible(len(TTS) >= 1)
         self.tts.set_active(Settings.get().active_tts != '')
-
-        # Toggle dark mode
-        self.dark_mode.connect('notify::active', self._toggle_dark_mode)
 
         # Set translate accel sensitivity by live translation state
         self.translate_accel.set_sensitive(not self.live_translation.get_enable_expansion())
@@ -155,7 +143,6 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             self.search_provider.hide()
 
     def _unbind_settings(self,  *args, **kwargs):
-        Settings.get().unbind(self.dark_mode, 'active')
         Settings.get().unbind(self.live_translation, 'active')
         Settings.get().unbind(self.src_auto, 'active')
 
@@ -167,14 +154,6 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
                 Settings.get().reset_src_langs()
                 Settings.get().reset_dest_langs()
             self.parent.reload_backends()
-
-    def _toggle_dark_mode(self, switch, _active):
-        active = switch.get_active()
-        self.style_manager.set_color_scheme(
-            Adw.ColorScheme.FORCE_DARK
-            if active
-            else Adw.ColorScheme.DEFAULT
-        )
 
     def _toggle_accel_pref(self, row, _active):
         self.translate_accel.set_sensitive(not row.get_enable_expansion())

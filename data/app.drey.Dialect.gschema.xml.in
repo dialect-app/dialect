@@ -4,8 +4,13 @@
     <key type="ai" name="window-size">
         <default>[800, 300]</default>
     </key>
-    <key type="b" name="dark-mode">
-        <default>false</default>
+    <key type="s" name="color-scheme">
+      <choices>
+        <choice value="auto"/>
+        <choice value="light"/>
+        <choice value="dark"/>
+      </choices>
+      <default>"auto"</default>
     </key>
     <key type="b" name="live-translation">
         <default>false</default>

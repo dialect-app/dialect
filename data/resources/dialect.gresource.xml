@@ -9,5 +9,6 @@
     <file compressed="true" preprocess="xml-stripblanks">preferences.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">lang-selector.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">lang-row.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">theme-switcher.ui</file>
   </gresource>
 </gresources>

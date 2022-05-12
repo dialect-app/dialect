@@ -15,6 +15,7 @@ from dialect.lang_selector import DialectLangSelector
 from dialect.session import Session, ResponseEmpty, ResponseError
 from dialect.settings import Settings
 from dialect.shortcuts import DialectShortcutsWindow
+from dialect.theme_switcher import DialectThemeSwitcher
 from dialect.translators import TRANSLATORS, get_lang_name
 from dialect.translators.basetrans import ApiKeyRequired, InvalidApiKey, TranslatorError
 from dialect.tts import TTS
@@ -25,6 +26,7 @@ class DialectWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'DialectWindow'
 
     # Get widgets
+    menu_btn = Gtk.Template.Child()
     main_stack = Gtk.Template.Child()
     error_page = Gtk.Template.Child()
     translator_box = Gtk.Template.Child()
@@ -134,6 +136,10 @@ class DialectWindow(Adw.ApplicationWindow):
         # Set devel style
         if PROFILE == 'Devel':
             self.get_style_context().add_class('devel')
+
+        # Theme Switcher
+        theme_switcher = DialectThemeSwitcher()
+        self.menu_btn.get_popover().add_child(theme_switcher, 'theme')
 
         # Connect responsive design function
         self.connect('notify::default-width', self.responsive_listener)
