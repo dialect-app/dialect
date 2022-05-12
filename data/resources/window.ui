@@ -63,7 +63,7 @@
                         <property name="wrap">True</property>
                         <property name="label" translatable="yes">Loading…</property>
                         <style>
-                          <class name="large-title"/>
+                          <class name="title-1"/>
                         </style>
                       </object>
                     </child>
