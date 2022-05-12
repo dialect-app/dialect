@@ -11,7 +11,7 @@
         "--socket=fallback-x11",
         "--socket=wayland",
         "--socket=pulseaudio",
-        "--own-name=app.drey.Dialect.SearchProvider"
+        "--own-name=app.drey.Dialect.Devel.SearchProvider"
     ],
     "modules" : [
         "pypi-dependencies.json",

@@ -26,13 +26,22 @@
           <object class="AdwPreferencesGroup">
             <property name="title" translatable="yes">Behavior</property>
             <child>
-              <object class="AdwActionRow">
+              <object class="AdwExpanderRow" id="live_translation">
                 <property name="title" translatable="yes">Live Translation</property>
                 <property name="subtitle" translatable="yes">Warning: Your IP address may get banned for API abuse.</property>
-                <property name="activatable_widget">live_translation</property>
+                <property name="show-enable-switch">True</property>
+                <property name="enable-expansion">False</property>
+                <property name="expanded">True</property>
                 <child>
-                  <object class="GtkSwitch" id="live_translation">
-                    <property name="valign">center</property>
+                  <object class="AdwActionRow" id="search_provider">
+                    <property name="title" translatable="yes">Show Translations in Search Provider</property>
+                    <property name="subtitle" translatable="yes">Warning: All desktop searches will be sent to the translation service</property>
+                    <property name="activatable_widget">sp_translation</property>
+                    <child>
+                      <object class="GtkSwitch" id="sp_translation">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -228,12 +237,6 @@
                 </child>
               </object>
             </child>
-          </object>
-        </child>
-        <child>
-          <object class="AdwPreferencesGroup" id="search_provider">
-            <property name="title" translatable="yes">Search Provider</property>
-            <property name="description" translatable="yes">To reduce API abuse, the GNOME search provider in Dialect is turned off when Live translation is. Ensure the search provider is also turned on in the GNOME Settings.</property>
           </object>
         </child>
       </object>

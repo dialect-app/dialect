@@ -37,28 +37,29 @@ class Session(Soup.Session):
         try:
             response = session.send_and_read_finish(result)
 
-            if raw:
-                return response.get_data()
-
-            data = Session.read_response(response)
-
-            if not data and fail_if_empty:
-                raise ResponseEmpty()
+            data = Session.read_response(response, fail_if_empty, raw)
 
             return data
         except GLib.GError as exc:
             raise ResponseError(exc.message) from exc
 
     @staticmethod
-    def read_response(response):
-        response_data = {}
+    def read_response(response, fail_if_empty=True, raw=False):
+        if raw:
+            return response.get_data()
+
+        data = {}
         try:
-            response_data = json.loads(
+            data = json.loads(
                 response.get_data()
             ) if response else {}
         except Exception as exc:
             logging.warning(exc)
-        return response_data
+
+        if not data and fail_if_empty:
+            raise ResponseEmpty()
+
+        return data
 
     @staticmethod
     def encode_data(data):

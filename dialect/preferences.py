@@ -27,6 +27,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
     appearance = Gtk.Template.Child()
     dark_mode = Gtk.Template.Child()
     live_translation = Gtk.Template.Child()
+    sp_translation = Gtk.Template.Child()
     translate_accel = Gtk.Template.Child()
     src_auto = Gtk.Template.Child()
     backend = Gtk.Template.Child()
@@ -81,7 +82,9 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         # Bind preferences with GSettings
         Settings.get().bind('dark-mode', self.dark_mode, 'active',
                             Gio.SettingsBindFlags.DEFAULT)
-        Settings.get().bind('live-translation', self.live_translation, 'active',
+        Settings.get().bind('live-translation', self.live_translation, 'enable-expansion',
+                            Gio.SettingsBindFlags.DEFAULT)
+        Settings.get().bind('sp-translation', self.sp_translation, 'active',
                             Gio.SettingsBindFlags.DEFAULT)
         Settings.get().bind('translate-accel', self.translate_accel,
                             'selected', Gio.SettingsBindFlags.DEFAULT)
@@ -96,8 +99,8 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         self.dark_mode.connect('notify::active', self._toggle_dark_mode)
 
         # Set translate accel sensitivity by live translation state
-        self.translate_accel.set_sensitive(not self.live_translation.get_active())
-        self.live_translation.connect('notify::active', self._toggle_accel_pref)
+        self.translate_accel.set_sensitive(not self.live_translation.get_enable_expansion())
+        self.live_translation.connect('notify::enable-expansion', self._toggle_accel_pref)
 
         # Switch backends
         self.backend.set_selected(selected_backend_index)
@@ -173,8 +176,8 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             else Adw.ColorScheme.DEFAULT
         )
 
-    def _toggle_accel_pref(self, switch, _active):
-        self.translate_accel.set_sensitive(not switch.get_active())
+    def _toggle_accel_pref(self, row, _active):
+        self.translate_accel.set_sensitive(not row.get_enable_expansion())
 
     def _toggle_tts(self, switch, _active):
         value = ''

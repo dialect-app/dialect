@@ -1,14 +1,16 @@
-serarch_provider_dir = join_paths(get_option('prefix'), get_option('datadir'), 'gnome-shell', 'search-providers')
+search_provider_dir = join_paths(get_option('prefix'), get_option('datadir'), 'gnome-shell', 'search-providers')
 service_dir = join_paths(get_option('prefix'), get_option('datadir'), 'dbus-1', 'services')
 
-install_data(
-  'app.drey.Dialect.SearchProvider.ini',
-  install_dir: serarch_provider_dir,
+configure_file(
+  input: 'app.drey.Dialect.SearchProvider.ini',
+  output: '@0@.SearchProvider.ini'.format(application_id),
+  configuration: conf,
+  install_dir: search_provider_dir,
 )
 
 configure_file(
   input: 'app.drey.Dialect.SearchProvider.service.in',
-  output: 'app.drey.Dialect.SearchProvider.service',
+  output: '@0@.SearchProvider.service'.format(application_id),
   configuration: conf,
   install_dir: service_dir,
 )

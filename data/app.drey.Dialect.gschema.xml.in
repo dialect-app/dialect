@@ -10,6 +10,9 @@
     <key type="b" name="live-translation">
         <default>false</default>
     </key>
+    <key type="b" name="sp-translation">
+      <default>false</default>
+    </key>
     <key type="b" name="show-pronunciation">
         <default>false</default>
     </key>
