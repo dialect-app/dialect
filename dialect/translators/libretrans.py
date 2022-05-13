@@ -29,7 +29,7 @@ class Translator(TranslatorBase):
         'api-key-supported': False,
         'api-key-required': False,
     }
-    instance_url = 'translate.api.skitzen.com'
+    instance_url = 'libretranslate.pussthecat.org'
     api_key = ''
 
     validation_path = '/spec'
