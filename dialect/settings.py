@@ -2,8 +2,6 @@
 # Copyright 2021-2022 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-import json
-
 from gi.repository import Gio, GLib
 
 from dialect.define import APP_ID

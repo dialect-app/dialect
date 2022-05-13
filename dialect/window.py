@@ -268,14 +268,12 @@ class DialectWindow(Adw.ApplicationWindow):
         self.main_stack.set_visible_child_name('loading')
 
         # Translator object
-        if TRANSLATORS[backend].supported_features['change-instance']:
-            self.translator = TRANSLATORS[backend](
-                callback=on_loaded,
-                base_url=Settings.get().instance_url,
-                api_key=Settings.get().api_key,
-            )
-        else:
-            self.translator = TRANSLATORS[backend]()
+        self.translator = TRANSLATORS[backend](
+            callback=on_loaded,
+            base_url=Settings.get().instance_url,
+            api_key=Settings.get().api_key,
+        )
+        if not TRANSLATORS[backend].supported_features['change-instance']:
             on_loaded(True)  # Assume successful loading.
 
         if launch:
