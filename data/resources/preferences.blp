@@ -1,0 +1,195 @@
+using Gtk 4.0;
+
+template DialectPreferencesWindow : .AdwPreferencesWindow {
+  default-height: "420";
+  default-width: "600";
+  modal: "True";
+
+  .AdwPreferencesPage {
+    .AdwPreferencesGroup {
+      title: _("Behavior");
+
+      .AdwExpanderRow live_translation {
+        title: _("Live Translation");
+        subtitle: _("Warning: Your IP address may get banned for API abuse.");
+        show-enable-switch: "True";
+        enable-expansion: "False";
+        expanded: "True";
+
+        .AdwActionRow search_provider {
+          title: _("Show Translations in Search Provider");
+          subtitle: _("Warning: All desktop searches will be sent to the translation service");
+          activatable-widget: "sp_translation";
+
+          Switch sp_translation {
+            valign: center;
+          }
+        }
+      }
+
+      .AdwComboRow translate_accel {
+        title: _("Translation Shortcut");
+        subtitle: _("The unselected choice will be used for line break.");
+        model: 
+        StringList {
+          strings ["Ctrl + Enter", "Enter"]
+        };
+      }
+
+      .AdwActionRow {
+        title: _("Default to Auto");
+        subtitle: _("Use \"Auto\" as the default language");
+        activatable-widget: "src_auto";
+
+        Switch src_auto {
+          valign: center;
+        }
+      }
+
+      .AdwComboRow backend {
+        title: _("Translator");
+        subtitle: _("Choose from the available translation services.");
+      }
+
+      .AdwActionRow backend_instance_row {
+        title: _("Translator Instance");
+        subtitle: _("Enter a translation service URL.");
+
+        Stack backend_instance_stack {
+          transition-type: crossfade;
+
+          StackPage {
+            name: "view";
+            child: 
+            Box {
+              spacing: 6;
+              valign: center;
+              halign: end;
+
+              Label backend_instance_label {
+              }
+
+              Button backend_instance_edit {
+                tooltip-text: _("Edit");
+
+                Image {
+                  icon-name: "document-edit-symbolic";
+                }
+              }
+            }
+
+            ;
+          }
+
+          StackPage {
+            name: "edit";
+            child: 
+            Box backend_instance_edit_box {
+              valign: center;
+
+              styles [
+                "linked",
+              ]
+
+              Entry backend_instance {
+              }
+
+              Button backend_instance_reset {
+                tooltip-text: _("Reset to default");
+
+                Image {
+                  icon-name: "view-refresh-symbolic";
+                }
+              }
+
+              Button backend_instance_save {
+                tooltip-text: _("Save");
+
+                styles [
+                  "suggested-action",
+                ]
+              }
+            }
+
+            ;
+          }
+        }
+      }
+
+      .AdwActionRow api_key_row {
+        title: _("API Key");
+        subtitle: _("Enter an API key for the translation service.");
+
+        Stack api_key_stack {
+          transition-type: crossfade;
+
+          StackPage {
+            name: "view";
+            child: 
+            Box {
+              spacing: 6;
+              valign: center;
+              halign: end;
+
+              Label api_key_label {
+              }
+
+              Button api_key_edit {
+                tooltip-text: _("Edit");
+
+                Image {
+                  icon-name: "document-edit-symbolic";
+                }
+              }
+            }
+
+            ;
+          }
+
+          StackPage {
+            name: "edit";
+            child: 
+            Box api_key_edit_box {
+              valign: center;
+
+              styles [
+                "linked",
+              ]
+
+              Entry api_key {
+              }
+
+              Button api_key_reset {
+                tooltip-text: _("Reset to default");
+
+                Image {
+                  icon-name: "view-refresh-symbolic";
+                }
+              }
+
+              Button api_key_save {
+                tooltip-text: _("Save");
+
+                styles [
+                  "suggested-action",
+                ]
+              }
+            }
+
+            ;
+          }
+        }
+      }
+
+      .AdwActionRow tts_row {
+        title: _("Text-to-Speech");
+        subtitle: _("Use Google for TTS.");
+        activatable-widget: "tts";
+
+        Switch tts {
+          valign: center;
+        }
+      }
+    }
+  }
+}

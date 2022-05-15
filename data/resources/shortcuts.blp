@@ -1,0 +1,103 @@
+using Gtk 4.0;
+
+template DialectShortcutsWindow : ShortcutsWindow {
+  modal: true;
+
+  ShortcutsSection {
+    visible: true;
+    section-name: "shortcuts";
+    max-height: 10;
+
+    ShortcutsGroup {
+      visible: true;
+      title: C_("shortcuts window", "Translator");
+
+      ShortcutsShortcut translate_shortcut {
+        visible: true;
+        title: C_("shortcuts window", "Translate");
+        accelerator: "<Primary>Return";
+      }
+
+      ShortcutsShortcut switch_shortcut {
+        visible: true;
+        title: C_("shortcuts window", "Switch Languages");
+        action-name: "win.switch";
+      }
+
+      ShortcutsShortcut {
+        visible: true;
+        title: C_("shortcuts window", "Clear source text");
+        action-name: "win.clear";
+      }
+
+      ShortcutsShortcut {
+        visible: true;
+        title: C_("shortcuts window", "Copy translation");
+        action-name: "win.copy";
+      }
+
+      ShortcutsShortcut {
+        visible: true;
+        title: C_("shortcuts window", "Show Pronunciation");
+        action-name: "app.pronunciation";
+      }
+    }
+
+    ShortcutsGroup {
+      visible: true;
+      title: C_("shortcuts window", "Text-to-Speech");
+
+      ShortcutsShortcut {
+        visible: true;
+        title: C_("shortcuts window", "Listen to source text");
+        action-name: "win.listen-src";
+      }
+
+      ShortcutsShortcut {
+        visible: true;
+        title: C_("shortcuts window", "Listen to translation");
+        action-name: "win.listen-dest";
+      }
+    }
+
+    ShortcutsGroup {
+      visible: true;
+      title: C_("shortcuts window", "Navigation");
+
+      ShortcutsShortcut {
+        visible: true;
+        title: C_("shortcuts window", "Go back in history");
+        action-name: "win.back";
+      }
+
+      ShortcutsShortcut {
+        visible: true;
+        title: C_("shortcuts window", "Go forward in history");
+        action-name: "win.forward";
+      }
+    }
+
+    ShortcutsGroup {
+      visible: true;
+      title: C_("shortcuts window", "General");
+
+      ShortcutsShortcut {
+        visible: true;
+        title: C_("shortcuts window", "Preferences");
+        action-name: "app.preferences";
+      }
+
+      ShortcutsShortcut {
+        visible: true;
+        title: C_("shortcut window", "Shortcuts");
+        action-name: "win.show-help-overlay";
+      }
+
+      ShortcutsShortcut {
+        visible: true;
+        title: C_("shortcuts window", "Quit");
+        action-name: "app.quit";
+      }
+    }
+  }
+}

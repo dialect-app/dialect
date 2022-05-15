@@ -1,0 +1,55 @@
+using Gtk 4.0;
+
+template DialectLangSelector : Popover {
+  height-request: 300;
+
+  styles [
+    "lang-selector",
+    "menu",
+  ]
+
+  Box {
+    orientation: vertical;
+
+    Box search_box {
+      orientation: vertical;
+
+      SearchEntry search {
+        placeholder-text: _("Search Languages…");
+      }
+
+      styles [
+        "search_box",
+      ]
+    }
+
+    ScrolledWindow scroll {
+      vexpand: true;
+      child: 
+      Box {
+        orientation: vertical;
+
+        Revealer revealer {
+          reveal-child: true;
+
+          Box {
+            orientation: vertical;
+
+            ListBox recent_list {
+              selection-mode: single;
+            }
+
+            Separator separator {
+            }
+          }
+        }
+
+        ListBox lang_list {
+          selection-mode: single;
+        }
+      }
+
+      ;
+    }
+  }
+}
