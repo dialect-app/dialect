@@ -149,6 +149,7 @@ class Dialect(Adw.Application):
         """ Show about dialog """
         builder = Gtk.Builder.new_from_resource(f'{RES_PATH}/about.ui')
         about = builder.get_object('about')
+        about.set_authors(["Mufeed Ali", "Rafael Mardojai CM"])
         about.set_transient_for(self.window)
         about.set_logo_icon_name(APP_ID)
         about.set_version(VERSION)

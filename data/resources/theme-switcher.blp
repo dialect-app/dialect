@@ -1,0 +1,57 @@
+using Gtk 4.0;
+
+template DialectThemeSwitcher : Box {
+  styles [
+    "themeswitcher",
+  ]
+
+  hexpand: true;
+
+  Box box {
+    hexpand: true;
+    orientation: horizontal;
+    spacing: 12;
+
+    CheckButton system {
+      styles [
+        "theme-selector",
+        "system",
+      ]
+
+      visible: bind DialectThemeSwitcher.show-system;
+      hexpand: true;
+      halign: center;
+      focus-on-click: false;
+      tooltip-text: _("Follow system style");
+      notify::active => _on_color_scheme_changed();
+    }
+
+    CheckButton light {
+      styles [
+        "theme-selector",
+        "light",
+      ]
+
+      hexpand: true;
+      halign: center;
+      group: system;
+      focus-on-click: false;
+      tooltip-text: _("Light style");
+      notify::active => _on_color_scheme_changed();
+    }
+
+    CheckButton dark {
+      styles [
+        "theme-selector",
+        "dark",
+      ]
+
+      hexpand: true;
+      halign: center;
+      group: system;
+      focus-on-click: false;
+      tooltip-text: _("Dark style");
+      notify::active => _on_color_scheme_changed();
+    }
+  }
+}

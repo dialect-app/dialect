@@ -1,0 +1,620 @@
+using Gtk 4.0;
+using Adw 1;
+
+menu app-menu {
+  section {
+    item {
+      custom: "theme";
+    }
+  }
+
+  section {
+    id: "preferences-section";
+
+    item {
+      label: _("Show Pronunciation");
+      action: "app.pronunciation";
+    }
+  }
+
+  section {
+    id: "help-section";
+
+    item {
+      label: _("Preferences");
+      action: "app.preferences";
+    }
+
+    item {
+      label: _("Keyboard Shortcuts");
+      action: "win.show-help-overlay";
+    }
+
+    item {
+      label: _("About Dialect");
+      action: "app.about";
+    }
+  }
+}
+
+template DialectWindow : Adw.ApplicationWindow {
+  default-width: "800";
+  default-height: "300";
+  focus-widget: src_text;
+
+  Stack main_stack {
+    transition-type: crossfade;
+
+    StackPage {
+      name: "loading";
+      child: 
+      WindowHandle {
+        Box {
+          orientation: vertical;
+          spacing: 12;
+          margin-top: 12;
+          margin-bottom: 12;
+          margin-start: 12;
+          margin-end: 12;
+          halign: center;
+          valign: center;
+
+          Spinner {
+            spinning: true;
+            width-request: 32;
+            height-request: 32;
+          }
+
+          Label {
+            wrap: true;
+            label: _("Loading…");
+
+            styles [
+              "title-1",
+            ]
+          }
+        }
+      }
+
+      ;
+    }
+
+    StackPage {
+      name: "error";
+      child: 
+      WindowHandle {
+        child:         Box {
+          orientation: vertical;
+
+          Adw.HeaderBar {
+            styles [
+              "flat",
+            ]
+          }
+
+          Adw.StatusPage error_page {
+            vexpand: true;
+            child: 
+            Box {
+              spacing: 12;
+              halign: center;
+
+              Button retry_backend_btn {
+                label: _("Retry");
+
+                styles [
+                  "pill",
+                  "suggested-action",
+                ]
+              }
+
+              Button {
+                label: _("Open Preferences");
+                action-name: "app.preferences";
+
+                styles [
+                  "pill",
+                ]
+              }
+            }
+
+            ;
+          }
+        }
+
+        ;
+      }
+
+      ;
+    }
+
+    StackPage {
+      name: "api-key";
+      child: 
+      WindowHandle {
+        child:         Box {
+          orientation: vertical;
+
+          Adw.HeaderBar {
+            styles [
+              "flat",
+            ]
+          }
+
+          Adw.StatusPage key_page {
+            icon-name: "dialog-password-symbolic";
+            vexpand: true;
+            child: 
+            Box {
+              spacing: 12;
+              halign: center;
+
+              Button rmv_key_btn {
+                visible: false;
+                label: _("Remove Key and Retry");
+
+                styles [
+                  "pill",
+                  "suggested-action",
+                ]
+              }
+
+              Button {
+                label: _("Open Preferences");
+                action-name: "app.preferences";
+
+                styles [
+                  "pill",
+                ]
+              }
+            }
+
+            ;
+          }
+        }
+
+        ;
+      }
+
+      ;
+    }
+
+    StackPage {
+      name: "translate";
+      child: 
+      Box {
+        orientation: vertical;
+
+        Adw.HeaderBar {
+          centering-policy: strict;
+          title-widget: 
+          Stack title_stack {
+            transition-type: crossfade;
+
+            StackPage {
+              name: "selector";
+              child: 
+              Box langs_button_box {
+                spacing: 6;
+
+                MenuButton src_lang_btn {
+                  always-show-arrow: true;
+
+                  styles [
+                    "raised",
+                  ]
+
+                  Label src_lang_label {
+                    ellipsize: end;
+                    xalign: 0;
+                  }
+                }
+
+                Button switch_btn {
+                  action-name: "win.switch";
+                  tooltip-text: _("Switch languages");
+                  icon-name: "object-flip-horizontal-symbolic";
+                }
+
+                MenuButton dest_lang_btn {
+                  always-show-arrow: true;
+
+                  styles [
+                    "raised",
+                  ]
+
+                  Label dest_lang_label {
+                    ellipsize: end;
+                    xalign: 0;
+                  }
+                }
+              }
+
+              ;
+            }
+
+            StackPage {
+              name: "label";
+              child: 
+              Adw.WindowTitle {
+                title: _("Dialect");
+              }
+
+              ;
+            }
+          }
+
+          ;
+
+          Button return_btn {
+            action-name: "win.back";
+            tooltip-text: _("Previous translation");
+            icon-name: "go-previous-symbolic";
+          }
+
+          Button forward_btn {
+            action-name: "win.forward";
+            tooltip-text: _("Next translation");
+            icon-name: "go-next-symbolic";
+          }
+
+          [end]
+          MenuButton menu_btn {
+            menu-model: app-menu;
+            icon-name: "open-menu-symbolic";
+            primary: true;
+          }
+        }
+
+        Adw.ToastOverlay toast_overlay {
+          vexpand: true;
+
+          Box {
+            orientation: vertical;
+
+            Box translator_box {
+              vexpand: true;
+              spacing: 12;
+              homogeneous: true;
+              overflow: hidden;
+
+              styles [
+                "translation-box",
+              ]
+
+              Box {
+                orientation: vertical;
+                overflow: hidden;
+
+                styles [
+                  "card",
+                  "translation-side-box",
+                ]
+
+                ScrolledWindow src_scroller {
+                  vexpand: true;
+                  child: 
+                  TextView src_text {
+                    wrap-mode: word_char;
+                    left-margin: 9;
+                    right-margin: 9;
+                    top-margin: 9;
+                    bottom-margin: 9;
+
+                    EventControllerKey src_key_ctrlr {
+                    }
+                  }
+
+                  ;
+                }
+
+                Revealer mistakes {
+                  can-focus: false;
+                  reveal-child: false;
+
+                  Box {
+                    can-focus: false;
+                    orientation: horizontal;
+                    spacing: 8;
+
+                    Image {
+                      can-focus: false;
+                      icon-name: "error-correct-symbolic";
+                    }
+
+                    Label mistakes_label {
+                      can-focus: false;
+                      wrap: true;
+                      wrap-mode: word_char;
+                    }
+
+                    styles [
+                      "mistakes",
+                    ]
+                  }
+                }
+
+                Revealer src_pron_revealer {
+                  transition-type: slide_down;
+                  reveal-child: false;
+
+                  ScrolledWindow {
+                    margin-bottom: 2;
+
+                    Label src_pron_label {
+                      margin-start: 9;
+                      margin-end: 9;
+                      xalign: 0;
+                      wrap: true;
+                      wrap-mode: word_char;
+                      selectable: true;
+
+                      styles [
+                        "dim-label",
+                      ]
+                    }
+
+                    styles [
+                      "pronunciation",
+                    ]
+                  }
+                }
+
+                Box {
+                  Button clear_btn {
+                    action-name: "win.clear";
+                    tooltip-text: _("Clear");
+                    icon-name: "edit-clear-all-symbolic";
+                  }
+
+                  Button paste_btn {
+                    action-name: "win.paste";
+                    tooltip-text: _("Paste");
+                    icon-name: "edit-paste-symbolic";
+                  }
+
+                  Button src_voice_btn {
+                    action-name: "win.listen-src";
+                    tooltip-text: _("Listen");
+
+                    styles [
+                      "flat",
+                    ]
+                  }
+
+                  Label char_counter {
+                    margin-start: 4;
+                    margin-end: 4;
+                    hexpand: true;
+                    halign: end;
+
+                    styles [
+                      "dim-label",
+                      "caption-heading",
+                    ]
+                  }
+
+                  Button translate_btn {
+                    label: _("Translate");
+                    action-name: "win.translation";
+
+                    styles [
+                      "suggested-action",
+                    ]
+                  }
+
+                  styles [
+                    "toolbar",
+                  ]
+                }
+              }
+
+              Box dest_box {
+                orientation: vertical;
+                overflow: hidden;
+
+                styles [
+                  "card",
+                  "translation-side-box",
+                ]
+
+                ScrolledWindow dest_scroller {
+                  vexpand: true;
+                  child: 
+                  TextView dest_text {
+                    editable: false;
+                    wrap-mode: word_char;
+                    left-margin: 9;
+                    right-margin: 9;
+                    top-margin: 9;
+                    bottom-margin: 9;
+                  }
+
+                  ;
+                }
+
+                Revealer dest_pron_revealer {
+                  transition-type: slide_down;
+                  reveal-child: false;
+
+                  ScrolledWindow {
+                    margin-bottom: 2;
+
+                    Label dest_pron_label {
+                      margin-start: 9;
+                      margin-end: 9;
+                      xalign: 0;
+                      wrap: true;
+                      wrap-mode: word_char;
+                      selectable: true;
+
+                      styles [
+                        "dim-label",
+                      ]
+                    }
+
+                    styles [
+                      "pronunciation",
+                    ]
+                  }
+                }
+
+                Stack dest_toolbar_stack {
+                  transition-type: crossfade;
+
+                  StackPage {
+                    name: "default";
+                    child: 
+                    Box {
+                      Spinner trans_spinner {
+                        tooltip-text: _("Translating…");
+                        margin-start: 8;
+                      }
+
+                      Image trans_warning {
+                        tooltip-text: _("Could not translate the text");
+                        margin-start: 8;
+                        icon-name: "dialog-warning-symbolic";
+                      }
+
+                      Button copy_btn {
+                        action-name: "win.copy";
+                        tooltip-text: _("Copy");
+                        icon-name: "edit-copy-symbolic";
+                        hexpand: true;
+                        halign: end;
+                      }
+
+                      Button edit_btn {
+                        action-name: "win.suggest";
+                        tooltip-text: _("Suggest Translation");
+                        icon-name: "document-edit-symbolic";
+                      }
+
+                      Button dest_voice_btn {
+                        action-name: "win.listen-dest";
+                        tooltip-text: _("Listen");
+
+                        styles [
+                          "flat",
+                        ]
+                      }
+
+                      styles [
+                        "toolbar",
+                      ]
+                    }
+
+                    ;
+                  }
+
+                  StackPage {
+                    name: "edit";
+                    child: 
+                    Box {
+                      Button cancel_btn {
+                        action-name: "win.suggest-cancel";
+                        label: _("Cancel");
+                        hexpand: true;
+                        halign: end;
+                      }
+
+                      Button save_btn {
+                        action-name: "win.suggest-ok";
+                        label: _("Save");
+
+                        styles [
+                          "suggested-action",
+                        ]
+                      }
+
+                      styles [
+                        "toolbar",
+                      ]
+                    }
+
+                    ;
+                  }
+                }
+              }
+            }
+
+            Revealer actionbar {
+              transition-type: slide_down;
+              reveal-child: false;
+
+              Box {
+                orientation: vertical;
+
+                Box {
+                  sensitive: bind langs_button_box.sensitive no-sync-create;
+                  margin-start: 8;
+                  margin-end: 8;
+                  margin-top: 8;
+                  margin-bottom: 8;
+                  hexpand: true;
+
+                  MenuButton src_lang_btn2 {
+                    hexpand: true;
+                    sensitive: bind src_lang_btn.sensitive no-sync-create;
+                    focus-on-click: false;
+                    always-show-arrow: true;
+
+                    Label {
+                      label: bind src_lang_label.label no-sync-create;
+                      ellipsize: end;
+                      xalign: 0;
+                    }
+                  }
+
+                  Button switch_btn2 {
+                    sensitive: bind switch_btn.sensitive no-sync-create;
+                    tooltip-text: _("Switch languages");
+                    action-name: "win.switch";
+                    icon-name: "object-flip-horizontal-symbolic";
+                  }
+
+                  MenuButton dest_lang_btn2 {
+                    hexpand: true;
+                    sensitive: bind dest_lang_btn.sensitive no-sync-create;
+                    focus-on-click: false;
+                    always-show-arrow: true;
+
+                    Label {
+                      label: bind dest_lang_label.label no-sync-create;
+                      ellipsize: end;
+                      xalign: 0;
+                    }
+                  }
+
+                  styles [
+                    "linked",
+                  ]
+                }
+
+                styles [
+                  "bottom-bar",
+                ]
+              }
+            }
+          }
+        }
+      }
+
+      ;
+    }
+  }
+
+  EventControllerKey win_key_ctrlr {
+  }
+}
+
+Gtk.SizeGroup {
+  mode: both;
+  widgets [src_lang_btn2, dest_lang_btn2]
+}
+
+Gtk.SizeGroup {
+  mode: both;
+  widgets [src_lang_label, dest_lang_label]
+}

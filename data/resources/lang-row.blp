@@ -1,0 +1,18 @@
+using Gtk 4.0;
+
+template DialectLangRow : ListBoxRow {
+  child:   Box {
+    spacing: 6;
+
+    Label name {
+      xalign: 0;
+    }
+
+    Image selection {
+      icon-name: "object-select-symbolic";
+      visible: false;
+    }
+  }
+
+  ;
+}

@@ -143,3 +143,6 @@ dmypy.json
 
 # PyCharm settings
 .idea/
+
+# Subprojects
+/subprojects/blueprint-compiler
