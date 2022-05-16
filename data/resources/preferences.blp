@@ -1,25 +1,26 @@
 using Gtk 4.0;
+using Adw 1;
 
-template DialectPreferencesWindow : .AdwPreferencesWindow {
+template DialectPreferencesWindow : Adw.PreferencesWindow {
   default-height: "420";
   default-width: "600";
-  modal: "True";
+  modal: true;
 
-  .AdwPreferencesPage {
-    .AdwPreferencesGroup {
+  Adw.PreferencesPage {
+    Adw.PreferencesGroup {
       title: _("Behavior");
 
-      .AdwExpanderRow live_translation {
+      Adw.ExpanderRow live_translation {
         title: _("Live Translation");
         subtitle: _("Warning: Your IP address may get banned for API abuse.");
-        show-enable-switch: "True";
-        enable-expansion: "False";
-        expanded: "True";
+        show-enable-switch: true;
+        enable-expansion: false;
+        expanded: true;
 
-        .AdwActionRow search_provider {
+        Adw.ActionRow search_provider {
           title: _("Show Translations in Search Provider");
           subtitle: _("Warning: All desktop searches will be sent to the translation service");
-          activatable-widget: "sp_translation";
+          activatable-widget: sp_translation;
 
           Switch sp_translation {
             valign: center;
@@ -27,7 +28,7 @@ template DialectPreferencesWindow : .AdwPreferencesWindow {
         }
       }
 
-      .AdwComboRow translate_accel {
+      Adw.ComboRow translate_accel {
         title: _("Translation Shortcut");
         subtitle: _("The unselected choice will be used for line break.");
         model: 
@@ -36,22 +37,22 @@ template DialectPreferencesWindow : .AdwPreferencesWindow {
         };
       }
 
-      .AdwActionRow {
+      Adw.ActionRow {
         title: _("Default to Auto");
         subtitle: _("Use \"Auto\" as the default language");
-        activatable-widget: "src_auto";
+        activatable-widget: src_auto;
 
         Switch src_auto {
           valign: center;
         }
       }
 
-      .AdwComboRow backend {
+      Adw.ComboRow backend {
         title: _("Translator");
         subtitle: _("Choose from the available translation services.");
       }
 
-      .AdwActionRow backend_instance_row {
+      Adw.ActionRow backend_instance_row {
         title: _("Translator Instance");
         subtitle: _("Enter a translation service URL.");
 
@@ -116,7 +117,7 @@ template DialectPreferencesWindow : .AdwPreferencesWindow {
         }
       }
 
-      .AdwActionRow api_key_row {
+      Adw.ActionRow api_key_row {
         title: _("API Key");
         subtitle: _("Enter an API key for the translation service.");
 
@@ -181,10 +182,10 @@ template DialectPreferencesWindow : .AdwPreferencesWindow {
         }
       }
 
-      .AdwActionRow tts_row {
+      Adw.ActionRow tts_row {
         title: _("Text-to-Speech");
         subtitle: _("Use Google for TTS.");
-        activatable-widget: "tts";
+        activatable-widget: tts;
 
         Switch tts {
           valign: center;

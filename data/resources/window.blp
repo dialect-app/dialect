@@ -1,4 +1,5 @@
 using Gtk 4.0;
+using Adw 1;
 
 menu app-menu {
   section {
@@ -36,10 +37,10 @@ menu app-menu {
   }
 }
 
-template DialectWindow : .AdwApplicationWindow {
+template DialectWindow : Adw.ApplicationWindow {
   default-width: "800";
   default-height: "300";
-  focus-widget: "src_text";
+  focus-widget: src_text;
 
   Stack main_stack {
     transition-type: crossfade;
@@ -85,14 +86,14 @@ template DialectWindow : .AdwApplicationWindow {
         child:         Box {
           orientation: vertical;
 
-          .AdwHeaderBar {
+          Adw.HeaderBar {
             styles [
               "flat",
             ]
           }
 
-          .AdwStatusPage error_page {
-            vexpand: "True";
+          Adw.StatusPage error_page {
+            vexpand: true;
             child: 
             Box {
               spacing: 12;
@@ -134,15 +135,15 @@ template DialectWindow : .AdwApplicationWindow {
         child:         Box {
           orientation: vertical;
 
-          .AdwHeaderBar {
+          Adw.HeaderBar {
             styles [
               "flat",
             ]
           }
 
-          .AdwStatusPage key_page {
+          Adw.StatusPage key_page {
             icon-name: "dialog-password-symbolic";
-            vexpand: "True";
+            vexpand: true;
             child: 
             Box {
               spacing: 12;
@@ -184,8 +185,8 @@ template DialectWindow : .AdwApplicationWindow {
       Box {
         orientation: vertical;
 
-        .AdwHeaderBar {
-          centering-policy: "strict";
+        Adw.HeaderBar {
+          centering-policy: strict;
           title-widget: 
           Stack title_stack {
             transition-type: crossfade;
@@ -235,7 +236,7 @@ template DialectWindow : .AdwApplicationWindow {
             StackPage {
               name: "label";
               child: 
-              .AdwWindowTitle {
+              Adw.WindowTitle {
                 title: _("Dialect");
               }
 
@@ -265,8 +266,8 @@ template DialectWindow : .AdwApplicationWindow {
           }
         }
 
-        .AdwToastOverlay toast_overlay {
-          vexpand: "True";
+        Adw.ToastOverlay toast_overlay {
+          vexpand: true;
 
           Box {
             orientation: vertical;
