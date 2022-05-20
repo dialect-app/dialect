@@ -13,8 +13,9 @@
       Features:
     </p>
     <ul>
-      <li>Translation based on an unofficial API for Google Translate</li>
-      <li>Translation based on the LibreTranslate API, allowing you use any instance available online</li>
+      <li>Translation based on Google Translate</li>
+      <li>Translation based on the LibreTranslate API, allowing you to use any public instance</li>
+      <li>Translation based on Lingva Translate API</li>
       <li>Text to speech</li>
       <li>Translation history</li>
       <li>Automatic language detection</li>
