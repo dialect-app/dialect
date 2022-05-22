@@ -340,7 +340,7 @@ class DialectWindow(Adw.ApplicationWindow):
             description = description.format(url=url)
 
         if network:
-            title = _('Could’t connect to the translation service')
+            title = _('Couldn’t connect to the translation service')
             description = _('We can’t connect to the server. Please check for network issues.')
             if self.translator.supported_features['change-instance']:
                 description = _('We can’t connect to the {service} instance "{url}".\n Please check for network issues or if the address is correct.')
@@ -914,7 +914,7 @@ class DialectWindow(Adw.ApplicationWindow):
         elif message.type == Gst.MessageType.ERROR:
             self.player.set_state(Gst.State.NULL)
             self.player_event.set()
-            logging.error('Some error occured while trying to play.')
+            logging.error('Some error occurred while trying to play.')
 
     def voice_download(self, text, language, called_from):
         try:
