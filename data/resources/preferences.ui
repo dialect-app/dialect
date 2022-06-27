@@ -18,7 +18,7 @@
                 <property name="expanded">True</property>
                 <child>
                   <object class="AdwActionRow" id="search_provider">
-                    <property name="title" translatable="yes">Show Translations in Search Provider</property>
+                    <property name="title" translatable="yes">Show Translations in Desktop Search</property>
                     <property name="subtitle" translatable="yes">Warning: All desktop searches will be sent to the translation service</property>
                     <property name="activatable_widget">sp_translation</property>
                     <child>
