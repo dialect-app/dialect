@@ -43,6 +43,24 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="2.0.0" date="2022-07-13">
+      <description>
+        <ul>
+          <li>Ported to GTK4 and libadwaita</li>
+          <li>New in-app color scheme switcher</li>
+          <li>Added Lingva Translate support</li>
+          <li>Google Translate module rewritten from scratch to not rely on external libraries and improve reliability.</li>
+          <li>GNOME Search Provider improvements</li>
+          <li>APP ID changed to app.drey.Dialect</li>
+          <li>Added API keys support for LibreTranslate</li>
+          <li>Added translation suggestions support for LibreTranslate</li>
+          <li>Fixed proxies by rewriting the http backend</li>
+          <li>Character limit is now service-dependent</li>
+          <li>Major code base refactoring</li>
+          <li>Fixed several bugs</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.4.1" date="2021-10-20">
       <description>
         <ul>
