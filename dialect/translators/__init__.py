@@ -40,6 +40,7 @@ LANGUAGES = {
     'zh': _('Chinese'),
     'zh-CN': _('Chinese (Simplified)'),
     'zh-TW': _('Chinese (Traditional)'),
+    'zh_HANT': _('Chinese (Traditional)'),
     'co': _('Corsican'),
     'hr': _('Croatian'),
     'cs': _('Czech'),
