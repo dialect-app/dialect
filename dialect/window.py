@@ -144,6 +144,7 @@ class DialectWindow(Adw.ApplicationWindow):
         # Connect responsive design function
         self.connect('notify::default-width', self.responsive_listener)
         self.connect('notify::maximized', self.responsive_listener)
+        self.connect('notify::scale-factor', self.responsive_listener)
         # Save settings on close
         self.connect('unrealize', self.save_settings)
 
@@ -496,7 +497,7 @@ class DialectWindow(Adw.ApplicationWindow):
             width = size.width
             height = size.height
 
-        if width < 680 and not self.is_maximized():
+        if width / self.get_scale_factor() < 680 and not self.is_maximized():
             if self.mobile_mode is False:
                 self.mobile_mode = True
                 self.toggle_mobile_mode()
