@@ -43,6 +43,13 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="2.0.1" date="2022-07-14">
+      <description>
+        <ul>
+          <li>Fixed an issue with scale factor</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.0.0" date="2022-07-13">
       <description>
         <ul>
