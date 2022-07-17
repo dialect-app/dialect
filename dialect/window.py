@@ -141,16 +141,11 @@ class DialectWindow(Adw.ApplicationWindow):
         theme_switcher = DialectThemeSwitcher()
         self.menu_btn.get_popover().add_child(theme_switcher, 'theme')
 
-        # Connect responsive design function
-        self.connect('notify::default-width', self.responsive_listener)
-        self.connect('notify::maximized', self.responsive_listener)
-        self.connect('notify::scale-factor', self.responsive_listener)
         # Save settings on close
         self.connect('unrealize', self.save_settings)
 
         self.setup_headerbar()
         self.setup_translation()
-        self.responsive_listener(launch=True)
         self.set_help_overlay(DialectShortcutsWindow())
 
         # Load translator
@@ -160,6 +155,18 @@ class DialectWindow(Adw.ApplicationWindow):
         # Get languages available for speech
         if Settings.get().active_tts != '':
             threading.Thread(target=self.load_lang_speech, daemon=True).start()
+
+    def do_size_allocate(self, width, height, baseline):
+        if width < 680:
+            if self.mobile_mode is False:
+                self.mobile_mode = True
+                self.toggle_mobile_mode()
+        else:
+            if self.mobile_mode is True:
+                self.mobile_mode = False
+                self.toggle_mobile_mode()
+
+        Adw.ApplicationWindow.do_size_allocate(self, width, height, baseline)
 
     def setup_actions(self):
         back = Gio.SimpleAction.new('back', None)
@@ -488,26 +495,6 @@ class DialectWindow(Adw.ApplicationWindow):
 
         self.src_voice_btn.set_visible(Settings.get().active_tts != '')
         self.dest_voice_btn.set_visible(Settings.get().active_tts != '')
-
-    def responsive_listener(self, _window=None, _param=None, launch=False):
-        if launch:
-            width, height = Settings.get().window_size
-        else:
-            size = self.get_default_size()
-            width = size.width
-            height = size.height
-
-        if width / self.get_scale_factor() < 680 and not self.is_maximized():
-            if self.mobile_mode is False:
-                self.mobile_mode = True
-                self.toggle_mobile_mode()
-        else:
-            if self.mobile_mode is True:
-                self.mobile_mode = False
-                self.toggle_mobile_mode()
-
-        if launch:
-            self.set_default_size(width, height)
 
     def toggle_mobile_mode(self):
         if self.mobile_mode:
