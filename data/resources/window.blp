@@ -539,66 +539,46 @@ template DialectWindow : Adw.ApplicationWindow {
               }
             }
 
-            Revealer actionbar {
-              transition-type: slide_down;
-              reveal-child: false;
+            ActionBar actionbar {
+              sensitive: bind langs_button_box.sensitive no-sync-create;
+              revealed: false;
 
-              Box {
-                sensitive: bind langs_button_box.sensitive no-sync-create;
-                hexpand: true;
+              MenuButton src_lang_btn2 {
+                sensitive: bind src_lang_btn.sensitive no-sync-create;
+                focus-on-click: false;
+                always-show-arrow: true;
 
-                MenuButton src_lang_btn2 {
-                  hexpand: true;
-                  sensitive: bind src_lang_btn.sensitive no-sync-create;
-                  focus-on-click: false;
-                  always-show-arrow: true;
-
-                  Label {
-                    label: bind src_lang_label.label no-sync-create;
-                    ellipsize: end;
-                    xalign: 0;
-                  }
-
-                  styles [
-                    "raised"
-                  ]
+                Label {
+                  label: bind src_lang_label.label no-sync-create;
+                  ellipsize: end;
+                  xalign: 0;
                 }
+              }
 
-                Button switch_btn2 {
-                  sensitive: bind switch_btn.sensitive no-sync-create;
-                  tooltip-text: _("Switch languages");
-                  action-name: "win.switch";
-                  icon-name: "object-flip-horizontal-symbolic";
+              [center]
+              Button switch_btn2 {
+                sensitive: bind switch_btn.sensitive no-sync-create;
+                tooltip-text: _("Switch languages");
+                action-name: "win.switch";
+                icon-name: "object-flip-horizontal-symbolic";
+              }
+
+              [end]
+              MenuButton dest_lang_btn2 {
+                sensitive: bind dest_lang_btn.sensitive no-sync-create;
+                focus-on-click: false;
+                always-show-arrow: true;
+
+                Label {
+                  label: bind dest_lang_label.label no-sync-create;
+                  ellipsize: end;
+                  xalign: 0;
                 }
-
-                MenuButton dest_lang_btn2 {
-                  hexpand: true;
-                  sensitive: bind dest_lang_btn.sensitive no-sync-create;
-                  focus-on-click: false;
-                  always-show-arrow: true;
-
-                  Label {
-                    label: bind dest_lang_label.label no-sync-create;
-                    ellipsize: end;
-                    xalign: 0;
-                  }
-
-                  styles [
-                    "raised"
-                  ]
-                }
-
-                styles [
-                  "bottom-bar",
-                  "toolbar"
-                ]
               }
             }
           }
         }
-      }
-
-      ;
+      };
     }
   }
 

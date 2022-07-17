@@ -499,7 +499,7 @@ class DialectWindow(Adw.ApplicationWindow):
     def toggle_mobile_mode(self):
         if self.mobile_mode:
             # Show actionbar
-            self.actionbar.set_reveal_child(True)
+            self.actionbar.set_revealed(True)
             # Change headerbar title
             self.title_stack.set_visible_child_name('label')
             # Change translation box orientation
@@ -511,7 +511,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.dest_lang_btn2.set_popover(self.dest_lang_selector)
         else:
             # Hide actionbar
-            self.actionbar.set_reveal_child(False)
+            self.actionbar.set_revealed(False)
             # Reset headerbar title
             self.title_stack.set_visible_child_name('selector')
             # Reset translation box orientation
