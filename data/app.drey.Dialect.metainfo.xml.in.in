@@ -43,6 +43,15 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="2.0.2" date="2022-07-17">
+      <description>
+        <ul>
+          <li>Fixed responsive implementation</li>
+          <li>Fixed small stylings</li>
+          <li>Updated translations</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.0.1" date="2022-07-14">
       <description>
         <ul>
