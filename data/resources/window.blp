@@ -47,8 +47,7 @@ template DialectWindow : Adw.ApplicationWindow {
 
     StackPage {
       name: "loading";
-      child: 
-      WindowHandle {
+      child: WindowHandle {
         Box {
           orientation: vertical;
           spacing: 12;
@@ -74,16 +73,13 @@ template DialectWindow : Adw.ApplicationWindow {
             ]
           }
         }
-      }
-
-      ;
+      };
     }
 
     StackPage {
       name: "error";
-      child: 
-      WindowHandle {
-        child:         Box {
+      child: WindowHandle {
+        child: Box {
           orientation: vertical;
 
           Adw.HeaderBar {
@@ -94,8 +90,7 @@ template DialectWindow : Adw.ApplicationWindow {
 
           Adw.StatusPage error_page {
             vexpand: true;
-            child: 
-            Box {
+            child: Box {
               spacing: 12;
               halign: center;
 
@@ -116,23 +111,16 @@ template DialectWindow : Adw.ApplicationWindow {
                   "pill",
                 ]
               }
-            }
-
-            ;
+            };
           }
-        }
-
-        ;
-      }
-
-      ;
+        };
+      };
     }
 
     StackPage {
       name: "api-key";
-      child: 
-      WindowHandle {
-        child:         Box {
+      child: WindowHandle {
+        child: Box {
           orientation: vertical;
 
           Adw.HeaderBar {
@@ -144,8 +132,7 @@ template DialectWindow : Adw.ApplicationWindow {
           Adw.StatusPage key_page {
             icon-name: "dialog-password-symbolic";
             vexpand: true;
-            child: 
-            Box {
+            child: Box {
               spacing: 12;
               halign: center;
 
@@ -167,16 +154,10 @@ template DialectWindow : Adw.ApplicationWindow {
                   "pill",
                 ]
               }
-            }
-
-            ;
+            };
           }
-        }
-
-        ;
-      }
-
-      ;
+        };
+      };
     }
 
     StackPage {
@@ -193,8 +174,7 @@ template DialectWindow : Adw.ApplicationWindow {
 
               StackPage {
                 name: "selector";
-                child: 
-                Box langs_button_box {
+                child: Box langs_button_box {
                   spacing: 6;
 
                   MenuButton src_lang_btn {
@@ -228,23 +208,16 @@ template DialectWindow : Adw.ApplicationWindow {
                       xalign: 0;
                     }
                   }
-                }
-
-                ;
+                };
               }
 
               StackPage {
                 name: "label";
-                child: 
-                Adw.WindowTitle {
+                child: Adw.WindowTitle {
                   title: _("Dialect");
-                }
-
-                ;
+                };
               }
-            }
-
-            ;
+            };
 
             Button return_btn {
               action-name: "win.back";
@@ -289,19 +262,15 @@ template DialectWindow : Adw.ApplicationWindow {
 
                 ScrolledWindow src_scroller {
                   vexpand: true;
-                  child: 
-                  TextView src_text {
+                  child: TextView src_text {
                     wrap-mode: word_char;
                     left-margin: 9;
                     right-margin: 9;
                     top-margin: 9;
                     bottom-margin: 9;
 
-                    EventControllerKey src_key_ctrlr {
-                    }
-                  }
-
-                  ;
+                    EventControllerKey src_key_ctrlr {}
+                  };
                 }
 
                 Revealer mistakes {
@@ -416,17 +385,14 @@ template DialectWindow : Adw.ApplicationWindow {
 
                 ScrolledWindow dest_scroller {
                   vexpand: true;
-                  child: 
-                  TextView dest_text {
+                  child: TextView dest_text {
                     editable: false;
                     wrap-mode: word_char;
                     left-margin: 9;
                     right-margin: 9;
                     top-margin: 9;
                     bottom-margin: 9;
-                  }
-
-                  ;
+                  };
                 }
 
                 Revealer dest_pron_revealer {
@@ -460,8 +426,7 @@ template DialectWindow : Adw.ApplicationWindow {
 
                   StackPage {
                     name: "default";
-                    child: 
-                    Box {
+                    child: Box {
                       Spinner trans_spinner {
                         tooltip-text: _("Translating…");
                         margin-start: 8;
@@ -499,15 +464,12 @@ template DialectWindow : Adw.ApplicationWindow {
                       styles [
                         "toolbar",
                       ]
-                    }
-
-                    ;
+                    };
                   }
 
                   StackPage {
                     name: "edit";
-                    child: 
-                    Box {
+                    child: Box {
                       Button cancel_btn {
                         action-name: "win.suggest-cancel";
                         label: _("Cancel");
@@ -527,9 +489,7 @@ template DialectWindow : Adw.ApplicationWindow {
                       styles [
                         "toolbar",
                       ]
-                    }
-
-                    ;
+                    };
                   }
                 }
               }
@@ -578,8 +538,7 @@ template DialectWindow : Adw.ApplicationWindow {
     }
   }
 
-  EventControllerKey win_key_ctrlr {
-  }
+  EventControllerKey win_key_ctrlr {}
 }
 
 Gtk.SizeGroup {
