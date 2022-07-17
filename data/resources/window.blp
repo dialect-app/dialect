@@ -181,93 +181,90 @@ template DialectWindow : Adw.ApplicationWindow {
 
     StackPage {
       name: "translate";
-      child: 
-      Box {
-        orientation: vertical;
+      child: Adw.ToastOverlay toast_overlay {
+        vexpand: true;
+        child: Box {
+          orientation: vertical;
+          Adw.HeaderBar {
+            centering-policy: strict;
+            title-widget: 
+            Stack title_stack {
+              transition-type: crossfade;
 
-        Adw.HeaderBar {
-          centering-policy: strict;
-          title-widget: 
-          Stack title_stack {
-            transition-type: crossfade;
+              StackPage {
+                name: "selector";
+                child: 
+                Box langs_button_box {
+                  spacing: 6;
 
-            StackPage {
-              name: "selector";
-              child: 
-              Box langs_button_box {
-                spacing: 6;
+                  MenuButton src_lang_btn {
+                    always-show-arrow: true;
 
-                MenuButton src_lang_btn {
-                  always-show-arrow: true;
+                    styles [
+                      "raised",
+                    ]
 
-                  styles [
-                    "raised",
-                  ]
+                    Label src_lang_label {
+                      ellipsize: end;
+                      xalign: 0;
+                    }
+                  }
 
-                  Label src_lang_label {
-                    ellipsize: end;
-                    xalign: 0;
+                  Button switch_btn {
+                    action-name: "win.switch";
+                    tooltip-text: _("Switch languages");
+                    icon-name: "object-flip-horizontal-symbolic";
+                  }
+
+                  MenuButton dest_lang_btn {
+                    always-show-arrow: true;
+
+                    styles [
+                      "raised",
+                    ]
+
+                    Label dest_lang_label {
+                      ellipsize: end;
+                      xalign: 0;
+                    }
                   }
                 }
 
-                Button switch_btn {
-                  action-name: "win.switch";
-                  tooltip-text: _("Switch languages");
-                  icon-name: "object-flip-horizontal-symbolic";
-                }
-
-                MenuButton dest_lang_btn {
-                  always-show-arrow: true;
-
-                  styles [
-                    "raised",
-                  ]
-
-                  Label dest_lang_label {
-                    ellipsize: end;
-                    xalign: 0;
-                  }
-                }
+                ;
               }
 
-              ;
-            }
+              StackPage {
+                name: "label";
+                child: 
+                Adw.WindowTitle {
+                  title: _("Dialect");
+                }
 
-            StackPage {
-              name: "label";
-              child: 
-              Adw.WindowTitle {
-                title: _("Dialect");
+                ;
               }
+            }
 
-              ;
+            ;
+
+            Button return_btn {
+              action-name: "win.back";
+              tooltip-text: _("Previous translation");
+              icon-name: "go-previous-symbolic";
+            }
+
+            Button forward_btn {
+              action-name: "win.forward";
+              tooltip-text: _("Next translation");
+              icon-name: "go-next-symbolic";
+            }
+
+            [end]
+            MenuButton menu_btn {
+              menu-model: app-menu;
+              icon-name: "open-menu-symbolic";
+              primary: true;
             }
           }
-
-          ;
-
-          Button return_btn {
-            action-name: "win.back";
-            tooltip-text: _("Previous translation");
-            icon-name: "go-previous-symbolic";
-          }
-
-          Button forward_btn {
-            action-name: "win.forward";
-            tooltip-text: _("Next translation");
-            icon-name: "go-next-symbolic";
-          }
-
-          [end]
-          MenuButton menu_btn {
-            menu-model: app-menu;
-            icon-name: "open-menu-symbolic";
-            primary: true;
-          }
-        }
-
-        Adw.ToastOverlay toast_overlay {
-          vexpand: true;
 
           Box {
             orientation: vertical;
@@ -276,7 +273,6 @@ template DialectWindow : Adw.ApplicationWindow {
               vexpand: true;
               spacing: 12;
               homogeneous: true;
-              overflow: hidden;
 
               styles [
                 "translation-box",
@@ -577,7 +573,7 @@ template DialectWindow : Adw.ApplicationWindow {
               }
             }
           }
-        }
+        };
       };
     }
   }
