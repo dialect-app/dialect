@@ -149,10 +149,17 @@ class Dialect(Adw.Application):
         """ Show about dialog """
         builder = Gtk.Builder.new_from_resource(f'{RES_PATH}/about.ui')
         about = builder.get_object('about')
-        about.set_authors(["Mufeed Ali", "Rafael Mardojai CM"])
-        about.set_transient_for(self.window)
-        about.set_logo_icon_name(APP_ID)
+
+        about.set_application_icon(APP_ID)
         about.set_version(VERSION)
+        about.set_developers(
+            [
+                "Mufeed Ali",
+                "Rafael Mardojai CM http://rafaelmardojai.com"
+            ]
+        )
+
+        about.set_transient_for(self.window)
         about.present()
 
     def _on_quit(self, _action, _param):
