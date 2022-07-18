@@ -1138,7 +1138,7 @@ class DialectWindow(Adw.ApplicationWindow):
         # Pronunciation
         reveal = Settings.get().show_pronunciation
         if self.translator.supported_features['pronunciation']:
-            if self.trans_src_pron is not None:
+            if self.trans_src_pron is not None and self.trans_mistakes == [None, None]:
                 self.src_pron_label.set_text(self.trans_src_pron)
                 self.src_pron_revealer.set_reveal_child(reveal)
             elif self.src_pron_revealer.get_reveal_child():
