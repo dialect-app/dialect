@@ -90,26 +90,64 @@ template DialectWindow : Adw.ApplicationWindow {
 
           Adw.StatusPage error_page {
             vexpand: true;
-            child: Box {
-              spacing: 12;
-              halign: center;
 
-              Button retry_backend_btn {
-                label: _("Retry");
+            child: Adw.Squeezer {
+              homogeneous: false;
 
-                styles [
-                  "pill",
-                  "suggested-action",
-                ]
+              Box {
+                spacing: 12;
+                halign: center;
+
+                Button {
+                  label: _("Retry");
+                  clicked => retry_load_translator();
+
+                  styles [
+                    "pill",
+                    "suggested-action",
+                  ]
+                }
+
+                Button {
+                  label: _("Open Preferences");
+                  action-name: "app.preferences";
+
+                  styles [
+                    "pill",
+                  ]
+                }
               }
 
-              Button {
-                label: _("Open Preferences");
-                action-name: "app.preferences";
+              Box {
+                spacing: 12;
+                orientation: vertical;
 
-                styles [
-                  "pill",
-                ]
+                Button error_retry_btn {
+                  clicked => retry_load_translator();
+
+                  styles [
+                    "pill",
+                    "suggested-action",
+                  ]
+
+                  child: Label {
+                    label: _("Retry");
+                    ellipsize: end;
+                  };
+                }
+
+                Button error_preferences_btn {
+                  action-name: "app.preferences";
+
+                  styles [
+                    "pill",
+                  ]
+
+                  child: Label {
+                    label: _("Open Preferences");
+                    ellipsize: end;
+                  };
+                }
               }
             };
           }
@@ -132,27 +170,66 @@ template DialectWindow : Adw.ApplicationWindow {
           Adw.StatusPage key_page {
             icon-name: "dialog-password-symbolic";
             vexpand: true;
-            child: Box {
-              spacing: 12;
-              halign: center;
 
-              Button rmv_key_btn {
-                visible: false;
-                label: _("Remove Key and Retry");
+            child: Adw.Squeezer {
+              homogeneous: false;
 
-                styles [
-                  "pill",
-                  "suggested-action",
-                ]
+              Box {
+                spacing: 12;
+                halign: center;
+
+                Button rmv_key_btn {
+                  visible: false;
+                  label: _("Remove Key and Retry");
+                  clicked => remove_key_and_reload();
+
+                  styles [
+                    "pill",
+                    "suggested-action",
+                  ]
+                }
+
+                Button {
+                  label: _("Open Preferences");
+                  action-name: "app.preferences";
+
+                  styles [
+                    "pill",
+                  ]
+                }
               }
 
-              Button {
-                label: _("Open Preferences");
-                action-name: "app.preferences";
+              Box {
+                spacing: 12;
+                orientation: vertical;
 
-                styles [
-                  "pill",
-                ]
+                Button error_api_key_btn {
+                  visible: false;
+                  clicked => remove_key_and_reload();
+
+                  styles [
+                    "pill",
+                    "suggested-action",
+                  ]
+
+                  child: Label {
+                    label: _("Remove Key and Retry");
+                    ellipsize: end;
+                  };
+                }
+
+                Button error_preferences2_btn {
+                  action-name: "app.preferences";
+
+                  styles [
+                    "pill",
+                  ]
+
+                  child: Label {
+                    label: _("Open Preferences");
+                    ellipsize: end;
+                  };
+                }
               }
             };
           }
@@ -549,4 +626,12 @@ Gtk.SizeGroup {
 Gtk.SizeGroup {
   mode: both;
   widgets [src_lang_label, dest_lang_label]
+}
+
+Gtk.SizeGroup {
+  widgets [error_retry_btn, error_preferences_btn]
+}
+
+Gtk.SizeGroup {
+  widgets [error_api_key_btn, error_preferences2_btn]
 }

@@ -30,9 +30,9 @@ class DialectWindow(Adw.ApplicationWindow):
     main_stack = Gtk.Template.Child()
     error_page = Gtk.Template.Child()
     translator_box = Gtk.Template.Child()
-    retry_backend_btn = Gtk.Template.Child()
     key_page = Gtk.Template.Child()
     rmv_key_btn = Gtk.Template.Child()
+    error_api_key_btn = Gtk.Template.Child()
 
     title_stack = Gtk.Template.Child()
     langs_button_box = Gtk.Template.Child()
@@ -149,8 +149,6 @@ class DialectWindow(Adw.ApplicationWindow):
         self.set_help_overlay(DialectShortcutsWindow())
 
         # Load translator
-        self.retry_backend_btn.connect('clicked', self.retry_load_translator)
-        self.rmv_key_btn.connect('clicked', self.remove_key_and_reload)
         self.load_translator(True)
         # Get languages available for speech
         if Settings.get().active_tts != '':
@@ -309,6 +307,7 @@ class DialectWindow(Adw.ApplicationWindow):
                         _('Please set a valid API key or unset the API key in the preferences.')
                     )
                     self.rmv_key_btn.set_visible(True)
+                    self.error_api_key_btn.set_visible(True)
                 self.main_stack.set_visible_child_name('api-key')
             except (TranslatorError, ResponseEmpty) as exc:
                 logging.warning(exc)
@@ -360,9 +359,11 @@ class DialectWindow(Adw.ApplicationWindow):
         self.error_page.set_title(title)
         self.error_page.set_description(description)
 
+    @Gtk.Template.Callback()
     def retry_load_translator(self, _button):
         self.load_translator()
 
+    @Gtk.Template.Callback()
     def remove_key_and_reload(self, _button):
         Settings.get().reset_api_key()
         self.load_translator()
