@@ -168,8 +168,12 @@ template DialectWindow : Adw.ApplicationWindow {
           orientation: vertical;
           Adw.HeaderBar {
             centering-policy: strict;
-            title-widget: 
-            Stack title_stack {
+
+            styles [
+              "flat"
+            ]
+
+            title-widget: Stack title_stack {
               transition-type: crossfade;
 
               StackPage {
