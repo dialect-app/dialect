@@ -1,4 +1,5 @@
 
+/* Main Window */
 .translation-box {
   padding: 12px;
 }
@@ -9,19 +10,28 @@
   color: inherit;
 }
 
+.translation-scrolled undershoot.bottom {
+  border-bottom: 1px solid @card_shade_color;
+}
+
+.translation-scrolled.top-undershoot undershoot.top {
+  border-top: 1px solid @card_shade_color;
+}
+
 .mistakes {
+  margin: 6px;
   padding-right: 12px;
   padding-left: 12px;
   padding-top: 9px;
   padding-bottom: 9px;
   background-color: mix(@accent_bg_color, @window_bg_color, 0.7);
-  border-bottom: 1px solid @borders;
 }
 
 .pronunciation {
-  border-bottom: 1px solid @borders;
+  padding: 9px;
 }
 
+/* Lang Selector */
 .search_box {
   background: @popover_bg_color;
   border-bottom: 1px solid @borders;
@@ -39,10 +49,6 @@
 
 .lang-selector separator {
   margin: 0 6px;
-}
-
-.scroller-border {
-  border-bottom: 1px solid @borders;
 }
 
 /* Theme Switcher */
