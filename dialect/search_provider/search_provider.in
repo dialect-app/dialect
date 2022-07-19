@@ -206,6 +206,7 @@ class TranslateService(dbus.service.Object):
         if key.startswith('translator-'):
             self.loaded = False
             self.translator = self._get_translator()
+            self.dest_language = Settings.get().dest_langs[0]
         if key == 'live-translation' or key == 'sp-translation':
             self.live_enabled = self.is_live_enabled()
 
