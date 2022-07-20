@@ -223,7 +223,8 @@ class Translator(TranslatorBase):
 
             if src == 'auto':
                 try:
-                    src = parsed[0][2]
+                    if parsed[0][2] in self.languages:
+                        src = parsed[0][2]
                 except (IndexError, TypeError):
                     pass
 
