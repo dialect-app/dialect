@@ -1,7 +1,11 @@
 
 /* Main Window */
 .translation-box {
-  padding: 6px 12px 12px;
+  padding: 0 12px 12px;
+}
+
+.translation-box.vertical {
+  padding-bottom: 0;
 }
 
 .translation-side-box textview,
@@ -49,6 +53,12 @@
 
 .lang-selector separator {
   margin: 0 6px;
+}
+
+/* Actionbar */
+actionbar.flat > revealer > box {
+  background: none;
+  box-shadow: none;
 }
 
 /* Theme Switcher */

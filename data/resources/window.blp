@@ -512,6 +512,10 @@ template DialectWindow : Adw.ApplicationWindow {
               sensitive: bind langs_button_box.sensitive no-sync-create;
               revealed: false;
 
+              styles [
+                "flat",
+              ]
+
               MenuButton src_lang_btn2 {
                 sensitive: bind src_lang_btn.sensitive no-sync-create;
                 focus-on-click: false;
