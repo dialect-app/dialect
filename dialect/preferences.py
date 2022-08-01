@@ -95,6 +95,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
 
         # Instance
         self.instance_entry.connect('apply', self._on_instance_apply)
+        self.instance_entry.connect('changed', self._on_instance_changed)
         self.instance_reset.connect('clicked', self._on_reset_instance)
 
         # API Key
@@ -221,6 +222,12 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             Session.get().send_and_read_async(validation_message, 0, None, on_validation_response)
         else:
             self.instance_entry.remove_css_class('error')
+
+    def _on_instance_changed(self, _entry):
+        if self.instance_entry.props.text == Settings.get().instance_url:
+            self.instance_entry.props.show_apply_button = False
+        elif not self.instance_entry.props.show_apply_button:
+            self.instance_entry.props.show_apply_button = True
 
     def _on_reset_instance(self, _button):
         backend = Settings.get().active_translator
