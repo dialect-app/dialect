@@ -1,11 +1,12 @@
 
 /* Main Window */
 .translation-box {
-  padding: 0 12px 12px;
+  padding: 4px 12px 12px;
 }
 
 .translation-box.vertical {
   padding-bottom: 0;
+  padding-top: 0;
 }
 
 .translation-side-box textview,
