@@ -1,0 +1,8 @@
+
+.translation-scrolled undershoot.bottom {
+  border-bottom: 1px solid #222222;
+}
+
+.translation-scrolled.top-undershoot undershoot.top {
+  border-top: 1px solid #222222;
+}
