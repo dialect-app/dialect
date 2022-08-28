@@ -521,6 +521,10 @@ template DialectWindow : Adw.ApplicationWindow {
                 focus-on-click: false;
                 always-show-arrow: true;
 
+                styles [
+                  "raised",
+                ]
+
                 Label {
                   label: bind src_lang_label.label no-sync-create;
                   ellipsize: end;
@@ -541,6 +545,10 @@ template DialectWindow : Adw.ApplicationWindow {
                 sensitive: bind dest_lang_btn.sensitive no-sync-create;
                 focus-on-click: false;
                 always-show-arrow: true;
+
+                styles [
+                  "raised",
+                ]
 
                 Label {
                   label: bind dest_lang_label.label no-sync-create;
