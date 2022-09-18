@@ -1,13 +1,16 @@
 using Gtk 4.0;
+using Adw 1;
 
-AboutDialog about {
+Adw.AboutWindow about {
   modal: true;
   destroy-with-parent: true;
-  program-name: _("Dialect");
+  application-name: _("Dialect");
+  developer-name: _("The Dialect Authors");
   copyright: _("Copyright 2020–⁠2022 The Dialect Authors");
   comments: _("A translation app for GNOME.");
   website: "https://github.com/dialect-app/dialect";
-  website-label: _("GitHub page");
+  issue-url: "https://github.com/dialect-app/dialect/issues";
+  support-url: "https://github.com/dialect-app/dialect/discussions";
 
   /* Translators: Replace me with your names. */
 

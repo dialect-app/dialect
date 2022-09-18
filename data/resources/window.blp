@@ -245,8 +245,12 @@ template DialectWindow : Adw.ApplicationWindow {
           orientation: vertical;
           Adw.HeaderBar {
             centering-policy: strict;
-            title-widget: 
-            Stack title_stack {
+
+            styles [
+              "flat"
+            ]
+
+            title-widget: Stack title_stack {
               transition-type: crossfade;
 
               StackPage {
@@ -337,9 +341,10 @@ template DialectWindow : Adw.ApplicationWindow {
                   "translation-side-box",
                 ]
 
-                ScrolledWindow src_scroller {
+                ScrolledWindow {
                   vexpand: true;
-                  child: TextView src_text {
+
+                  TextView src_text {
                     wrap-mode: word_char;
                     left-margin: 9;
                     right-margin: 9;
@@ -347,7 +352,36 @@ template DialectWindow : Adw.ApplicationWindow {
                     bottom-margin: 9;
 
                     EventControllerKey src_key_ctrlr {}
-                  };
+                  }
+
+                  styles [
+                    "translation-scrolled"
+                  ]
+                }
+
+                Revealer src_pron_revealer {
+                  transition-type: slide_down;
+                  reveal-child: false;
+
+                  ScrolledWindow {
+                    Label src_pron_label {
+                      xalign: 0;
+                      wrap: true;
+                      wrap-mode: word_char;
+                      selectable: true;
+                      valign: end;
+
+                      styles [
+                        "pronunciation",
+                        "dim-label",
+                      ]
+                    }
+
+                    styles [
+                      "translation-scrolled",
+                      "top-undershoot"
+                    ]
+                  }
                 }
 
                 Revealer mistakes {
@@ -371,33 +405,8 @@ template DialectWindow : Adw.ApplicationWindow {
                     }
 
                     styles [
-                      "mistakes",
-                    ]
-                  }
-                }
-
-                Revealer src_pron_revealer {
-                  transition-type: slide_down;
-                  reveal-child: false;
-
-                  ScrolledWindow {
-                    margin-bottom: 2;
-
-                    Label src_pron_label {
-                      margin-start: 9;
-                      margin-end: 9;
-                      xalign: 0;
-                      wrap: true;
-                      wrap-mode: word_char;
-                      selectable: true;
-
-                      styles [
-                        "dim-label",
-                      ]
-                    }
-
-                    styles [
-                      "pronunciation",
+                      "card",
+                      "mistakes"
                     ]
                   }
                 }
@@ -460,16 +469,21 @@ template DialectWindow : Adw.ApplicationWindow {
                   "translation-side-box",
                 ]
 
-                ScrolledWindow dest_scroller {
+                ScrolledWindow {
                   vexpand: true;
-                  child: TextView dest_text {
+
+                  TextView dest_text {
                     editable: false;
                     wrap-mode: word_char;
                     left-margin: 9;
                     right-margin: 9;
                     top-margin: 9;
                     bottom-margin: 9;
-                  };
+                  }
+
+                  styles [
+                    "translation-scrolled"
+                  ]
                 }
 
                 Revealer dest_pron_revealer {
@@ -477,23 +491,22 @@ template DialectWindow : Adw.ApplicationWindow {
                   reveal-child: false;
 
                   ScrolledWindow {
-                    margin-bottom: 2;
-
                     Label dest_pron_label {
-                      margin-start: 9;
-                      margin-end: 9;
                       xalign: 0;
                       wrap: true;
                       wrap-mode: word_char;
                       selectable: true;
+                      valign: end;
 
                       styles [
+                        "pronunciation",
                         "dim-label",
                       ]
                     }
 
                     styles [
-                      "pronunciation",
+                      "translation-scrolled",
+                      "top-undershoot"
                     ]
                   }
                 }
@@ -576,10 +589,18 @@ template DialectWindow : Adw.ApplicationWindow {
               sensitive: bind langs_button_box.sensitive no-sync-create;
               revealed: false;
 
+              styles [
+                "flat",
+              ]
+
               MenuButton src_lang_btn2 {
                 sensitive: bind src_lang_btn.sensitive no-sync-create;
                 focus-on-click: false;
                 always-show-arrow: true;
+
+                styles [
+                  "raised",
+                ]
 
                 Label {
                   label: bind src_lang_label.label no-sync-create;
@@ -602,6 +623,10 @@ template DialectWindow : Adw.ApplicationWindow {
                 focus-on-click: false;
                 always-show-arrow: true;
 
+                styles [
+                  "raised",
+                ]
+
                 Label {
                   label: bind dest_lang_label.label no-sync-create;
                   ellipsize: end;
@@ -616,11 +641,6 @@ template DialectWindow : Adw.ApplicationWindow {
   }
 
   EventControllerKey win_key_ctrlr {}
-}
-
-Gtk.SizeGroup {
-  mode: both;
-  widgets [src_lang_btn2, dest_lang_btn2]
 }
 
 Gtk.SizeGroup {

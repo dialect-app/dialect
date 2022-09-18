@@ -66,69 +66,33 @@
               </object>
             </child>
             <child>
-              <object class="AdwActionRow" id="backend_instance_row">
+              <object class="AdwEntryRow" id="instance_entry">
                 <property name="title" translatable="yes">Translator Instance</property>
-                <property name="subtitle" translatable="yes">Enter a translation service URL.</property>
+                <property name="tooltip-text" translatable="yes">Enter a translation service URL.</property>
+                <property name="show-apply-button">True</property>
                 <child>
-                  <object class="GtkStack" id="backend_instance_stack">
-                    <property name="transition-type">crossfade</property>
+                  <object class="GtkStack" id="instance_stack">
                     <child>
                       <object class="GtkStackPage">
-                        <property name="name">view</property>
+                        <property name="name">reset</property>
                         <property name="child">
-                          <object class="GtkBox">
-                            <property name="spacing">6</property>
+                          <object class="GtkButton" id="instance_reset">
+                            <property name="tooltip-text" translatable="yes">Reset to default</property>
+                            <property name="icon-name">view-refresh-symbolic</property>
                             <property name="valign">center</property>
-                            <property name="halign">end</property>
-                            <child>
-                              <object class="GtkLabel" id="backend_instance_label">
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="backend_instance_edit">
-                                <property name="tooltip-text" translatable="yes">Edit</property>
-                                <child>
-                                  <object class="GtkImage">
-                                    <property name="icon-name">document-edit-symbolic</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
+                            <style>
+                              <class name="flat"/>
+                            </style>
                           </object>
                         </property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkStackPage">
-                        <property name="name">edit</property>
+                        <property name="name">spinner</property>
                         <property name="child">
-                          <object class="GtkBox" id="backend_instance_edit_box">
+                          <object class="GtkSpinner" id="instance_spinner">
                             <property name="valign">center</property>
-                            <style>
-                              <class name="linked"/>
-                            </style>
-                            <child>
-                              <object class="GtkEntry" id="backend_instance">
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="backend_instance_reset">
-                                <property name="tooltip-text" translatable="yes">Reset to default</property>
-                                <child>
-                                  <object class="GtkImage">
-                                    <property name="icon-name">view-refresh-symbolic</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="backend_instance_save">
-                                <property name="tooltip-text" translatable="yes">Save</property>
-                                <style>
-                                  <class name="suggested-action"/>
-                                </style>
-                              </object>
-                            </child>
                           </object>
                         </property>
                       </object>
@@ -138,69 +102,33 @@
               </object>
             </child>
             <child>
-              <object class="AdwActionRow" id="api_key_row">
+              <object class="AdwEntryRow" id="api_key_entry">
                 <property name="title" translatable="yes">API Key</property>
-                <property name="subtitle" translatable="yes">Enter an API key for the translation service.</property>
+                <property name="tooltip-text" translatable="yes">Enter an API key for the translation service.</property>
+                <property name="show-apply-button">True</property>
                 <child>
                   <object class="GtkStack" id="api_key_stack">
-                    <property name="transition-type">crossfade</property>
                     <child>
                       <object class="GtkStackPage">
-                        <property name="name">view</property>
+                        <property name="name">reset</property>
                         <property name="child">
-                          <object class="GtkBox">
-                            <property name="spacing">6</property>
+                          <object class="GtkButton" id="api_key_reset">
+                            <property name="tooltip-text" translatable="yes">Reset to default</property>
+                            <property name="icon-name">view-refresh-symbolic</property>
                             <property name="valign">center</property>
-                            <property name="halign">end</property>
-                            <child>
-                              <object class="GtkLabel" id="api_key_label">
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="api_key_edit">
-                                <property name="tooltip-text" translatable="yes">Edit</property>
-                                <child>
-                                  <object class="GtkImage">
-                                    <property name="icon-name">document-edit-symbolic</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
+                            <style>
+                              <class name="flat"/>
+                            </style>
                           </object>
                         </property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkStackPage">
-                        <property name="name">edit</property>
+                        <property name="name">spinner</property>
                         <property name="child">
-                          <object class="GtkBox" id="api_key_edit_box">
+                          <object class="GtkSpinner" id="api_key_spinner">
                             <property name="valign">center</property>
-                            <style>
-                              <class name="linked"/>
-                            </style>
-                            <child>
-                              <object class="GtkEntry" id="api_key">
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="api_key_reset">
-                                <property name="tooltip-text" translatable="yes">Reset to default</property>
-                                <child>
-                                  <object class="GtkImage">
-                                    <property name="icon-name">view-refresh-symbolic</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="api_key_save">
-                                <property name="tooltip-text" translatable="yes">Save</property>
-                                <style>
-                                  <class name="suggested-action"/>
-                                </style>
-                              </object>
-                            </child>
                           </object>
                         </property>
                       </object>

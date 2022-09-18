@@ -50,7 +50,6 @@ class DialectWindow(Adw.ApplicationWindow):
     mistakes = Gtk.Template.Child()
     mistakes_label = Gtk.Template.Child()
     char_counter = Gtk.Template.Child()
-    src_scroller = Gtk.Template.Child()
     src_text = Gtk.Template.Child()
     clear_btn = Gtk.Template.Child()
     paste_btn = Gtk.Template.Child()
@@ -60,7 +59,6 @@ class DialectWindow(Adw.ApplicationWindow):
     dest_box = Gtk.Template.Child()
     dest_pron_revealer = Gtk.Template.Child()
     dest_pron_label = Gtk.Template.Child()
-    dest_scroller = Gtk.Template.Child()
     dest_text = Gtk.Template.Child()
     dest_toolbar_stack = Gtk.Template.Child()
     trans_spinner = Gtk.Template.Child()
@@ -470,15 +468,11 @@ class DialectWindow(Adw.ApplicationWindow):
         self.win_key_ctrlr.connect('key-pressed', self.on_key_event)
         # "Did you mean" links
         self.mistakes_label.connect('activate-link', self.on_mistakes_clicked)
-        self.src_scroller.get_vadjustment().connect('value-changed', self.on_src_scrolled)
-        self.src_scroller.get_vadjustment().connect('changed', self.on_src_scrolled)
 
         # Right buffer
         self.dest_buffer = self.dest_text.get_buffer()
         self.dest_buffer.set_text('')
         self.dest_buffer.connect('changed', self.on_dest_text_changed)
-        self.dest_scroller.get_vadjustment().connect('value-changed', self.on_dest_scrolled)
-        self.dest_scroller.get_vadjustment().connect('changed', self.on_dest_scrolled)
         # Translation progress spinner
         self.trans_spinner.hide()
         self.trans_warning.hide()
@@ -605,20 +599,6 @@ class DialectWindow(Adw.ApplicationWindow):
             )
             self.dest_voice_btn.set_child(self.dest_voice_image)
             self.dest_voice_spinner.stop()
-
-    def on_src_scrolled(self, vadj):
-        if (vadj.get_value() + vadj.get_page_size() != vadj.get_upper()
-                or (self.src_pron_revealer.get_reveal_child() or self.mistakes.get_reveal_child())):
-            self.src_scroller.get_style_context().add_class('scroller-border')
-        else:
-            self.src_scroller.get_style_context().remove_class('scroller-border')
-
-    def on_dest_scrolled(self, vadj):
-        if (vadj.get_value() + vadj.get_page_size() != vadj.get_upper()
-                or self.dest_pron_revealer.get_reveal_child()):
-            self.dest_scroller.get_style_context().add_class('scroller-border')
-        else:
-            self.dest_scroller.get_style_context().remove_class('scroller-border')
 
     def on_src_lang_changed(self, _obj, _param):
         code = self.src_lang_selector.get_property('selected')
@@ -1159,7 +1139,7 @@ class DialectWindow(Adw.ApplicationWindow):
         # Pronunciation
         reveal = Settings.get().show_pronunciation
         if self.translator.supported_features['pronunciation']:
-            if self.trans_src_pron is not None:
+            if self.trans_src_pron is not None and self.trans_mistakes == [None, None]:
                 self.src_pron_label.set_text(self.trans_src_pron)
                 self.src_pron_revealer.set_reveal_child(reveal)
             elif self.src_pron_revealer.get_reveal_child():

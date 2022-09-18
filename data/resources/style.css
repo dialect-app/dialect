@@ -1,6 +1,12 @@
 
+/* Main Window */
 .translation-box {
-  padding: 12px;
+  padding: 4px 12px 12px;
+}
+
+.translation-box.vertical {
+  padding-bottom: 0;
+  padding-top: 0;
 }
 
 .translation-side-box textview,
@@ -9,19 +15,28 @@
   color: inherit;
 }
 
+.translation-scrolled undershoot.bottom {
+  border-bottom: 1px solid #ededed;
+}
+
+.translation-scrolled.top-undershoot undershoot.top {
+  border-top: 1px solid #ededed;
+}
+
 .mistakes {
+  margin: 6px;
   padding-right: 12px;
   padding-left: 12px;
   padding-top: 9px;
   padding-bottom: 9px;
   background-color: mix(@accent_bg_color, @window_bg_color, 0.7);
-  border-bottom: 1px solid @borders;
 }
 
 .pronunciation {
-  border-bottom: 1px solid @borders;
+  padding: 9px;
 }
 
+/* Lang Selector */
 .search_box {
   background: @popover_bg_color;
   border-bottom: 1px solid @borders;
@@ -41,8 +56,10 @@
   margin: 0 6px;
 }
 
-.scroller-border {
-  border-bottom: 1px solid @borders;
+/* Actionbar */
+actionbar.flat > revealer > box {
+  background: none;
+  box-shadow: none;
 }
 
 /* Theme Switcher */
