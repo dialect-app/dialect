@@ -619,6 +619,11 @@ class DialectWindow(Adw.ApplicationWindow):
                 code in self.tts_langs and src_text != ''
             )
 
+        # Disable or enable switch function.
+        self.lookup_action('switch').set_enabled(
+            code != 'auto'
+        )
+
         if code in self.translator.languages:
             self.src_lang_label.set_label(get_lang_name(code))
             # Update saved src langs list
@@ -725,14 +730,6 @@ class DialectWindow(Adw.ApplicationWindow):
         self.langs_button_box.set_sensitive(True)
         self.lookup_action('translation').set_enabled(self.src_buffer.get_char_count() != 0)
 
-    def switch_auto_lang(self, dest_language, src_text, dest_text):
-        src_language = self.translator.detect(src_text).lang
-        if isinstance(src_language, list):
-            src_language = src_language[0]
-
-        # Switch all
-        GLib.idle_add(self.switch_all, src_language, dest_language, src_text, dest_text)
-
     def ui_switch(self, _action, _param):
         # Get variables
         self.langs_button_box.set_sensitive(False)
@@ -750,15 +747,7 @@ class DialectWindow(Adw.ApplicationWindow):
             True
         )
         if src_language == 'auto':
-            if src_text == '':
-                src_language = self.src_langs[0]
-            else:
-                threading.Thread(
-                    target=self.switch_auto_lang,
-                    args=(dest_language, src_text, dest_text),
-                    daemon=True
-                ).start()
-                return
+            return
 
         # Switch all
         self.switch_all(src_language, dest_language, src_text, dest_text)
