@@ -43,6 +43,15 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="2.1.0" date="2022-10-18">
+      <description>
+        <ul>
+          <li>Update to use libadwaita 1.2 widgets</li>
+          <li>Updated translations</li>
+          <li>Fixed minor bugs</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.0.2" date="2022-07-17">
       <description>
         <ul>
