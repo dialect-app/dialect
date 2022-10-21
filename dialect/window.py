@@ -418,14 +418,20 @@ class DialectWindow(Adw.ApplicationWindow):
         title = _('Failed loading the translation service')
         description = _('Please report this in the Dialect bug tracker if the issue persists.')
         if self.translator.supported_features['change-instance']:
-            description = _('Failed loading "{url}", check if the instance address is correct or report in the Dialect bug tracker if the issue persists.')
+            description = _((
+                'Failed loading "{url}", check if the instance address is correct or report in the Dialect bug tracker'
+                ' if the issue persists.'
+            ))
             description = description.format(url=url)
 
         if network:
             title = _('Couldn’t connect to the translation service')
             description = _('We can’t connect to the server. Please check for network issues.')
             if self.translator.supported_features['change-instance']:
-                description = _('We can’t connect to the {service} instance "{url}".\n Please check for network issues or if the address is correct.')
+                description = _((
+                    'We can’t connect to the {service} instance "{url}".\n'
+                    'Please check for network issues or if the address is correct.'
+                ))
                 description = description.format(service=service, url=url)
 
         if details:
