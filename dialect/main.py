@@ -130,19 +130,19 @@ class Dialect(Adw.Application):
 
     def _on_pronunciation(self, action, value):
         """ Update show pronunciation setting """
-        action.set_state(value)
+        action.props.state = value
         Settings.get().show_pronunciation = value
 
         # Update UI
         if self.window.trans_src_pron is not None:
-            self.window.src_pron_revealer.set_reveal_child(value)
+            self.window.src_pron_revealer.props.reveal_child = value
         if self.window.trans_dest_pron is not None:
-            self.window.dest_pron_revealer.set_reveal_child(value)
+            self.window.dest_pron_revealer.props.reveal_child = value
 
     def _on_preferences(self, _action, _param):
         """ Show preferences window """
         window = DialectPreferencesWindow(self.window)
-        window.set_transient_for(self.window)
+        window.props.transient_for = self.window
         window.present()
 
     def _on_about(self, _action, _param):
@@ -150,16 +150,14 @@ class Dialect(Adw.Application):
         builder = Gtk.Builder.new_from_resource(f'{RES_PATH}/about.ui')
         about = builder.get_object('about')
 
-        about.set_application_icon(APP_ID)
-        about.set_version(VERSION)
-        about.set_developers(
-            [
-                "Mufeed Ali",
-                "Rafael Mardojai CM http://rafaelmardojai.com"
-            ]
-        )
+        about.props.application_icon = APP_ID
+        about.props.version = VERSION
+        about.props.developers = [
+            "Mufeed Ali",
+            "Rafael Mardojai CM http://rafaelmardojai.com"
+        ]
 
-        about.set_transient_for(self.window)
+        about.props.transient_for = self.window
         about.present()
 
     def _on_quit(self, _action, _param):

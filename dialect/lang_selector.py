@@ -57,14 +57,6 @@ class DialectLangSelector(Gtk.Popover):
         filter_model = Gtk.FilterListModel.new(self.lang_model, self.filter)
         self.lang_list.bind_model(filter_model, self._create_lang_row)
 
-    def get_selected(self):
-        return self.get_property('selected')
-
-    def set_selected(self, lang_code, notify=True):
-        self.set_property('selected', lang_code)
-        if notify:
-            self.emit('user-selection-changed')
-
     def set_languages(self, languages):
         # Clear list
         self.lang_model.remove_all()
@@ -82,13 +74,14 @@ class DialectLangSelector(Gtk.Popover):
 
     def refresh_selected(self):
         for item in self.lang_model:
-            item.set_property('selected', (item.code == self.selected))
+            item.props.selected = (item.code == self.selected)
 
     def _activated(self, _list, row):
         # Close popover
         self.popdown()
         # Set selected property
-        self.set_selected(row.lang.code)
+        self.selected = row.lang.code
+        self.emit('user-selection-changed')
 
     def _show(self, _popover):
         self.search.grab_focus()
@@ -96,9 +89,9 @@ class DialectLangSelector(Gtk.Popover):
     def _closed(self, _popover):
         # Reset scroll
         vscroll = self.scroll.get_vadjustment()
-        vscroll.set_value(0)
+        vscroll.props.value = 0
         # Clear search
-        self.search.set_text('')
+        self.search.props.text = ''
 
     def _create_lang_row(self, lang):
         return DialectLangRow(lang)
@@ -108,16 +101,15 @@ class DialectLangSelector(Gtk.Popover):
         return bool(re.search(search, item.name, re.IGNORECASE))
 
     def _on_search(self, _entry):
-        search = self.search.get_text()
-        if search != '':
-            self.revealer.set_reveal_child(False)
+        if self.search.props.text != '':
+            self.revealer.props.reveal_child = False
         else:
-            self.revealer.set_reveal_child(True)
+            self.revealer.props.reveal_child = True
 
         self.filter.emit('changed', Gtk.FilterChange.DIFFERENT)
 
     def _on_search_activate(self, _entry):
-        if self.search.get_text():
+        if self.search.props.text:
             row = self.lang_list.get_row_at_index(0)
             if row:
                 self.lang_list.emit('row-activated', row)
@@ -142,9 +134,9 @@ class LangObject(GObject.Object):
     def __init__(self, code, name, selected=False):
         super().__init__()
 
-        self.set_property('code', code)
-        self.set_property('name', name)
-        self.set_property('selected', selected)
+        self.code = code
+        self.name = name
+        self.selected = selected
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/lang-row.ui')
@@ -158,7 +150,7 @@ class DialectLangRow(Gtk.ListBoxRow):
     def __init__(self, lang):
         super().__init__()
         self.lang = lang
-        self.name.set_label(self.lang.name)
+        self.name.props.label = self.lang.name
 
         self.lang.bind_property(
             'selected',

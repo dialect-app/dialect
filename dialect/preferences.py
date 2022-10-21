@@ -49,9 +49,6 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         self.setup()
 
     def setup(self):
-        # Disable search, we have few preferences
-        self.set_search_enabled(False)
-
         # Setup backends combo row
         self.backend_model = Gio.ListStore.new(BackendObject)
         backend_options = [
@@ -75,15 +72,11 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
                             Gio.SettingsBindFlags.DEFAULT)
 
         # Setup TTS
-        self.tts_row.set_visible(len(TTS) >= 1)
-        self.tts.set_active(Settings.get().active_tts != '')
-
-        # Set translate accel sensitivity by live translation state
-        self.translate_accel.set_sensitive(not self.live_translation.get_enable_expansion())
-        self.live_translation.connect('notify::enable-expansion', self._toggle_accel_pref)
+        self.tts_row.props.visible = len(TTS) >= 1
+        self.tts.props.active = Settings.get().active_tts != ''
 
         # Switch backends
-        self.backend.set_selected(selected_backend_index)
+        self.backend.props.selected = selected_backend_index
         self.backend.connect('notify::selected', self._switch_backends)
         self.parent.connect('notify::backend-loading', self._on_backend_loading)
 
@@ -108,6 +101,10 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         if os.getenv('XDG_CURRENT_DESKTOP') != 'GNOME':
             self.search_provider.hide()
 
+    @Gtk.Template.Callback()
+    def is_not_true(self, _widget, boolean):
+        return not boolean
+
     def _unbind_settings(self,  *args, **kwargs):
         Settings.get().unbind(self.live_translation, 'active')
         Settings.get().unbind(self.src_auto, 'active')
@@ -121,23 +118,22 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
                 Settings.get().reset_dest_langs()
             self.parent.reload_backends()
 
-    def _toggle_accel_pref(self, row, _active):
-        self.translate_accel.set_sensitive(not row.get_enable_expansion())
-
     def _toggle_tts(self, switch, _active):
         value = ''
-        if switch.get_active() and len(TTS) >= 1:
+        active = switch.props.active
+
+        if active and len(TTS) >= 1:
             tts = list(TTS.keys())
             value = str(tts[0])
 
-        self.parent.src_voice_btn.set_sensitive(False)
-        self.parent.src_voice_btn.set_visible(switch.get_active())
-        self.parent.dest_voice_btn.set_sensitive(False)
-        self.parent.dest_voice_btn.set_visible(switch.get_active())
+        self.parent.src_voice_btn.props.sensitive = False
+        self.parent.src_voice_btn.props.visible = active
+        self.parent.dest_voice_btn.props.sensitive = False
+        self.parent.dest_voice_btn.props.visible = active
 
         Settings.get().active_tts = value
 
-        if switch.get_active():
+        if active:
             threading.Thread(
                 target=self.parent.load_lang_speech,
                 daemon=True
@@ -151,23 +147,23 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         self.parent.reload_backends()
 
     def _on_backend_loading(self, window, _value):
-        self.backend.set_sensitive(not window.get_property('backend-loading'))
-        self.instance_entry.set_sensitive(not window.get_property('backend-loading'))
-        self.api_key_entry.set_sensitive(not window.get_property('backend-loading'))
+        self.backend.props.sensitive = not window.get_property('backend-loading')
+        self.instance_entry.props.sensitive = not window.get_property('backend-loading')
+        self.api_key_entry.props.sensitive = not window.get_property('backend-loading')
 
-        if not window.get_property('backend-loading'):
-            self.instance_stack.set_visible_child_name('reset')
+        if not window.backend_loading:
+            self.instance_stack.props.visible_child_name = 'reset'
             self.instance_spinner.stop()
-            self.api_key_stack.set_visible_child_name('reset')
+            self.api_key_stack.props.visible_child_name = 'reset'
             self.api_key_spinner.stop()
 
             # Show or hide api key entry
             if window.translator:
                 if window.translator.supported_features['api-key-supported']:
-                    self.api_key_entry.set_visible(True)
-                    self.api_key_entry.set_text(Settings.get().api_key)
+                    self.api_key_entry.props.visible = True
+                    self.api_key_entry.props.text = Settings.get().api_key
                 else:
-                    self.api_key_entry.set_visible(False)
+                    self.api_key_entry.props.visible = False
 
     def _on_instance_apply(self, _row):
         def on_validation_response(session, result):
@@ -182,24 +178,24 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             if valid:
                 Settings.get().instance_url = self.new_instance_url
                 self.instance_entry.remove_css_class('error')
-                self.instance_entry.set_text(Settings.get().instance_url)
+                self.instance_entry.props.text = Settings.get().instance_url
             else:
                 self.instance_entry.add_css_class('error')
                 error_text = _('Not a valid {backend} instance')
                 error_text = error_text.format(backend=TRANSLATORS[backend].prettyname)
                 toast = Adw.Toast.new(error_text)
                 self.add_toast(toast)
-                self.api_key_entry.set_visible(False)
-                self.api_key_entry.set_text('')
+                self.api_key_entry.props.visible = False
+                self.api_key_entry.props.text = ''
 
-            self.backend.set_sensitive(True)
-            self.instance_entry.set_sensitive(True)
-            self.api_key_entry.set_sensitive(True)
-            self.instance_stack.set_visible_child_name('reset')
+            self.backend.props.sensitive = True
+            self.instance_entry.props.sensitive = True
+            self.api_key_entry.props.sensitive = True
+            self.instance_stack.props.visible_child_nam = 'reset'
             self.instance_spinner.stop()
 
         old_value = Settings.get().instance_url
-        new_value = self.instance_entry.get_text()
+        new_value = self.instance_entry.props.text
 
         url = re.compile(r'https?://(www\.)?')
         self.new_instance_url = url.sub('', new_value).strip().strip('/')
@@ -207,10 +203,10 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         # Validate
         if self.new_instance_url != old_value:
             # Progress feedback
-            self.backend.set_sensitive(False)
-            self.instance_entry.set_sensitive(False)
-            self.api_key_entry.set_sensitive(False)
-            self.instance_stack.set_visible_child_name('spinner')
+            self.backend.props.sensitive = False
+            self.instance_entry.props.sensitive = False
+            self.api_key_entry.props.sensitive = False
+            self.instance_stack.props.visible_child_name = 'spinner'
             self.instance_spinner.start()
 
             backend = Settings.get().active_translator
@@ -235,10 +231,10 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         if Settings.get().instance_url != TRANSLATORS[backend].instance_url:
             Settings.get().reset_instance_url()
             Settings.get().reset_api_key()
-            self.instance_stack.set_visible_child_name('spinner')
+            self.instance_stack.props.visible_child_name = 'spinner'
             self.instance_spinner.start()
         self.instance_entry.remove_css_class('error')
-        self.instance_entry.set_text(Settings.get().instance_url)
+        self.instance_entry.props.text = Settings.get().instance_url
 
     def _on_api_key_apply(self, _row):
         def on_response(session, result):
@@ -253,7 +249,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             if valid:
                 Settings.get().api_key = self.new_api_key
                 self.api_key_entry.remove_css_class('error')
-                self.api_key_entry.set_text(Settings.get().instance_url)
+                self.api_key_entry.props.text = Settings.get().instance_url
             else:
                 self.api_key_entry.add_css_class('error')
                 error_text = _('Not a valid {backend} API key')
@@ -262,10 +258,10 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
                 self.add_toast(toast)
                 self.api_key_entry.grab_focus()
 
-            self.backend.set_sensitive(True)
-            self.instance_entry.set_sensitive(True)
-            self.api_key_entry.set_sensitive(True)
-            self.api_key_stack.set_visible_child_name('reset')
+            self.backend.props.sensitive = True
+            self.instance_entry.props.sensitive = True
+            self.api_key_entry.props.sensitive = True
+            self.api_key_stack.props.visible_child_name = 'reset'
             self.api_key_spinner.stop()
 
         old_value = Settings.get().api_key
@@ -273,10 +269,10 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
 
         if self.new_api_key != old_value:
             # Progress feedback
-            self.backend.set_sensitive(False)
-            self.instance_entry.set_sensitive(False)
-            self.api_key_entry.set_sensitive(False)
-            self.api_key_stack.set_visible_child_name('spinner')
+            self.backend.props.sensitive = False
+            self.instance_entry.props.sensitive = False
+            self.api_key_entry.props.sensitive = False
+            self.api_key_stack.props.visible_child_name = 'spinner'
             self.api_key_spinner.start()
 
             backend = Settings.get().active_translator
@@ -295,24 +291,24 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         backend = Settings.get().active_translator
         if Settings.get().api_key != TRANSLATORS[backend].api_key:
             Settings.get().reset_api_key()
-            self.api_key_stack.set_visible_child_name('spinner')
+            self.api_key_stack.props.visible_child_name = 'spinner'
             self.api_key_spinner.start()
         self.api_key_entry.remove_css_class('error')
-        self.api_key_entry.set_text(Settings.get().api_key)
+        self.api_key_entry.props.text = Settings.get().api_key
 
     def __check_instance_or_api_key_support(self):
         backend = Settings.get().active_translator
         if TRANSLATORS[backend].supported_features['change-instance']:
-            self.instance_entry.set_visible(True)
-            self.instance_entry.set_text(Settings.get().instance_url)
+            self.instance_entry.props.visible = True
+            self.instance_entry.props.text = Settings.get().instance_url
         else:
-            self.instance_entry.set_visible(False)
+            self.instance_entry.props.visible = False
 
         if TRANSLATORS[backend].supported_features['api-key-supported']:
-            self.api_key_entry.set_visible(True)
-            self.api_key_entry.set_text(Settings.get().api_key)
+            self.api_key_entry.props.visible = True
+            self.api_key_entry.props.text = Settings.get().api_key
         else:
-            self.api_key_entry.set_visible(False)
+            self.api_key_entry.props.visible = False
 
 
 class BackendObject(GObject.Object):
@@ -324,5 +320,5 @@ class BackendObject(GObject.Object):
     def __init__(self, name, prettyname):
         super().__init__()
 
-        self.set_property('name', name)
-        self.set_property('prettyname', prettyname)
+        self.name = name
+        self.prettyname = prettyname

@@ -20,5 +20,5 @@ class DialectShortcutsWindow(Gtk.ShortcutsWindow):
         self.connect('show', self._on_show)
 
     def _on_show(self, _data):
-        self.translate_shortcut.set_visible(not Settings.get().live_translation)
-        self.translate_shortcut.set_property('accelerator', Settings.get().translate_accel)
+        self.translate_shortcut.props.visible = not Settings.get().live_translation
+        self.translate_shortcut.props.accelerator = Settings.get().translate_accel
