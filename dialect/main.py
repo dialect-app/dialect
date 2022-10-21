@@ -4,17 +4,21 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 # Initial setup
+import logging
 import sys
 from gettext import gettext as _
 
 import gi
-gi.require_version('Gdk', '4.0')
-gi.require_version('Gtk', '4.0')
-gi.require_version('Gst', '1.0')
-gi.require_version('Adw', '1')
-gi.require_version('Soup', '3.0')
+try:
+    gi.require_version('Gdk', '4.0')
+    gi.require_version('Gtk', '4.0')
+    gi.require_version('Gst', '1.0')
+    gi.require_version('Adw', '1')
+    gi.require_version('Soup', '3.0')
 
-from gi.repository import Adw, Gio, GLib, Gst, Gtk
+    from gi.repository import Adw, Gio, GLib, Gst, Gtk
+except ImportError or ValueError:
+    logging.error('Error: GObject dependencies not met.')
 
 from dialect.define import APP_ID, RES_PATH, VERSION
 from dialect.preferences import DialectPreferencesWindow
