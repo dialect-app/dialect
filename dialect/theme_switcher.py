@@ -6,7 +6,7 @@
 # Code modified from Apostrophe
 # https://gitlab.gnome.org/World/apostrophe/-/blob/main/apostrophe/theme_switcher.py
 
-from gi.repository import Adw, Gio, GObject, Gtk 
+from gi.repository import Adw, Gio, GObject, Gtk
 
 from dialect.define import RES_PATH
 from dialect.settings import Settings
@@ -34,14 +34,14 @@ class DialectThemeSwitcher(Gtk.Box):
         self.color_scheme = color_scheme
 
         if color_scheme == 'auto':
-            self.system.set_active(True)
-            self.style_manager.set_color_scheme(Adw.ColorScheme.PREFER_LIGHT)
+            self.system.props.active = True
+            self.style_manager.props.color_scheme = Adw.ColorScheme.PREFER_LIGHT
         if color_scheme == 'light':
-            self.light.set_active(True)
-            self.style_manager.set_color_scheme(Adw.ColorScheme.FORCE_LIGHT)
+            self.light.props.active = True
+            self.style_manager.props.color_scheme = Adw.ColorScheme.FORCE_LIGHT
         if color_scheme == 'dark':
-            self.dark.set_active(True)
-            self.style_manager.set_color_scheme(Adw.ColorScheme.FORCE_DARK)
+            self.dark.props.active = True
+            self.style_manager.props.color_scheme = Adw.ColorScheme.FORCE_DARK
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -65,9 +65,9 @@ class DialectThemeSwitcher(Gtk.Box):
 
     @Gtk.Template.Callback()
     def _on_color_scheme_changed(self, _widget, _paramspec):
-        if self.system.get_active():
+        if self.system.props.active:
             self.selected_color_scheme = 'auto'
-        if self.light.get_active():
+        if self.light.props.active:
             self.selected_color_scheme = 'light'
-        if self.dark.get_active():
+        if self.dark.props.active:
             self.selected_color_scheme = 'dark'

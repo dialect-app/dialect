@@ -4,6 +4,7 @@
     <property name="default_height">420</property>
     <property name="default_width">600</property>
     <property name="modal">True</property>
+    <property name="search-enabled">False</property>
     <child>
       <object class="AdwPreferencesPage">
         <child>
@@ -34,6 +35,11 @@
               <object class="AdwComboRow" id="translate_accel">
                 <property name="title" translatable="yes">Translation Shortcut</property>
                 <property name="subtitle" translatable="yes">The unselected choice will be used for line break.</property>
+                <binding name="sensitive">
+                  <closure function="is_not_true" type="gboolean">
+                    <lookup name="enable-expansion">live_translation</lookup>
+                  </closure>
+                </binding>
                 <property name="model">
                   <object class="GtkStringList">
                     <items>
