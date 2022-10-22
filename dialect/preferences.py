@@ -144,6 +144,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             ).start()
 
     def _switch_backends(self, row, _value):
+        self.parent.save_settings()
         backend = self.backend_model[row.get_selected()].name
         Settings.get().active_translator = backend
         self.__check_instance_or_api_key_support()

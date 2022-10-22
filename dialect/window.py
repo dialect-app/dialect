@@ -1205,8 +1205,5 @@ class DialectWindow(Adw.ApplicationWindow):
     def reload_backends(self):
         self.set_property('backend-loading', True)
 
-        # Save previous backend settings
-        self.save_settings()
-
         # Load translator
         self.load_translator()
