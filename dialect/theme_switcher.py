@@ -3,7 +3,7 @@
 # Copyright 2022 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-# Code modifed from Apostrophe
+# Code modified from Apostrophe
 # https://gitlab.gnome.org/World/apostrophe/-/blob/main/apostrophe/theme_switcher.py
 
 from gi.repository import Adw, Gio, GObject, Gtk 

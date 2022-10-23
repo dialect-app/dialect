@@ -25,7 +25,7 @@ class DialectLangSelector(Gtk.Popover):
     separator = Gtk.Template.Child()
     lang_list = Gtk.Template.Child()
 
-    # Propeties
+    # Properties
     selected = GObject.Property(type=str)  # Key of the selected lang
 
     def __init__(self, **kwargs):
@@ -54,8 +54,8 @@ class DialectLangSelector(Gtk.Popover):
         self.lang_model = Gio.ListStore.new(LangObject)
         self.filter = Gtk.CustomFilter()
         self.filter.set_filter_func(self._filter_func)
-        fitler_model = Gtk.FilterListModel.new(self.lang_model, self.filter)
-        self.lang_list.bind_model(fitler_model, self._create_lang_row)
+        filter_model = Gtk.FilterListModel.new(self.lang_model, self.filter)
+        self.lang_list.bind_model(filter_model, self._create_lang_row)
 
     def get_selected(self):
         return self.get_property('selected')
