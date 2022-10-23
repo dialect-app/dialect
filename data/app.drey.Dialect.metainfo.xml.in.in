@@ -43,6 +43,14 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="2.1.1" date="2022-10-22">
+      <description>
+        <ul>
+          <li>Updated translations</li>
+          <li>Fixed minor bugs</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.1.0" date="2022-10-18">
       <description>
         <ul>
