@@ -646,7 +646,8 @@ class DialectWindow(Adw.ApplicationWindow):
         if self.translator.supported_features['detection']:
             self.src_lang_selector.insert_recent('auto', _('Auto'))
         for code in self.src_langs:
-            self.src_lang_selector.insert_recent(code, get_lang_name(code))
+            if code in self.translator.languages:
+                self.src_lang_selector.insert_recent(code, get_lang_name(code))
 
         # Refresh list
         self.src_lang_selector.refresh_selected()
@@ -684,7 +685,8 @@ class DialectWindow(Adw.ApplicationWindow):
         # Rewrite recent langs
         self.dest_lang_selector.clear_recent()
         for code in self.dest_langs:
-            self.dest_lang_selector.insert_recent(code, get_lang_name(code))
+            if code in self.translator.languages:
+                self.dest_lang_selector.insert_recent(code, get_lang_name(code))
 
         # Refresh list
         self.dest_lang_selector.refresh_selected()
