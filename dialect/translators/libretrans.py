@@ -29,7 +29,7 @@ class Translator(TranslatorBase):
         'api-key-supported': False,
         'api-key-required': False,
     }
-    instance_url = 'libretranslate.pussthecat.org'
+    instance_url = 'libretranslate.de'
     api_key = ''
 
     validation_path = '/spec'
