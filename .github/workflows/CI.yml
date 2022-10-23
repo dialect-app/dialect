@@ -4,6 +4,11 @@ on:
   pull_request:
 name: CI
 jobs:
+  codespell:
+    name: Check for spelling errors
+    runs-on: ubuntu-latest
+    steps:
+    - uses: codespell-project/actions-codespell@master
   flatpak-builder:
     name: "Flatpak Builder"
     runs-on: ubuntu-latest
