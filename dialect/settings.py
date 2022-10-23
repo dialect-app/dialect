@@ -40,7 +40,7 @@ class Settings(Gio.Settings):
         return Settings.instance
 
     def init_translators_settings(self):
-        """Intialize translators settings with its default values."""
+        """Initialize translators settings with its default values."""
         self.translators_list = list(TRANSLATORS.keys())
         for name, instance in TRANSLATORS.items():
             settings = self.get_translator_settings(name)

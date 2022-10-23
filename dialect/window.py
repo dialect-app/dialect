@@ -104,7 +104,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
     mobile_mode = False  # UI mode
 
-    # Propeties
+    # Properties
     backend_loading = GObject.Property(type=bool, default=False)
 
     def __init__(self, text, langs, **kwargs):
@@ -373,7 +373,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.dest_voice_btn.set_child(self.dest_voice_warning)
         self.dest_voice_spinner.stop()
 
-        tooltip_text = _('A network issue has occured. Retry?')
+        tooltip_text = _('A network issue has occurred. Retry?')
         self.src_voice_btn.set_tooltip_text(tooltip_text)
         self.dest_voice_btn.set_tooltip_text(tooltip_text)
 
@@ -386,7 +386,7 @@ class DialectWindow(Adw.ApplicationWindow):
             action = None
 
         self.send_notification(
-            _('A network issue has occured. Please try again.'),
+            _('A network issue has occurred. Please try again.'),
             action=action
         )
 
