@@ -328,8 +328,11 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.src_lang_selector.selected = 'auto' if set_auto else self.src_langs[0]
                 self.dest_lang_selector.selected = self.dest_langs[0]
                 # Update chars limit
-                count = f'{str(self.src_buffer.get_char_count())}/{self.translator.chars_limit}'
-                self.char_counter.props.label = count
+                if self.translator.chars_limit == -1:  # -1 means unlimited
+                    self.char_counter.props.label = ''
+                else:
+                    count = f'{str(self.src_buffer.get_char_count())}/{self.translator.chars_limit}'
+                    self.char_counter.props.label = count
 
                 self.backend_loading = False
 
@@ -438,7 +441,7 @@ class DialectWindow(Adw.ApplicationWindow):
             description = description + '\n\n<small><tt>' + details + '</tt></small>'
 
         self.error_page.props.title = title
-        self.error_page.prosp.description = description
+        self.error_page.props.description = description
 
     @Gtk.Template.Callback()
     def retry_load_translator(self, _button):
@@ -969,13 +972,18 @@ class DialectWindow(Adw.ApplicationWindow):
     def user_action_ended(self, buffer):
         # If the text is over the highest number of characters allowed, it is truncated.
         # This is done for avoiding exceeding the limit imposed by translation services.
-        if buffer.get_char_count() >= self.translator.chars_limit:
-            self.send_notification(_('{} characters limit reached!').format(self.translator.chars_limit))
-            buffer.delete(
-                buffer.get_iter_at_offset(self.translator.chars_limit),
-                buffer.get_end_iter()
-            )
-        self.char_counter.props.label = f'{str(buffer.get_char_count())}/{self.translator.chars_limit}'
+        if self.translator.chars_limit == -1:  # -1 means unlimited
+            self.char_counter.props.label = ''
+        else:
+            self.char_counter.props.label = f'{str(buffer.get_char_count())}/{self.translator.chars_limit}'
+
+            if buffer.get_char_count() >= self.translator.chars_limit:
+                self.send_notification(_('{} characters limit reached!').format(self.translator.chars_limit))
+                buffer.delete(
+                    buffer.get_iter_at_offset(self.translator.chars_limit),
+                    buffer.get_end_iter()
+                )
+
         if Settings.get().live_translation:
             self.translation()
 

@@ -191,7 +191,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             self.backend.props.sensitive = True
             self.instance_entry.props.sensitive = True
             self.api_key_entry.props.sensitive = True
-            self.instance_stack.props.visible_child_nam = 'reset'
+            self.instance_stack.props.visible_child_name = 'reset'
             self.instance_spinner.stop()
 
         old_value = Settings.get().instance_url
