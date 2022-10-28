@@ -41,5 +41,4 @@ sources = [
 install_data(sources, install_dir: moduledir)
 
 # Install translators and tts providers
-install_subdir('translators', install_dir: moduledir)
-install_subdir('tts', install_dir: moduledir)
+install_subdir('providers', install_dir: moduledir)
