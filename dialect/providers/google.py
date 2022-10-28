@@ -268,6 +268,8 @@ class Provider(LocalProvider, SoupProvider):
             mistake = None
             try:
                 mistake = parsed[0][1][0][0][1]
+                # Convert to pango markup
+                mistake = mistake.replace('<em>', '<b>').replace('</em>', '</b>')
             except (IndexError, TypeError):
                 pass
 
