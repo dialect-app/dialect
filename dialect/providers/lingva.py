@@ -13,7 +13,7 @@ class Provider(SoupProvider):
     __provider_type__ = 'soup'
 
     name = 'lingva'
-    prettyname = 'Lingva'
+    prettyname = 'Lingva Translate'
     translation = True
     tts = True
     definitions = False
@@ -38,6 +38,8 @@ class Provider(SoupProvider):
 
         self.chars_limit = 5000
         self.detection = True
+        self.mistakes = True
+        self.pronunciation = True
 
     @staticmethod
     def format_validate_instance(url):
@@ -91,16 +93,22 @@ class Provider(SoupProvider):
     def get_translation(self, data):
         data = self.read_data(data)
         self._check_errors(data)
+
+        detected = data['info'].get('detectedSource', None)
+        mistakes = data['info'].get('typo', None)
+        src_pronunciation = data['info']['pronunciation'].get('query', None)
+        dest_pronunciation = data['info']['pronunciation'].get('translation', None)
+
         translation = Translation(
             data['translation'],
             {
-                'possible-mistakes': None,
-                'src-pronunciation': None,
-                'dest-pronunciation': None,
+                'possible-mistakes': [mistakes, mistakes],
+                'src-pronunciation': src_pronunciation,
+                'dest-pronunciation': dest_pronunciation,
             },
         )
 
-        return (translation, None)
+        return (translation, detected)
 
     def format_speech(self, text, language):
         url = self.speech_url.format(text=text, lang=language)
