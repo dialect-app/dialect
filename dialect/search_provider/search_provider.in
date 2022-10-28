@@ -195,7 +195,7 @@ class TranslateService(dbus.service.Object):
             base_url=Settings.get().instance_url,
             api_key=Settings.get().api_key
         )
-        if not TRANSLATORS[backend].supported_features['change-instance']:
+        if not TRANSLATORS[backend].change_instance:
             self.loaded = True
         return translator
 

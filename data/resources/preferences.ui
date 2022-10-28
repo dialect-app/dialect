@@ -144,15 +144,12 @@
               </object>
             </child>
             <child>
-              <object class="AdwActionRow" id="tts_row">
+              <object class="AdwComboRow" id="tts">
                 <property name="title" translatable="yes">Text-to-Speech</property>
-                <property name="subtitle" translatable="yes">Use Google for TTS.</property>
-                <property name="activatable_widget">tts</property>
-                <child>
-                  <object class="GtkSwitch" id="tts">
-                    <property name="valign">center</property>
-                  </object>
-                </child>
+                <property name="subtitle" translatable="yes">Choose from the available TTS providers.</property>
+                <property name="expression">
+                  <lookup name="prettyname" type="BackendObject"></lookup>
+                </property>
               </object>
             </child>
           </object>

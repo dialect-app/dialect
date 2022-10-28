@@ -5,12 +5,12 @@
 from gi.repository import Gio, GLib
 
 from dialect.define import APP_ID
-from dialect.translators import (
-    check_backend_availability,
-    get_fallback_backend_name,
-    TRANSLATORS
+from dialect.providers import (
+    check_translator_availability,
+    get_fallback_translator_name,
+    TRANSLATORS,
+    TTS
 )
-from dialect.tts import TTS
 
 
 class Settings(Gio.Settings):
@@ -45,10 +45,10 @@ class Settings(Gio.Settings):
         for name, instance in TRANSLATORS.items():
             settings = self.get_translator_settings(name)
             if not settings.get_boolean('init'):
-                settings.set_strv('src-langs', instance.src_langs)
-                settings.set_strv('dest-langs', instance.dest_langs)
-                settings.set_string('instance-url', instance.instance_url)
-                settings.set_string('api-key', instance.api_key)
+                settings.set_strv('src-langs', instance.defaults['src_langs'])
+                settings.set_strv('dest-langs', instance.defaults['dest_langs'])
+                settings.set_string('instance-url', instance.defaults['instance_url'])
+                settings.set_string('api-key', instance.defaults['api_key'])
                 settings.set_boolean('init', True)
 
     @property
@@ -63,11 +63,11 @@ class Settings(Gio.Settings):
     def active_translator(self):
         value = self.get_child('translators').get_string('active')
 
-        if check_backend_availability(value):
+        if check_translator_availability(value):
             return value
 
-        self.active_translator = get_fallback_backend_name()
-        return get_fallback_backend_name()
+        self.active_translator = get_fallback_translator_name()
+        return get_fallback_translator_name()
 
     @active_translator.setter
     def active_translator(self, translator):
@@ -108,7 +108,7 @@ class Settings(Gio.Settings):
         self.get_translator_settings().set_strv('src-langs', src_langs)
 
     def reset_src_langs(self):
-        self.src_langs = TRANSLATORS[self.active_translator].src_langs
+        self.src_langs = TRANSLATORS[self.active_translator].defaults['src_langs']
 
     @property
     def dest_langs(self):
@@ -119,7 +119,7 @@ class Settings(Gio.Settings):
         self.get_translator_settings().set_strv('dest-langs', dest_langs)
 
     def reset_dest_langs(self):
-        self.dest_langs = TRANSLATORS[self.active_translator].dest_langs
+        self.dest_langs = TRANSLATORS[self.active_translator].defaults['dest_langs']
 
     @property
     def instance_url(self):
@@ -131,7 +131,7 @@ class Settings(Gio.Settings):
         self.save_translator_settings()
 
     def reset_instance_url(self):
-        self.instance_url = TRANSLATORS[self.active_translator].instance_url
+        self.instance_url = TRANSLATORS[self.active_translator].defaults['instance_url']
 
     @property
     def api_key(self):
@@ -143,7 +143,7 @@ class Settings(Gio.Settings):
         self.save_translator_settings()
 
     def reset_api_key(self):
-        self.api_key = TRANSLATORS[self.active_translator].api_key
+        self.api_key = TRANSLATORS[self.active_translator].defaults['api_key']
 
     @property
     def window_size(self):
