@@ -1,0 +1,14 @@
+using Gtk 4.0;
+using Adw 1;
+
+template ProvidersList : Adw.Bin {
+    child: ListBox list {
+        selection-mode: none;
+
+        row-activated => on_provider_activated();
+
+        styles [
+            "boxed-list"
+        ]
+    };
+}

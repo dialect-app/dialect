@@ -3,13 +3,15 @@
   <gresource prefix="/app/drey/Dialect">
     <file compressed="true">style.css</file>
     <file compressed="true">style-dark.css</file>
-    <file compressed="true" preprocess="xml-stripblanks">shortcuts.ui</file>
 
+    <file compressed="true" preprocess="xml-stripblanks">shortcuts.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">window.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">about.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">preferences.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">lang-selector.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">lang-row.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">theme-switcher.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">providers-list.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">provider-row.ui</file>
   </gresource>
 </gresources>

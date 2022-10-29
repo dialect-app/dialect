@@ -62,94 +62,36 @@
                 </child>
               </object>
             </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Providers</property>
             <child>
               <object class="AdwComboRow" id="backend">
                 <property name="title" translatable="yes">Translator</property>
                 <property name="subtitle" translatable="yes">Choose from the available translation services.</property>
                 <property name="expression">
-                  <lookup name="prettyname" type="BackendObject"></lookup>
+                  <lookup name="prettyname" type="ProviderObject"></lookup>
                 </property>
-              </object>
-            </child>
-            <child>
-              <object class="AdwEntryRow" id="instance_entry">
-                <property name="title" translatable="yes">Translator Instance</property>
-                <property name="tooltip-text" translatable="yes">Enter a translation service URL.</property>
-                <property name="show-apply-button">True</property>
-                <child>
-                  <object class="GtkStack" id="instance_stack">
-                    <child>
-                      <object class="GtkStackPage">
-                        <property name="name">reset</property>
-                        <property name="child">
-                          <object class="GtkButton" id="instance_reset">
-                            <property name="tooltip-text" translatable="yes">Reset to default</property>
-                            <property name="icon-name">view-refresh-symbolic</property>
-                            <property name="valign">center</property>
-                            <style>
-                              <class name="flat"/>
-                            </style>
-                          </object>
-                        </property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkStackPage">
-                        <property name="name">spinner</property>
-                        <property name="child">
-                          <object class="GtkSpinner" id="instance_spinner">
-                            <property name="valign">center</property>
-                          </object>
-                        </property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="AdwEntryRow" id="api_key_entry">
-                <property name="title" translatable="yes">API Key</property>
-                <property name="tooltip-text" translatable="yes">Enter an API key for the translation service.</property>
-                <property name="show-apply-button">True</property>
-                <child>
-                  <object class="GtkStack" id="api_key_stack">
-                    <child>
-                      <object class="GtkStackPage">
-                        <property name="name">reset</property>
-                        <property name="child">
-                          <object class="GtkButton" id="api_key_reset">
-                            <property name="tooltip-text" translatable="yes">Reset to default</property>
-                            <property name="icon-name">view-refresh-symbolic</property>
-                            <property name="valign">center</property>
-                            <style>
-                              <class name="flat"/>
-                            </style>
-                          </object>
-                        </property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkStackPage">
-                        <property name="name">spinner</property>
-                        <property name="child">
-                          <object class="GtkSpinner" id="api_key_spinner">
-                            <property name="valign">center</property>
-                          </object>
-                        </property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
               </object>
             </child>
             <child>
               <object class="AdwComboRow" id="tts">
                 <property name="title" translatable="yes">Text-to-Speech</property>
-                <property name="subtitle" translatable="yes">Choose from the available TTS providers.</property>
+                <property name="subtitle" translatable="yes">Choose from the available TTS services.</property>
                 <property name="expression">
-                  <lookup name="prettyname" type="BackendObject"></lookup>
+                  <lookup name="prettyname" type="ProviderObject"></lookup>
                 </property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Providers Settings</property>
+            <child>
+              <object class="ProvidersList" id="providers">
               </object>
             </child>
           </object>

@@ -116,6 +116,9 @@ class DialectWindow(Adw.ApplicationWindow):
         # Application object
         self.app = kwargs['application']
 
+        # Connect to providers settings changes
+        Settings.get().connect('provider-changed', self._on_provider_changed)
+
         # GStreamer playbin object and related setup
         self.player = Gst.ElementFactory.make('playbin', 'player')
         bus = self.player.get_bus()
@@ -1290,3 +1293,14 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Load translator
         self.load_translator()
+
+    def _on_provider_changed(self, _settings, name, key):
+        if name == Settings.get().active_translator:
+            if key in ('instance-url', 'api-key'):
+                if key == 'instance-url' and self.translator.change_instance:
+                    Settings.get().reset_src_langs()
+                    Settings.get().reset_dest_langs()
+                self.reload_backends()
+
+        if name == Settings.get().active_tts:
+            self.load_tts()

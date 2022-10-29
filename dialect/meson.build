@@ -28,17 +28,20 @@ subdir('search_provider')
 # Python sources
 sources = [
   '__init__.py',
-  'main.py',
-  'window.py',
-  'preferences.py',
   'lang_selector.py',
+  'main.py',
+  'preferences.py',
   'session.py',
   'settings.py',
   'shortcuts.py',
   'theme_switcher.py',
+  'window.py',
 ]
 # Install sources
 install_data(sources, install_dir: moduledir)
 
-# Install translators and tts providers
+# Install custom widgets
+install_subdir('widgets', install_dir: moduledir)
+
+# Install providers
 install_subdir('providers', install_dir: moduledir)
