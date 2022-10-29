@@ -2,7 +2,7 @@
 # Copyright 2021-2022 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Gio, GLib
+from gi.repository import Gio, GLib, GObject
 
 from dialect.define import APP_ID
 from dialect.providers import (
@@ -17,18 +17,20 @@ class Settings(Gio.Settings):
     """
     Dialect settings handler
     """
+    __gsignals__ = {
+        'provider-changed': (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, (str, str))
+    }
 
     instance = None
     translator = None
 
-    def __init__(self):
-        Gio.Settings.__init__(self)
+    def __init__(self, *args):
+        super().__init__(*args)
 
     @staticmethod
     def new():
         """Create a new instance of Settings."""
-        g_settings = Gio.Settings.new(APP_ID)
-        g_settings.__class__ = Settings
+        g_settings = Settings(APP_ID)
         g_settings.init_translators_settings()
         return g_settings
 
@@ -75,16 +77,16 @@ class Settings(Gio.Settings):
         self.translator = None
 
     def get_translator_settings(self, translator=None):
-        def on_changed(_settings, key):
-            self.emit('changed', 'translator-' + key)
+        def on_changed(_settings, key, name):
+            self.emit('provider-changed', name, key)
 
         def get_settings(name):
             path = self.get_child('translators').get_property('path')
             if not path.endswith('/'):
                 path += '/'
             path += name + '/'
-            settings = Gio.Settings(APP_ID + '.translator', path)
-            settings.connect('changed', on_changed)
+            settings = ProviderSettings(APP_ID + '.translator', path)
+            settings.connect('changed', on_changed, name)
             return settings
 
         if translator is not None:
@@ -231,3 +233,28 @@ class Settings(Gio.Settings):
     @src_auto.setter
     def src_auto(self, state):
         self.set_boolean('src-auto', state)
+
+
+class ProviderSettings(Gio.Settings):
+    """
+    Dialect provider settings handler
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    @property
+    def instance_url(self):
+        return self.get_string('instance-url')
+
+    @instance_url.setter
+    def instance_url(self, url):
+        self.set_string('instance-url', url)
+
+    @property
+    def api_key(self):
+        return self.get_string('api-key')
+
+    @api_key.setter
+    def api_key(self, api_key):
+        self.set_string('api-key', api_key)

@@ -3,12 +3,14 @@ gnome = import('gnome')
 
 blueprints = custom_target('blueprints',
   input: files(
-    'theme-switcher.blp',
-    'lang-selector.blp',
-    'window.blp',
-    'lang-row.blp',
     'about.blp',
+    'lang-selector.blp',
+    'lang-row.blp',
+    'provider-row.blp',
+    'providers-list.blp',
     'shortcuts.blp',
+    'theme-switcher.blp',
+    'window.blp',
   ),
   output: '.',
   command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],

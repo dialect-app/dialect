@@ -1,0 +1,44 @@
+using Gtk 4.0;
+using Adw 1;
+
+template ProviderRow : Adw.ExpanderRow {
+
+  Adw.EntryRow instance_entry {
+    tooltip-text: _("Enter an instance URL for the provider.");
+    show-apply-button: true;
+
+    Stack instance_stack {
+      StackPage {
+        name: "reset";
+        child:  Button instance_reset {
+          tooltip-text: _("Reset to default");
+          icon-name: "view-refresh-symbolic";
+          valign: center;
+
+          styles ["flat"]
+        };
+      }
+
+      StackPage {
+        name: "spinner";
+        child: Spinner instance_spinner {
+          valign: center;
+        };
+      }
+    }
+  }
+
+  Adw.EntryRow api_key_entry {
+    title: _("API Key");
+    tooltip-text: _("Enter an API key for the provider.");
+    show-apply-button: true;
+
+    Button api_key_reset {
+      tooltip-text: _("Reset to default");
+      icon-name: "view-refresh-symbolic";
+      valign: center;
+
+      styles ["flat"]
+    }
+  }
+}
