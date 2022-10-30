@@ -6,7 +6,7 @@ import logging
 import re
 from gettext import gettext as _
 
-from gi.repository import Adw, Gtk
+from gi.repository import Adw, GObject, Gtk
 
 from dialect.define import RES_PATH
 from dialect.session import Session
@@ -14,7 +14,7 @@ from dialect.settings import Settings
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/provider-row.ui')
-class ProviderRow(Adw.ExpanderRow):
+class ProviderRow(Adw.PreferencesRow):
     __gtype_name__ = 'ProviderRow'
 
     instance_entry = Gtk.Template.Child()
@@ -24,11 +24,27 @@ class ProviderRow(Adw.ExpanderRow):
     api_key_entry = Gtk.Template.Child()
     api_key_reset = Gtk.Template.Child()
 
+    expanded = GObject.Property(type=bool, default=False)
+    can_expand = GObject.Property(type=bool, default=True)
+    title = GObject.Property(type=str)
+    subtitle = GObject.Property(type=str)
+    icon_name = GObject.Property(type=str)
+    translation = GObject.Property(type=bool, default=False)
+    tts = GObject.Property(type=bool, default=False)
+    definitions = GObject.Property(type=bool, default=False)
+
     def __init__(self, provider, **kwargs):
         super().__init__(**kwargs)
         self.p_class = provider.p_class
         self.settings = Settings.get().get_translator_settings(provider.name)
-        self.props.title = provider.prettyname
+
+        self.title = provider.prettyname
+        self.icon_name = f'dialect-{provider.name}'
+        self.translation = provider.p_class.translation
+        self.tts = provider.p_class.tts
+        self.definitions = provider.p_class.definitions
+
+        self.connect('notify::expanded', self._on_expanded_changed)
 
         # Instance
         self.instance_entry.props.title = _('{provider} Instance').format(provider=provider.prettyname)
@@ -47,11 +63,23 @@ class ProviderRow(Adw.ExpanderRow):
         self.instance_entry.props.text = self.settings.get_string('instance-url')
         self.api_key_entry.props.text = self.settings.get_string('api-key')
 
+    @Gtk.Template.Callback()
+    def _on_activated(self, *args):
+        self.expanded = not self.expanded
+
+    def _on_expanded_changed(self, _row, _pspec):
+        if self.expanded:
+            self.set_state_flags(Gtk.StateFlags.CHECKED, False)
+        else:
+            self.unset_state_flags(Gtk.StateFlags.CHECKED)
+
     def _check_settings(self):
         if not self.p_class.change_instance and not self.p_class.api_key_supported:
-            self.props.sensitive = False
-            self.props.subtitle = _("This provider doesn't have settigns available.")
+            self.can_expand = False
+            self.subtitle = _("This provider doesn't have settigns available.")
 
+        if not self.p_class.change_instance:
+            self.instance_entry.props.visible = False
         if not self.p_class.api_key_supported:
             self.api_key_entry.props.visible = False
 

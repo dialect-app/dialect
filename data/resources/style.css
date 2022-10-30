@@ -106,3 +106,26 @@ actionbar.flat > revealer > box {
   background-color: @theme_selected_bg_color;
   color: @theme_selected_fg_color;
 }
+
+/* Provider settings */
+.provider-feature {
+  padding: 3px 9px;
+  border-radius: 12px;
+  font-weight: bold;
+}
+.provider-feature:disabled {
+  opacity: 1;
+  filter: none;
+}
+.provider-feature-tts {
+	color: @green_5;
+  background-color: alpha(@green_3, .25);
+}
+.provider-feature-trans {
+  color: @blue_4;
+  background-color: alpha(@blue_3, .25);
+}
+.provider-feature-dic {
+  color: #ae7b03;
+  background: alpha(@yellow_5, .25);
+}

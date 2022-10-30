@@ -1,44 +1,129 @@
 using Gtk 4.0;
 using Adw 1;
 
-template ProviderRow : Adw.ExpanderRow {
+template ProviderRow : Adw.PreferencesRow {
+  activate => _on_activated();
 
-  Adw.EntryRow instance_entry {
-    tooltip-text: _("Enter an instance URL for the provider.");
-    show-apply-button: true;
+  styles ["expander"]
 
-    Stack instance_stack {
-      StackPage {
-        name: "reset";
-        child:  Button instance_reset {
-          tooltip-text: _("Reset to default");
-          icon-name: "view-refresh-symbolic";
-          valign: center;
+  child: Box {
+    orientation: vertical;
 
-          styles ["flat"]
-        };
-      }
+    ListBox {
+      selection-mode: none;
 
-      StackPage {
-        name: "spinner";
-        child: Spinner instance_spinner {
-          valign: center;
-        };
+      row-activated => _on_activated();
+
+      Adw.ActionRow actionrow {
+        title: bind ProviderRow.title no-sync-create;
+        subtitle: bind ProviderRow.subtitle no-sync-create;
+        title-lines: 2;
+        icon-name: bind ProviderRow.icon-name no-sync-create;
+        activatable: bind ProviderRow.can-expand;
+        sensitive: bind ProviderRow.can-expand;
+        can-focus: true;
+
+        styles ["header"]
+
+        Box {
+          margin-top: 0;
+          spacing: 6;
+
+          Label {
+            label: _("Translation");
+            tooltip-text: _("This provider offers translation");
+            visible: bind ProviderRow.translation no-sync-create;
+            valign: center;
+
+            styles [
+              "provider-feature-trans",
+              "provider-feature",
+              "caption-heading"
+            ]
+          }
+
+          Label {
+            label: _("TTS");
+            tooltip-text: _("This provider offers text-to-speech");
+            visible: bind ProviderRow.tts no-sync-create;
+            valign: center;
+
+            styles [
+              "provider-feature-tts",
+              "provider-feature",
+              "caption-heading"
+            ]
+          }
+
+          Label {
+            label: _("Dictionary");
+            tooltip-text: _("This provider offers dictionary definitions");
+            visible: bind ProviderRow.definitions no-sync-create;
+            valign: center;
+
+            styles [
+              "provider-feature-dic",
+              "provider-feature",
+              "caption-heading"
+            ]
+          }
+        }
+
+        Image {
+          icon-name: "adw-expander-arrow-symbolic";
+
+          styles ["expander-row-arrow"]
+        }
       }
     }
-  }
 
-  Adw.EntryRow api_key_entry {
-    title: _("API Key");
-    tooltip-text: _("Enter an API key for the provider.");
-    show-apply-button: true;
+    Revealer revealer {
+      reveal-child: bind ProviderRow.expanded no-sync-create;
 
-    Button api_key_reset {
-      tooltip-text: _("Reset to default");
-      icon-name: "view-refresh-symbolic";
-      valign: center;
+      ListBox {
+        selection-mode: none;
 
-      styles ["flat"]
+        styles ["nested"]
+
+        Adw.EntryRow instance_entry {
+          tooltip-text: _("Enter an instance URL for the provider.");
+          show-apply-button: true;
+
+          Stack instance_stack {
+            StackPage {
+              name: "reset";
+              child:  Button instance_reset {
+                tooltip-text: _("Reset to default");
+                icon-name: "view-refresh-symbolic";
+                valign: center;
+
+                styles ["flat"]
+              };
+            }
+
+            StackPage {
+              name: "spinner";
+              child: Spinner instance_spinner {
+                valign: center;
+              };
+            }
+          }
+        }
+
+        Adw.EntryRow api_key_entry {
+          title: _("API Key");
+          tooltip-text: _("Enter an API key for the provider.");
+          show-apply-button: true;
+
+          Button api_key_reset {
+            tooltip-text: _("Reset to default");
+            icon-name: "view-refresh-symbolic";
+            valign: center;
+
+            styles ["flat"]
+          }
+        }
+      }
     }
-  }
+  };
 }
