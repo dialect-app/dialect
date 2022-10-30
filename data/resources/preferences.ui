@@ -71,6 +71,8 @@
               <object class="AdwComboRow" id="backend">
                 <property name="title" translatable="yes">Translator</property>
                 <property name="subtitle" translatable="yes">Choose from the available translation services.</property>
+                <property name="title-lines">1</property>
+                <property name="subtitle-lines">3</property>
                 <property name="expression">
                   <lookup name="prettyname" type="ProviderObject"></lookup>
                 </property>
@@ -80,6 +82,8 @@
               <object class="AdwComboRow" id="tts">
                 <property name="title" translatable="yes">Text-to-Speech</property>
                 <property name="subtitle" translatable="yes">Choose from the available TTS services.</property>
+                <property name="title-lines">1</property>
+                <property name="subtitle-lines">3</property>
                 <property name="expression">
                   <lookup name="prettyname" type="ProviderObject"></lookup>
                 </property>
@@ -89,7 +93,7 @@
         </child>
         <child>
           <object class="AdwPreferencesGroup">
-            <property name="title" translatable="yes">Providers Settings</property>
+            <property name="title" translatable="yes">Configure Providers Settings</property>
             <child>
               <object class="ProvidersList" id="providers">
               </object>
