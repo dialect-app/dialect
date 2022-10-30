@@ -1,6 +1,6 @@
 using Gtk 4.0;
 
-template DialectThemeSwitcher : Box {
+template ThemeSwitcher : Box {
   styles [
     "themeswitcher",
   ]
@@ -18,7 +18,7 @@ template DialectThemeSwitcher : Box {
         "system",
       ]
 
-      visible: bind DialectThemeSwitcher.show-system;
+      visible: bind ThemeSwitcher.show-system;
       hexpand: true;
       halign: center;
       focus-on-click: false;

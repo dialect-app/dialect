@@ -13,8 +13,8 @@ from dialect.settings import Settings
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/theme-switcher.ui')
-class DialectThemeSwitcher(Gtk.Box):
-    __gtype_name__ = 'DialectThemeSwitcher'
+class ThemeSwitcher(Gtk.Box):
+    __gtype_name__ = 'ThemeSwitcher'
 
     show_system = GObject.property(type=bool, default=True)
     color_scheme = 'light'
