@@ -28,7 +28,7 @@ subdir('search_provider')
 # Python sources
 sources = [
   '__init__.py',
-  'lang_selector.py',
+  'languages.py',
   'main.py',
   'preferences.py',
   'session.py',

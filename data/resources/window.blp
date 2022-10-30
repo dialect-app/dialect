@@ -258,18 +258,7 @@ template DialectWindow : Adw.ApplicationWindow {
                 child: Box langs_button_box {
                   spacing: 6;
 
-                  MenuButton src_lang_btn {
-                    always-show-arrow: true;
-
-                    styles [
-                      "raised",
-                    ]
-
-                    Label src_lang_label {
-                      ellipsize: end;
-                      xalign: 0;
-                    }
-                  }
+                  .LangSelector src_lang_selector {}
 
                   Button switch_btn {
                     action-name: "win.switch";
@@ -277,18 +266,7 @@ template DialectWindow : Adw.ApplicationWindow {
                     icon-name: "object-flip-horizontal-symbolic";
                   }
 
-                  MenuButton dest_lang_btn {
-                    always-show-arrow: true;
-
-                    styles [
-                      "raised",
-                    ]
-
-                    Label dest_lang_label {
-                      ellipsize: end;
-                      xalign: 0;
-                    }
-                  }
+                  .LangSelector dest_lang_selector {}
                 };
               }
 
@@ -594,20 +572,8 @@ template DialectWindow : Adw.ApplicationWindow {
                 "flat",
               ]
 
-              MenuButton src_lang_btn2 {
-                sensitive: bind src_lang_btn.sensitive no-sync-create;
-                focus-on-click: false;
-                always-show-arrow: true;
-
-                styles [
-                  "raised",
-                ]
-
-                Label {
-                  label: bind src_lang_label.label no-sync-create;
-                  ellipsize: end;
-                  xalign: 0;
-                }
+              .LangSelector src_lang_selector_m {
+                selected: bind src_lang_selector.selected bidirectional;
               }
 
               [center]
@@ -619,20 +585,8 @@ template DialectWindow : Adw.ApplicationWindow {
               }
 
               [end]
-              MenuButton dest_lang_btn2 {
-                sensitive: bind dest_lang_btn.sensitive no-sync-create;
-                focus-on-click: false;
-                always-show-arrow: true;
-
-                styles [
-                  "raised",
-                ]
-
-                Label {
-                  label: bind dest_lang_label.label no-sync-create;
-                  ellipsize: end;
-                  xalign: 0;
-                }
+              .LangSelector dest_lang_selector_m {
+                selected: bind dest_lang_selector.selected bidirectional;
               }
             }
           }
@@ -646,7 +600,7 @@ template DialectWindow : Adw.ApplicationWindow {
 
 Gtk.SizeGroup {
   mode: both;
-  widgets [src_lang_label, dest_lang_label]
+  widgets [src_lang_selector, dest_lang_selector]
 }
 
 Gtk.SizeGroup {

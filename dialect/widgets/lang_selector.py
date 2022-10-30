@@ -3,21 +3,25 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import re
+from gettext import gettext as _
 
-from gi.repository import Gio, Gdk, GObject, Gtk
+from gi.repository import Gdk, GObject, Gtk
 
 from dialect.define import RES_PATH
-from dialect.providers import get_lang_name
+from dialect.languages import get_lang_name
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/lang-selector.ui')
-class DialectLangSelector(Gtk.Popover):
-    __gtype_name__ = 'DialectLangSelector'
+class LangSelector(Gtk.Widget):
+    __gtype_name__ = 'LangSelector'
     __gsignals__ = {
         'user-selection-changed': (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())
     }
 
     # Get widgets
+    button = Gtk.Template.Child()
+    label = Gtk.Template.Child()
+    popover = Gtk.Template.Child()
     search = Gtk.Template.Child()
     scroll = Gtk.Template.Child()
     revealer = Gtk.Template.Child()
@@ -26,59 +30,64 @@ class DialectLangSelector(Gtk.Popover):
     lang_list = Gtk.Template.Child()
 
     # Properties
-    selected = GObject.Property(type=str)  # Key of the selected lang
+    selected = GObject.Property(type=str)  # Code of the selected lang
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+        self.model = None
+        self.recent_model = None
+
+        self.connect('notify::selected', self._on_selected_changed)
+
         # Connect popover open/close signal
-        self.connect('show', self._show)
-        self.connect('closed', self._closed)
+        self.popover.connect('show', self._show)
+        self.popover.connect('closed', self._closed)
 
         # Connect list signals
         self.recent_list.connect('row-activated', self._activated)
         self.lang_list.connect('row-activated', self._activated)
 
         # Setup search entry
-        self.search.set_key_capture_widget(self)
+        self.search.set_key_capture_widget(self.popover)
         key_events = Gtk.EventControllerKey.new()
         key_events.connect('key-pressed', self._on_key_pressed)
         self.search.add_controller(key_events)
-        # Connect search entry signals
         self.search.connect('changed', self._on_search)
         self.search.connect('activate', self._on_search_activate)
 
-        self.recent_model = Gio.ListStore.new(LangObject)
-        self.recent_list.bind_model(self.recent_model, self._create_lang_row)
+    def bind_models(self, langs, recent):
+        self.model = langs
+        self.recent_model = recent
 
-        self.lang_model = Gio.ListStore.new(LangObject)
+        self.recent_model.connect('items-changed', self._on_recent_changed)
+
         self.filter = Gtk.CustomFilter()
         self.filter.set_filter_func(self._filter_func)
-        filter_model = Gtk.FilterListModel.new(self.lang_model, self.filter)
+        filter_model = Gtk.FilterListModel.new(self.model, self.filter)
         self.lang_list.bind_model(filter_model, self._create_lang_row)
 
-    def set_languages(self, languages):
-        # Clear list
-        self.lang_model.remove_all()
+        self.recent_list.bind_model(self.recent_model, self._create_lang_row)
 
-        # Load langs list
-        for code in languages:
-            self.lang_model.append(LangObject(code, get_lang_name(code)))
+    def set_insight(self, code):
+        if self.selected == 'auto':
+            self.label.props.label = f'{self.label.props.label} ({get_lang_name(code)})'
 
-    def insert_recent(self, code, name):
-        row_selected = (code == self.selected)
-        self.recent_model.append(LangObject(code, name, row_selected))
+    def _on_recent_changed(self, _model, _position, _removed, _added):
+        self.recent_model.set_selected(self.selected)
 
-    def clear_recent(self):
-        self.recent_model.remove_all()
+    def _on_selected_changed(self, _self, _pspec):
+        if self.model is not None:
+            self.model.set_selected(self.selected)
 
-    def refresh_selected(self):
-        for item in self.lang_model:
-            item.props.selected = (item.code == self.selected)
+            if self.selected == 'auto':
+                self.label.props.label = _('Auto')
+            else:
+                self.label.props.label = get_lang_name(self.selected)
 
     def _activated(self, _list, row):
         # Close popover
-        self.popdown()
+        self.popover.popdown()
         # Set selected property
         self.selected = row.lang.code
         self.emit('user-selection-changed')
@@ -94,7 +103,7 @@ class DialectLangSelector(Gtk.Popover):
         self.search.props.text = ''
 
     def _create_lang_row(self, lang):
-        return DialectLangRow(lang)
+        return LangRow(lang)
 
     def _filter_func(self, item):
         search = self.search.get_text()
@@ -118,30 +127,15 @@ class DialectLangSelector(Gtk.Popover):
     def _on_key_pressed(self, _controller, keyval, _keycode, _mod):
         # Close popover if ESQ key is pressed in search entry
         if keyval == Gdk.KEY_Escape:
-            self.popdown()
+            self.popover.popdown()
         # Prevent search entry unfocusing when down key is pressed
         elif keyval == Gdk.KEY_Down:
             return Gdk.EVENT_STOP
 
 
-class LangObject(GObject.Object):
-    __gtype_name__ = 'LangObject'
-
-    code = GObject.Property(type=str)
-    name = GObject.Property(type=str)
-    selected = GObject.Property(type=bool, default=False)
-
-    def __init__(self, code, name, selected=False):
-        super().__init__()
-
-        self.code = code
-        self.name = name
-        self.selected = selected
-
-
 @Gtk.Template(resource_path=f'{RES_PATH}/lang-row.ui')
-class DialectLangRow(Gtk.ListBoxRow):
-    __gtype_name__ = 'DialectLangRow'
+class LangRow(Gtk.ListBoxRow):
+    __gtype_name__ = 'LangRow'
 
     # Widgets
     name = Gtk.Template.Child()

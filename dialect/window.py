@@ -11,13 +11,14 @@ from tempfile import NamedTemporaryFile
 from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk
 
 from dialect.define import APP_ID, PROFILE, RES_PATH, TRANS_NUMBER
-from dialect.lang_selector import DialectLangSelector
-from dialect.providers import TRANSLATORS, TTS, get_lang_name
+from dialect.languages import LanguagesListModel
+from dialect.providers import TRANSLATORS, TTS
 from dialect.providers.base import ApiKeyRequired, InvalidApiKey, ProviderError
 from dialect.session import Session, ResponseError
 from dialect.settings import Settings
 from dialect.shortcuts import DialectShortcutsWindow
 from dialect.theme_switcher import DialectThemeSwitcher
+from dialect.widgets import LangSelector
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/window.ui')
@@ -36,10 +37,8 @@ class DialectWindow(Adw.ApplicationWindow):
     title_stack = Gtk.Template.Child()
     langs_button_box = Gtk.Template.Child()
     switch_btn = Gtk.Template.Child()
-    src_lang_btn = Gtk.Template.Child()
-    src_lang_label = Gtk.Template.Child()
-    dest_lang_btn = Gtk.Template.Child()
-    dest_lang_label = Gtk.Template.Child()
+    src_lang_selector: LangSelector = Gtk.Template.Child()
+    dest_lang_selector: LangSelector = Gtk.Template.Child()
 
     return_btn = Gtk.Template.Child()
     forward_btn = Gtk.Template.Child()
@@ -67,9 +66,8 @@ class DialectWindow(Adw.ApplicationWindow):
     dest_voice_btn = Gtk.Template.Child()
 
     actionbar = Gtk.Template.Child()
-    src_lang_btn2 = Gtk.Template.Child()
-    switch_btn2 = Gtk.Template.Child()
-    dest_lang_btn2 = Gtk.Template.Child()
+    src_lang_selector_m: LangSelector = Gtk.Template.Child()
+    dest_lang_selector_m: LangSelector = Gtk.Template.Child()
 
     toast = None  # for notification management
     toast_overlay = Gtk.Template.Child()
@@ -211,7 +209,7 @@ class DialectWindow(Adw.ApplicationWindow):
         # Save settings on close
         self.connect('unrealize', self.save_settings)
 
-        self.setup_headerbar()
+        self.setup_selectors()
         self.setup_translation()
         self.set_help_overlay(DialectShortcutsWindow())
 
@@ -220,24 +218,26 @@ class DialectWindow(Adw.ApplicationWindow):
         # Get languages available for speech
         self.load_tts()
 
-    def setup_headerbar(self):
+    def setup_selectors(self):
+        # Languages models
+        self.src_lang_model = LanguagesListModel()
+        self.src_recent_lang_model = LanguagesListModel()
+        self.dest_lang_model = LanguagesListModel()
+        self.dest_recent_lang_model = LanguagesListModel()
+
         # Left lang selector
-        self.src_lang_selector = DialectLangSelector()
-        self.src_lang_selector.connect('notify::selected',
-                                       self.on_src_lang_changed)
-        self.src_lang_selector.connect('user-selection-changed',
-                                       self.translation)
-        # Set popover selector to button
-        self.src_lang_btn.props.popover = self.src_lang_selector
+        self.src_lang_selector.bind_models(self.src_lang_model, self.src_recent_lang_model)
+        self.src_lang_selector.connect('notify::selected', self.on_src_lang_changed)
+        self.src_lang_selector.connect('user-selection-changed', self.translation)
+        self.src_lang_selector_m.bind_models(self.src_lang_model, self.src_recent_lang_model)
+        self.src_lang_selector_m.connect('user-selection-changed', self.translation)
 
         # Right lang selector
-        self.dest_lang_selector = DialectLangSelector()
-        self.dest_lang_selector.connect('notify::selected',
-                                        self.on_dest_lang_changed)
-        self.dest_lang_selector.connect('user-selection-changed',
-                                        self.translation)
-        # Set popover selector to button
-        self.dest_lang_btn.props.popover = self.dest_lang_selector
+        self.dest_lang_selector.bind_models(self.dest_lang_model, self.dest_recent_lang_model)
+        self.dest_lang_selector.connect('notify::selected', self.on_dest_lang_changed)
+        self.dest_lang_selector.connect('user-selection-changed', self.translation)
+        self.dest_lang_selector_m.bind_models(self.dest_lang_model, self.dest_recent_lang_model)
+        self.dest_lang_selector_m.connect('user-selection-changed', self.translation)
 
         self.langs_button_box.props.homogeneous = False
 
@@ -280,11 +280,6 @@ class DialectWindow(Adw.ApplicationWindow):
             self.title_stack.props.visible_child_name = 'label'
             # Change translation box orientation
             self.translator_box.props.orientation = Gtk.Orientation.VERTICAL
-            # Change lang selectors position
-            self.src_lang_btn.props.popover = None
-            self.src_lang_btn2.props.popover = self.src_lang_selector
-            self.dest_lang_btn.props.popover = None
-            self.dest_lang_btn2.props.popover = self.dest_lang_selector
         else:
             # Hide actionbar
             self.actionbar.props.revealed = False
@@ -292,11 +287,6 @@ class DialectWindow(Adw.ApplicationWindow):
             self.title_stack.props.visible_child_name = 'selector'
             # Reset translation box orientation
             self.translator_box.props.orientation = Gtk.Orientation.HORIZONTAL
-            # Reset lang selectors position
-            self.src_lang_btn2.props.popover = None
-            self.src_lang_btn.props.popover = self.src_lang_selector
-            self.dest_lang_btn2.props.popover = None
-            self.dest_lang_btn.props.popover = self.dest_lang_selector
 
     def _check_provider_type(self, provider_type, context):
         if isinstance(provider_type, dict):
@@ -330,9 +320,10 @@ class DialectWindow(Adw.ApplicationWindow):
                 else:
                     self.app.lookup_action('pronunciation').props.enabled = True
 
-                # Update langs list
-                self.src_lang_selector.set_languages(self.translator.languages)
-                self.dest_lang_selector.set_languages(self.translator.languages)
+                # Update langs
+                self.src_lang_model.set_langs(self.translator.languages)
+                self.dest_lang_model.set_langs(self.translator.languages)
+
                 # Update selected langs
                 set_auto = Settings.get().src_auto and self.translator.detection
                 self.src_lang_selector.selected = 'auto' if set_auto else self.src_langs[0]
@@ -670,7 +661,6 @@ class DialectWindow(Adw.ApplicationWindow):
         self.lookup_action('switch').props.enabled = code != 'auto'
 
         if code in self.translator.languages:
-            self.src_lang_label.props.label = get_lang_name(code)
             # Update saved src langs list
             if code in self.src_langs:
                 # Bring lang to the top
@@ -681,21 +671,9 @@ class DialectWindow(Adw.ApplicationWindow):
             elif len(self.src_langs) == 4:
                 self.src_langs.pop()
             self.src_langs.insert(0, code)
-        elif code == 'auto' and self.translator.detection:
-            self.src_lang_label.props.label = _('Auto')
-        else:
-            self.src_lang_label.props.label = get_lang_name(code)
 
         # Rewrite recent langs
-        self.src_lang_selector.clear_recent()
-        if self.translator.detection:
-            self.src_lang_selector.insert_recent('auto', _('Auto'))
-        for code in self.src_langs:
-            if code in self.translator.languages:
-                self.src_lang_selector.insert_recent(code, get_lang_name(code))
-
-        # Refresh list
-        self.src_lang_selector.refresh_selected()
+        self.src_recent_lang_model.set_langs(self.src_langs, auto=True)
 
     def on_dest_lang_changed(self, _obj, _param):
         code = self.dest_lang_selector.selected
@@ -715,7 +693,6 @@ class DialectWindow(Adw.ApplicationWindow):
                 code in self.tts.tts_languages and dest_text != ''
             )
 
-        self.dest_lang_label.props.label = get_lang_name(code)
         # Update saved dest langs list
         if code in self.dest_langs:
             # Bring lang to the top
@@ -728,13 +705,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.dest_langs.insert(0, code)
 
         # Rewrite recent langs
-        self.dest_lang_selector.clear_recent()
-        for code in self.dest_langs:
-            if code in self.translator.languages:
-                self.dest_lang_selector.insert_recent(code, get_lang_name(code))
-
-        # Refresh list
-        self.dest_lang_selector.refresh_selected()
+        self.dest_recent_lang_model.set_langs(self.dest_langs)
 
     """
     User interface functions
@@ -1166,10 +1137,8 @@ class DialectWindow(Adw.ApplicationWindow):
             (translation, lang) = self.translator.get_translation(data)
 
             if lang and self.src_lang_selector.selected == 'auto':
-                if Settings.get().live_translation:
-                    lang = get_lang_name(lang)
-                    label = _('Auto')
-                    self.src_lang_label.props.label = f'{label} ({lang})'
+                if Settings.get().src_auto:
+                    self.src_lang_selector.set_insight(lang)
                 else:
                     self.src_lang_selector.selected = lang
 

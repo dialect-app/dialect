@@ -1,52 +1,69 @@
 using Gtk 4.0;
 
-template DialectLangSelector : Popover {
-  height-request: 300;
+template LangSelector : Widget {
+  layout-manager: BinLayout {};
 
-  styles [
-    "lang-selector",
-    "menu",
-  ]
+  MenuButton button {
+    always-show-arrow: true;
 
-  Box {
-    orientation: vertical;
+    styles [
+      "raised",
+    ]
 
-    Box search_box {
-      orientation: vertical;
+    child: Label label {
+      ellipsize: end;
+      xalign: 0;
+    };
 
-      SearchEntry search {
-        placeholder-text: _("Search Languages…");
-      }
+    popover: Popover popover {
+      height-request: 300;
 
       styles [
-        "search_box",
+        "lang-selector",
+        "menu",
       ]
-    }
 
-    ScrolledWindow scroll {
-      vexpand: true;
-      child: Box {
+      Box {
         orientation: vertical;
 
-        Revealer revealer {
-          reveal-child: true;
+        Box search_box {
+          orientation: vertical;
 
-          Box {
+          SearchEntry search {
+            placeholder-text: _("Search Languages…");
+          }
+
+          styles [
+            "search_box",
+          ]
+        }
+
+        ScrolledWindow scroll {
+          vexpand: true;
+          child: Box {
             orientation: vertical;
 
-            ListBox recent_list {
+            Revealer revealer {
+              reveal-child: true;
+
+              Box {
+                orientation: vertical;
+
+                ListBox recent_list {
+                  selection-mode: single;
+                }
+
+                Separator separator {
+                }
+              }
+            }
+
+            ListBox lang_list {
               selection-mode: single;
             }
-
-            Separator separator {
-            }
-          }
+          };
         }
-
-        ListBox lang_list {
-          selection-mode: single;
-        }
-      };
-    }
+      }
+    };
   }
 }
