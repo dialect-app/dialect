@@ -17,8 +17,7 @@ from dialect.providers.base import ApiKeyRequired, InvalidApiKey, ProviderError
 from dialect.session import Session, ResponseError
 from dialect.settings import Settings
 from dialect.shortcuts import DialectShortcutsWindow
-from dialect.theme_switcher import DialectThemeSwitcher
-from dialect.widgets import LangSelector
+from dialect.widgets import LangSelector, ThemeSwitcher
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/window.ui')
@@ -203,7 +202,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.add_css_class('devel')
 
         # Theme Switcher
-        theme_switcher = DialectThemeSwitcher()
+        theme_switcher = ThemeSwitcher()
         self.menu_btn.props.popover.add_child(theme_switcher, 'theme')
 
         # Save settings on close

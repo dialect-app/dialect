@@ -34,7 +34,6 @@ sources = [
   'session.py',
   'settings.py',
   'shortcuts.py',
-  'theme_switcher.py',
   'window.py',
 ]
 # Install sources
