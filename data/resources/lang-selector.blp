@@ -10,9 +10,18 @@ template LangSelector : Widget {
       "raised",
     ]
 
-    child: Label label {
-      ellipsize: end;
-      xalign: 0;
+    child: Box {
+      spacing: 3;
+
+      Label label {
+        ellipsize: end;
+        xalign: 0;
+      }
+
+      Label insight {
+        ellipsize: end;
+        xalign: 0;
+      }
     };
 
     popover: Popover popover {
