@@ -16,9 +16,11 @@ from dialect.settings import Settings
 class ThemeSwitcher(Gtk.Box):
     __gtype_name__ = 'ThemeSwitcher'
 
+    # Properties
     show_system = GObject.property(type=bool, default=True)
     color_scheme = 'light'
 
+    # Child widgets
     system = Gtk.Template.Child()
     light = Gtk.Template.Child()
     dark = Gtk.Template.Child()
@@ -65,6 +67,7 @@ class ThemeSwitcher(Gtk.Box):
 
     @Gtk.Template.Callback()
     def _on_color_scheme_changed(self, _widget, _paramspec):
+        """ Called on (self.system, self.light, self.dark)::notify::active signal """
         if self.system.props.active:
             self.selected_color_scheme = 'auto'
         if self.light.props.active:

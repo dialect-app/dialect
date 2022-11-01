@@ -3,6 +3,8 @@ using Gtk 4.0;
 template DialectShortcutsWindow : ShortcutsWindow {
   modal: true;
 
+  show => _on_show();
+
   ShortcutsSection {
     section-name: "shortcuts";
     max-height: 10;

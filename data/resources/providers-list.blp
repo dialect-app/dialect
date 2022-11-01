@@ -1,14 +1,15 @@
 using Gtk 4.0;
-using Adw 1;
 
-template ProvidersList : Adw.Bin {
-    child: ListBox list {
-        selection-mode: none;
+template ProvidersList : Widget {
+  layout-manager: BinLayout {};
 
-        row-activated => on_provider_activated();
+  ListBox list {
+    selection-mode: none;
 
-        styles [
-            "boxed-list"
-        ]
-    };
+    row-activated => _on_provider_activated();
+
+    styles [
+        "boxed-list"
+    ]
+  }
 }

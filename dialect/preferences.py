@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import os
-import threading
 
 from gi.repository import Adw, Gio, Gtk
 
@@ -19,7 +18,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
 
     parent = NotImplemented
 
-    # Get preferences widgets
+    # Child widgets
     live_translation = Gtk.Template.Child()
     sp_translation = Gtk.Template.Child()
     translate_accel = Gtk.Template.Child()
@@ -34,9 +33,6 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
 
         self.parent = parent
 
-        self.setup()
-
-    def setup(self):
         # Bind preferences with GSettings
         Settings.get().bind('live-translation', self.live_translation, 'enable-expansion',
                             Gio.SettingsBindFlags.DEFAULT)
@@ -51,14 +47,12 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         trans_model = ProvidersListModel('translators')
         self.backend.set_model(trans_model)
         self.backend.props.selected = trans_model.get_index_by_name(Settings.get().active_translator)
-        self.backend.connect('notify::selected', self._switch_backends)
 
         # Setup TTS chooser
         if (len(TTS) >= 1):
             tts_model = ProvidersListModel('tts', True)
             self.tts.set_model(tts_model)
             self.tts.props.selected = tts_model.get_index_by_name(Settings.get().active_tts)
-            self.tts.connect('notify::selected', self._switch_tts)
         else:
             self.tts.props.visible = False
 
@@ -75,40 +69,22 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
 
     @Gtk.Template.Callback()
     def is_not_true(self, _widget, boolean):
+        """ Check if boolean is not true
+            template binding closure function
+        """
         return not boolean
 
-    def _unbind_settings(self, *args, **kwargs):
-        Settings.get().unbind(self.live_translation, 'active')
-        Settings.get().unbind(self.src_auto, 'active')
-
-    def _toggle_tts(self, switch, _active):
-        value = ''
-        active = switch.props.active
-
-        if active and len(TTS) >= 1:
-            tts = list(TTS.keys())
-            value = str(tts[0])
-
-        self.parent.src_voice_btn.props.sensitive = False
-        self.parent.src_voice_btn.props.visible = active
-        self.parent.dest_voice_btn.props.sensitive = False
-        self.parent.dest_voice_btn.props.visible = active
-
-        Settings.get().active_tts = value
-
-        if active:
-            threading.Thread(
-                target=self.parent.load_lang_speech,
-                daemon=True
-            ).start()
-
-    def _switch_backends(self, row, _value):
+    @Gtk.Template.Callback()
+    def _switch_translator(self, row, _value):
+        """ Called on self.translator::notify::selected signal """
         self.parent.save_settings()
         backend = self.backend.get_selected_item().name
         Settings.get().active_translator = backend
         self.parent.reload_backends()
 
+    @Gtk.Template.Callback()
     def _switch_tts(self, row, _value):
+        """ Called on self.tts::notify::selected signal """
         provider = self.tts.get_selected_item().name
         Settings.get().active_tts = provider
 

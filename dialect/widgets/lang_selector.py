@@ -18,7 +18,10 @@ class LangSelector(Gtk.Widget):
         'user-selection-changed': (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())
     }
 
-    # Get widgets
+    # Properties
+    selected = GObject.Property(type=str)  # Code of the selected lang
+
+    # Child Widgets
     button = Gtk.Template.Child()
     label = Gtk.Template.Child()
     insight = Gtk.Template.Child()
@@ -30,32 +33,17 @@ class LangSelector(Gtk.Widget):
     separator = Gtk.Template.Child()
     lang_list = Gtk.Template.Child()
 
-    # Properties
-    selected = GObject.Property(type=str)  # Code of the selected lang
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         self.model = None
         self.recent_model = None
 
-        self.connect('notify::selected', self._on_selected_changed)
-
-        # Connect popover open/close signal
-        self.popover.connect('show', self._show)
-        self.popover.connect('closed', self._closed)
-
-        # Connect list signals
-        self.recent_list.connect('row-activated', self._activated)
-        self.lang_list.connect('row-activated', self._activated)
-
         # Setup search entry
         self.search.set_key_capture_widget(self.popover)
         key_events = Gtk.EventControllerKey.new()
         key_events.connect('key-pressed', self._on_key_pressed)
         self.search.add_controller(key_events)
-        self.search.connect('changed', self._on_search)
-        self.search.connect('activate', self._on_search_activate)
 
     def bind_models(self, langs, recent):
         self.model = langs
@@ -77,7 +65,10 @@ class LangSelector(Gtk.Widget):
     def _on_recent_changed(self, _model, _position, _removed, _added):
         self.recent_model.set_selected(self.selected)
 
+    @Gtk.Template.Callback()
     def _on_selected_changed(self, _self, _pspec):
+        """ Called on self::notify::selected signal """
+
         if self.model is not None:
             self.model.set_selected(self.selected)
 
@@ -90,16 +81,21 @@ class LangSelector(Gtk.Widget):
 
     @Gtk.Template.Callback()
     def _activated(self, _list, row):
+        """ Called on self.(recent_list, lang_list)::row-activated signal """
         # Close popover
         self.popover.popdown()
         # Set selected property
         self.selected = row.lang.code
         self.emit('user-selection-changed')
 
-    def _show(self, _popover):
+    @Gtk.Template.Callback()
+    def _popover_show(self, _popover):
+        """ Called on self.popover::show signal """
         self.search.grab_focus()
 
-    def _closed(self, _popover):
+    @Gtk.Template.Callback()
+    def _popover_closed(self, _popover):
+        """ Called on self.popover::closed signal """
         # Reset scroll
         vscroll = self.scroll.get_vadjustment()
         vscroll.props.value = 0
@@ -113,7 +109,9 @@ class LangSelector(Gtk.Widget):
         search = self.search.get_text()
         return bool(re.search(search, item.name, re.IGNORECASE))
 
+    @Gtk.Template.Callback()
     def _on_search(self, _entry):
+        """ Called on self.search::changed signal """
         if self.search.props.text != '':
             self.revealer.props.reveal_child = False
         else:
@@ -121,7 +119,9 @@ class LangSelector(Gtk.Widget):
 
         self.filter.emit('changed', Gtk.FilterChange.DIFFERENT)
 
+    @Gtk.Template.Callback()
     def _on_search_activate(self, _entry):
+        """ Called on self.search::activate signal """
         if self.search.props.text:
             row = self.lang_list.get_row_at_index(0)
             if row:
