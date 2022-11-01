@@ -3,6 +3,7 @@ using Adw 1;
 
 template ProviderRow : Adw.PreferencesRow {
   activate => _on_activated();
+  notify::expanded => _on_expanded_changed();
 
   styles ["expander"]
 
@@ -89,6 +90,9 @@ template ProviderRow : Adw.PreferencesRow {
           tooltip-text: _("Enter an instance URL for the provider.");
           show-apply-button: true;
 
+          apply => _on_instance_apply();
+          notify::text => _on_instance_changed();
+
           Stack instance_stack {
             StackPage {
               name: "reset";
@@ -96,6 +100,8 @@ template ProviderRow : Adw.PreferencesRow {
                 tooltip-text: _("Reset to default");
                 icon-name: "view-refresh-symbolic";
                 valign: center;
+
+                clicked => _on_reset_instance();
 
                 styles ["flat"]
               };
@@ -115,10 +121,14 @@ template ProviderRow : Adw.PreferencesRow {
           tooltip-text: _("Enter an API key for the provider.");
           show-apply-button: true;
 
+          apply => _on_api_key_apply();
+
           Button api_key_reset {
             tooltip-text: _("Reset to default");
             icon-name: "view-refresh-symbolic";
             valign: center;
+
+            clicked => _on_reset_api_key();
 
             styles ["flat"]
           }

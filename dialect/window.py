@@ -24,7 +24,10 @@ from dialect.widgets import LangSelector, ThemeSwitcher
 class DialectWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'DialectWindow'
 
-    # Get widgets
+    # Properties
+    backend_loading = GObject.Property(type=bool, default=False)
+
+    # Child widgets
     menu_btn = Gtk.Template.Child()
     main_stack = Gtk.Template.Child()
     error_page = Gtk.Template.Child()
@@ -99,9 +102,6 @@ class DialectWindow(Adw.ApplicationWindow):
     before_suggest = None
 
     mobile_mode = False  # UI mode
-
-    # Properties
-    backend_loading = GObject.Property(type=bool, default=False)
 
     def __init__(self, text, langs, **kwargs):
         super().__init__(**kwargs)
@@ -224,35 +224,24 @@ class DialectWindow(Adw.ApplicationWindow):
         self.dest_lang_model = LanguagesListModel()
         self.dest_recent_lang_model = LanguagesListModel()
 
-        # Left lang selector
+        # Src lang selector
         self.src_lang_selector.bind_models(self.src_lang_model, self.src_recent_lang_model)
-        self.src_lang_selector.connect('notify::selected', self.on_src_lang_changed)
-        self.src_lang_selector.connect('user-selection-changed', self.translation)
         self.src_lang_selector_m.bind_models(self.src_lang_model, self.src_recent_lang_model)
-        self.src_lang_selector_m.connect('user-selection-changed', self.translation)
 
-        # Right lang selector
+        # Dest lang selector
         self.dest_lang_selector.bind_models(self.dest_lang_model, self.dest_recent_lang_model)
-        self.dest_lang_selector.connect('notify::selected', self.on_dest_lang_changed)
-        self.dest_lang_selector.connect('user-selection-changed', self.translation)
         self.dest_lang_selector_m.bind_models(self.dest_lang_model, self.dest_recent_lang_model)
-        self.dest_lang_selector_m.connect('user-selection-changed', self.translation)
 
         self.langs_button_box.props.homogeneous = False
 
     def setup_translation(self):
-        # Left buffer
+        # Src buffer
         self.src_buffer = self.src_text.props.buffer
         self.src_buffer.props.text = self.launch_text
         self.src_buffer.connect('changed', self.on_src_text_changed)
         self.src_buffer.connect('end-user-action', self.user_action_ended)
-        # Detect typing
-        self.src_key_ctrlr.connect('key-pressed', self.update_trans_button)
-        self.win_key_ctrlr.connect('key-pressed', self.on_key_event)
-        # "Did you mean" links
-        self.mistakes_label.connect('activate-link', self.on_mistakes_clicked)
 
-        # Right buffer
+        # Dest buffer
         self.dest_buffer = self.dest_text.props.buffer
         self.dest_buffer.props.text = ''
         self.dest_buffer.connect('changed', self.on_dest_text_changed)
@@ -637,7 +626,10 @@ class DialectWindow(Adw.ApplicationWindow):
             self.dest_voice_btn.props.child = self.dest_voice_image
             self.dest_voice_spinner.stop()
 
-    def on_src_lang_changed(self, _obj, _param):
+    @Gtk.Template.Callback()
+    def _on_src_lang_changed(self, _obj, _param):
+        """ Called on self.src_lang_selector::notify::selected signal """
+
         code = self.src_lang_selector.selected
         dest_code = self.dest_lang_selector.selected
         src_text = self.src_buffer.get_text(
@@ -674,7 +666,10 @@ class DialectWindow(Adw.ApplicationWindow):
         # Rewrite recent langs
         self.src_recent_lang_model.set_langs(self.src_langs, auto=True)
 
-    def on_dest_lang_changed(self, _obj, _param):
+    @Gtk.Template.Callback()
+    def _on_dest_lang_changed(self, _obj, _param):
+        """ Called on self.dest_lang_selector::notify::selected signal """
+
         code = self.dest_lang_selector.selected
         src_code = self.src_lang_selector.selected
         dest_text = self.dest_buffer.get_text(
@@ -950,7 +945,9 @@ class DialectWindow(Adw.ApplicationWindow):
         if self._check_provider_type(self.tts.__provider_type__, 'tts') == 'local':
             self.player_event.wait()
 
-    def on_key_event(self, _button, keyval, _keycode, state):
+    @Gtk.Template.Callback()
+    def _on_key_event(self, _button, keyval, _keycode, state):
+        """ Called on self.win_key_ctrlr::key-pressed signal """
         modifiers = state & Gtk.accelerator_get_default_mod_mask()
         shift_mask = Gdk.ModifierType.SHIFT_MASK
         unicode_key_val = Gdk.keyval_to_unicode(keyval)
@@ -964,8 +961,11 @@ class DialectWindow(Adw.ApplicationWindow):
             return Gdk.EVENT_STOP
         return Gdk.EVENT_PROPAGATE
 
-    # This starts the translation if Ctrl+Enter button is pressed
-    def update_trans_button(self, _button, keyval, _keycode, state):
+    @Gtk.Template.Callback()
+    def _update_trans_button(self, _button, keyval, _keycode, state):
+        """ Called on self.src_key_ctrlr::key-pressed signal
+            Starts translation when user presses the translate keyboard shorcut
+        """
         modifiers = state & Gtk.accelerator_get_default_mod_mask()
 
         control_mask = Gdk.ModifierType.CONTROL_MASK
@@ -986,7 +986,9 @@ class DialectWindow(Adw.ApplicationWindow):
 
         return Gdk.EVENT_PROPAGATE
 
-    def on_mistakes_clicked(self, _button, _data):
+    @Gtk.Template.Callback()
+    def _on_mistakes_clicked(self, _button, _data):
+        """ Called on self.mistakes_label::activate-link signal """
         self.mistakes.props.reveal_child = False
         self.src_buffer.props.text = self.trans_mistakes[1]
         # Run translation again
@@ -1018,7 +1020,7 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.dest_lang_selector.selected in self.tts.tts_languages
                 and sensitive
             )
-        elif not self.voice_loading and not self.tts.tts_languages:
+        elif not self.voice_loading and self.tts is not None and not self.tts.tts_languages:
             self.lookup_action('listen-dest').props.enabled = sensitive
 
     def user_action_ended(self, buffer):
@@ -1070,6 +1072,7 @@ class DialectWindow(Adw.ApplicationWindow):
             return True
         return False
 
+    @Gtk.Template.Callback()
     def translation(self, _action=None, _param=None):
         # If it's like the last translation then it's useless to continue
         if not self.appeared_before():

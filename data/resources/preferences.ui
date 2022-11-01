@@ -76,6 +76,7 @@
                 <property name="expression">
                   <lookup name="prettyname" type="ProviderObject"></lookup>
                 </property>
+                <signal name="notify::selected" handler="_switch_translator"/>
               </object>
             </child>
             <child>
@@ -87,6 +88,7 @@
                 <property name="expression">
                   <lookup name="prettyname" type="ProviderObject"></lookup>
                 </property>
+                <signal name="notify::selected" handler="_switch_tts"/>
               </object>
             </child>
           </object>

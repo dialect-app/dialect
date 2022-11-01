@@ -258,7 +258,10 @@ template DialectWindow : Adw.ApplicationWindow {
                 child: Box langs_button_box {
                   spacing: 6;
 
-                  .LangSelector src_lang_selector {}
+                  .LangSelector src_lang_selector {
+                    notify::selected => _on_src_lang_changed();
+                    user-selection-changed => translation();
+                  }
 
                   Button switch_btn {
                     action-name: "win.switch";
@@ -266,7 +269,10 @@ template DialectWindow : Adw.ApplicationWindow {
                     icon-name: "object-flip-horizontal-symbolic";
                   }
 
-                  .LangSelector dest_lang_selector {}
+                  .LangSelector dest_lang_selector {
+                    notify::selected => _on_dest_lang_changed();
+                    user-selection-changed => translation();
+                  }
                 };
               }
 
@@ -329,7 +335,9 @@ template DialectWindow : Adw.ApplicationWindow {
                     top-margin: 9;
                     bottom-margin: 9;
 
-                    EventControllerKey src_key_ctrlr {}
+                    EventControllerKey src_key_ctrlr {
+                      key-pressed => _update_trans_button();
+                    }
                   }
 
                   styles [
@@ -380,6 +388,8 @@ template DialectWindow : Adw.ApplicationWindow {
                       can-focus: false;
                       wrap: true;
                       wrap-mode: word_char;
+
+                      activate-link => _on_mistakes_clicked();
                     }
 
                     styles [
@@ -574,6 +584,8 @@ template DialectWindow : Adw.ApplicationWindow {
 
               .LangSelector src_lang_selector_m {
                 selected: bind src_lang_selector.selected bidirectional;
+
+                user-selection-changed => translation();
               }
 
               [center]
@@ -587,6 +599,8 @@ template DialectWindow : Adw.ApplicationWindow {
               [end]
               .LangSelector dest_lang_selector_m {
                 selected: bind dest_lang_selector.selected bidirectional;
+
+                user-selection-changed => translation();
               }
             }
           }
@@ -595,7 +609,9 @@ template DialectWindow : Adw.ApplicationWindow {
     }
   }
 
-  EventControllerKey win_key_ctrlr {}
+  EventControllerKey win_key_ctrlr {
+    key-pressed => _on_key_event();
+  }
 }
 
 Gtk.SizeGroup {

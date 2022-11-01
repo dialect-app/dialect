@@ -17,13 +17,7 @@ from dialect.settings import Settings
 class ProviderRow(Adw.PreferencesRow):
     __gtype_name__ = 'ProviderRow'
 
-    instance_entry = Gtk.Template.Child()
-    instance_stack = Gtk.Template.Child()
-    instance_reset = Gtk.Template.Child()
-    instance_spinner = Gtk.Template.Child()
-    api_key_entry = Gtk.Template.Child()
-    api_key_reset = Gtk.Template.Child()
-
+    # Properties
     expanded = GObject.Property(type=bool, default=False)
     can_expand = GObject.Property(type=bool, default=True)
     title = GObject.Property(type=str)
@@ -32,6 +26,14 @@ class ProviderRow(Adw.PreferencesRow):
     translation = GObject.Property(type=bool, default=False)
     tts = GObject.Property(type=bool, default=False)
     definitions = GObject.Property(type=bool, default=False)
+
+    # Child widgets
+    instance_entry = Gtk.Template.Child()
+    instance_stack = Gtk.Template.Child()
+    instance_reset = Gtk.Template.Child()
+    instance_spinner = Gtk.Template.Child()
+    api_key_entry = Gtk.Template.Child()
+    api_key_reset = Gtk.Template.Child()
 
     def __init__(self, provider, **kwargs):
         super().__init__(**kwargs)
@@ -44,17 +46,8 @@ class ProviderRow(Adw.PreferencesRow):
         self.tts = provider.p_class.tts
         self.definitions = provider.p_class.definitions
 
-        self.connect('notify::expanded', self._on_expanded_changed)
-
         # Instance
         self.instance_entry.props.title = _('{provider} Instance').format(provider=provider.prettyname)
-        self.instance_entry.connect('apply', self._on_instance_apply)
-        self.instance_entry.connect('notify::text', self._on_instance_changed)
-        self.instance_reset.connect('clicked', self._on_reset_instance)
-
-        # API Key
-        self.api_key_entry.connect('apply', self._on_api_key_apply)
-        self.api_key_reset.connect('clicked', self._on_reset_api_key)
 
         # Check what entries to show
         self._check_settings()
@@ -62,16 +55,6 @@ class ProviderRow(Adw.PreferencesRow):
         # Load saved values
         self.instance_entry.props.text = self.settings.get_string('instance-url')
         self.api_key_entry.props.text = self.settings.get_string('api-key')
-
-    @Gtk.Template.Callback()
-    def _on_activated(self, *args):
-        self.expanded = not self.expanded
-
-    def _on_expanded_changed(self, _row, _pspec):
-        if self.expanded:
-            self.set_state_flags(Gtk.StateFlags.CHECKED, False)
-        else:
-            self.unset_state_flags(Gtk.StateFlags.CHECKED)
 
     def _check_settings(self):
         if not self.p_class.change_instance and not self.p_class.api_key_supported:
@@ -83,7 +66,22 @@ class ProviderRow(Adw.PreferencesRow):
         if not self.p_class.api_key_supported:
             self.api_key_entry.props.visible = False
 
+    @Gtk.Template.Callback()
+    def _on_activated(self, *args):
+        """ Called on self::activated signal """
+        self.expanded = not self.expanded
+
+    @Gtk.Template.Callback()
+    def _on_expanded_changed(self, _row, _pspec):
+        """ Called on self::notify::expanded signal """
+        if self.expanded:
+            self.set_state_flags(Gtk.StateFlags.CHECKED, False)
+        else:
+            self.unset_state_flags(Gtk.StateFlags.CHECKED)
+
+    @Gtk.Template.Callback()
     def _on_instance_apply(self, _row):
+        """ Called on self.instance_entry::apply signal """
         def on_validation_response(session, result):
             valid = False
             try:
@@ -133,13 +131,17 @@ class ProviderRow(Adw.PreferencesRow):
         else:
             self.instance_entry.remove_css_class('error')
 
+    @Gtk.Template.Callback()
     def _on_instance_changed(self, _entry, _pspec):
+        """ Called on self.instance_entry::notify::text signal """
         if self.instance_entry.props.text == self.settings.instance_url:
             self.instance_entry.props.show_apply_button = False
         elif not self.instance_entry.props.show_apply_button:
             self.instance_entry.props.show_apply_button = True
 
+    @Gtk.Template.Callback()
     def _on_reset_instance(self, _button):
+        """ Called on self.instance_reset::clicked signal """
         if self.settings.instance_url != self.p_class.defaults['instance_url']:
             # Translator loading in main window
             self._loading_handler = self.get_root().parent.connect(
@@ -152,7 +154,9 @@ class ProviderRow(Adw.PreferencesRow):
         self.instance_entry.remove_css_class('error')
         self.instance_entry.props.text = self.settings.instance_url
 
+    @Gtk.Template.Callback()
     def _on_api_key_apply(self, _row):
+        """ Called on self.api_key_entry::apply signal """
         old_value = self.settings.api_key
         self.new_api_key = self.api_key_entry.get_text()
 
@@ -160,7 +164,9 @@ class ProviderRow(Adw.PreferencesRow):
             self.settings.api_key = self.new_api_key
             self.api_key_entry.props.text = self.settings.api_key
 
+    @Gtk.Template.Callback()
     def _on_reset_api_key(self, _button):
+        """ Called on self.api_key_reset::clicked signal """
         if self.settings.api_key != self.p_class.defaults['api_key']:
             self.settings.api_key = self.p_class.defaults['api_key']
         self.api_key_entry.props.text = self.settings.api_key
