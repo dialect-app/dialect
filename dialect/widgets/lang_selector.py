@@ -21,6 +21,7 @@ class LangSelector(Gtk.Widget):
     # Get widgets
     button = Gtk.Template.Child()
     label = Gtk.Template.Child()
+    insight = Gtk.Template.Child()
     popover = Gtk.Template.Child()
     search = Gtk.Template.Child()
     scroll = Gtk.Template.Child()
@@ -71,7 +72,7 @@ class LangSelector(Gtk.Widget):
 
     def set_insight(self, code):
         if self.selected == 'auto':
-            self.label.props.label = f'{self.label.props.label} ({get_lang_name(code)})'
+            self.insight.props.label = f'({get_lang_name(code)})'
 
     def _on_recent_changed(self, _model, _position, _removed, _added):
         self.recent_model.set_selected(self.selected)
@@ -85,6 +86,9 @@ class LangSelector(Gtk.Widget):
             else:
                 self.label.props.label = get_lang_name(self.selected)
 
+            self.insight.props.label = ''
+
+    @Gtk.Template.Callback()
     def _activated(self, _list, row):
         # Close popover
         self.popover.popdown()
