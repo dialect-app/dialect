@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
+import random
 import threading
 from gettext import gettext as _
 from tempfile import NamedTemporaryFile
@@ -314,8 +315,16 @@ class DialectWindow(Adw.ApplicationWindow):
 
                 # Update selected langs
                 set_auto = Settings.get().src_auto and self.translator.detection
-                self.src_lang_selector.selected = 'auto' if set_auto else self.src_langs[0]
-                self.dest_lang_selector.selected = self.dest_langs[0]
+                src_lang = self.translator.languages[0]
+                if self.src_langs and self.src_langs[0] in self.translator.languages:
+                    src_lang = self.src_langs[0]
+                self.src_lang_selector.selected = 'auto' if set_auto else src_lang
+
+                dest_lang = self.translator.languages[1]
+                if self.dest_langs and self.dest_langs[0] in self.translator.languages:
+                    dest_lang = self.dest_langs[0]
+                self.dest_lang_selector.selected = dest_lang
+
                 # Update chars limit
                 if self.translator.chars_limit == -1:  # -1 means unlimited
                     self.char_counter.props.label = ''
@@ -639,8 +648,14 @@ class DialectWindow(Adw.ApplicationWindow):
         )
 
         if code == dest_code:
-            code = self.dest_langs[1] if code == self.src_langs[0] else dest_code
-            self.dest_lang_selector.selected = self.src_langs[0]
+            if len(self.dest_langs) >= 2:
+                code = self.dest_langs[1] if code == self.src_langs[0] else dest_code
+            if self.src_langs:
+                self.dest_lang_selector.selected = self.src_langs[0]
+            else:
+                options = list(self.translator.languages)
+                options.remove(code)
+                self.dest_lang_selector.selected = random.choice(options)
 
         # Disable or enable listen function.
         if self.tts and Settings.get().active_tts != '':
