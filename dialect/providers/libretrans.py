@@ -158,6 +158,8 @@ class Provider(SoupProvider):
 
     def _check_errors(self, data):
         """Raises a proper Exception if an error is found in the data."""
+        if not data:
+            raise ProviderError('Request empty')
         if 'error' in data:
             error = data['error']
 
