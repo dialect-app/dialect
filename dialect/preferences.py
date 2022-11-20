@@ -45,14 +45,16 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
 
         # Setup translator chooser
         trans_model = ProvidersListModel('translators')
-        self.backend.set_model(trans_model)
-        self.backend.props.selected = trans_model.get_index_by_name(Settings.get().active_translator)
+        with self.backend.freeze_notify():
+            self.backend.set_model(trans_model)
+            self.backend.props.selected = trans_model.get_index_by_name(Settings.get().active_translator)
 
         # Setup TTS chooser
         if (len(TTS) >= 1):
             tts_model = ProvidersListModel('tts', True)
-            self.tts.set_model(tts_model)
-            self.tts.props.selected = tts_model.get_index_by_name(Settings.get().active_tts)
+            with self.tts.freeze_notify():
+                self.tts.set_model(tts_model)
+                self.tts.props.selected = tts_model.get_index_by_name(Settings.get().active_tts)
         else:
             self.tts.props.visible = False
 
@@ -77,18 +79,19 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
     @Gtk.Template.Callback()
     def _switch_translator(self, row, _value):
         """ Called on self.translator::notify::selected signal """
-        self.parent.save_settings()
-        backend = self.backend.get_selected_item().name
-        Settings.get().active_translator = backend
-        self.parent.reload_backends()
+        provider = self.backend.get_selected_item().name
+        if provider != Settings.get().active_translator:
+            self.parent.save_settings()
+            Settings.get().active_translator = provider
+            self.parent.reload_backends()
 
     @Gtk.Template.Callback()
     def _switch_tts(self, row, _value):
         """ Called on self.tts::notify::selected signal """
         provider = self.tts.get_selected_item().name
-        Settings.get().active_tts = provider
-
-        self.parent.load_tts()
+        if provider != Settings.get().active_tts:
+            Settings.get().active_tts = provider
+            self.parent.load_tts()
 
     def _on_backend_loading(self, window, _value):
         self.backend.props.sensitive = not window.backend_loading
