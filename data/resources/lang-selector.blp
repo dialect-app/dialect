@@ -1,7 +1,7 @@
 using Gtk 4.0;
+using Adw 1;
 
-template LangSelector : Widget {
-  layout-manager: BinLayout {};
+template LangSelector : Adw.Bin {
 
   notify::selected => _on_selected_changed();
 
