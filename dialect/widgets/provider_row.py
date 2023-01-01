@@ -14,15 +14,10 @@ from dialect.settings import Settings
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/provider-row.ui')
-class ProviderRow(Adw.PreferencesRow):
+class ProviderRow(Adw.ExpanderRow):
     __gtype_name__ = 'ProviderRow'
 
     # Properties
-    expanded = GObject.Property(type=bool, default=False)
-    can_expand = GObject.Property(type=bool, default=True)
-    title = GObject.Property(type=str)
-    subtitle = GObject.Property(type=str)
-    icon_name = GObject.Property(type=str)
     translation = GObject.Property(type=bool, default=False)
     tts = GObject.Property(type=bool, default=False)
     definitions = GObject.Property(type=bool, default=False)
@@ -40,8 +35,9 @@ class ProviderRow(Adw.PreferencesRow):
         self.p_class = provider.p_class
         self.settings = Settings.get().get_translator_settings(provider.name)
 
-        self.title = provider.prettyname
-        self.icon_name = f'dialect-{provider.name}'
+        self.props.title = provider.prettyname
+        self.props.icon_name = f'dialect-{provider.name}'
+
         self.translation = provider.p_class.translation
         self.tts = provider.p_class.tts
         self.definitions = provider.p_class.definitions
@@ -58,26 +54,13 @@ class ProviderRow(Adw.PreferencesRow):
 
     def _check_settings(self):
         if not self.p_class.change_instance and not self.p_class.api_key_supported:
-            self.can_expand = False
-            self.subtitle = _("This provider doesn't have settigns available.")
+            self.props.enable_expansion = False
+            self.props.subtitle = _("This provider doesn't have settigns available.")
 
         if not self.p_class.change_instance:
             self.instance_entry.props.visible = False
         if not self.p_class.api_key_supported:
             self.api_key_entry.props.visible = False
-
-    @Gtk.Template.Callback()
-    def _on_activated(self, *args):
-        """ Called on self::activated signal """
-        self.expanded = not self.expanded
-
-    @Gtk.Template.Callback()
-    def _on_expanded_changed(self, _row, _pspec):
-        """ Called on self::notify::expanded signal """
-        if self.expanded:
-            self.set_state_flags(Gtk.StateFlags.CHECKED, False)
-        else:
-            self.unset_state_flags(Gtk.StateFlags.CHECKED)
 
     @Gtk.Template.Callback()
     def _on_instance_apply(self, _row):
