@@ -5,14 +5,14 @@
 import re
 from gettext import gettext as _
 
-from gi.repository import Gdk, GObject, Gtk
+from gi.repository import Adw, Gdk, GObject, Gtk
 
 from dialect.define import RES_PATH
 from dialect.languages import get_lang_name
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/lang-selector.ui')
-class LangSelector(Gtk.Widget):
+class LangSelector(Adw.Bin):
     __gtype_name__ = 'LangSelector'
     __gsignals__ = {
         'user-selection-changed': (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())

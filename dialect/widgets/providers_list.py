@@ -2,14 +2,14 @@
 # Copyright 2020-2022 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Gtk
+from gi.repository import Adw, Gtk
 
 from dialect.define import RES_PATH
 from dialect.widgets import ProviderRow
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/providers-list.ui')
-class ProvidersList(Gtk.Widget):
+class ProvidersList(Adw.Bin):
     __gtype_name__ = 'ProvidersList'
 
     # Child widgets
