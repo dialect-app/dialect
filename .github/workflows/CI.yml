@@ -16,10 +16,10 @@ jobs:
       image: bilelmoussaoui/flatpak-github-actions:gnome-nightly
       options: --privileged
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
-    - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v4
+    - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v5
       with:
         bundle: "dialect-devel.flatpak"
         manifest-path: "build-aux/flatpak/app.drey.Dialect.Devel.json"
