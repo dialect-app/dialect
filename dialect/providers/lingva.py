@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
+import urllib
 
 from dialect.providers.base import (
     InvalidLangCode, SoupProvider, ProviderError, TextToSpeechError, Translation
@@ -87,6 +88,7 @@ class Provider(SoupProvider):
             self.error = str(exc)
 
     def format_translation(self, text, src, dest):
+        text = urllib.parse.quote(text, safe='')
         url = self.translate_url.format(text=text, src=src, dest=dest)
         return self.create_request('GET', url)
 
