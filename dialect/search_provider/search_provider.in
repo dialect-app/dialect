@@ -18,8 +18,9 @@ from gi.repository import GLib
 
 from dialect.session import Session
 from dialect.settings import Settings
-from dialect.translators import get_lang_name, TRANSLATORS
-from dialect.translators.basetrans import ApiKeyRequired, InvalidApiKey
+from dialect.languages import get_lang_name
+from dialect.providers import TRANSLATORS
+from dialect.providers.base import ApiKeyRequired, InvalidApiKey
 
 SEARCH_BUS_NAME = 'org.gnome.Shell.SearchProvider2'
 SBN = dict(dbus_interface=SEARCH_BUS_NAME)
@@ -42,6 +43,7 @@ class TranslateService(dbus.service.Object):
         dbus.service.Object.__init__(self, bus_name, self._object_path)
 
         self.loaded = False
+        self.load_failed = False
 
         # Live translation enabled
         self.live_enabled = self.is_live_enabled()
@@ -55,6 +57,7 @@ class TranslateService(dbus.service.Object):
         # Translator
         self.translator = self._get_translator()
         Settings.get().connect('changed', self._on_settings_changed)
+        Settings.get().connect('provider-changed', self._on_provider_changed)
 
     @dbus.service.method(in_signature='as', out_signature='as', **SBN)
     def GetInitialResultSet(self, terms):
@@ -63,7 +66,7 @@ class TranslateService(dbus.service.Object):
         on start of input
         """
         text = ' '.join(terms)
-        backend = Settings.get().active_translator
+        provider = Settings.get().active_translator
 
         if self.live_enabled:
             if not self.loaded:
@@ -75,9 +78,9 @@ class TranslateService(dbus.service.Object):
             return results
 
         return [
-            _('Translate “{text}” with {backend_name}').format(
+            _('Translate “{text}” with {provider_name}').format(
                 text=text,
-                backend_name=TRANSLATORS[backend].prettyname
+                provider_name=TRANSLATORS[provider].prettyname
             )
         ]
 
@@ -106,8 +109,8 @@ class TranslateService(dbus.service.Object):
         ):
             text = self.translations[translate_id]
             lang = get_lang_name(self.dest_language)
-            backend = Settings.get().active_translator
-            description = f'{lang} — {TRANSLATORS[backend].prettyname}' if self.live_enabled else ''
+            provider = Settings.get().active_translator
+            description = f'{lang} — {TRANSLATORS[provider].prettyname}' if self.live_enabled else ''
 
             self.translations.clear()
 
@@ -154,20 +157,16 @@ class TranslateService(dbus.service.Object):
         # If the two languages are the same, nothing is done
         if self.src_language != self.dest_language and src_text != '':
             error_id = ERROR_PREFIX + src_text
-            # Format data
-            url = self.translator.translate_url.format(
-                text=src_text, src=self.src_language, dest=self.dest_language
-            )
-            (method, data, headers, raw) = self.translator.format_translation(
+
+            message = self.translator.format_translation(
                 src_text, self.src_language, self.dest_language
             )
 
-            message = Session.create_message(method, url, data, headers, raw)
             response = Session.get().send_and_read(message, None)
 
             if response:
                 try:
-                    data = Session.read_response(response, fail_if_empty=True, raw=raw)
+                    data = response.get_data()
                     (translation, _lang) = self.translator.get_translation(data)
 
                     self.translations[src_text] = translation.text
@@ -189,18 +188,31 @@ class TranslateService(dbus.service.Object):
         return Settings.get().live_translation and Settings.get().sp_translation
 
     def _get_translator(self):
-        backend = Settings.get().active_translator
-        translator = TRANSLATORS[backend](
-            callback=self._on_loaded,
+        provider = Settings.get().active_translator
+        translator = TRANSLATORS[provider](
             base_url=Settings.get().instance_url,
             api_key=Settings.get().api_key
         )
-        if not TRANSLATORS[backend].change_instance:
-            self.loaded = True
+
+        if translator.trans_init_requests:
+            requests = []
+            for name in translator.trans_init_requests:
+                message = getattr(translator, f'format_{name}_init')()
+                callback = getattr(translator, f'{name}_init')
+                requests.append([message, callback])
+            Session.get().multiple(requests, self._on_loaded)
+        else:
+            self._on_loaded('')
+
         return translator
 
-    def _on_loaded(self, success, _error='', _network_error=False):
-        self.loaded = success
+    def _on_loaded(self, errors):
+        if errors or self.translator.error:
+            self.loaded = False
+            self.load_failed = True
+        else:
+            self.loaded = True
+            self.load_failed = False
 
     def _on_settings_changed(self, _settings, key):
         if key.startswith('translator-'):
@@ -209,6 +221,12 @@ class TranslateService(dbus.service.Object):
             self.dest_language = Settings.get().dest_langs[0]
         if key == 'live-translation' or key == 'sp-translation':
             self.live_enabled = self.is_live_enabled()
+
+    def _on_provider_changed(self, _settings, name, key):
+        if name == Settings.get().active_translator and key in ('instance-url', 'api-key'):
+            self.loaded = False
+            self.translator = self._get_translator()
+            self.dest_language = Settings.get().dest_langs[0]
 
 
 if __name__ == "__main__":
