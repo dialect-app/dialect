@@ -76,7 +76,7 @@ class ProviderRow(Adw.ExpanderRow):
             if valid:
                 # Translator loading in main window
                 self._loading_handler = self.get_root().parent.connect(
-                    'notify::backend-loading',
+                    'notify::translator-loading',
                     self._on_translator_loading
                 )
 
@@ -85,8 +85,8 @@ class ProviderRow(Adw.ExpanderRow):
                 self.instance_entry.props.text = self.settings.instance_url
             else:
                 self.instance_entry.add_css_class('error')
-                error_text = _('Not a valid {backend} instance')
-                error_text = error_text.format(backend=self.p_class.prettyname)
+                error_text = _('Not a valid {provider} instance')
+                error_text = error_text.format(provider=self.p_class.prettyname)
                 toast = Adw.Toast.new(error_text)
                 self.get_root().add_toast(toast)
 
@@ -128,7 +128,7 @@ class ProviderRow(Adw.ExpanderRow):
         if self.settings.instance_url != self.p_class.defaults['instance_url']:
             # Translator loading in main window
             self._loading_handler = self.get_root().parent.connect(
-                'notify::backend-loading',
+                'notify::translator-loading',
                 self._on_translator_loading
             )
 
@@ -155,10 +155,10 @@ class ProviderRow(Adw.ExpanderRow):
         self.api_key_entry.props.text = self.settings.api_key
 
     def _on_translator_loading(self, window, _value):
-        self.instance_entry.props.sensitive = not window.backend_loading
-        self.api_key_entry.props.sensitive = not window.backend_loading
+        self.instance_entry.props.sensitive = not window.translator_loading
+        self.api_key_entry.props.sensitive = not window.translator_loading
 
-        if window.backend_loading:
+        if window.translator_loading:
             self.instance_stack.props.visible_child_name = 'spinner'
             self.instance_spinner.start()
         else:

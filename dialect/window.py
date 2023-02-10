@@ -26,7 +26,7 @@ class DialectWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'DialectWindow'
 
     # Properties
-    backend_loading = GObject.Property(type=bool, default=False)
+    translator_loading = GObject.Property(type=bool, default=False)
 
     # Child widgets
     menu_btn = Gtk.Template.Child()
@@ -286,11 +286,11 @@ class DialectWindow(Adw.ApplicationWindow):
         def on_loaded(errors):
             if errors or self.translator.error:
                 # Show error view
-                if (self.translator.error):
+                if self.translator.error:
                     self.loading_failed(self.translator.error)
                 else:
                     self.loading_failed(errors, True)
-                self.backend_loading = False
+                self.translator_loading = False
             else:
                 # Supported features
                 if not self.translator.mistakes:
@@ -332,11 +332,11 @@ class DialectWindow(Adw.ApplicationWindow):
                     count = f'{str(self.src_buffer.get_char_count())}/{self.translator.chars_limit}'
                     self.char_counter.props.label = count
 
-                self.backend_loading = False
+                self.translator_loading = False
 
                 self.check_apikey()
 
-        backend = Settings.get().active_translator
+        provider = Settings.get().active_translator
 
         # Get saved languages
         self.src_langs = Settings.get().src_langs
@@ -346,14 +346,14 @@ class DialectWindow(Adw.ApplicationWindow):
         self.main_stack.props.visible_child_name = 'loading'
 
         # Translator object
-        self.translator = TRANSLATORS[backend](
+        self.translator = TRANSLATORS[provider](
             base_url=Settings.get().instance_url,
             api_key=Settings.get().api_key,
         )
 
         # Make the init requests required to use the translator
-        requests = []
         if self.translator.trans_init_requests:
+            requests = []
             for name in self.translator.trans_init_requests:
                 message = getattr(self.translator, f'format_{name}_init')()
                 callback = getattr(self.translator, f'{name}_init')
@@ -1274,8 +1274,8 @@ class DialectWindow(Adw.ApplicationWindow):
         else:
             self.trans_warning.hide()
 
-    def reload_backends(self):
-        self.backend_loading = True
+    def reload_translator(self):
+        self.translator_loading = True
 
         # Load translator
         self.load_translator()
@@ -1286,7 +1286,7 @@ class DialectWindow(Adw.ApplicationWindow):
                 if key == 'instance-url' and self.translator.change_instance:
                     Settings.get().reset_src_langs()
                     Settings.get().reset_dest_langs()
-                self.reload_backends()
+                self.reload_translator()
 
         if name == Settings.get().active_tts:
             self.load_tts()
