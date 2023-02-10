@@ -68,7 +68,7 @@
           <object class="AdwPreferencesGroup">
             <property name="title" translatable="yes">Providers</property>
             <child>
-              <object class="AdwComboRow" id="backend">
+              <object class="AdwComboRow" id="translator">
                 <property name="title" translatable="yes">Translator</property>
                 <property name="subtitle" translatable="yes">Choose from the available translation services.</property>
                 <property name="title-lines">1</property>

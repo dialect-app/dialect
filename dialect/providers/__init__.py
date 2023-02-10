@@ -21,8 +21,8 @@ for _importer, modname, _ispkg in pkgutil.iter_modules(__path__):
             TTS[modclass.name] = modclass
 
 
-def check_translator_availability(backend_name):
-    if backend_name in TRANSLATORS:
+def check_translator_availability(provider_name):
+    if provider_name in TRANSLATORS:
         return True
     return False
 

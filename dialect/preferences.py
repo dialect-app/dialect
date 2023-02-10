@@ -23,7 +23,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
     sp_translation = Gtk.Template.Child()
     translate_accel = Gtk.Template.Child()
     src_auto = Gtk.Template.Child()
-    backend = Gtk.Template.Child()
+    translator = Gtk.Template.Child()
     tts = Gtk.Template.Child()
     search_provider = Gtk.Template.Child()
     providers: ProvidersList = Gtk.Template.Child()
@@ -45,9 +45,9 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
 
         # Setup translator chooser
         trans_model = ProvidersListModel('translators')
-        with self.backend.freeze_notify():
-            self.backend.set_model(trans_model)
-            self.backend.props.selected = trans_model.get_index_by_name(Settings.get().active_translator)
+        with self.translator.freeze_notify():
+            self.translator.set_model(trans_model)
+            self.translator.props.selected = trans_model.get_index_by_name(Settings.get().active_translator)
 
         # Setup TTS chooser
         if (len(TTS) >= 1):
@@ -63,7 +63,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         self.providers.bind_model(providers_model)
 
         # Translator loading
-        self.parent.connect('notify::backend-loading', self._on_backend_loading)
+        self.parent.connect('notify::translator-loading', self._on_translator_loading)
 
         # Search Provider
         if os.getenv('XDG_CURRENT_DESKTOP') != 'GNOME':
@@ -79,11 +79,11 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
     @Gtk.Template.Callback()
     def _switch_translator(self, row, _value):
         """ Called on self.translator::notify::selected signal """
-        provider = self.backend.get_selected_item().name
+        provider = self.translator.get_selected_item().name
         if provider != Settings.get().active_translator:
             self.parent.save_settings()
             Settings.get().active_translator = provider
-            self.parent.reload_backends()
+            self.parent.reload_translator()
 
     @Gtk.Template.Callback()
     def _switch_tts(self, row, _value):
@@ -93,6 +93,6 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             Settings.get().active_tts = provider
             self.parent.load_tts()
 
-    def _on_backend_loading(self, window, _value):
-        self.backend.props.sensitive = not window.backend_loading
-        self.tts.props.sensitive = not window.backend_loading
+    def _on_translator_loading(self, window, _value):
+        self.translator.props.sensitive = not window.translator_loading
+        self.tts.props.sensitive = not window.translator_loading
