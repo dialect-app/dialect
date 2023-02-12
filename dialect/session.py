@@ -2,6 +2,8 @@
 # Copyright 2021-2022 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+from __future__ import annotations
+
 import logging
 
 from gi.repository import GLib, Soup
@@ -18,14 +20,14 @@ class Session(Soup.Session):
         Soup.Session.__init__(self)
 
     @staticmethod
-    def new():
+    def new() -> Session:
         """Create a new instance of Session."""
         s_session = Soup.Session()
         s_session.__class__ = Session
         return s_session
 
     @staticmethod
-    def get():
+    def get() -> Session:
         """Return an active instance of Session."""
         if Session.instance is None:
             Session.instance = Session.new()
