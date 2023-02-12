@@ -78,6 +78,9 @@ class DialectWindow(Adw.ApplicationWindow):
     src_key_ctrlr = Gtk.Template.Child()
     win_key_ctrlr = Gtk.Template.Child()
 
+    # Window Launch Tracking
+    launch = True
+
     # Translator
     translator = None  # Translator object
     # Text to speech
@@ -214,7 +217,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.set_help_overlay(DialectShortcutsWindow())
 
         # Load translator
-        self.load_translator(True)
+        self.load_translator()
         # Get languages available for speech
         self.load_tts()
 
@@ -282,7 +285,7 @@ class DialectWindow(Adw.ApplicationWindow):
             return provider_type[context]
         return provider_type
 
-    def load_translator(self, launch=False):
+    def load_translator(self):
         def on_loaded(errors):
             if errors or self.translator.error:
                 # Show error view
@@ -362,15 +365,6 @@ class DialectWindow(Adw.ApplicationWindow):
         else:
             on_loaded('')
 
-        if launch:
-            if self.launch_langs['src'] is not None:
-                self.src_lang_selector.selected = self.launch_langs['src']
-            if self.launch_langs['dest'] is not None and self.launch_langs['dest'] in self.translator.languages:
-                self.dest_lang_selector.selected = self.launch_langs['dest']
-
-            if self.launch_text != '':
-                self.translate(self.launch_text, self.launch_langs['src'], self.launch_langs['dest'])
-
     def check_apikey(self):
         def on_response(session, result):
             try:
@@ -443,6 +437,22 @@ class DialectWindow(Adw.ApplicationWindow):
     @Gtk.Template.Callback()
     def retry_load_translator(self, _button):
         self.load_translator()
+
+    @Gtk.Template.Callback()
+    def on_stack_page_change(self, _stack, _param):
+        if self.main_stack.props.visible_child_name == 'translate' and self.launch:
+            # Page being set to "Translate" means the translator is fully ready
+            # We can now translate as per CLI parameters
+
+            self.launch = False  # Prevent reoccurance of CLI parameter translation
+
+            if self.launch_langs['src'] is not None:
+                self.src_lang_selector.selected = self.launch_langs['src']
+            if self.launch_langs['dest'] is not None and self.launch_langs['dest'] in self.translator.languages:
+                self.dest_lang_selector.selected = self.launch_langs['dest']
+
+            if self.launch_text != '':
+                self.translate(self.launch_text, self.launch_langs['src'], self.launch_langs['dest'])
 
     @Gtk.Template.Callback()
     def remove_key_and_reload(self, _button):

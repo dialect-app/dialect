@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import importlib
-from gettext import gettext as _
 import pkgutil
+from gettext import gettext as _
 
 from gi.repository import Gio, GObject
 
