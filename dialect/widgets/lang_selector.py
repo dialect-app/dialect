@@ -52,8 +52,10 @@ class LangSelector(Adw.Bin):
         self.recent_model.connect('items-changed', self._on_recent_changed)
 
         self.filter = Gtk.CustomFilter()
-        self.filter.set_filter_func(self._filter_func)
-        filter_model = Gtk.FilterListModel.new(self.model, self.filter)
+        self.filter.set_filter_func(self._filter_langs)
+        sorter = Gtk.CustomSorter.new(self._sort_langs)
+        sorted_model = Gtk.SortListModel.new(model=self.model, sorter=sorter)
+        filter_model = Gtk.FilterListModel.new(sorted_model, self.filter)
         self.lang_list.bind_model(filter_model, self._create_lang_row)
 
         self.recent_list.bind_model(self.recent_model, self._create_lang_row)
@@ -105,9 +107,14 @@ class LangSelector(Adw.Bin):
     def _create_lang_row(self, lang):
         return LangRow(lang)
 
-    def _filter_func(self, item):
+    def _filter_langs(self, item):
         search = self.search.get_text()
         return bool(re.search(search, item.name, re.IGNORECASE))
+
+    def _sort_langs(self, lang_a, lang_b, _data):
+        a = lang_a.name.lower()
+        b = lang_b.name.lower()
+        return (a > b) - (a < b)
 
     @Gtk.Template.Callback()
     def _on_search(self, _entry):
