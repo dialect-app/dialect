@@ -223,10 +223,10 @@ class DialectWindow(Adw.ApplicationWindow):
 
     def setup_selectors(self):
         # Languages models
-        self.src_lang_model = LanguagesListModel()
-        self.src_recent_lang_model = LanguagesListModel()
-        self.dest_lang_model = LanguagesListModel()
-        self.dest_recent_lang_model = LanguagesListModel()
+        self.src_lang_model = LanguagesListModel(self._lang_names_func)
+        self.src_recent_lang_model = LanguagesListModel(self._lang_names_func)
+        self.dest_lang_model = LanguagesListModel(self._lang_names_func)
+        self.dest_recent_lang_model = LanguagesListModel(self._lang_names_func)
 
         # Src lang selector
         self.src_lang_selector.bind_models(self.src_lang_model, self.src_recent_lang_model)
@@ -237,6 +237,9 @@ class DialectWindow(Adw.ApplicationWindow):
         self.dest_lang_selector_m.bind_models(self.dest_lang_model, self.dest_recent_lang_model)
 
         self.langs_button_box.props.homogeneous = False
+
+    def _lang_names_func(self, code):
+        return self.translator.get_lang_name(code)
 
     def setup_translation(self):
         # Src buffer

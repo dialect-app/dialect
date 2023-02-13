@@ -81,6 +81,7 @@ class Provider(SoupProvider):
                     if lang['code'] != 'auto':
                         self.languages.append(lang['code'])
                         self.tts_languages.append(lang['code'])
+                        self.languages_names[lang['code']] = lang['name']
             else:
                 self.error = 'No langs found on server.'
         except Exception as exc:

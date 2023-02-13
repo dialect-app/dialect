@@ -124,7 +124,7 @@ LANGUAGES = {
 
 
 def get_lang_name(code):
-    return LANGUAGES.get(code, code)
+    return LANGUAGES.get(code, None)
 
 
 class LangObject(GObject.Object):
@@ -148,9 +148,10 @@ class LangObject(GObject.Object):
 class LanguagesListModel(GObject.GObject, Gio.ListModel):
     __gtype_name__ = 'LanguagesListModel'
 
-    def __init__(self):
+    def __init__(self, names_func=get_lang_name):
         super().__init__()
 
+        self.names_func = names_func
         self.langs = []
 
     def __iter__(self):
@@ -173,7 +174,7 @@ class LanguagesListModel(GObject.GObject, Gio.ListModel):
             self.langs.append(LangObject('auto', _('Auto')))
 
         for code in langs:
-            self.langs.append(LangObject(code, get_lang_name(code)))
+            self.langs.append(LangObject(code, self.names_func(code)))
 
         self.items_changed(0, removed, len(self.langs))
 

@@ -8,6 +8,8 @@ import logging
 
 from gi.repository import GLib, Soup
 
+from dialect.languages import get_lang_name
+
 
 class BaseProvider:
     __provider_type__ = ''
@@ -44,6 +46,8 @@ class BaseProvider:
         """ Languages available for translating """
         self.tts_languages = []
         """ Languages available for TTS """
+        self.languages_names = {}
+        """ Names of languages provided by the service """
 
         self.chars_limit = -1
         """ Translation char limit """
@@ -69,6 +73,14 @@ class BaseProvider:
             protocol = 'http://'
 
         return protocol + url + path
+
+    def get_lang_name(self, code):
+        name = get_lang_name(code)  # Try getting translated name from Dialect
+
+        if name is None:  # Get name from provider if available
+            return self.languages_names.get(code, code)
+
+        return name
 
 
 class LocalProvider(BaseProvider):
