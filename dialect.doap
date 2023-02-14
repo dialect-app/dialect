@@ -9,6 +9,8 @@
   <homepage rdf:resource="https://github.com/dialect-app/dialect" />
   <bug-database rdf:resource="https://github.com/dialect-app/dialect/issues"/>
   <programming-language>Python</programming-language>
+  <platform>GTK 4</platform>
+  <platform>Libadwaita</platform>
 
   <maintainer>
     <foaf:Person>
