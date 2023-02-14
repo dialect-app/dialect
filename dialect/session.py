@@ -5,8 +5,12 @@
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING, Callable, List
 
 from gi.repository import GLib, Soup
+
+if TYPE_CHECKING:
+    from gi.repository import Gio
 
 
 class Session(Soup.Session):
@@ -34,39 +38,39 @@ class Session(Soup.Session):
         return Session.instance
 
     @staticmethod
-    def get_response(session, result):
+    def get_response(session: Soup.Session, result: Gio.AsyncResult) -> bytes:
         try:
-            response = session.send_and_read_finish(result)
+            response: GLib.Bytes = session.send_and_read_finish(result)
             data = response.get_data()
 
             return data
         except GLib.GError as exc:
             raise ResponseError(exc.message) from exc
 
-    def multiple(self, messages, callback=None):
+    def multiple(self, messages: List, callback: Callable | None = None):
         """Keep track of multiple async operations."""
 
-        def on_task_response(session, result, message_callback):
+        def on_task_response(session: Soup.Session, result: Gio.AsyncResult, message_callback: Callable):
             messages.pop()
 
             try:
-                data = Session.get_response(session, result)
+                data: bytes = Session.get_response(session, result)
                 message_callback(data)
             except ResponseError as exc:
                 logging.warning(exc)
                 if (self.errors):
-                    self.errors + '/n'
-                self.errors = self.errors + str(exc)
+                    self.errors += '\n'
+                self.errors += str(exc)
 
             # If all tasks are done, run main callback
             if callback is not None and len(messages) == 0:
                 callback(errors=self.errors)
 
-        self.errors = ''  # FIXME: We're assuming that multiple() isn't called twice simultaneously
+        self.errors: str = ''  # FIXME: We're assuming that multiple() isn't called twice simultaneously
 
         for msg in messages:
             # msg[0]: Soup.Message
-            # msg[1]: message callback
+            # msg[1]: Callable, message callback
             self.send_and_read_async(msg[0], 0, None, on_task_response, msg[1])
 
 

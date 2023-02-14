@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from gettext import gettext as _
+from typing import List
 
 from gi.repository import Gio, GObject
 
@@ -147,25 +148,25 @@ def normalize_lang_code(code):
     return code
 
 
-def get_lang_name(code):
+def get_lang_name(code: str) -> str | None:
     return LANGUAGES.get(code, None)
 
 
 class LangObject(GObject.Object):
     __gtype_name__ = 'LangObject'
 
-    code = GObject.Property(type=str)
-    name = GObject.Property(type=str)
-    selected = GObject.Property(type=bool, default=False)
+    code: str = GObject.Property(type=str)
+    name: str = GObject.Property(type=str)
+    selected: bool = GObject.Property(type=bool, default=False)
 
-    def __init__(self, code, name, selected=False):
+    def __init__(self, code: str, name: str, selected: bool = False):
         super().__init__()
 
         self.code = code
         self.name = name
         self.selected = selected
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.code
 
 
@@ -176,22 +177,22 @@ class LanguagesListModel(GObject.GObject, Gio.ListModel):
         super().__init__()
 
         self.names_func = names_func
-        self.langs = []
+        self.langs: List[LangObject] = []
 
     def __iter__(self):
         return iter(self.langs)
 
-    def do_get_item(self, position):
+    def do_get_item(self, position: int) -> LangObject:
         return self.langs[position]
 
     def do_get_item_type(self):
         return LangObject
 
-    def do_get_n_items(self):
+    def do_get_n_items(self) -> int:
         return len(self.langs)
 
-    def set_langs(self, langs, auto=False):
-        removed = len(self.langs)
+    def set_langs(self, langs: List[str], auto: bool = False):
+        removed: int = len(self.langs)
         self.langs.clear()
 
         if auto:
@@ -202,6 +203,6 @@ class LanguagesListModel(GObject.GObject, Gio.ListModel):
 
         self.items_changed(0, removed, len(self.langs))
 
-    def set_selected(self, code):
+    def set_selected(self, code: str):
         for item in self.langs:
-            item.props.selected = (item.code == code)
+            item.selected = (item.code == code)
