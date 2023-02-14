@@ -13,6 +13,7 @@ builddir/
 build-dir/
 _build/
 .flatpak/
+*.flatpak
 .flatpak-builder/
 develop-eggs/
 dist/
