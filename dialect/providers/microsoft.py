@@ -5,7 +5,8 @@ import logging
 from uuid import uuid4
 
 from dialect.providers.base import (
-    ProviderError, SoupProvider, Translation, InvalidApiKey
+    ProviderError, ServiceLimitReached, SoupProvider, Translation,
+    InvalidApiKey, InvalidLangCode
 )
 
 
@@ -123,8 +124,12 @@ class Provider(SoupProvider):
             error = data['error']['message']
             code = data['error']['code']
 
-            # TODO match more errors
-            if code == 401000:
-                raise InvalidApiKey(error)
-            else:
-                raise ProviderError(error)
+            match code:
+                case 400019 | 400023 | 400035 | 400036:
+                    raise InvalidLangCode(error)
+                case 401000:
+                    raise InvalidApiKey(error)
+                case 403001 | 429000 | 429001 | 429002:
+                    raise ServiceLimitReached(error)
+                case _:
+                    raise ProviderError(error)
