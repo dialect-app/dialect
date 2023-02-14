@@ -19,5 +19,6 @@
     <file preprocess="xml-stripblanks">dialect-google.svg</file>
     <file preprocess="xml-stripblanks">dialect-lingva.svg</file>
     <file preprocess="xml-stripblanks">dialect-libretranslate.svg</file>
+    <file preprocess="xml-stripblanks">dialect-yandex.svg</file>
   </gresource>
 </gresources>
