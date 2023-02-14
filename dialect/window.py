@@ -241,7 +241,6 @@ class DialectWindow(Adw.ApplicationWindow):
     def setup_translation(self):
         # Src buffer
         self.src_buffer = self.src_text.props.buffer
-        self.src_buffer.props.text = self.launch_text
         self.src_buffer.connect('changed', self.on_src_text_changed)
         self.src_buffer.connect('end-user-action', self.user_action_ended)
 
@@ -445,11 +444,6 @@ class DialectWindow(Adw.ApplicationWindow):
             # We can now translate as per CLI parameters
 
             self.launch = False  # Prevent reoccurance of CLI parameter translation
-
-            if self.launch_langs['src'] is not None:
-                self.src_lang_selector.selected = self.launch_langs['src']
-            if self.launch_langs['dest'] is not None and self.launch_langs['dest'] in self.translator.languages:
-                self.dest_lang_selector.selected = self.launch_langs['dest']
 
             if self.launch_text != '':
                 self.translate(self.launch_text, self.launch_langs['src'], self.launch_langs['dest'])
