@@ -5,6 +5,7 @@
 import io
 import json
 import logging
+import urllib.parse
 
 from gi.repository import GLib, Soup
 
@@ -61,14 +62,21 @@ class BaseProvider:
         """ Here we save the translation history """
 
     @staticmethod
-    def format_url(url: str, path: str, http: bool = False):
+    def format_url(url: str, path: str = '', params: dict = {}, http: bool = False):
         """ Formats a given url with path with the https protocol """
+
+        if not path.startswith('/'):
+            path = '/' + path
 
         protocol = 'https://'
         if url.startswith('localhost:') or http:
             protocol = 'http://'
 
-        return protocol + url + path
+        params_str = urllib.parse.urlencode(params)
+        if params_str:
+            params_str = '?' + params_str
+
+        return protocol + url + path + params_str
 
 
 class LocalProvider(BaseProvider):
@@ -113,7 +121,7 @@ class SoupProvider(BaseProvider):
         """ Loading error when initializing """
 
     @staticmethod
-    def encode_data(data: dict) -> GLib.Bytes or None:
+    def encode_data(data) -> GLib.Bytes | None:
         """ Convert dict to JSON and bytes """
         data_glib_bytes = None
         try:
@@ -131,7 +139,7 @@ class SoupProvider(BaseProvider):
             ) if data else {}
 
     @staticmethod
-    def create_request(method: str, url: str, data: dict = {}, headers: dict = {}, form: bool = False) -> Soup.Message:
+    def create_request(method: str, url: str, data={}, headers: dict = {}, form: bool = False) -> Soup.Message:
         """ Helper for creating Soup.Message """
 
         if form and data:
