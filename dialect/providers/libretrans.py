@@ -116,7 +116,6 @@ class Provider(SoupProvider):
         self.get_translation(data)
 
     def format_translation(self, text, src, dest):
-        src, dest = self.denormalize_lang(src, dest)
         data = {
             'q': text,
             'source': src,
@@ -142,7 +141,6 @@ class Provider(SoupProvider):
         return (translation, None)
 
     def format_suggestion(self, text, src, dest, suggestion):
-        src, dest = self.denormalize_lang(src, dest)
         data = {
             'q': text,
             'source': src,

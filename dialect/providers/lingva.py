@@ -87,7 +87,6 @@ class Provider(SoupProvider):
             self.error = str(exc)
 
     def format_translation(self, text, src, dest):
-        src, dest = self.denormalize_lang(src, dest)
         text = urllib.parse.quote(text, safe='')
         url = self.translate_url.format(text=text, src=src, dest=dest)
         return self.create_request('GET', url)
@@ -113,7 +112,6 @@ class Provider(SoupProvider):
         return (translation, detected)
 
     def format_speech(self, text, language):
-        language = self.denormalize_lang(language)
         url = self.speech_url.format(text=text, lang=language)
         return self.create_request('GET', url)
 

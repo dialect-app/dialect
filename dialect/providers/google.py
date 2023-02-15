@@ -178,8 +178,6 @@ class Provider(LocalProvider, SoupProvider):
         return self.format_url(url, '&'.join(params))
 
     def format_translation(self, text, src, dest):
-        src, dest = self.denormalize_lang(src, dest)
-
         data = {
             'f.req': self._build_rpc_request(text, src, dest),
         }
@@ -307,7 +305,6 @@ class Provider(LocalProvider, SoupProvider):
         return escaped
 
     def download_speech(self, text, language, file):
-        language = self.denormalize_lang(language)
         try:
             tts = gTTS(text, lang=language, lang_check=False)
             tts.write_to_fp(file)
