@@ -83,8 +83,7 @@ class Provider(SoupProvider):
             data = self.read_data(data)
             self._check_errors(data)
             for lang in data:
-                self.languages.append(lang['code'])
-                self.languages_names[lang['code']] = lang['name']
+                self.add_lang(lang['code'], lang['name'])
         except Exception as exc:
             logging.warning(exc)
             self.error = str(exc)
@@ -117,6 +116,7 @@ class Provider(SoupProvider):
         self.get_translation(data)
 
     def format_translation(self, text, src, dest):
+        src, dest = self.denormalize_lang(src, dest)
         data = {
             'q': text,
             'source': src,
@@ -142,6 +142,7 @@ class Provider(SoupProvider):
         return (translation, None)
 
     def format_suggestion(self, text, src, dest, suggestion):
+        src, dest = self.denormalize_lang(src, dest)
         data = {
             'q': text,
             'source': src,

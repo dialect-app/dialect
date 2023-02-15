@@ -79,9 +79,7 @@ class Provider(SoupProvider):
             if 'languages' in data:
                 for lang in data['languages']:
                     if lang['code'] != 'auto':
-                        self.languages.append(lang['code'])
-                        self.tts_languages.append(lang['code'])
-                        self.languages_names[lang['code']] = lang['name']
+                        self.add_lang(lang['code'], lang['name'], tts=True)
             else:
                 self.error = 'No langs found on server.'
         except Exception as exc:
@@ -89,6 +87,7 @@ class Provider(SoupProvider):
             self.error = str(exc)
 
     def format_translation(self, text, src, dest):
+        src, dest = self.denormalize_lang(src, dest)
         text = urllib.parse.quote(text, safe='')
         url = self.translate_url.format(text=text, src=src, dest=dest)
         return self.create_request('GET', url)
@@ -114,6 +113,7 @@ class Provider(SoupProvider):
         return (translation, detected)
 
     def format_speech(self, text, language):
+        language = self.denormalize_lang(language)
         url = self.speech_url.format(text=text, lang=language)
         return self.create_request('GET', url)
 

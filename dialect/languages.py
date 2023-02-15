@@ -148,7 +148,6 @@ def normalize_lang_code(code):
 
 
 def get_lang_name(code):
-    code = normalize_lang_code(code)
     return LANGUAGES.get(code, None)
 
 
