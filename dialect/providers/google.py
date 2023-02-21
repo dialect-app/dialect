@@ -128,7 +128,7 @@ class Provider(LocalProvider, SoupProvider):
             'te', 'th', 'tr', 'tk', 'uk', 'ur', 'ug', 'uz', 'vi', 'cy', 'xh', 'yi',
             'yo', 'zu'
         ]
-        self._unstandard_langs = {
+        self._nonstandard_langs = {
             'zh-Hans': 'zh-CN',
             'zh-Hant': 'zh-TW',
         }
