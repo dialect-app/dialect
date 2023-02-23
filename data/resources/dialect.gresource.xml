@@ -11,8 +11,6 @@
     <file compressed="true" preprocess="xml-stripblanks">lang-selector.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">lang-row.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">theme-switcher.ui</file>
-    <file compressed="true" preprocess="xml-stripblanks">providers-list.ui</file>
-    <file compressed="true" preprocess="xml-stripblanks">provider-row.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">provider-preferences.ui</file>
   </gresource>
 
