@@ -9,6 +9,75 @@
       <object class="AdwPreferencesPage">
         <child>
           <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Providers</property>
+            <child>
+              <object class="AdwComboRow" id="translator">
+                <property name="title" translatable="yes">Translator</property>
+                <property name="subtitle" translatable="yes">Choose from the available translation services.</property>
+                <property name="title-lines">1</property>
+                <property name="subtitle-lines">3</property>
+                <property name="expression">
+                  <lookup name="prettyname" type="ProviderObject"></lookup>
+                </property>
+                <signal name="notify::selected" handler="_switch_translator"/>
+
+                <child>
+                  <object class="GtkSeparator">
+                    <property name="margin-start">12</property>
+                    <property name="margin-bottom">12</property>
+                    <property name="margin-top">12</property>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkButton" id="translator_config">
+                    <property name="valign">center</property>
+                    <property name="icon-name">dialect-settings-symbolic</property>
+                    <property name="sensitive">False</property>
+
+                    <style>
+                      <class name="flat" />
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwComboRow" id="tts">
+                <property name="title" translatable="yes">Text-to-Speech</property>
+                <property name="subtitle" translatable="yes">Choose from the available TTS services.</property>
+                <property name="title-lines">1</property>
+                <property name="subtitle-lines">3</property>
+                <property name="expression">
+                  <lookup name="prettyname" type="ProviderObject"></lookup>
+                </property>
+                <signal name="notify::selected" handler="_switch_tts"/>
+
+                <child>
+                  <object class="GtkSeparator">
+                    <property name="margin-start">12</property>
+                    <property name="margin-bottom">12</property>
+                    <property name="margin-top">12</property>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkButton" id="tts_config">
+                    <property name="valign">center</property>
+                    <property name="icon-name">dialect-settings-symbolic</property>
+                    <property name="sensitive">False</property>
+
+                    <style>
+                      <class name="flat" />
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup">
             <property name="title" translatable="yes">Behavior</property>
             <child>
               <object class="AdwExpanderRow" id="live_translation">
@@ -60,44 +129,6 @@
                     <property name="valign">center</property>
                   </object>
                 </child>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="AdwPreferencesGroup">
-            <property name="title" translatable="yes">Providers</property>
-            <child>
-              <object class="AdwComboRow" id="translator">
-                <property name="title" translatable="yes">Translator</property>
-                <property name="subtitle" translatable="yes">Choose from the available translation services.</property>
-                <property name="title-lines">1</property>
-                <property name="subtitle-lines">3</property>
-                <property name="expression">
-                  <lookup name="prettyname" type="ProviderObject"></lookup>
-                </property>
-                <signal name="notify::selected" handler="_switch_translator"/>
-              </object>
-            </child>
-            <child>
-              <object class="AdwComboRow" id="tts">
-                <property name="title" translatable="yes">Text-to-Speech</property>
-                <property name="subtitle" translatable="yes">Choose from the available TTS services.</property>
-                <property name="title-lines">1</property>
-                <property name="subtitle-lines">3</property>
-                <property name="expression">
-                  <lookup name="prettyname" type="ProviderObject"></lookup>
-                </property>
-                <signal name="notify::selected" handler="_switch_tts"/>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="AdwPreferencesGroup">
-            <property name="title" translatable="yes">Configure Providers Settings</property>
-            <child>
-              <object class="ProvidersList" id="providers">
               </object>
             </child>
           </object>

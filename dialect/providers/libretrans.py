@@ -38,7 +38,7 @@ class Provider(SoupProvider):
 
         self.chars_limit = 0
         self.detection = True
-        self._api_key_supported = False  # For LT conditional api keys
+        self.api_key_supported = False  # For LT conditional api keys
 
     @staticmethod
     def format_validate_instance(url):
@@ -96,7 +96,7 @@ class Provider(SoupProvider):
             data = self.read_data(data)
             self._check_errors(data)
             self.suggestions = data.get('suggestions', False)
-            self._api_key_supported = data.get('apiKeys', False)
+            self.api_key_supported = data.get('apiKeys', False)
             self.api_key_required = data.get('keyRequired', False)
             self.chars_limit = data.get('charLimit', 0)
         except Exception as exc:

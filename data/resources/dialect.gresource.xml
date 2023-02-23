@@ -13,9 +13,12 @@
     <file compressed="true" preprocess="xml-stripblanks">theme-switcher.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">providers-list.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">provider-row.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">provider-preferences.ui</file>
   </gresource>
 
   <gresource prefix="/app/drey/Dialect/icons/scalable/emblems/">
+    <file preprocess="xml-stripblanks">dialect-settings-symbolic.svg</file>
+
     <file preprocess="xml-stripblanks">dialect-bing.svg</file>
     <file preprocess="xml-stripblanks">dialect-google.svg</file>
     <file preprocess="xml-stripblanks">dialect-lingva.svg</file>
