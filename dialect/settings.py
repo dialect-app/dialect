@@ -22,7 +22,7 @@ class Settings(Gio.Settings):
     }
 
     instance = None
-    translator = None
+    providers = {}
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -74,7 +74,6 @@ class Settings(Gio.Settings):
     @active_translator.setter
     def active_translator(self, translator):
         self.get_child('translators').set_string('active', translator)
-        self.translator = None
 
     def get_translator_settings(self, translator=None):
         def on_changed(_settings, key, name):
@@ -85,21 +84,19 @@ class Settings(Gio.Settings):
             if not path.endswith('/'):
                 path += '/'
             path += name + '/'
+
             settings = ProviderSettings(APP_ID + '.translator', path)
             settings.connect('changed', on_changed, name)
             return settings
 
-        if translator is not None:
-            translator = get_settings(translator)
-            return translator
-        if self.translator is None:
-            self.translator = get_settings(self.active_translator)
-            self.translator.delay()
-        return self.translator
+        if translator is None:
+            translator = self.active_translator
 
-    def save_translator_settings(self):
-        if self.translator is not None:
-            self.translator.apply()
+        if translator in self.providers:
+            return self.providers[translator]
+
+        self.providers[translator] = get_settings(translator)
+        return self.providers[translator]
 
     @property
     def src_langs(self):
@@ -130,7 +127,6 @@ class Settings(Gio.Settings):
     @instance_url.setter
     def instance_url(self, url):
         self.get_translator_settings().set_string('instance-url', url)
-        self.save_translator_settings()
 
     def reset_instance_url(self):
         self.instance_url = TRANSLATORS[self.active_translator].defaults['instance_url']
@@ -142,7 +138,6 @@ class Settings(Gio.Settings):
     @api_key.setter
     def api_key(self, api_key):
         self.get_translator_settings().set_string('api-key', api_key)
-        self.save_translator_settings()
 
     def reset_api_key(self):
         self.api_key = TRANSLATORS[self.active_translator].defaults['api_key']

@@ -586,7 +586,6 @@ class DialectWindow(Adw.ApplicationWindow):
         if self.provider['trans'] is not None:
             Settings.get().src_langs = self.src_langs
             Settings.get().dest_langs = self.dest_langs
-            Settings.get().save_translator_settings()
 
     def send_notification(self, text, queue=False, action=None, timeout=5, priority=Adw.ToastPriority.NORMAL):
         """
