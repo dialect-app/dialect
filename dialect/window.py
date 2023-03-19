@@ -244,7 +244,6 @@ class DialectWindow(Adw.ApplicationWindow):
     def setup_translation(self):
         # Src buffer
         self.src_buffer = self.src_text.props.buffer
-        self.src_buffer.props.text = self.launch_text
         self.src_buffer.connect('changed', self.on_src_text_changed)
         self.src_buffer.connect('end-user-action', self.user_action_ended)
 
@@ -448,11 +447,6 @@ class DialectWindow(Adw.ApplicationWindow):
             # We can now translate as per CLI parameters
 
             self.launch = False  # Prevent reoccurance of CLI parameter translation
-
-            if self.launch_langs['src'] is not None:
-                self.src_lang_selector.selected = self.launch_langs['src']
-            if self.launch_langs['dest'] is not None and self.launch_langs['dest'] in self.translator.languages:
-                self.dest_lang_selector.selected = self.launch_langs['dest']
 
             if self.launch_text != '':
                 self.translate(self.launch_text, self.launch_langs['src'], self.launch_langs['dest'])
@@ -813,6 +807,7 @@ class DialectWindow(Adw.ApplicationWindow):
             if text is not None:
                 end_iter = self.src_buffer.get_end_iter()
                 self.src_buffer.insert(end_iter, text)
+                self.src_buffer.emit('end-user-action')
 
         cancellable = Gio.Cancellable()
         clipboard.read_text_async(cancellable, on_paste)
@@ -1031,7 +1026,23 @@ class DialectWindow(Adw.ApplicationWindow):
         return Gdk.EVENT_STOP
 
     def on_src_text_changed(self, buffer):
-        sensitive = buffer.get_char_count() != 0
+        char_count = buffer.get_char_count()
+
+        # If the text is over the highest number of characters allowed, it is truncated.
+        # This is done for avoiding exceeding the limit imposed by translation services.
+        if self.translator.chars_limit == -1:  # -1 means unlimited
+            self.char_counter.props.label = ''
+        else:
+            self.char_counter.props.label = f'{str(char_count)}/{self.translator.chars_limit}'
+
+            if char_count >= self.translator.chars_limit:
+                self.send_notification(_('{} characters limit reached!').format(self.translator.chars_limit))
+                buffer.delete(
+                    buffer.get_iter_at_offset(self.translator.chars_limit),
+                    buffer.get_end_iter()
+                )
+
+        sensitive = char_count != 0
         self.lookup_action('translation').props.enabled = sensitive
         self.lookup_action('clear').props.enabled = sensitive
         if not self.voice_loading and self.tts:
@@ -1057,21 +1068,7 @@ class DialectWindow(Adw.ApplicationWindow):
         elif not self.voice_loading and self.tts is not None and not self.tts.tts_languages:
             self.lookup_action('listen-dest').props.enabled = sensitive
 
-    def user_action_ended(self, buffer):
-        # If the text is over the highest number of characters allowed, it is truncated.
-        # This is done for avoiding exceeding the limit imposed by translation services.
-        if self.translator.chars_limit == -1:  # -1 means unlimited
-            self.char_counter.props.label = ''
-        else:
-            self.char_counter.props.label = f'{str(buffer.get_char_count())}/{self.translator.chars_limit}'
-
-            if buffer.get_char_count() >= self.translator.chars_limit:
-                self.send_notification(_('{} characters limit reached!').format(self.translator.chars_limit))
-                buffer.delete(
-                    buffer.get_iter_at_offset(self.translator.chars_limit),
-                    buffer.get_end_iter()
-                )
-
+    def user_action_ended(self, _buffer):
         if Settings.get().live_translation:
             self.translation()
 
