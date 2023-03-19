@@ -9,6 +9,8 @@ import urllib.parse
 
 from gi.repository import GLib, Soup
 
+from dialect.languages import get_lang_name, normalize_lang_code
+
 
 class BaseProvider:
     __provider_type__ = ''
@@ -45,6 +47,10 @@ class BaseProvider:
         """ Languages available for translating """
         self.tts_languages = []
         """ Languages available for TTS """
+        self._nonstandard_langs = {}
+        """ Mapping of lang codes that differ with Dialect ones """
+        self._languages_names = {}
+        """ Names of languages provided by the service """
 
         self.chars_limit = -1
         """ Translation char limit """
@@ -77,6 +83,44 @@ class BaseProvider:
             params_str = '?' + params_str
 
         return protocol + url + path + params_str
+
+    def add_lang(self, original_code, name=None, trans=True, tts=False):
+        """ Add lang supported by provider """
+
+        code = normalize_lang_code(original_code)  # Get normalized lang code
+
+        if trans:  # Add lang to supported languages list
+            self.languages.append(code)
+        if tts:  # Add lang to supported TTS languages list
+            self.tts_languages.append(code)
+
+        if code != original_code and code not in self._nonstandard_langs:
+            # Save a divergent lang code for later denormalization
+            self._nonstandard_langs[code] = original_code
+
+        if name is not None and code not in self._languages_names:
+            # Save name provider by the service
+            self._languages_names[code] = name
+
+    def denormalize_lang(self, *codes):
+        """ Get denormalized lang code if available """
+
+        if len(codes) == 1:
+            return self._nonstandard_langs.get(codes[0], codes[0])
+
+        result = []
+        for code in codes:
+            result.append(self._nonstandard_langs.get(code, code))
+        return tuple(result)
+
+    def get_lang_name(self, code):
+        """ Get language name """
+        name = get_lang_name(code)  # Try getting translated name from Dialect
+
+        if name is None:  # Get name from provider if available
+            return self._languages_names.get(code, code)
+
+        return name
 
 
 class LocalProvider(BaseProvider):

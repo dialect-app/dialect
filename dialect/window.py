@@ -223,10 +223,10 @@ class DialectWindow(Adw.ApplicationWindow):
 
     def setup_selectors(self):
         # Languages models
-        self.src_lang_model = LanguagesListModel()
-        self.src_recent_lang_model = LanguagesListModel()
-        self.dest_lang_model = LanguagesListModel()
-        self.dest_recent_lang_model = LanguagesListModel()
+        self.src_lang_model = LanguagesListModel(self._lang_names_func)
+        self.src_recent_lang_model = LanguagesListModel(self._lang_names_func)
+        self.dest_lang_model = LanguagesListModel(self._lang_names_func)
+        self.dest_recent_lang_model = LanguagesListModel(self._lang_names_func)
 
         # Src lang selector
         self.src_lang_selector.bind_models(self.src_lang_model, self.src_recent_lang_model)
@@ -237,6 +237,9 @@ class DialectWindow(Adw.ApplicationWindow):
         self.dest_lang_selector_m.bind_models(self.dest_lang_model, self.dest_recent_lang_model)
 
         self.langs_button_box.props.homogeneous = False
+
+    def _lang_names_func(self, code):
+        return self.translator.get_lang_name(code)
 
     def setup_translation(self):
         # Src buffer
@@ -830,10 +833,14 @@ class DialectWindow(Adw.ApplicationWindow):
             True
         )
 
+        src, dest = self.translator.denormalize_lang(
+            self.translator.history[self.current_history]['Languages'][0],
+            self.translator.history[self.current_history]['Languages'][1]
+        )
         (data, headers) = self.translator.format_suggestion(
             self.translator.history[self.current_history]['Text'][0],
-            self.translator.history[self.current_history]['Languages'][0],
-            self.translator.history[self.current_history]['Languages'][1],
+            src,
+            dest,
             dest_text
         )
         message = Session.create_message(
@@ -920,7 +927,8 @@ class DialectWindow(Adw.ApplicationWindow):
                         daemon=True
                     ).start()
                 case 'soup':
-                    message = self.tts.format_speech(self.current_speech['text'], self.current_speech['lang'])
+                    lang = self.tts.denormalize_lang(self.current_speech['lang'])
+                    message = self.tts.format_speech(self.current_speech['text'], lang)
                     Session.get().send_and_read_async(
                         message,
                         0,
@@ -935,7 +943,8 @@ class DialectWindow(Adw.ApplicationWindow):
         """ Downlaod and play speech from local provider """
         try:
             with NamedTemporaryFile() as file_to_play:
-                self.tts.download_speech(self.current_speech['text'], self.current_speech['lang'], file_to_play)
+                lang = self.tts.denormalize_lang(self.current_speech['lang'])
+                self.tts.download_speech(self.current_speech['text'], lang, file_to_play)
                 self._play_audio(file_to_play.name)
         except Exception as exc:
             logging.error(exc)
@@ -1131,8 +1140,9 @@ class DialectWindow(Adw.ApplicationWindow):
                 if src_text != '':
                     self.ongoing_trans = True
 
+                    src, dest = self.translator.denormalize_lang(src_language, dest_language)
                     message = self.translator.format_translation(
-                        src_text, src_language, dest_language
+                        src_text, src, dest
                     )
 
                     Session.get().send_and_read_async(

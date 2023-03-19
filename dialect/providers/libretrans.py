@@ -83,7 +83,7 @@ class Provider(SoupProvider):
             data = self.read_data(data)
             self._check_errors(data)
             for lang in data:
-                self.languages.append(lang['code'])
+                self.add_lang(lang['code'], lang['name'])
         except Exception as exc:
             logging.warning(exc)
             self.error = str(exc)

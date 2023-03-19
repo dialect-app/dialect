@@ -23,9 +23,8 @@ LANGUAGES = {
     'ceb': _('Cebuano'),
     'ny': _('Chichewa'),
     'zh': _('Chinese'),
-    'zh-CN': _('Chinese (Simplified)'),
-    'zh-TW': _('Chinese (Traditional)'),
-    'zh_HANT': _('Chinese (Traditional)'),
+    'zh-Hans': _('Chinese (Simplified)'),
+    'zh-Hant': _('Chinese (Traditional)'),
     'co': _('Corsican'),
     'hr': _('Croatian'),
     'cs': _('Czech'),
@@ -122,9 +121,34 @@ LANGUAGES = {
     'zu': _('Zulu'),
 }
 
+ALIASES = {
+    'zh-CN': 'zh-Hans',
+    'zh-TW': 'zh-Hant',
+}
+
+
+def normalize_lang_code(code):
+    code = code.replace('_', '-')  # Normalize separator
+    codes = code.split('-')
+
+    if len(codes) == 2:  # Code contain a script or country code
+
+        if len(codes[1]) == 4:  # ISO 15924 (script)
+            codes[1] = codes[1].capitalize()
+
+        elif len(codes[1]) == 2:  # ISO 3166-1 (country)
+            codes[1] = codes[1].upper()
+
+        code = '-'.join(codes)
+
+    if code in ALIASES:
+        code = ALIASES[code]
+
+    return code
+
 
 def get_lang_name(code):
-    return LANGUAGES.get(code, code)
+    return LANGUAGES.get(code, None)
 
 
 class LangObject(GObject.Object):
@@ -148,9 +172,10 @@ class LangObject(GObject.Object):
 class LanguagesListModel(GObject.GObject, Gio.ListModel):
     __gtype_name__ = 'LanguagesListModel'
 
-    def __init__(self):
+    def __init__(self, names_func=get_lang_name):
         super().__init__()
 
+        self.names_func = names_func
         self.langs = []
 
     def __iter__(self):
@@ -173,7 +198,7 @@ class LanguagesListModel(GObject.GObject, Gio.ListModel):
             self.langs.append(LangObject('auto', _('Auto')))
 
         for code in langs:
-            self.langs.append(LangObject(code, get_lang_name(code)))
+            self.langs.append(LangObject(code, self.names_func(code)))
 
         self.items_changed(0, removed, len(self.langs))
 

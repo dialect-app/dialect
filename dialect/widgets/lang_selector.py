@@ -8,7 +8,6 @@ from gettext import gettext as _
 from gi.repository import Adw, Gdk, GObject, Gtk
 
 from dialect.define import RES_PATH
-from dialect.languages import get_lang_name
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/lang-selector.ui')
@@ -62,7 +61,10 @@ class LangSelector(Adw.Bin):
 
     def set_insight(self, code):
         if self.selected == 'auto':
-            self.insight.props.label = f'({get_lang_name(code)})'
+            self.insight.props.label = f'({self._get_lang_name(code)})'
+
+    def _get_lang_name(self, code):
+        return self.model.names_func(code)
 
     def _on_recent_changed(self, _model, _position, _removed, _added):
         self.recent_model.set_selected(self.selected)
@@ -77,7 +79,7 @@ class LangSelector(Adw.Bin):
             if self.selected == 'auto':
                 self.label.props.label = _('Auto')
             else:
-                self.label.props.label = get_lang_name(self.selected)
+                self.label.props.label = self._get_lang_name(self.selected)
 
             self.insight.props.label = ''
 
