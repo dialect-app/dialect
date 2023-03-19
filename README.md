@@ -46,6 +46,7 @@ sudo dnf install dialect
 - Ninja `ninja`
 - gTTS `python-gtts`
 - D-Bus `python-dbus`
+- Beautiful Soup `python-beautifulsoup4`
 
 If official packages are not available for any of the python dependencies, you can install them from pip:
 
