@@ -262,17 +262,19 @@ template DialectWindow : Adw.ApplicationWindow {
                   .LangSelector src_lang_selector {
                     notify::selected => _on_src_lang_changed();
                     user-selection-changed => translation();
+                    tooltip-text: _("Change Source Language");
                   }
 
                   Button switch_btn {
                     action-name: "win.switch";
-                    tooltip-text: _("Switch languages");
+                    tooltip-text: _("Switch Languages");
                     icon-name: "object-flip-horizontal-symbolic";
                   }
 
                   .LangSelector dest_lang_selector {
                     notify::selected => _on_dest_lang_changed();
                     user-selection-changed => translation();
+                    tooltip-text: _("Change Destination Language");
                   }
                 };
               }
@@ -287,19 +289,20 @@ template DialectWindow : Adw.ApplicationWindow {
 
             Button return_btn {
               action-name: "win.back";
-              tooltip-text: _("Previous translation");
+              tooltip-text: _("Previous Translation");
               icon-name: "go-previous-symbolic";
             }
 
             Button forward_btn {
               action-name: "win.forward";
-              tooltip-text: _("Next translation");
+              tooltip-text: _("Next Translation");
               icon-name: "go-next-symbolic";
             }
 
             [end]
             MenuButton menu_btn {
               menu-model: app-menu;
+              tooltip-text: _("Main Menu");
               icon-name: "open-menu-symbolic";
               primary: true;
             }
@@ -513,7 +516,7 @@ template DialectWindow : Adw.ApplicationWindow {
                       }
 
                       Image trans_warning {
-                        tooltip-text: _("Could not translate the text");
+                        tooltip-text: _("Could not Translate the Text");
                         margin-start: 8;
                         icon-name: "dialog-warning-symbolic";
                       }
@@ -585,6 +588,7 @@ template DialectWindow : Adw.ApplicationWindow {
 
               .LangSelector src_lang_selector_m {
                 selected: bind src_lang_selector.selected bidirectional;
+                tooltip-text: _("Change Source Language");
 
                 user-selection-changed => translation();
               }
@@ -592,7 +596,7 @@ template DialectWindow : Adw.ApplicationWindow {
               [center]
               Button switch_btn2 {
                 sensitive: bind switch_btn.sensitive no-sync-create;
-                tooltip-text: _("Switch languages");
+                tooltip-text: _("Switch Languages");
                 action-name: "win.switch";
                 icon-name: "object-flip-horizontal-symbolic";
               }
@@ -600,6 +604,7 @@ template DialectWindow : Adw.ApplicationWindow {
               [end]
               .LangSelector dest_lang_selector_m {
                 selected: bind dest_lang_selector.selected bidirectional;
+                tooltip-text: _("Change Destination Language");
 
                 user-selection-changed => translation();
               }
