@@ -23,7 +23,7 @@ template ProviderPreferences : Gtk.Box {
 
       Adw.EntryRow instance_entry {
         title: _("Instance URL");
-        tooltip-text: _("Enter an instance URL for the provider.");
+        tooltip-text: _("Enter an Instance URL for the Provider.");
         show-apply-button: true;
 
         apply => _on_instance_apply();
@@ -33,7 +33,7 @@ template ProviderPreferences : Gtk.Box {
           StackPage {
             name: "reset";
             child:  Button instance_reset {
-              tooltip-text: _("Reset to default");
+              tooltip-text: _("Reset to Default");
               icon-name: "view-refresh-symbolic";
               valign: center;
 
@@ -54,7 +54,7 @@ template ProviderPreferences : Gtk.Box {
 
       Adw.EntryRow api_key_entry {
         title: _("API Key");
-        tooltip-text: _("Enter an API key for the provider.");
+        tooltip-text: _("Enter an API Key for the Provider.");
         show-apply-button: true;
 
         apply => _on_api_key_apply();
@@ -63,7 +63,7 @@ template ProviderPreferences : Gtk.Box {
           StackPage {
             name: "reset";
             child:  Button api_key_reset {
-              tooltip-text: _("Reset to default");
+              tooltip-text: _("Reset to Default");
               icon-name: "view-refresh-symbolic";
               valign: center;
 
