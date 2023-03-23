@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import os
+from gettext import gettext as _
 
 from gi.repository import Adw, Gio, Gtk
 
@@ -43,6 +44,9 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
                             'selected', Gio.SettingsBindFlags.DEFAULT)
         Settings.get().bind('src-auto', self.src_auto, 'active',
                             Gio.SettingsBindFlags.DEFAULT)
+
+        self.translator_config.props.sensitive = False
+        self.tts_config.props.sensitive = False
 
         # Setup translator chooser
         trans_model = ProvidersListModel('translators')
@@ -111,6 +115,13 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         if provider != Settings.get().active_tts:
             Settings.get().active_tts = provider
             self.parent.load_tts()
+
+    @Gtk.Template.Callback()
+    def _provider_settings_tooltip(self, button, _pspec):
+        if button.props.sensitive:
+            button.props.tooltip_text = _("Edit Provider Settings")
+        else:
+            button.props.tooltip_text = _("No Settings for This Provider")
 
     def _on_translator_loading(self, window, _value):
         self.translator.props.sensitive = not window.translator_loading
