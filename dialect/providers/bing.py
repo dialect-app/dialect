@@ -82,19 +82,17 @@ class Provider(SoupProvider):
                 iid = soup.find('div', {'id': 'rich_tta'})
                 self._iid = iid['data-iid']
 
+                # Decode response bytes
+                data = data.decode('utf-8')
+
                 # Look for abuse prevention data
-                pattern = re.compile(r"var params_AbusePreventionHelper = \[(.*?)\];", re.MULTILINE | re.DOTALL)
-                script = soup.find('script', text=pattern)
-                params = pattern.search(script.text).group(1)
+                params = re.findall("var params_AbusePreventionHelper = \[(.*?)\];", data)[0]
                 abuse_params = params.replace('"', '').split(',')
                 self._key = abuse_params[0]
                 self._token = abuse_params[1]
 
                 # Look for IG
-                pattern = re.compile(r"IG:\"(.*?)\",", re.MULTILINE | re.DOTALL)
-                script = soup.find('script', text=pattern)
-                ig = pattern.search(script.text).group(1)
-                self._ig = ig
+                self._ig = re.findall("IG:\"(.*?)\",", data)[0]
 
             except Exception as exc:
                 self.error = 'Failed parsing HTML from bing.com'
