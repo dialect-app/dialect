@@ -163,7 +163,7 @@ class Provider(LocalProvider, SoupProvider):
     @property
     def translate_url(self):
         url = TRANSLATE_RPC.format(host=self._pick_service_url()) + '?'
-        params_dict = {
+        params = {
             'rpcids': RPC_ID,
             'bl': 'boq_translate-webserver_20201207.13_p0',
             'soc-app': '1',
@@ -171,11 +171,8 @@ class Provider(LocalProvider, SoupProvider):
             'soc-device': '1',
             'rt': 'c',
         }
-        params = []
-        for item in params_dict:
-            params.append('='.join([item, params_dict[item]]))
 
-        return self.format_url(url, '&'.join(params))
+        return self.format_url(url, params=params)
 
     def format_translation(self, text, src, dest):
         data = {
