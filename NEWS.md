@@ -2,8 +2,11 @@
 ### In Development
 - Refactored providers implementation to ease future features
 - Added Lingva Text-to-speech support in addition to Google's
-- Added languages list localized sorting
-- Fix Lingva Translate provider bugs
+- Added Bing translation provider
+- Added Yandex translation provider
+- Updated preferences window
+- Languages list now have localized sorting
+- Fixed Lingva Translate provider bugs
 
 ### 2.1.1
 - Updated translations
