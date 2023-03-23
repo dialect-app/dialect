@@ -242,7 +242,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.langs_button_box.props.homogeneous = False
 
     def _lang_names_func(self, code):
-        return self.translator.get_lang_name(code)
+        return self.provider['trans'].get_lang_name(code)
 
     def setup_translation(self):
         # Src buffer
@@ -830,11 +830,11 @@ class DialectWindow(Adw.ApplicationWindow):
             True
         )
 
-        src, dest = self.translator.denormalize_lang(
+        src, dest = self.provider['trans'].denormalize_lang(
             self.provider['trans'].history[self.current_history]['Languages'][0],
             self.provider['trans'].history[self.current_history]['Languages'][1]
         )
-        (data, headers) = self.translator.format_suggestion(
+        (data, headers) = self.provider['trans'].format_suggestion(
             self.provider['trans'].history[self.current_history]['Text'][0],
             src,
             dest,
@@ -1032,15 +1032,15 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # If the text is over the highest number of characters allowed, it is truncated.
         # This is done for avoiding exceeding the limit imposed by translation services.
-        if self.translator.chars_limit == -1:  # -1 means unlimited
+        if self.provider['trans'].chars_limit == -1:  # -1 means unlimited
             self.char_counter.props.label = ''
         else:
-            self.char_counter.props.label = f'{str(char_count)}/{self.translator.chars_limit}'
+            self.char_counter.props.label = f'{str(char_count)}/{self.provider["trans"].chars_limit}'
 
-            if char_count >= self.translator.chars_limit:
-                self.send_notification(_('{} characters limit reached!').format(self.translator.chars_limit))
+            if char_count >= self.provider['trans'].chars_limit:
+                self.send_notification(_('{} characters limit reached!').format(self.provider['trans'].chars_limit))
                 buffer.delete(
-                    buffer.get_iter_at_offset(self.translator.chars_limit),
+                    buffer.get_iter_at_offset(self.provider['trans'].chars_limit),
                     buffer.get_end_iter()
                 )
 
