@@ -1,5 +1,5 @@
-# Copyright 2020-2022 Mufeed Ali
-# Copyright 2020-2022 Rafael Mardojai CM
+# Copyright 2023 Mufeed Ali
+# Copyright 2023 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
@@ -13,9 +13,9 @@ from dialect.session import Session
 from dialect.settings import Settings
 
 
-@Gtk.Template(resource_path=f'{RES_PATH}/provider-row.ui')
-class ProviderRow(Adw.ExpanderRow):
-    __gtype_name__ = 'ProviderRow'
+@Gtk.Template(resource_path=f'{RES_PATH}/provider-preferences.ui')
+class ProviderPreferences(Gtk.Box):
+    __gtype_name__ = 'ProviderPreferences'
 
     # Properties
     translation = GObject.Property(type=bool, default=False)
@@ -23,27 +23,29 @@ class ProviderRow(Adw.ExpanderRow):
     definitions = GObject.Property(type=bool, default=False)
 
     # Child widgets
+    title = Gtk.Template.Child()
+    page = Gtk.Template.Child()
     instance_entry = Gtk.Template.Child()
     instance_stack = Gtk.Template.Child()
     instance_reset = Gtk.Template.Child()
     instance_spinner = Gtk.Template.Child()
     api_key_entry = Gtk.Template.Child()
+    api_key_stack = Gtk.Template.Child()
     api_key_reset = Gtk.Template.Child()
+    api_key_spinner = Gtk.Template.Child()
 
-    def __init__(self, provider, **kwargs):
+    def __init__(self, providers, scope, **kwargs):
         super().__init__(**kwargs)
-        self.p_class = provider.p_class
-        self.settings = Settings.get().get_translator_settings(provider.name)
+        self.providers = providers
+        self.scope = scope
+        self.provider = providers[scope]
+        self.settings = Settings.get().get_translator_settings(self.provider.name)
 
-        self.props.title = provider.prettyname
-        self.props.icon_name = f'dialect-{provider.name}'
+        self.title.props.subtitle = self.provider.prettyname
 
-        self.translation = provider.p_class.translation
-        self.tts = provider.p_class.tts
-        self.definitions = provider.p_class.definitions
-
-        # Instance
-        self.instance_entry.props.title = _('{provider} Instance').format(provider=provider.prettyname)
+        self.translation = self.provider.translation
+        self.tts = self.provider.tts
+        self.definitions = self.provider.definitions
 
         # Check what entries to show
         self._check_settings()
@@ -52,15 +54,20 @@ class ProviderRow(Adw.ExpanderRow):
         self.instance_entry.props.text = self.settings.get_string('instance-url')
         self.api_key_entry.props.text = self.settings.get_string('api-key')
 
-    def _check_settings(self):
-        if not self.p_class.change_instance and not self.p_class.api_key_supported:
-            self.props.enable_expansion = False
-            self.props.subtitle = _("This provider doesn't have settigns available.")
+    @Gtk.Template.Callback()
+    def _on_parent(self, _view, _pspec):
+        # Main window progress
+        if self.props.parent is not None:
+            self.get_root().parent.connect('notify::translator-loading', self._on_translator_loading)
 
-        if not self.p_class.change_instance:
-            self.instance_entry.props.visible = False
-        if not self.p_class.api_key_supported:
-            self.api_key_entry.props.visible = False
+    def _check_settings(self):
+        self.instance_entry.props.visible = self.provider.change_instance
+        self.api_key_entry.props.visible = self.provider.api_key_supported
+
+    @Gtk.Template.Callback()
+    def _on_back(self, _button):
+        """ Called on self.back_btn::clicked signal """
+        self.get_root().close_subpage()
 
     @Gtk.Template.Callback()
     def _on_instance_apply(self, _row):
@@ -69,24 +76,18 @@ class ProviderRow(Adw.ExpanderRow):
             valid = False
             try:
                 data = Session.get_response(session, result)
-                valid = self.p_class.validate_instance(data)
+                valid = self.provider.validate_instance(data)
             except Exception as exc:
                 logging.error(exc)
 
             if valid:
-                # Translator loading in main window
-                self._loading_handler = self.get_root().parent.connect(
-                    'notify::translator-loading',
-                    self._on_translator_loading
-                )
-
                 self.settings.instance_url = self.new_instance_url
                 self.instance_entry.remove_css_class('error')
                 self.instance_entry.props.text = self.settings.instance_url
             else:
                 self.instance_entry.add_css_class('error')
                 error_text = _('Not a valid {provider} instance')
-                error_text = error_text.format(provider=self.p_class.prettyname)
+                error_text = error_text.format(provider=self.provider.prettyname)
                 toast = Adw.Toast.new(error_text)
                 self.get_root().add_toast(toast)
 
@@ -109,7 +110,7 @@ class ProviderRow(Adw.ExpanderRow):
             self.instance_stack.props.visible_child_name = 'spinner'
             self.instance_spinner.start()
 
-            validation = self.p_class.format_validate_instance(self.new_instance_url)
+            validation = self.provider.format_validate_instance(self.new_instance_url)
             Session.get().send_and_read_async(validation, 0, None, on_validation_response)
         else:
             self.instance_entry.remove_css_class('error')
@@ -125,14 +126,10 @@ class ProviderRow(Adw.ExpanderRow):
     @Gtk.Template.Callback()
     def _on_reset_instance(self, _button):
         """ Called on self.instance_reset::clicked signal """
-        if self.settings.instance_url != self.p_class.defaults['instance_url']:
-            # Translator loading in main window
-            self._loading_handler = self.get_root().parent.connect(
-                'notify::translator-loading',
-                self._on_translator_loading
-            )
-
-            self.settings.instance_url = self.p_class.defaults['instance_url']
+        if self.settings.instance_url != self.provider.defaults['instance_url']:
+            self.instance_stack.props.visible_child_name = 'spinner'
+            self.instance_spinner.start()
+            self.settings.instance_url = self.provider.defaults['instance_url']
 
         self.instance_entry.remove_css_class('error')
         self.instance_entry.props.text = self.settings.instance_url
@@ -140,28 +137,64 @@ class ProviderRow(Adw.ExpanderRow):
     @Gtk.Template.Callback()
     def _on_api_key_apply(self, _row):
         """ Called on self.api_key_entry::apply signal """
+        def on_validation_response(session, result):
+            valid = False
+            try:
+                data = Session.get_response(session, result)
+                self.provider.validate_api_key(data)
+                valid = True
+            except Exception as exc:
+                logging.error(exc)
+
+            if valid:
+                self.settings.api_key = self.new_api_key
+                self.api_key_entry.remove_css_class('error')
+                self.api_key_entry.props.text = self.settings.api_key
+            else:
+                self.api_key_entry.add_css_class('error')
+                error_text = _('Not a valid {provider} API key')
+                error_text = error_text.format(provider=self.provider.prettyname)
+                toast = Adw.Toast.new(error_text)
+                self.get_root().add_toast(toast)
+
+            self.instance_entry.props.sensitive = True
+            self.api_key_entry.props.sensitive = True
+            self.api_key_stack.props.visible_child_name = 'reset'
+            self.api_key_spinner.stop()
+
         old_value = self.settings.api_key
         self.new_api_key = self.api_key_entry.get_text()
 
+        # Validate
         if self.new_api_key != old_value:
-            self.settings.api_key = self.new_api_key
-            self.api_key_entry.props.text = self.settings.api_key
+            # Progress feedback
+            self.instance_entry.props.sensitive = False
+            self.api_key_entry.props.sensitive = False
+            self.api_key_stack.props.visible_child_name = 'spinner'
+            self.api_key_spinner.start()
+
+            validation = self.provider.format_validate_api_key(self.new_api_key)
+            Session.get().send_and_read_async(validation, 0, None, on_validation_response)
+        else:
+            self.api_key_entry.remove_css_class('error')
 
     @Gtk.Template.Callback()
     def _on_reset_api_key(self, _button):
         """ Called on self.api_key_reset::clicked signal """
-        if self.settings.api_key != self.p_class.defaults['api_key']:
-            self.settings.api_key = self.p_class.defaults['api_key']
+        if self.settings.api_key != self.provider.defaults['api_key']:
+            self.api_key_stack.props.visible_child_name = 'spinner'
+            self.api_key_spinner.start()
+            self.settings.api_key = self.provider.defaults['api_key']
         self.api_key_entry.props.text = self.settings.api_key
 
     def _on_translator_loading(self, window, _value):
-        self.instance_entry.props.sensitive = not window.translator_loading
-        self.api_key_entry.props.sensitive = not window.translator_loading
+        self.page.props.sensitive = not window.translator_loading
 
-        if window.translator_loading:
-            self.instance_stack.props.visible_child_name = 'spinner'
-            self.instance_spinner.start()
-        else:
+        if not window.translator_loading:
             self.instance_stack.props.visible_child_name = 'reset'
             self.instance_spinner.stop()
-            self.get_root().parent.disconnect(self._loading_handler)
+            self.api_key_stack.props.visible_child_name = 'reset'
+            self.api_key_spinner.stop()
+
+            self.provider = self.providers[self.scope]
+            self._check_settings()

@@ -81,10 +81,13 @@ class DialectWindow(Adw.ApplicationWindow):
     # Window Launch Tracking
     launch = True
 
-    # Translator
-    translator = None  # Translator object
+    # Providers objects
+    provider = {
+        'trans': None,
+        'tts': None
+    }
+
     # Text to speech
-    tts = None
     current_speech = {}
     voice_loading = False  # tts loading status
 
@@ -239,7 +242,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.langs_button_box.props.homogeneous = False
 
     def _lang_names_func(self, code):
-        return self.translator.get_lang_name(code)
+        return self.provider['trans'].get_lang_name(code)
 
     def setup_translation(self):
         # Src buffer
@@ -289,25 +292,25 @@ class DialectWindow(Adw.ApplicationWindow):
 
     def load_translator(self):
         def on_loaded(errors):
-            if errors or self.translator.error:
+            if errors or self.provider['trans'].error:
                 # Show error view
-                if self.translator.error:
-                    self.loading_failed(self.translator.error)
+                if self.provider['trans'].error:
+                    self.loading_failed(self.provider['trans'].error)
                 else:
                     self.loading_failed(errors, True)
                 self.translator_loading = False
             else:
                 # Supported features
-                if not self.translator.mistakes:
+                if not self.provider['trans'].mistakes:
                     self.mistakes.props.reveal_child = False
 
                 self.ui_suggest_cancel(None, None)
-                if not self.translator.suggestions:
+                if not self.provider['trans'].suggestions:
                     self.edit_btn.props.visible = False
                 else:
                     self.edit_btn.props.visible = True
 
-                if not self.translator.pronunciation:
+                if not self.provider['trans'].pronunciation:
                     self.src_pron_revealer.props.reveal_child = False
                     self.dest_pron_revealer.props.reveal_child = False
                     self.app.lookup_action('pronunciation').props.enabled = False
@@ -315,26 +318,26 @@ class DialectWindow(Adw.ApplicationWindow):
                     self.app.lookup_action('pronunciation').props.enabled = True
 
                 # Update langs
-                self.src_lang_model.set_langs(self.translator.languages)
-                self.dest_lang_model.set_langs(self.translator.languages)
+                self.src_lang_model.set_langs(self.provider['trans'].languages)
+                self.dest_lang_model.set_langs(self.provider['trans'].languages)
 
                 # Update selected langs
-                set_auto = Settings.get().src_auto and self.translator.detection
-                src_lang = self.translator.languages[0]
-                if self.src_langs and self.src_langs[0] in self.translator.languages:
+                set_auto = Settings.get().src_auto and self.provider['trans'].detection
+                src_lang = self.provider['trans'].languages[0]
+                if self.src_langs and self.src_langs[0] in self.provider['trans'].languages:
                     src_lang = self.src_langs[0]
                 self.src_lang_selector.selected = 'auto' if set_auto else src_lang
 
-                dest_lang = self.translator.languages[1]
-                if self.dest_langs and self.dest_langs[0] in self.translator.languages:
+                dest_lang = self.provider['trans'].languages[1]
+                if self.dest_langs and self.dest_langs[0] in self.provider['trans'].languages:
                     dest_lang = self.dest_langs[0]
                 self.dest_lang_selector.selected = dest_lang
 
                 # Update chars limit
-                if self.translator.chars_limit == -1:  # -1 means unlimited
+                if self.provider['trans'].chars_limit == -1:  # -1 means unlimited
                     self.char_counter.props.label = ''
                 else:
-                    count = f'{str(self.src_buffer.get_char_count())}/{self.translator.chars_limit}'
+                    count = f"{str(self.src_buffer.get_char_count())}/{self.provider['trans'].chars_limit}"
                     self.char_counter.props.label = count
 
                 self.translator_loading = False
@@ -351,17 +354,17 @@ class DialectWindow(Adw.ApplicationWindow):
         self.main_stack.props.visible_child_name = 'loading'
 
         # Translator object
-        self.translator = TRANSLATORS[provider](
+        self.provider['trans'] = TRANSLATORS[provider](
             base_url=Settings.get().instance_url,
             api_key=Settings.get().api_key,
         )
 
         # Make the init requests required to use the translator
-        if self.translator.trans_init_requests:
+        if self.provider['trans'].trans_init_requests:
             requests = []
-            for name in self.translator.trans_init_requests:
-                message = getattr(self.translator, f'format_{name}_init')()
-                callback = getattr(self.translator, f'{name}_init')
+            for name in self.provider['trans'].trans_init_requests:
+                message = getattr(self.provider['trans'], f'format_{name}_init')()
+                callback = getattr(self.provider['trans'], f'{name}_init')
                 requests.append([message, callback])
             Session.get().multiple(requests, on_loaded)
         else:
@@ -371,12 +374,12 @@ class DialectWindow(Adw.ApplicationWindow):
         def on_response(session, result):
             try:
                 data = Session.get_response(session, result)
-                self.translator.validate_api_key(data)
+                self.provider['trans'].validate_api_key(data)
                 self.main_stack.props.visible_child_name = 'translate'
             except InvalidApiKey as exc:
                 logging.warning(exc)
                 self.key_page.props.title = _('The provided API key is invalid')
-                if self.translator.api_key_required:
+                if self.provider['trans'].api_key_required:
                     self.key_page.props.description = _('Please set a valid API key in the preferences.')
                 else:
                     self.key_page.props.description = _(
@@ -392,11 +395,11 @@ class DialectWindow(Adw.ApplicationWindow):
                 logging.warning(exc)
                 self.loading_failed(str(exc), True)
 
-        if self.translator.api_key_supported:
+        if self.provider['trans'].api_key_supported:
             if Settings.get().api_key:
-                validation = self.translator.format_validate_api_key(Settings.get().api_key)
+                validation = self.provider['trans'].format_validate_api_key(Settings.get().api_key)
                 Session.get().send_and_read_async(validation, 0, None, on_response)
-            elif not Settings.get().api_key and self.translator.api_key_required:
+            elif not Settings.get().api_key and self.provider['trans'].api_key_required:
                 self.key_page.props.title = _('API key is required to use the service')
                 self.key_page.props.description = _('Please set an API key in the preferences.')
                 self.main_stack.props.visible_child_name = 'api-key'
@@ -408,12 +411,12 @@ class DialectWindow(Adw.ApplicationWindow):
     def loading_failed(self, details='', network=False):
         self.main_stack.props.visible_child_name = 'error'
 
-        service = self.translator.prettyname
-        url = self.translator.instance_url
+        service = self.provider['trans'].prettyname
+        url = self.provider['trans'].instance_url
 
         title = _('Failed loading the translation service')
         description = _('Please report this in the Dialect bug tracker if the issue persists.')
-        if self.translator.change_instance:
+        if self.provider['trans'].change_instance:
             description = _((
                 'Failed loading "{url}", check if the instance address is correct or report in the Dialect bug tracker'
                 ' if the issue persists.'
@@ -423,7 +426,7 @@ class DialectWindow(Adw.ApplicationWindow):
         if network:
             title = _('Couldn’t connect to the translation service')
             description = _('We can’t connect to the server. Please check for network issues.')
-            if self.translator.change_instance:
+            if self.provider['trans'].change_instance:
                 description = _((
                     'We can’t connect to the {service} instance "{url}".\n'
                     'Please check for network issues or if the address is correct.'
@@ -465,12 +468,12 @@ class DialectWindow(Adw.ApplicationWindow):
             self.dest_voice_btn.props.visible = True
 
             settings = Settings.get().get_translator_settings(provider)
-            self.tts = TTS[provider](
+            self.provider['tts'] = TTS[provider](
                 base_url=settings.get_string('instance-url'),
                 api_key=settings.get_string('api-key'),
             )
 
-            match self._check_provider_type(self.tts.__provider_type__, 'tts'):
+            match self._check_provider_type(self.provider['tts'].__provider_type__, 'tts'):
                 case 'local':
                     threading.Thread(
                         target=self._load_local_tts,
@@ -479,22 +482,22 @@ class DialectWindow(Adw.ApplicationWindow):
                 case 'soup':
                     # Make the init requests required to use the provider
                     requests = []
-                    if self.tts.tts_init_requests:
-                        for name in self.tts.tts_init_requests:
-                            message = getattr(self.tts, f'format_{name}_init')()
-                            callback = getattr(self.tts, f'{name}_init')
+                    if self.provider['tts'].tts_init_requests:
+                        for name in self.provider['tts'].tts_init_requests:
+                            message = getattr(self.provider['tts'], f'format_{name}_init')()
+                            callback = getattr(self.provider['tts'], f'{name}_init')
                             requests.append([message, callback])
                         Session.get().multiple(requests, self._on_tts_loaded)
                     else:
                         self._on_tts_loaded('')
         else:
-            self.tts = None
+            self.provider['tts'] = None
             self.src_voice_btn.props.visible = False
             self.dest_voice_btn.props.visible = False
 
     def _load_local_tts(self):
         try:
-            self.tts.init_tts()
+            self.provider['tts'].init_tts()
         except ProviderError as exc:
             logging.error('Error: ' + str(exc))
             self.on_listen_failed()
@@ -503,7 +506,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.download_speech()
 
     def _on_tts_loaded(self, errors):
-        if errors or self.tts.error:
+        if errors or self.provider['tts'].error:
             self.on_listen_failed()
         else:
             # Download speech if we are retrying
@@ -545,13 +548,13 @@ class DialectWindow(Adw.ApplicationWindow):
             True
         )
 
-        if self.tts.tts_languages:
+        if self.provider['tts'].tts_languages:
             self.lookup_action('listen-src').set_enabled(
-                self.src_lang_selector.selected in self.tts.tts_languages
+                self.src_lang_selector.selected in self.provider['tts'].tts_languages
                 and src_text != ''
             )
             self.lookup_action('listen-dest').set_enabled(
-                self.dest_lang_selector.selected in self.tts.tts_languages
+                self.dest_lang_selector.selected in self.provider['tts'].tts_languages
                 and dest_text != ''
             )
         else:
@@ -568,7 +571,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.src_lang_selector.selected = 'auto'
         else:
             self.src_lang_selector.selected = src_lang
-        if dest_lang is not None and dest_lang in self.translator.languages:
+        if dest_lang is not None and dest_lang in self.provider['trans'].languages:
             self.dest_lang_selector.selected = dest_lang
             self.dest_lang_selector.emit('user-selection-changed')
         # Set text to src buffer
@@ -580,10 +583,9 @@ class DialectWindow(Adw.ApplicationWindow):
         if not self.is_maximized():
             size = self.get_default_size()
             Settings.get().window_size = (size.width, size.height)
-        if self.translator is not None:
+        if self.provider['trans'] is not None:
             Settings.get().src_langs = self.src_langs
             Settings.get().dest_langs = self.dest_langs
-            Settings.get().save_translator_settings()
 
     def send_notification(self, text, queue=False, action=None, timeout=5, priority=Adw.ToastPriority.NORMAL):
         """
@@ -624,7 +626,7 @@ class DialectWindow(Adw.ApplicationWindow):
                 True
             )
             self.lookup_action('listen-src').set_enabled(
-                self.src_lang_selector.selected in self.tts.tts_languages
+                self.src_lang_selector.selected in self.provider['tts'].tts_languages
                 and src_text != ''
             )
             self.src_voice_btn.props.child = self.src_voice_image
@@ -636,7 +638,7 @@ class DialectWindow(Adw.ApplicationWindow):
                 True
             )
             self.lookup_action('listen-dest').set_enabled(
-                self.dest_lang_selector.selected in self.tts.tts_languages
+                self.dest_lang_selector.selected in self.provider['tts'].tts_languages
                 and dest_text != ''
             )
             self.dest_voice_btn.props.child = self.dest_voice_image
@@ -660,20 +662,20 @@ class DialectWindow(Adw.ApplicationWindow):
             if self.src_langs:
                 self.dest_lang_selector.selected = self.src_langs[0]
             else:
-                options = list(self.translator.languages)
+                options = list(self.provider['trans'].languages)
                 options.remove(code)
                 self.dest_lang_selector.selected = random.choice(options)
 
         # Disable or enable listen function.
-        if self.tts and Settings.get().active_tts != '':
+        if self.provider['tts'] and Settings.get().active_tts != '':
             self.lookup_action('listen-src').set_enabled(
-                code in self.tts.tts_languages and src_text != ''
+                code in self.provider['tts'].tts_languages and src_text != ''
             )
 
         # Disable or enable switch function.
         self.lookup_action('switch').props.enabled = code != 'auto'
 
-        if code in self.translator.languages:
+        if code in self.provider['trans'].languages:
             # Update saved src langs list
             if code in self.src_langs:
                 # Bring lang to the top
@@ -704,9 +706,9 @@ class DialectWindow(Adw.ApplicationWindow):
             self.src_lang_selector.selected = self.dest_langs[0]
 
         # Disable or enable listen function.
-        if self.tts and Settings.get().active_tts != '':
+        if self.provider['tts'] and Settings.get().active_tts != '':
             self.lookup_action('listen-dest').set_enabled(
-                code in self.tts.tts_languages and dest_text != ''
+                code in self.provider['tts'].tts_languages and dest_text != ''
             )
 
         # Update saved dest langs list
@@ -746,11 +748,11 @@ class DialectWindow(Adw.ApplicationWindow):
             'Text': [src_text, dest_text]
         }
         if self.current_history > 0:
-            del self.translator.history[: self.current_history]
+            del self.provider['trans'].history[: self.current_history]
             self.current_history = 0
-        if len(self.translator.history) == TRANS_NUMBER:
-            self.translator.history.pop()
-        self.translator.history.insert(0, new_history_trans)
+        if len(self.provider['trans'].history) == TRANS_NUMBER:
+            self.provider['trans'].history.pop()
+        self.provider['trans'].history.insert(0, new_history_trans)
         GLib.idle_add(self.reset_return_forward_btns)
 
     def switch_all(self, src_language, dest_language, src_text, dest_text):
@@ -828,19 +830,19 @@ class DialectWindow(Adw.ApplicationWindow):
             True
         )
 
-        src, dest = self.translator.denormalize_lang(
-            self.translator.history[self.current_history]['Languages'][0],
-            self.translator.history[self.current_history]['Languages'][1]
+        src, dest = self.provider['trans'].denormalize_lang(
+            self.provider['trans'].history[self.current_history]['Languages'][0],
+            self.provider['trans'].history[self.current_history]['Languages'][1]
         )
-        (data, headers) = self.translator.format_suggestion(
-            self.translator.history[self.current_history]['Text'][0],
+        (data, headers) = self.provider['trans'].format_suggestion(
+            self.provider['trans'].history[self.current_history]['Text'][0],
             src,
             dest,
             dest_text
         )
         message = Session.create_message(
             'POST',
-            self.translator.suggest_url,
+            self.provider['trans'].suggest_url,
             data, headers
         )
         Session.get().send_and_read_async(message, 0, None, self.on_suggest_response)
@@ -859,7 +861,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.dest_toolbar_stack.props.visible_child_name = 'default'
         try:
             data = Session.get_response(session, result)
-            success = self.translator.get_suggestion(data)
+            success = self.provider['trans'].get_suggestion(data)
         except Exception as exc:
             logging.error(exc)
 
@@ -899,7 +901,7 @@ class DialectWindow(Adw.ApplicationWindow):
                 'called_from': called_from
             }
 
-            if not self.tts.error:
+            if not self.provider['tts'].error:
                 self.download_speech()
             else:
                 self.load_tts()
@@ -915,15 +917,15 @@ class DialectWindow(Adw.ApplicationWindow):
 
     def download_speech(self):
         if self.current_speech:
-            match self._check_provider_type(self.tts.__provider_type__, 'tts'):
+            match self._check_provider_type(self.provider['tts'].__provider_type__, 'tts'):
                 case 'local':
                     threading.Thread(
                         target=self._download_local_tts,
                         daemon=True
                     ).start()
                 case 'soup':
-                    lang = self.tts.denormalize_lang(self.current_speech['lang'])
-                    message = self.tts.format_speech(self.current_speech['text'], lang)
+                    lang = self.provider['tts'].denormalize_lang(self.current_speech['lang'])
+                    message = self.provider['tts'].format_speech(self.current_speech['text'], lang)
                     Session.get().send_and_read_async(
                         message,
                         0,
@@ -938,8 +940,8 @@ class DialectWindow(Adw.ApplicationWindow):
         """ Downlaod and play speech from local provider """
         try:
             with NamedTemporaryFile() as file_to_play:
-                lang = self.tts.denormalize_lang(self.current_speech['lang'])
-                self.tts.download_speech(self.current_speech['text'], lang, file_to_play)
+                lang = self.provider['tts'].denormalize_lang(self.current_speech['lang'])
+                self.provider['tts'].download_speech(self.current_speech['text'], lang, file_to_play)
                 self._play_audio(file_to_play.name)
         except Exception as exc:
             logging.error(exc)
@@ -956,7 +958,7 @@ class DialectWindow(Adw.ApplicationWindow):
         try:
             data = Session.get_response(session, result)
             with NamedTemporaryFile() as file_to_play:
-                self.tts.get_speech(data, file_to_play)
+                self.provider['tts'].get_speech(data, file_to_play)
                 self._play_audio(file_to_play.name)
         except Exception as exc:
             logging.error(exc)
@@ -971,7 +973,7 @@ class DialectWindow(Adw.ApplicationWindow):
         uri = 'file://' + path
         self.player.set_property('uri', uri)
         self.player.set_state(Gst.State.PLAYING)
-        if self._check_provider_type(self.tts.__provider_type__, 'tts') == 'local':
+        if self._check_provider_type(self.provider['tts'].__provider_type__, 'tts') == 'local':
             self.player_event.wait()
 
     @Gtk.Template.Callback()
@@ -1030,42 +1032,42 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # If the text is over the highest number of characters allowed, it is truncated.
         # This is done for avoiding exceeding the limit imposed by translation services.
-        if self.translator.chars_limit == -1:  # -1 means unlimited
+        if self.provider['trans'].chars_limit == -1:  # -1 means unlimited
             self.char_counter.props.label = ''
         else:
-            self.char_counter.props.label = f'{str(char_count)}/{self.translator.chars_limit}'
+            self.char_counter.props.label = f'{str(char_count)}/{self.provider["trans"].chars_limit}'
 
-            if char_count >= self.translator.chars_limit:
-                self.send_notification(_('{} characters limit reached!').format(self.translator.chars_limit))
+            if char_count >= self.provider['trans'].chars_limit:
+                self.send_notification(_('{} characters limit reached!').format(self.provider['trans'].chars_limit))
                 buffer.delete(
-                    buffer.get_iter_at_offset(self.translator.chars_limit),
+                    buffer.get_iter_at_offset(self.provider['trans'].chars_limit),
                     buffer.get_end_iter()
                 )
 
         sensitive = char_count != 0
         self.lookup_action('translation').props.enabled = sensitive
         self.lookup_action('clear').props.enabled = sensitive
-        if not self.voice_loading and self.tts:
+        if not self.voice_loading and self.provider['tts']:
             self.lookup_action('listen-src').set_enabled(
-                self.src_lang_selector.selected in self.tts.tts_languages
+                self.src_lang_selector.selected in self.provider['tts'].tts_languages
                 and sensitive
             )
-        elif not self.voice_loading and not self.tts:
+        elif not self.voice_loading and not self.provider['tts']:
             self.lookup_action('listen-src').props.enabled = sensitive
 
     def on_dest_text_changed(self, buffer):
         sensitive = buffer.get_char_count() != 0
         self.lookup_action('copy').props.enabled = sensitive
         self.lookup_action('suggest').set_enabled(
-            self.translator.suggestions
+            self.provider['trans'].suggestions
             and sensitive
         )
-        if not self.voice_loading and self.tts:
+        if not self.voice_loading and self.provider['tts']:
             self.lookup_action('listen-dest').set_enabled(
-                self.dest_lang_selector.selected in self.tts.tts_languages
+                self.dest_lang_selector.selected in self.provider['tts'].tts_languages
                 and sensitive
             )
-        elif not self.voice_loading and self.tts is not None and not self.tts.tts_languages:
+        elif not self.voice_loading and self.provider['tts'] is not None and not self.provider['tts'].tts_languages:
             self.lookup_action('listen-dest').props.enabled = sensitive
 
     def user_action_ended(self, _buffer):
@@ -1074,13 +1076,13 @@ class DialectWindow(Adw.ApplicationWindow):
 
     # The history part
     def reset_return_forward_btns(self):
-        self.lookup_action('back').props.enabled = self.current_history < len(self.translator.history) - 1
+        self.lookup_action('back').props.enabled = self.current_history < len(self.provider['trans'].history) - 1
         self.lookup_action('forward').props.enabled = self.current_history > 0
 
     # Retrieve translation history
     def history_update(self):
         self.reset_return_forward_btns()
-        lang_hist = self.translator.history[self.current_history]
+        lang_hist = self.provider['trans'].history[self.current_history]
         self.src_lang_selector.selected = lang_hist['Languages'][0]
         self.dest_lang_selector.selected = lang_hist['Languages'][1]
         self.src_buffer.props.text = lang_hist['Text'][0]
@@ -1095,10 +1097,10 @@ class DialectWindow(Adw.ApplicationWindow):
             True
         )
         if (
-            len(self.translator.history) >= self.current_history + 1
-            and (self.translator.history[self.current_history]['Languages'][0] == src_language or 'auto')
-            and self.translator.history[self.current_history]['Languages'][1] == dest_language
-            and self.translator.history[self.current_history]['Text'][0] == src_text
+            len(self.provider['trans'].history) >= self.current_history + 1
+            and (self.provider['trans'].history[self.current_history]['Languages'][0] == src_language or 'auto')
+            and self.provider['trans'].history[self.current_history]['Languages'][1] == dest_language
+            and self.provider['trans'].history[self.current_history]['Text'][0] == src_text
         ):
             return True
         return False
@@ -1137,8 +1139,8 @@ class DialectWindow(Adw.ApplicationWindow):
                 if src_text != '':
                     self.ongoing_trans = True
 
-                    src, dest = self.translator.denormalize_lang(src_language, dest_language)
-                    message = self.translator.format_translation(
+                    src, dest = self.provider['trans'].denormalize_lang(src_language, dest_language)
+                    message = self.provider['trans'].format_translation(
                         src_text, src, dest
                     )
 
@@ -1168,7 +1170,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.trans_dest_pron = None
         try:
             data = Session.get_response(session, result)
-            (translation, lang) = self.translator.get_translation(data)
+            (translation, lang) = self.provider['trans'].get_translation(data)
 
             if lang and self.src_lang_selector.selected == 'auto':
                 if Settings.get().src_auto:
@@ -1208,7 +1210,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.trans_failed = True
 
         # Mistakes
-        if self.translator.mistakes and not self.trans_mistakes == [None, None]:
+        if self.provider['trans'].mistakes and not self.trans_mistakes == [None, None]:
             self.mistakes_label.set_markup(_('Did you mean: ') + f'<a href="#">{self.trans_mistakes[0]}</a>')
             self.mistakes.props.reveal_child = True
         elif self.mistakes.props.reveal_child:
@@ -1216,7 +1218,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Pronunciation
         reveal = Settings.get().show_pronunciation
-        if self.translator.pronunciation:
+        if self.provider['trans'].pronunciation:
             if self.trans_src_pron is not None and self.trans_mistakes == [None, None]:
                 self.src_pron_label.props.label = self.trans_src_pron
                 self.src_pron_revealer.props.reveal_child = reveal
@@ -1300,7 +1302,7 @@ class DialectWindow(Adw.ApplicationWindow):
     def _on_provider_changed(self, _settings, name, key):
         if name == Settings.get().active_translator:
             if key in ('instance-url', 'api-key'):
-                if key == 'instance-url' and self.translator.change_instance:
+                if key == 'instance-url' and self.provider['trans'].change_instance:
                     Settings.get().reset_src_langs()
                     Settings.get().reset_dest_langs()
                 self.reload_translator()

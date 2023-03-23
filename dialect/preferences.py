@@ -8,8 +8,8 @@ from gi.repository import Adw, Gio, Gtk
 
 from dialect.define import RES_PATH
 from dialect.settings import Settings
-from dialect.providers import ProvidersListModel, TTS
-from dialect.widgets import ProvidersList
+from dialect.providers import ProvidersListModel, MODULES, TTS
+from dialect.widgets import ProviderPreferences
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/preferences.ui')
@@ -24,9 +24,10 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
     translate_accel = Gtk.Template.Child()
     src_auto = Gtk.Template.Child()
     translator = Gtk.Template.Child()
+    translator_config = Gtk.Template.Child()
     tts = Gtk.Template.Child()
+    tts_config = Gtk.Template.Child()
     search_provider = Gtk.Template.Child()
-    providers: ProvidersList = Gtk.Template.Child()
 
     def __init__(self, parent, **kwargs):
         super().__init__(**kwargs)
@@ -48,6 +49,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         with self.translator.freeze_notify():
             self.translator.set_model(trans_model)
             self.translator.props.selected = trans_model.get_index_by_name(Settings.get().active_translator)
+            self.translator_config.props.sensitive = self._provider_has_settings(Settings.get().active_translator)
 
         # Setup TTS chooser
         if (len(TTS) >= 1):
@@ -55,12 +57,13 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             with self.tts.freeze_notify():
                 self.tts.set_model(tts_model)
                 self.tts.props.selected = tts_model.get_index_by_name(Settings.get().active_tts)
+                self.tts_config.props.sensitive = self._provider_has_settings(Settings.get().active_tts)
         else:
             self.tts.props.visible = False
 
         # Providers Settings
-        providers_model = ProvidersListModel()
-        self.providers.bind_model(providers_model)
+        self.translator_config.connect('clicked', self._open_provider, 'trans')
+        self.tts_config.connect('clicked', self._open_provider, 'tts')
 
         # Translator loading
         self.parent.connect('notify::translator-loading', self._on_translator_loading)
@@ -76,10 +79,25 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         """
         return not boolean
 
+    def _open_provider(self, _button, scope):
+        if self.parent.provider[scope] is not None:
+            page = ProviderPreferences(self.parent.provider, scope)
+            self.present_subpage(page)
+
+    def _provider_has_settings(self, name):
+        if not name:
+            return False
+
+        if MODULES[name].change_instance or MODULES[name].api_key_supported:
+            return True
+
+        return False
+
     @Gtk.Template.Callback()
     def _switch_translator(self, row, _value):
         """ Called on self.translator::notify::selected signal """
         provider = self.translator.get_selected_item().name
+        self.translator_config.props.sensitive = self._provider_has_settings(provider)
         if provider != Settings.get().active_translator:
             self.parent.save_settings()
             Settings.get().active_translator = provider
@@ -89,6 +107,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
     def _switch_tts(self, row, _value):
         """ Called on self.tts::notify::selected signal """
         provider = self.tts.get_selected_item().name
+        self.tts_config.props.sensitive = self._provider_has_settings(provider)
         if provider != Settings.get().active_tts:
             Settings.get().active_tts = provider
             self.parent.load_tts()
