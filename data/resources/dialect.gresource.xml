@@ -16,11 +16,5 @@
 
   <gresource prefix="/app/drey/Dialect/icons/scalable/emblems/">
     <file preprocess="xml-stripblanks">dialect-settings-symbolic.svg</file>
-
-    <file preprocess="xml-stripblanks">dialect-bing.svg</file>
-    <file preprocess="xml-stripblanks">dialect-google.svg</file>
-    <file preprocess="xml-stripblanks">dialect-lingva.svg</file>
-    <file preprocess="xml-stripblanks">dialect-libretranslate.svg</file>
-    <file preprocess="xml-stripblanks">dialect-yandex.svg</file>
   </gresource>
 </gresources>
