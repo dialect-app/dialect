@@ -19,7 +19,7 @@ jobs:
     - uses: actions/checkout@v3
       with:
         submodules: recursive
-    - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v5
+    - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v6
       with:
         bundle: "dialect-devel.flatpak"
         manifest-path: "build-aux/flatpak/app.drey.Dialect.Devel.json"
