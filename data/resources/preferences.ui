@@ -33,7 +33,7 @@
                   <object class="GtkButton" id="translator_config">
                     <property name="valign">center</property>
                     <property name="icon-name">dialect-settings-symbolic</property>
-                    <property name="sensitive">False</property>
+                    <signal name="notify::sensitive" handler="_provider_settings_tooltip"/>
 
                     <style>
                       <class name="flat" />
@@ -65,7 +65,7 @@
                   <object class="GtkButton" id="tts_config">
                     <property name="valign">center</property>
                     <property name="icon-name">dialect-settings-symbolic</property>
-                    <property name="sensitive">False</property>
+                    <signal name="notify::sensitive" handler="_provider_settings_tooltip"/>
 
                     <style>
                       <class name="flat" />
