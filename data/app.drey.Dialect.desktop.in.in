@@ -3,6 +3,7 @@ Encoding=UTF-8
 Version=1.0
 Type=Application
 Terminal=false
+StartupNotify=true
 Exec=dialect
 Name=Dialect
 Comment=Translate between languages
