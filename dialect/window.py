@@ -15,7 +15,7 @@ from dialect.define import APP_ID, PROFILE, RES_PATH, TRANS_NUMBER
 from dialect.languages import LanguagesListModel
 from dialect.providers import TRANSLATORS, TTS
 from dialect.providers.base import ApiKeyRequired, InvalidApiKey, ProviderError
-from dialect.session import Session, ResponseError
+from dialect.session import ResponseError, Session
 from dialect.settings import Settings
 from dialect.shortcuts import DialectShortcutsWindow
 from dialect.widgets import LangSelector, ThemeSwitcher

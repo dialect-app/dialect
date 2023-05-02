@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
+
 import re
 from gettext import gettext as _
 from typing import TYPE_CHECKING

@@ -3,17 +3,14 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
+
 from typing import List, Tuple
 
 from gi.repository import Gio, GLib, GObject
 
 from dialect.define import APP_ID
-from dialect.providers import (
-    check_translator_availability,
-    get_fallback_translator_name,
-    TRANSLATORS,
-    TTS
-)
+from dialect.providers import (TRANSLATORS, TTS, check_translator_availability,
+                               get_fallback_translator_name)
 
 
 class Settings(Gio.Settings):

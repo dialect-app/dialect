@@ -7,7 +7,6 @@ from typing import List
 
 from gi.repository import Gio, GObject
 
-
 LANGUAGES = {
     'af': _('Afrikaans'),
     'sq': _('Albanian'),

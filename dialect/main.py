@@ -9,6 +9,7 @@ import sys
 from gettext import gettext as _
 
 import gi
+
 try:
     gi.require_version('Gdk', '4.0')
     gi.require_version('Gtk', '4.0')

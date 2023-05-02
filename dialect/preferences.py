@@ -8,8 +8,8 @@ from gettext import gettext as _
 from gi.repository import Adw, Gio, Gtk
 
 from dialect.define import RES_PATH
+from dialect.providers import MODULES, TTS, ProvidersListModel
 from dialect.settings import Settings
-from dialect.providers import ProvidersListModel, MODULES, TTS
 from dialect.widgets import ProviderPreferences
 
 

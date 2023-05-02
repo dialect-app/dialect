@@ -6,9 +6,8 @@ import re
 
 from bs4 import BeautifulSoup
 
-from dialect.providers.base import (
-    ProviderError, SoupProvider, Translation, TranslationError
-)
+from dialect.providers.base import (ProviderError, SoupProvider, Translation,
+                                    TranslationError)
 
 
 class Provider(SoupProvider):

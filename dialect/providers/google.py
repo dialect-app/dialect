@@ -7,11 +7,12 @@ import json
 import random
 import re
 from typing import List
+
 from gtts import gTTS, lang
 
-from dialect.providers.base import (
-    LocalProvider, ProviderError, SoupProvider, Translation, TranslationError, TextToSpeechError
-)
+from dialect.providers.base import (LocalProvider, ProviderError, SoupProvider,
+                                    TextToSpeechError, Translation,
+                                    TranslationError)
 
 RPC_ID = 'MkEWBc'
 
