@@ -129,6 +129,7 @@ class Provider(SoupProvider):
     def get_translation(self, data):
         data = self.read_data(data)
         self._check_errors(data)
+        detected = data.get('detectedLanguage', {}).get('language', None)
         translation = Translation(
             data['translatedText'],
             {
@@ -138,7 +139,7 @@ class Provider(SoupProvider):
             },
         )
 
-        return (translation, None)
+        return (translation, detected)
 
     def format_suggestion(self, text, src, dest, suggestion):
         data = {
