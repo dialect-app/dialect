@@ -150,9 +150,10 @@ class Provider(SoupProvider):
         if self.api_key and self.api_key_supported:
             data['api_key'] = self.api_key
 
-        return self.create_request('POST', self.suggest_url, data)
+        return self.create_request('POST', self.suggest_url, data, form=True)
 
     def get_suggestion(self, data):
+        data = self.read_data(data)
         self._check_errors(data)
         return data.get('success', False)
 

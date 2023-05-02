@@ -834,16 +834,11 @@ class DialectWindow(Adw.ApplicationWindow):
             self.provider['trans'].history[self.current_history]['Languages'][0],
             self.provider['trans'].history[self.current_history]['Languages'][1]
         )
-        (data, headers) = self.provider['trans'].format_suggestion(
+        message = self.provider['trans'].format_suggestion(
             self.provider['trans'].history[self.current_history]['Text'][0],
             src,
             dest,
             dest_text
-        )
-        message = Session.create_message(
-            'POST',
-            self.provider['trans'].suggest_url,
-            data, headers
         )
         Session.get().send_and_read_async(message, 0, None, self.on_suggest_response)
 
