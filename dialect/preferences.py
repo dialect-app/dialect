@@ -13,9 +13,9 @@ from dialect.settings import Settings
 from dialect.widgets import ProviderPreferences
 
 
-@Gtk.Template(resource_path=f'{RES_PATH}/preferences.ui')
+@Gtk.Template(resource_path=f"{RES_PATH}/preferences.ui")
 class DialectPreferencesWindow(Adw.PreferencesWindow):
-    __gtype_name__ = 'DialectPreferencesWindow'
+    __gtype_name__ = "DialectPreferencesWindow"
 
     parent = NotImplemented
 
@@ -36,28 +36,26 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         self.parent = parent
 
         # Bind preferences with GSettings
-        Settings.get().bind('live-translation', self.live_translation, 'enable-expansion',
-                            Gio.SettingsBindFlags.DEFAULT)
-        Settings.get().bind('sp-translation', self.sp_translation, 'active',
-                            Gio.SettingsBindFlags.DEFAULT)
-        Settings.get().bind('translate-accel', self.translate_accel,
-                            'selected', Gio.SettingsBindFlags.DEFAULT)
-        Settings.get().bind('src-auto', self.src_auto, 'active',
-                            Gio.SettingsBindFlags.DEFAULT)
+        Settings.get().bind(
+            "live-translation", self.live_translation, "enable-expansion", Gio.SettingsBindFlags.DEFAULT
+        )
+        Settings.get().bind("sp-translation", self.sp_translation, "active", Gio.SettingsBindFlags.DEFAULT)
+        Settings.get().bind("translate-accel", self.translate_accel, "selected", Gio.SettingsBindFlags.DEFAULT)
+        Settings.get().bind("src-auto", self.src_auto, "active", Gio.SettingsBindFlags.DEFAULT)
 
         self.translator_config.props.sensitive = False
         self.tts_config.props.sensitive = False
 
         # Setup translator chooser
-        trans_model = ProvidersListModel('translators')
+        trans_model = ProvidersListModel("translators")
         with self.translator.freeze_notify():
             self.translator.set_model(trans_model)
             self.translator.props.selected = trans_model.get_index_by_name(Settings.get().active_translator)
             self.translator_config.props.sensitive = self._provider_has_settings(Settings.get().active_translator)
 
         # Setup TTS chooser
-        if (len(TTS) >= 1):
-            tts_model = ProvidersListModel('tts', True)
+        if len(TTS) >= 1:
+            tts_model = ProvidersListModel("tts", True)
             with self.tts.freeze_notify():
                 self.tts.set_model(tts_model)
                 self.tts.props.selected = tts_model.get_index_by_name(Settings.get().active_tts)
@@ -66,20 +64,20 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             self.tts.props.visible = False
 
         # Providers Settings
-        self.translator_config.connect('clicked', self._open_provider, 'trans')
-        self.tts_config.connect('clicked', self._open_provider, 'tts')
+        self.translator_config.connect("clicked", self._open_provider, "trans")
+        self.tts_config.connect("clicked", self._open_provider, "tts")
 
         # Translator loading
-        self.parent.connect('notify::translator-loading', self._on_translator_loading)
+        self.parent.connect("notify::translator-loading", self._on_translator_loading)
 
         # Search Provider
-        if os.getenv('XDG_CURRENT_DESKTOP') != 'GNOME':
+        if os.getenv("XDG_CURRENT_DESKTOP") != "GNOME":
             self.search_provider.hide()
 
     @Gtk.Template.Callback()
     def is_not_true(self, _widget, boolean):
-        """ Check if boolean is not true
-            template binding closure function
+        """Check if boolean is not true
+        template binding closure function
         """
         return not boolean
 
@@ -99,7 +97,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
 
     @Gtk.Template.Callback()
     def _switch_translator(self, row, _value):
-        """ Called on self.translator::notify::selected signal """
+        """Called on self.translator::notify::selected signal"""
         provider = self.translator.get_selected_item().name
         self.translator_config.props.sensitive = self._provider_has_settings(provider)
         if provider != Settings.get().active_translator:
@@ -109,7 +107,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
 
     @Gtk.Template.Callback()
     def _switch_tts(self, row, _value):
-        """ Called on self.tts::notify::selected signal """
+        """Called on self.tts::notify::selected signal"""
         provider = self.tts.get_selected_item().name
         self.tts_config.props.sensitive = self._provider_has_settings(provider)
         if provider != Settings.get().active_tts:

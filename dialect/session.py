@@ -58,15 +58,15 @@ class Session(Soup.Session):
                 message_callback(data)
             except ResponseError as exc:
                 logging.warning(exc)
-                if (self.errors):
-                    self.errors += '\n'
+                if self.errors:
+                    self.errors += "\n"
                 self.errors += str(exc)
 
             # If all tasks are done, run main callback
             if callback is not None and len(messages) == 0:
                 callback(errors=self.errors)
 
-        self.errors: str = ''  # FIXME: We're assuming that multiple() isn't called twice simultaneously
+        self.errors: str = ""  # FIXME: We're assuming that multiple() isn't called twice simultaneously
 
         for msg in messages:
             # msg[0]: Soup.Message
@@ -77,10 +77,10 @@ class Session(Soup.Session):
 class ResponseError(Exception):
     """Exception raised when response fails."""
 
-    def __init__(self, cause, message='Response has failed'):
+    def __init__(self, cause, message="Response has failed"):
         self.cause = cause
         self.message = message
         super().__init__(self.message)
 
     def __str__(self):
-        return f'{self.message}: {self.cause}'
+        return f"{self.message}: {self.cause}"
