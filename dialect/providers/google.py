@@ -108,8 +108,11 @@ class Provider(LocalProvider, SoupProvider):
 
     _service_urls = DEFAULT_SERVICE_URLS
     _headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+        'Origin': 'https://translate.google.com',
         'Referer': 'https://translate.google.com',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36',
     }
     _src_lang = None
     _dest_lang = None
@@ -150,11 +153,11 @@ class Provider(LocalProvider, SoupProvider):
         return json.dumps([[
             [
                 RPC_ID,
-                json.dumps([[text, src, dest, True], [None]], separators=(',', ':')),
+                json.dumps([[text, src, dest, True], [1]]),
                 None,
                 'generic',
             ],
-        ]], separators=(',', ':'))
+        ]])
 
     def _pick_service_url(self):
         if len(self._service_urls) == 1:
@@ -163,17 +166,9 @@ class Provider(LocalProvider, SoupProvider):
 
     @property
     def translate_url(self):
-        url = TRANSLATE_RPC.format(host=self._pick_service_url()) + '?'
-        params = {
-            'rpcids': RPC_ID,
-            'bl': 'boq_translate-webserver_20201207.13_p0',
-            'soc-app': '1',
-            'soc-platform': '1',
-            'soc-device': '1',
-            'rt': 'c',
-        }
+        url = TRANSLATE_RPC.format(host=self._pick_service_url())
 
-        return self.format_url(url, params=params)
+        return self.format_url(url)
 
     def format_translation(self, text, src, dest):
         data = {
