@@ -13,13 +13,13 @@ from dialect.languages import get_lang_name, normalize_lang_code
 
 
 class BaseProvider:
-    __provider_type__ = ""
+    __provider_type__ = ''
     """ The type of engine used by the provider
     str or dict if you want to use diferent engines per feature
     """
-    name = ""
+    name = ''
     """ Module name for itern use, like settings storing """
-    prettyname = ""
+    prettyname = ''
     """ Module name for UI display """
     translation = False
     """ If it provides translation """
@@ -33,13 +33,13 @@ class BaseProvider:
     """ If it supports setting api keys """
 
     defaults = {
-        "instance_url": "",
-        "api_key": "",
-        "src_langs": ["en", "fr", "es", "de"],
-        "dest_langs": ["fr", "es", "de", "en"],
+        'instance_url': '',
+        'api_key': '',
+        'src_langs': ['en', 'fr', 'es', 'de'],
+        'dest_langs': ['fr', 'es', 'de', 'en']
     }
 
-    def __init__(self, base_url="", api_key=""):
+    def __init__(self, base_url='', api_key=''):
         self.instance_url = base_url
         self.api_key = api_key
 
@@ -68,24 +68,24 @@ class BaseProvider:
         """ Here we save the translation history """
 
     @staticmethod
-    def format_url(url: str, path: str = "", params: dict = {}, http: bool = False):
-        """Formats a given url with path with the https protocol"""
+    def format_url(url: str, path: str = '', params: dict = {}, http: bool = False):
+        """ Formats a given url with path with the https protocol """
 
-        if not path.startswith("/"):
-            path = "/" + path
+        if not path.startswith('/'):
+            path = '/' + path
 
-        protocol = "https://"
-        if url.startswith("localhost:") or http:
-            protocol = "http://"
+        protocol = 'https://'
+        if url.startswith('localhost:') or http:
+            protocol = 'http://'
 
         params_str = urllib.parse.urlencode(params)
         if params_str:
-            params_str = "?" + params_str
+            params_str = '?' + params_str
 
         return protocol + url + path + params_str
 
     def add_lang(self, original_code, name=None, trans=True, tts=False):
-        """Add lang supported by provider"""
+        """ Add lang supported by provider """
 
         code = normalize_lang_code(original_code)  # Get normalized lang code
 
@@ -103,7 +103,7 @@ class BaseProvider:
             self._languages_names[code] = name
 
     def denormalize_lang(self, *codes):
-        """Get denormalized lang code if available"""
+        """ Get denormalized lang code if available """
 
         if len(codes) == 1:
             return self._nonstandard_langs.get(codes[0], codes[0])
@@ -114,7 +114,7 @@ class BaseProvider:
         return tuple(result)
 
     def get_lang_name(self, code):
-        """Get language name"""
+        """ Get language name """
         name = get_lang_name(code)  # Try getting translated name from Dialect
 
         if name is None:  # Get name from provider if available
@@ -124,7 +124,7 @@ class BaseProvider:
 
 
 class LocalProvider(BaseProvider):
-    """Base class for providers using the local threaded engine"""
+    """ Base class for providers using the local threaded engine """
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -149,7 +149,7 @@ class LocalProvider(BaseProvider):
 
 
 class SoupProvider(BaseProvider):
-    """Base class for providers using the libsoup engine"""
+    """ Base class for providers using the libsoup engine """
 
     trans_init_requests = []
     """ List of request to do before using the provider """
@@ -161,15 +161,15 @@ class SoupProvider(BaseProvider):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.error = ""
+        self.error = ''
         """ Loading error when initializing """
 
     @staticmethod
     def encode_data(data) -> GLib.Bytes | None:
-        """Convert dict to JSON and bytes"""
+        """ Convert dict to JSON and bytes """
         data_glib_bytes = None
         try:
-            data_bytes = json.dumps(data).encode("utf-8")
+            data_bytes = json.dumps(data).encode('utf-8')
             data_glib_bytes = GLib.Bytes.new(data_bytes)
         except Exception as exc:
             logging.warning(exc)
@@ -177,12 +177,14 @@ class SoupProvider(BaseProvider):
 
     @staticmethod
     def read_data(data: bytes) -> dict:
-        """Get JSON data from bytes"""
-        return json.loads(data) if data else {}
+        """ Get JSON data from bytes """
+        return json.loads(
+                data
+            ) if data else {}
 
     @staticmethod
     def create_request(method: str, url: str, data={}, headers: dict = {}, form: bool = False) -> Soup.Message:
-        """Helper for creating Soup.Message"""
+        """ Helper for creating Soup.Message """
 
         if form and data:
             form_data = Soup.form_encode_hash(data)
@@ -191,12 +193,12 @@ class SoupProvider(BaseProvider):
             message = Soup.Message.new(method, url)
         if data and not form:
             data = SoupProvider.encode_data(data)
-            message.set_request_body_from_bytes("application/json", data)
+            message.set_request_body_from_bytes('application/json', data)
         if headers:
             for name, value in headers.items():
                 message.get_request_headers().append(name, value)
-        if "User-Agent" not in headers:
-            message.get_request_headers().append("User-Agent", "Dialect App")
+        if 'User-Agent' not in headers:
+            message.get_request_headers().append('User-Agent', 'Dialect App')
         return message
 
     @staticmethod
@@ -235,19 +237,19 @@ class SoupProvider(BaseProvider):
 class ProviderError(Exception):
     """Base Exception for Translator related errors."""
 
-    def __init__(self, cause, message="Translator Error"):
+    def __init__(self, cause, message='Translator Error'):
         self.cause = cause
         self.message = message
         super().__init__(self.message)
 
     def __str__(self):
-        return f"{self.message}: {self.cause}"
+        return f'{self.message}: {self.cause}'
 
 
 class ApiKeyRequired(ProviderError):
     """Exception raised when API key is required."""
 
-    def __init__(self, cause, message="API Key Required"):
+    def __init__(self, cause, message='API Key Required'):
         self.cause = cause
         self.message = message
         super().__init__(self.cause, self.message)
@@ -256,7 +258,7 @@ class ApiKeyRequired(ProviderError):
 class InvalidApiKey(ProviderError):
     """Exception raised when an invalid API key is found."""
 
-    def __init__(self, cause, message="Invalid API Key"):
+    def __init__(self, cause, message='Invalid API Key'):
         self.cause = cause
         self.message = message
         super().__init__(self.cause, self.message)
@@ -265,7 +267,7 @@ class InvalidApiKey(ProviderError):
 class InvalidLangCode(ProviderError):
     """Exception raised when an invalid lang code is sent."""
 
-    def __init__(self, cause, message="Invalid Lang Code"):
+    def __init__(self, cause, message='Invalid Lang Code'):
         self.cause = cause
         self.message = message
         super().__init__(self.cause, self.message)
@@ -274,7 +276,7 @@ class InvalidLangCode(ProviderError):
 class BatchSizeExceeded(ProviderError):
     """Exception raised when the batch size limit has been exceeded."""
 
-    def __init__(self, cause, message="Batch Size Exceeded"):
+    def __init__(self, cause, message='Batch Size Exceeded'):
         self.cause = cause
         self.message = message
         super().__init__(self.cause, self.message)
@@ -283,7 +285,7 @@ class BatchSizeExceeded(ProviderError):
 class CharactersLimitExceeded(ProviderError):
     """Exception raised when the char limit has been exceeded."""
 
-    def __init__(self, cause, message="Characters Limit Exceeded"):
+    def __init__(self, cause, message='Characters Limit Exceeded'):
         self.cause = cause
         self.message = message
         super().__init__(self.cause, self.message)
@@ -292,7 +294,7 @@ class CharactersLimitExceeded(ProviderError):
 class ServiceLimitReached(ProviderError):
     """Exception raised when the service limit has been reached."""
 
-    def __init__(self, cause, message="Service Limit Reached"):
+    def __init__(self, cause, message='Service Limit Reached'):
         self.cause = cause
         self.message = message
         super().__init__(self.cause, self.message)
@@ -301,7 +303,7 @@ class ServiceLimitReached(ProviderError):
 class TranslationError(ProviderError):
     """Exception raised when translation fails."""
 
-    def __init__(self, cause, message="Translation has failed"):
+    def __init__(self, cause, message='Translation has failed'):
         self.cause = cause
         self.message = message
         super().__init__(self.cause, self.message)
@@ -310,7 +312,7 @@ class TranslationError(ProviderError):
 class TextToSpeechError(ProviderError):
     """Exception raised when tts fails."""
 
-    def __init__(self, cause, message="Text to Speech has failed"):
+    def __init__(self, cause, message='Text to Speech has failed'):
         self.cause = cause
         self.message = message
         super().__init__(self.message)
@@ -319,9 +321,9 @@ class TextToSpeechError(ProviderError):
 class Translation:
     text = None
     extra_data = {
-        "possible-mistakes": None,
-        "src-pronunciation": None,
-        "dest-pronunciation": None,
+        'possible-mistakes': None,
+        'src-pronunciation': None,
+        'dest-pronunciation': None,
     }
 
     def __init__(self, text, extra_data):
