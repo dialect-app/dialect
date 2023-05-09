@@ -10,6 +10,9 @@ A translation app for GNOME.
 
 - Translation based on Google Translate
 - Translation based on the LibreTranslate API, allowing you to use any public instance
+- Translation based on Lingva Translate API</li>
+- Translation based on Bing
+- Translation based on Yandex
 - Translation history
 - Automatic language detection
 - Text to speech
