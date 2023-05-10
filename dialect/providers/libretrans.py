@@ -4,11 +4,11 @@
 
 import logging
 
-from dialect.providers.base import (
-    ApiKeyRequired, BatchSizeExceeded, CharactersLimitExceeded,
-    InvalidLangCode, InvalidApiKey, ProviderError, SoupProvider, Translation,
-    TranslationError
-)
+from dialect.providers.base import (ApiKeyRequired, BatchSizeExceeded,
+                                    CharactersLimitExceeded, InvalidApiKey,
+                                    InvalidLangCode, ProviderError,
+                                    SoupProvider, Translation,
+                                    TranslationError)
 
 
 class Provider(SoupProvider):

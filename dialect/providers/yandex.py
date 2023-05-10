@@ -3,9 +3,8 @@
 
 from uuid import uuid4
 
-from dialect.providers.base import (
-    ProviderError, SoupProvider, Translation, TranslationError
-)
+from dialect.providers.base import (ProviderError, SoupProvider, Translation,
+                                    TranslationError)
 
 
 class Provider(SoupProvider):

@@ -5,9 +5,9 @@
 import logging
 import urllib
 
-from dialect.providers.base import (
-    InvalidLangCode, SoupProvider, ProviderError, TextToSpeechError, Translation
-)
+from dialect.providers.base import (InvalidLangCode, ProviderError,
+                                    SoupProvider, TextToSpeechError,
+                                    Translation)
 
 
 class Provider(SoupProvider):
