@@ -2,126 +2,15 @@
 # Copyright 2021-2022 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gettext import gettext as _
-
 from gi.repository import Gio, GObject
 
+from dialect.define import LANGUAGES
 
-LANGUAGES = {
-    'af': _('Afrikaans'),
-    'sq': _('Albanian'),
-    'am': _('Amharic'),
-    'ar': _('Arabic'),
-    'hy': _('Armenian'),
-    'az': _('Azerbaijani'),
-    'eu': _('Basque'),
-    'be': _('Belarusian'),
-    'bn': _('Bengali'),
-    'bs': _('Bosnian'),
-    'bg': _('Bulgarian'),
-    'ca': _('Catalan'),
-    'ceb': _('Cebuano'),
-    'ny': _('Chichewa'),
-    'zh': _('Chinese'),
-    'zh-Hans': _('Chinese (Simplified)'),
-    'zh-Hant': _('Chinese (Traditional)'),
-    'co': _('Corsican'),
-    'hr': _('Croatian'),
-    'cs': _('Czech'),
-    'da': _('Danish'),
-    'nl': _('Dutch'),
-    'en': _('English'),
-    'eo': _('Esperanto'),
-    'et': _('Estonian'),
-    'tl': _('Filipino'),
-    'fi': _('Finnish'),
-    'fr': _('French'),
-    'fy': _('Frisian'),
-    'gl': _('Galician'),
-    'ka': _('Georgian'),
-    'de': _('German'),
-    'el': _('Greek'),
-    'gu': _('Gujarati'),
-    'ht': _('Haitian Creole'),
-    'ha': _('Hausa'),
-    'haw': _('Hawaiian'),
-    'iw': _('Hebrew'),
-    'he': _('Hebrew'),
-    'hi': _('Hindi'),
-    'hmn': _('Hmong'),
-    'hu': _('Hungarian'),
-    'is': _('Icelandic'),
-    'ig': _('Igbo'),
-    'id': _('Indonesian'),
-    'ga': _('Irish'),
-    'it': _('Italian'),
-    'ja': _('Japanese'),
-    'jw': _('Javanese'),
-    'kn': _('Kannada'),
-    'kk': _('Kazakh'),
-    'km': _('Khmer'),
-    'rw': _('Kinyarwanda'),
-    'ko': _('Korean'),
-    'ku': _('Kurdish (Kurmanji)'),
-    'ky': _('Kyrgyz'),
-    'lo': _('Lao'),
-    'la': _('Latin'),
-    'lv': _('Latvian'),
-    'lt': _('Lithuanian'),
-    'lb': _('Luxembourgish'),
-    'mk': _('Macedonian'),
-    'mg': _('Malagasy'),
-    'ms': _('Malay'),
-    'ml': _('Malayalam'),
-    'mt': _('Maltese'),
-    'mi': _('Maori'),
-    'mr': _('Marathi'),
-    'mn': _('Mongolian'),
-    'my': _('Myanmar (Burmese)'),
-    'ne': _('Nepali'),
-    'no': _('Norwegian'),
-    'or': _('Odia (Oriya)'),
-    'ps': _('Pashto'),
-    'fa': _('Persian'),
-    'pl': _('Polish'),
-    'pt': _('Portuguese'),
-    'pa': _('Punjabi'),
-    'ro': _('Romanian'),
-    'ru': _('Russian'),
-    'sm': _('Samoan'),
-    'gd': _('Scots Gaelic'),
-    'sr': _('Serbian'),
-    'st': _('Sesotho'),
-    'sn': _('Shona'),
-    'sd': _('Sindhi'),
-    'si': _('Sinhala'),
-    'sk': _('Slovak'),
-    'sl': _('Slovenian'),
-    'so': _('Somali'),
-    'es': _('Spanish'),
-    'su': _('Sundanese'),
-    'sw': _('Swahili'),
-    'sv': _('Swedish'),
-    'tg': _('Tajik'),
-    'ta': _('Tamil'),
-    'tt': _('Tatar'),
-    'te': _('Telugu'),
-    'th': _('Thai'),
-    'tr': _('Turkish'),
-    'tk': _('Turkmen'),
-    'uk': _('Ukrainian'),
-    'ur': _('Urdu'),
-    'ug': _('Uyghur'),
-    'uz': _('Uzbek'),
-    'vi': _('Vietnamese'),
-    'cy': _('Welsh'),
-    'xh': _('Xhosa'),
-    'yi': _('Yiddish'),
-    'yo': _('Yoruba'),
-    'zu': _('Zulu'),
-}
 
 ALIASES = {
+    'iw': 'he',  # Hebrew
+    'jw': 'jv',  # Javanese
+    'mni-Mtei': 'mni',  # Meiteilon (Manipuri)
     'zh-CN': 'zh-Hans',
     'zh-TW': 'zh-Hant',
 }
@@ -148,7 +37,8 @@ def normalize_lang_code(code):
 
 
 def get_lang_name(code):
-    return LANGUAGES.get(code, None)
+    name = gettext(LANGUAGES.get(code, ''))
+    return name if name else None
 
 
 class LangObject(GObject.Object):

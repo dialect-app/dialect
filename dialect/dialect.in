@@ -21,12 +21,14 @@ if builddir:
 
 sys.path.insert(1, pkgdatadir)
 signal.signal(signal.SIGINT, signal.SIG_DFL)
-gettext.install('dialect', localedir)
+
+langs_trans = gettext.translation('dialect-cldr-langs', localedir, fallback=True)
+ui_trans = gettext.translation('dialect', localedir, fallback=True)
+ui_trans.add_fallback(langs_trans)
+ui_trans.install(names=['gettext'])
 
 locale.bindtextdomain('dialect', localedir)
 locale.textdomain('dialect')
-gettext.bindtextdomain('dialect', localedir)
-gettext.textdomain('dialect')
 
 if __name__ == '__main__':
     from gi.repository import Gio

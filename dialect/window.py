@@ -6,7 +6,6 @@
 import logging
 import random
 import threading
-from gettext import gettext as _
 from tempfile import NamedTemporaryFile
 
 from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk

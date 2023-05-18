@@ -4,7 +4,6 @@
 
 import importlib
 import pkgutil
-from gettext import gettext as _
 
 from gi.repository import Gio, GObject
 
