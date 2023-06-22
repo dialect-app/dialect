@@ -116,9 +116,15 @@ class Provider(LocalProvider, SoupProvider):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.languages = [
+        self.chars_limit = 2000
+        self.detection = True
+        self.mistakes = True
+        self.pronunciation = True
+
+        # Populate languages
+        languages = [
             'af', 'sq', 'am', 'ar', 'hy', 'az', 'eu', 'be', 'bn', 'bs', 'bg', 'ca',
-            'ceb', 'ny', 'zh-Hans', 'zh-Hant', 'co', 'hr', 'cs', 'da', 'nl', 'en', 'eo',
+            'ceb', 'ny', 'zh-CN', 'zh-TW', 'co', 'hr', 'cs', 'da', 'nl', 'en', 'eo',
             'et', 'tl', 'fi', 'fr', 'fy', 'gl', 'ka', 'de', 'el', 'gu', 'ht', 'ha',
             'haw', 'iw', 'hi', 'hmn', 'hu', 'is', 'ig', 'id', 'ga', 'it', 'ja', 'jw',
             'kn', 'kk', 'km', 'rw', 'ko', 'ku', 'ky', 'lo', 'la', 'lv', 'lt', 'lb',
@@ -128,15 +134,8 @@ class Provider(LocalProvider, SoupProvider):
             'te', 'th', 'tr', 'tk', 'uk', 'ur', 'ug', 'uz', 'vi', 'cy', 'xh', 'yi',
             'yo', 'zu'
         ]
-        self._nonstandard_langs = {
-            'zh-Hans': 'zh-CN',
-            'zh-Hant': 'zh-TW',
-        }
-
-        self.chars_limit = 2000
-        self.detection = True
-        self.mistakes = True
-        self.pronunciation = True
+        for code in languages:
+            self.add_lang(code)
 
     def init_tts(self):
         for code in lang.tts_langs().keys():
