@@ -404,6 +404,12 @@ template DialectWindow : Adw.ApplicationWindow {
                 }
 
                 Box {
+                  Button capture_btn {
+                    action-name: "win.capture";
+                    tooltip-text: _("Extract Text From Image");
+                    icon-name: "camera-photo";
+                  }
+
                   Button clear_btn {
                     action-name: "win.clear";
                     tooltip-text: _("Clear");
