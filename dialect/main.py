@@ -160,8 +160,6 @@ class Dialect(Adw.Application):
         about.props.developers = [
             "Mufeed Ali",
             "Rafael Mardojai CM http://rafaelmardojai.com",
-            "Mdpe",
-            "Github https://github.com/mdpe-ir/ "
         ]
 
         about.props.transient_for = self.window
