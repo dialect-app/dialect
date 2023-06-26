@@ -4,8 +4,14 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
+import os
 import random
+import subprocess
 import threading
+from datetime import datetime
+
+from PIL import Image
+from pytesseract import pytesseract
 from tempfile import NamedTemporaryFile
 
 from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk
@@ -52,6 +58,7 @@ class DialectWindow(Adw.ApplicationWindow):
     char_counter: Gtk.Label = Gtk.Template.Child()
     src_text: Gtk.TextView = Gtk.Template.Child()
     clear_btn: Gtk.Button = Gtk.Template.Child()
+    capture_btn: Gtk.Button = Gtk.Template.Child()
     paste_btn: Gtk.Button = Gtk.Template.Child()
     src_voice_btn: Gtk.Button = Gtk.Template.Child()
     translate_btn: Gtk.Button = Gtk.Template.Child()
@@ -164,6 +171,11 @@ class DialectWindow(Adw.ApplicationWindow):
         clear_action.props.enabled = False
         clear_action.connect('activate', self.ui_clear)
         self.add_action(clear_action)
+
+        capture_action = Gio.SimpleAction.new('capture', None)
+        capture_action.props.enabled = True
+        capture_action.connect('activate', self.ui_capture)
+        self.add_action(capture_action)
 
         paste_action = Gio.SimpleAction.new('paste', None)
         paste_action.connect('activate', self.ui_paste)
@@ -791,6 +803,18 @@ class DialectWindow(Adw.ApplicationWindow):
         self.src_buffer.props.text = ''
         self.src_buffer.emit('end-user-action')
 
+    def ui_capture(self, _action, _param):
+        image_name = f"capture_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.png"
+        command = f"gnome-screenshot -a -f {image_name}"
+        subprocess.run(command, shell=True)
+        img = Image.open(image_name)
+        text = pytesseract.image_to_string(img)
+        if text is not None:
+            end_iter = self.src_buffer.get_end_iter()
+            self.src_buffer.insert(end_iter, text)
+            self.src_buffer.emit('end-user-action')
+        os.remove(image_name)
+
     def ui_copy(self, _action, _param):
         dest_text = self.dest_buffer.get_text(
             self.dest_buffer.get_start_iter(),
@@ -1091,10 +1115,10 @@ class DialectWindow(Adw.ApplicationWindow):
             True
         )
         if (
-            len(self.provider['trans'].history) >= self.current_history + 1
-            and (self.provider['trans'].history[self.current_history]['Languages'][0] == src_language or 'auto')
-            and self.provider['trans'].history[self.current_history]['Languages'][1] == dest_language
-            and self.provider['trans'].history[self.current_history]['Text'][0] == src_text
+                len(self.provider['trans'].history) >= self.current_history + 1
+                and (self.provider['trans'].history[self.current_history]['Languages'][0] == src_language or 'auto')
+                and self.provider['trans'].history[self.current_history]['Languages'][1] == dest_language
+                and self.provider['trans'].history[self.current_history]['Text'][0] == src_text
         ):
             return True
         return False
