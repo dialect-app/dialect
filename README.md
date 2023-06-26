@@ -50,6 +50,11 @@ sudo dnf install dialect
 - gTTS `python-gtts`
 - D-Bus `python-dbus`
 - Beautiful Soup `python-beautifulsoup4`
+- Gnome Screenshot `gnome-screenshot`
+- Imagemagick `imagemagick`
+- Python pytesseract `python-pytesseract`
+- Tesseract Ocr `tesseract-ocr`
+- 
 
 If official packages are not available for any of the python dependencies, you can install them from pip:
 
@@ -58,6 +63,8 @@ pip install gtts
 ```
 
 ### Building from Git
+
+‍‍```
 
 ```bash
 git clone --recurse-submodules https://github.com/dialect-app/dialect.git
