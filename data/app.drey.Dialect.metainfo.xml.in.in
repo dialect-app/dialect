@@ -32,6 +32,10 @@
 
   <launchable type="desktop-id">@app-id@.desktop</launchable>
   <translation type="gettext">dialect</translation>
+  
+  <custom>
+    <value key="GnomeSoftware::key-colors">[(108, 236, 156), (0, 0, 0)]</value>
+  </custom>
 
   <screenshots>
     <screenshot type="default">
