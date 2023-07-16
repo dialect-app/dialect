@@ -7,8 +7,9 @@ import json
 import logging
 import urllib.parse
 
-from gi.repository import GLib, Soup
+from gi.repository import GLib, Gio, Soup
 
+from dialect.define import APP_ID
 from dialect.languages import get_lang_name, normalize_lang_code
 
 
@@ -39,10 +40,7 @@ class BaseProvider:
         'dest_langs': ['fr', 'es', 'de', 'en']
     }
 
-    def __init__(self, base_url='', api_key=''):
-        self.instance_url = base_url
-        self.api_key = api_key
-
+    def __init__(self):
         self.languages = []
         """ Languages available for translating """
         self.tts_languages = []
@@ -66,6 +64,53 @@ class BaseProvider:
         """ If the api key is required for the provider to work """
         self.history = []
         """ Here we save the translation history """
+
+        # GSettings
+        self.settings = Gio.Settings(f'{APP_ID}.translator', f'/app/drey/Dialect/translators/{self.name}/')
+
+    @property
+    def instance_url(self):
+        return self.settings.get_string('instance-url') or self.defaults['instance_url']
+
+    @instance_url.setter
+    def instance_url(self, url):
+        self.settings.set_string('instance-url', url)
+
+    def reset_instance_url(self):
+        self.instance_url = ''
+
+    @property
+    def api_key(self):
+        return self.settings.get_string('api-key') or self.defaults['api_key']
+
+    @api_key.setter
+    def api_key(self, api_key):
+        self.settings.set_string('api-key', api_key)
+
+    def reset_api_key(self):
+        self.api_key = ''
+
+    @property
+    def src_langs(self):
+        return self.settings.get_strv('src-langs') or self.defaults['src_langs']
+
+    @src_langs.setter
+    def src_langs(self, src_langs):
+        self.settings.set_strv('src-langs', src_langs)
+
+    def reset_src_langs(self):
+        self.src_langs = []
+
+    @property
+    def dest_langs(self):
+        return self.settings.get_strv('dest-langs') or self.defaults['dest_langs']
+
+    @dest_langs.setter
+    def dest_langs(self, dest_langs):
+        self.settings.set_strv('dest-langs', dest_langs)
+
+    def reset_dest_langs(self):
+        self.dest_langs = []
 
     @staticmethod
     def format_url(url: str, path: str = '', params: dict = {}, http: bool = False):

@@ -119,9 +119,6 @@ class DialectWindow(Adw.ApplicationWindow):
         # Application object
         self.app = kwargs['application']
 
-        # Connect to providers settings changes
-        Settings.get().connect('provider-changed', self._on_provider_changed)
-
         # GStreamer playbin object and related setup
         self.player = Gst.ElementFactory.make('playbin', 'player')
         bus = self.player.get_bus()
@@ -345,18 +342,21 @@ class DialectWindow(Adw.ApplicationWindow):
 
         provider = Settings.get().active_translator
 
-        # Get saved languages
-        self.src_langs = Settings.get().src_langs
-        self.dest_langs = Settings.get().dest_langs
-
         # Show loading view
         self.main_stack.props.visible_child_name = 'loading'
 
         # Translator object
-        self.provider['trans'] = TRANSLATORS[provider](
-            base_url=Settings.get().instance_url,
-            api_key=Settings.get().api_key,
+        self.provider['trans'] = TRANSLATORS[provider]()
+        self.provider['trans'].settings.connect(
+            'changed::instance-url', self._on_provider_changed, self.provider['trans'].name
         )
+        self.provider['trans'].settings.connect(
+            'changed::api-key', self._on_provider_changed, self.provider['trans'].name
+        )
+
+        # Get saved languages
+        self.src_langs = self.provider['trans'].src_langs
+        self.dest_langs = self.provider['trans'].dest_langs
 
         # Make the init requests required to use the translator
         if self.provider['trans'].trans_init_requests:
@@ -395,10 +395,10 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.loading_failed(str(exc), True)
 
         if self.provider['trans'].api_key_supported:
-            if Settings.get().api_key:
-                validation = self.provider['trans'].format_validate_api_key(Settings.get().api_key)
+            if self.provider['trans'].api_key:
+                validation = self.provider['trans'].format_validate_api_key(self.provider['trans'].api_key)
                 Session.get().send_and_read_async(validation, 0, None, on_response)
-            elif not Settings.get().api_key and self.provider['trans'].api_key_required:
+            elif not self.provider['trans'].api_key and self.provider['trans'].api_key_required:
                 self.key_page.props.title = _('API key is required to use the service')
                 self.key_page.props.description = _('Please set an API key in the preferences.')
                 self.main_stack.props.visible_child_name = 'api-key'
@@ -455,7 +455,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def remove_key_and_reload(self, _button):
-        Settings.get().reset_api_key()
+        self.provider['trans'].reset_api_key()
         self.load_translator()
 
     def load_tts(self):
@@ -466,10 +466,12 @@ class DialectWindow(Adw.ApplicationWindow):
             self.src_voice_btn.props.visible = True
             self.dest_voice_btn.props.visible = True
 
-            settings = Settings.get().get_translator_settings(provider)
-            self.provider['tts'] = TTS[provider](
-                base_url=settings.get_string('instance-url'),
-                api_key=settings.get_string('api-key'),
+            self.provider['tts'] = TTS[provider]()
+            self.provider['tts'].settings.connect(
+                'changed::instance-url', self._on_provider_changed, self.provider['tts'].name
+            )
+            self.provider['tts'].settings.connect(
+                'changed::api-key', self._on_provider_changed, self.provider['tts'].name
             )
 
             match self._check_provider_type(self.provider['tts'].__provider_type__, 'tts'):
@@ -583,8 +585,8 @@ class DialectWindow(Adw.ApplicationWindow):
             size = self.get_default_size()
             Settings.get().window_size = (size.width, size.height)
         if self.provider['trans'] is not None:
-            Settings.get().src_langs = self.src_langs
-            Settings.get().dest_langs = self.dest_langs
+            self.provider['trans'].src_langs = self.src_langs
+            self.provider['trans'].dest_langs = self.dest_langs
 
     def send_notification(self, text, queue=False, action=None, timeout=5, priority=Adw.ToastPriority.NORMAL):
         """
@@ -1293,13 +1295,10 @@ class DialectWindow(Adw.ApplicationWindow):
         # Load translator
         self.load_translator()
 
-    def _on_provider_changed(self, _settings, name, key):
-        if name == Settings.get().active_translator:
-            if key in ('instance-url', 'api-key'):
-                if key == 'instance-url' and self.provider['trans'].change_instance:
-                    Settings.get().reset_src_langs()
-                    Settings.get().reset_dest_langs()
+    def _on_provider_changed(self, _settings, key, name):
+        if not self.translator_loading:
+            if name == self.provider['trans'].name:
                 self.reload_translator()
 
-        if name == Settings.get().active_tts:
-            self.load_tts()
+            if name == self.provider['tts'].name:
+                self.load_tts()
