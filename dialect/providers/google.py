@@ -228,7 +228,15 @@ class Provider(LocalProvider, SoupProvider):
                         [parsed[1][0][0][0], parsed[1][0][1][0]]
                     )
                 ]
-            translated = ' '.join(map(lambda part: part.text, translated_parts))
+
+            first_iter = True
+            translated = ""
+            for part in translated_parts:
+                if not part.text.isspace() and not first_iter:
+                    translated += " "
+                if first_iter:
+                    first_iter = False
+                translated += part.text
 
             src = None
             try:
