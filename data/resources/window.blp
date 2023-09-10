@@ -40,7 +40,18 @@ menu app-menu {
 template $DialectWindow : Adw.ApplicationWindow {
   default-width: 800;
   default-height: 300;
+  width-request: 360;
+  height-request: 200;
   focus-widget: src_text;
+
+  Adw.Breakpoint {
+    condition ("max-width: 680px")
+    setters {
+      actionbar.revealed: true;
+      title_stack.visible-child-name: "label";
+      translator_box.orientation: vertical;
+    }
+  }
 
   Stack main_stack {
     transition-type: crossfade;

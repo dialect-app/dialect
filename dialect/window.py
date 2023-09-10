@@ -107,8 +107,6 @@ class DialectWindow(Adw.ApplicationWindow):
     # Suggestions
     before_suggest = None
 
-    mobile_mode = False  # UI mode
-
     def __init__(self, text, langs, **kwargs):
         super().__init__(**kwargs)
 
@@ -129,18 +127,6 @@ class DialectWindow(Adw.ApplicationWindow):
         # Setup window
         self.setup_actions()
         self.setup()
-
-    def do_size_allocate(self, width, height, baseline):
-        if width < 680:
-            if self.mobile_mode is False:
-                self.mobile_mode = True
-                self.toggle_mobile_mode()
-        else:
-            if self.mobile_mode is True:
-                self.mobile_mode = False
-                self.toggle_mobile_mode()
-
-        Adw.ApplicationWindow.do_size_allocate(self, width, height, baseline)
 
     def setup_actions(self):
         back = Gio.SimpleAction.new('back', None)
@@ -264,22 +250,6 @@ class DialectWindow(Adw.ApplicationWindow):
         self.dest_voice_spinner = Gtk.Spinner()
 
         self.toggle_voice_spinner(True)
-
-    def toggle_mobile_mode(self):
-        if self.mobile_mode:
-            # Show actionbar
-            self.actionbar.props.revealed = True
-            # Change headerbar title
-            self.title_stack.props.visible_child_name = 'label'
-            # Change translation box orientation
-            self.translator_box.props.orientation = Gtk.Orientation.VERTICAL
-        else:
-            # Hide actionbar
-            self.actionbar.props.revealed = False
-            # Reset headerbar title
-            self.title_stack.props.visible_child_name = 'selector'
-            # Reset translation box orientation
-            self.translator_box.props.orientation = Gtk.Orientation.HORIZONTAL
 
     def _check_provider_type(self, provider_type, context):
         if isinstance(provider_type, dict):
