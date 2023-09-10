@@ -1,6 +1,6 @@
 using Gtk 4.0;
 
-template ThemeSwitcher : Box {
+template $ThemeSwitcher : Box {
   hexpand: true;
 
   styles [
@@ -13,13 +13,13 @@ template ThemeSwitcher : Box {
     spacing: 12;
 
     CheckButton system {
-      visible: bind ThemeSwitcher.show-system;
+      visible: bind template.show-system;
       hexpand: true;
       halign: center;
       focus-on-click: false;
       tooltip-text: _("Follow System Style");
 
-      notify::active => _on_color_scheme_changed();
+      notify::active => $_on_color_scheme_changed();
 
       styles [
         "theme-selector",
@@ -34,7 +34,7 @@ template ThemeSwitcher : Box {
       focus-on-click: false;
       tooltip-text: _("Light Style");
 
-      notify::active => _on_color_scheme_changed();
+      notify::active => $_on_color_scheme_changed();
 
       styles [
         "theme-selector",
@@ -49,7 +49,7 @@ template ThemeSwitcher : Box {
       focus-on-click: false;
       tooltip-text: _("Dark Style");
 
-      notify::active => _on_color_scheme_changed();
+      notify::active => $_on_color_scheme_changed();
 
       styles [
         "theme-selector",

@@ -1,9 +1,9 @@
 using Gtk 4.0;
 using Adw 1;
 
-template ProviderPreferences : Gtk.Box {
+template $ProviderPreferences : Gtk.Box {
   orientation: vertical;
-  notify::parent => _on_parent();
+  notify::parent => $_on_parent();
 
   Adw.HeaderBar headerbar {
 
@@ -13,7 +13,7 @@ template ProviderPreferences : Gtk.Box {
 
     Button {
       icon-name: "go-previous-symbolic";
-      clicked => _on_back();
+      clicked => $_on_back();
     }
   }
 
@@ -26,8 +26,8 @@ template ProviderPreferences : Gtk.Box {
         tooltip-text: _("Enter an Instance URL for the Provider.");
         show-apply-button: true;
 
-        apply => _on_instance_apply();
-        notify::text => _on_instance_changed();
+        apply => $_on_instance_apply();
+        notify::text => $_on_instance_changed();
 
         Stack instance_stack {
           StackPage {
@@ -37,7 +37,7 @@ template ProviderPreferences : Gtk.Box {
               icon-name: "view-refresh-symbolic";
               valign: center;
 
-              clicked => _on_reset_instance();
+              clicked => $_on_reset_instance();
 
               styles ["flat"]
             };
@@ -57,7 +57,7 @@ template ProviderPreferences : Gtk.Box {
         tooltip-text: _("Enter an API Key for the Provider.");
         show-apply-button: true;
 
-        apply => _on_api_key_apply();
+        apply => $_on_api_key_apply();
 
         Stack api_key_stack {
           StackPage {
@@ -67,7 +67,7 @@ template ProviderPreferences : Gtk.Box {
               icon-name: "view-refresh-symbolic";
               valign: center;
 
-              clicked => _on_reset_api_key();
+              clicked => $_on_reset_api_key();
 
               styles ["flat"]
             };
