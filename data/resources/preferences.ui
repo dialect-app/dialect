@@ -87,15 +87,9 @@
                 <property name="enable-expansion">False</property>
                 <property name="expanded">True</property>
                 <child>
-                  <object class="AdwActionRow" id="search_provider">
+                  <object class="AdwSwitchRow" id="search_provider">
                     <property name="title" translatable="yes">Show Translations in Desktop Search</property>
                     <property name="subtitle" translatable="yes">Warning: All desktop searches will be sent to the translation service</property>
-                    <property name="activatable_widget">sp_translation</property>
-                    <child>
-                      <object class="GtkSwitch" id="sp_translation">
-                        <property name="valign">center</property>
-                      </object>
-                    </child>
                   </object>
                 </child>
               </object>
@@ -120,15 +114,9 @@
               </object>
             </child>
             <child>
-              <object class="AdwActionRow">
+              <object class="AdwSwitchRow" id="src_auto">
                 <property name="title" translatable="yes">Default to Auto</property>
                 <property name="subtitle" translatable="yes">Use "Auto" as the default language</property>
-                <property name="activatable_widget">src_auto</property>
-                <child>
-                  <object class="GtkSwitch" id="src_auto">
-                    <property name="valign">center</property>
-                  </object>
-                </child>
               </object>
             </child>
           </object>

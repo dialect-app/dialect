@@ -43,7 +43,7 @@ sudo dnf install dialect
 - Python 3 `python`
 - PyGObject `python-gobject`
 - GTK4 `gtk4`
-- libadwaita (>= 1.2.0) `libadwaita`
+- libadwaita (>= 1.4.0) `libadwaita`
 - GStreamer 1.0 `gstreamer`
 - Meson `meson`
 - Ninja `ninja`

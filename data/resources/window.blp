@@ -79,162 +79,150 @@ template $DialectWindow : Adw.ApplicationWindow {
 
     StackPage {
       name: "error";
-      child: WindowHandle {
-        child: Box {
-          orientation: vertical;
+      child: Adw.ToolbarView {
 
-          Adw.HeaderBar {
-            styles [
-              "flat",
-            ]
-          }
+        [top]
+        Adw.HeaderBar {}
 
-          Adw.StatusPage error_page {
-            vexpand: true;
+        Adw.StatusPage error_page {
+          vexpand: true;
 
-            child: Adw.Squeezer {
-              homogeneous: false;
+          child: Adw.Squeezer {
+            homogeneous: false;
 
-              Box {
-                spacing: 12;
-                halign: center;
+            Box {
+              spacing: 12;
+              halign: center;
 
-                Button {
+              Button {
+                label: _("Retry");
+                clicked => $retry_load_translator();
+
+                styles [
+                  "pill",
+                  "suggested-action",
+                ]
+              }
+
+              Button {
+                label: _("Open Preferences");
+                action-name: "app.preferences";
+
+                styles [
+                  "pill",
+                ]
+              }
+            }
+
+            Box {
+              spacing: 12;
+              orientation: vertical;
+
+              Button error_retry_btn {
+                clicked => $retry_load_translator();
+
+                styles [
+                  "pill",
+                  "suggested-action",
+                ]
+
+                child: Label {
                   label: _("Retry");
-                  clicked => $retry_load_translator();
+                  ellipsize: end;
+                };
+              }
 
-                  styles [
-                    "pill",
-                    "suggested-action",
-                  ]
-                }
+              Button error_preferences_btn {
+                action-name: "app.preferences";
 
-                Button {
+                styles [
+                  "pill",
+                ]
+
+                child: Label {
                   label: _("Open Preferences");
-                  action-name: "app.preferences";
-
-                  styles [
-                    "pill",
-                  ]
-                }
+                  ellipsize: end;
+                };
               }
-
-              Box {
-                spacing: 12;
-                orientation: vertical;
-
-                Button error_retry_btn {
-                  clicked => $retry_load_translator();
-
-                  styles [
-                    "pill",
-                    "suggested-action",
-                  ]
-
-                  child: Label {
-                    label: _("Retry");
-                    ellipsize: end;
-                  };
-                }
-
-                Button error_preferences_btn {
-                  action-name: "app.preferences";
-
-                  styles [
-                    "pill",
-                  ]
-
-                  child: Label {
-                    label: _("Open Preferences");
-                    ellipsize: end;
-                  };
-                }
-              }
-            };
-          }
-        };
+            }
+          };
+        }
       };
     }
 
     StackPage {
       name: "api-key";
-      child: WindowHandle {
-        child: Box {
-          orientation: vertical;
+      child: Adw.ToolbarView {
 
-          Adw.HeaderBar {
-            styles [
-              "flat",
-            ]
-          }
+        [top]
+        Adw.HeaderBar {}
 
-          Adw.StatusPage key_page {
-            icon-name: "dialog-password-symbolic";
-            vexpand: true;
+        Adw.StatusPage key_page {
+          icon-name: "dialog-password-symbolic";
+          vexpand: true;
 
-            child: Adw.Squeezer {
-              homogeneous: false;
+          child: Adw.Squeezer {
+            homogeneous: false;
 
-              Box {
-                spacing: 12;
-                halign: center;
+            Box {
+              spacing: 12;
+              halign: center;
 
-                Button rmv_key_btn {
-                  visible: false;
+              Button rmv_key_btn {
+                visible: false;
+                label: _("Remove Key and Retry");
+                clicked => $remove_key_and_reload();
+
+                styles [
+                  "pill",
+                  "suggested-action",
+                ]
+              }
+
+              Button {
+                label: _("Open Preferences");
+                action-name: "app.preferences";
+
+                styles [
+                  "pill",
+                ]
+              }
+            }
+
+            Box {
+              spacing: 12;
+              orientation: vertical;
+
+              Button error_api_key_btn {
+                visible: false;
+                clicked => $remove_key_and_reload();
+
+                styles [
+                  "pill",
+                  "suggested-action",
+                ]
+
+                child: Label {
                   label: _("Remove Key and Retry");
-                  clicked => $remove_key_and_reload();
+                  ellipsize: end;
+                };
+              }
 
-                  styles [
-                    "pill",
-                    "suggested-action",
-                  ]
-                }
+              Button error_preferences2_btn {
+                action-name: "app.preferences";
 
-                Button {
+                styles [
+                  "pill",
+                ]
+
+                child: Label {
                   label: _("Open Preferences");
-                  action-name: "app.preferences";
-
-                  styles [
-                    "pill",
-                  ]
-                }
+                  ellipsize: end;
+                };
               }
-
-              Box {
-                spacing: 12;
-                orientation: vertical;
-
-                Button error_api_key_btn {
-                  visible: false;
-                  clicked => $remove_key_and_reload();
-
-                  styles [
-                    "pill",
-                    "suggested-action",
-                  ]
-
-                  child: Label {
-                    label: _("Remove Key and Retry");
-                    ellipsize: end;
-                  };
-                }
-
-                Button error_preferences2_btn {
-                  action-name: "app.preferences";
-
-                  styles [
-                    "pill",
-                  ]
-
-                  child: Label {
-                    label: _("Open Preferences");
-                    ellipsize: end;
-                  };
-                }
-              }
-            };
-          }
-        };
+            }
+          };
+        }
       };
     }
 
@@ -242,15 +230,11 @@ template $DialectWindow : Adw.ApplicationWindow {
       name: "translate";
       child: Adw.ToastOverlay toast_overlay {
         vexpand: true;
-        child: Box {
-          orientation: vertical;
+        child: Adw.ToolbarView {
+
+          [top]
           Adw.HeaderBar {
             centering-policy: strict;
-
-            styles [
-              "flat"
-            ]
-
             title-widget: Stack title_stack {
               transition-type: crossfade;
 
