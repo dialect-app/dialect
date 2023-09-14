@@ -9,7 +9,6 @@ from gi.repository import Adw, GObject, Gtk
 
 from dialect.define import RES_PATH
 from dialect.session import Session
-from dialect.settings import Settings
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/provider-preferences.ui')
@@ -38,7 +37,6 @@ class ProviderPreferences(Gtk.Box):
         self.providers = providers
         self.scope = scope
         self.provider = providers[scope]
-        self.settings = Settings.get().get_translator_settings(self.provider.name)
 
         self.title.props.subtitle = self.provider.prettyname
 
@@ -50,8 +48,8 @@ class ProviderPreferences(Gtk.Box):
         self._check_settings()
 
         # Load saved values
-        self.instance_entry.props.text = self.settings.get_string('instance-url')
-        self.api_key_entry.props.text = self.settings.get_string('api-key')
+        self.instance_entry.props.text = self.provider.instance_url
+        self.api_key_entry.props.text = self.provider.api_key
 
     @Gtk.Template.Callback()
     def _on_parent(self, _view, _pspec):
@@ -80,9 +78,11 @@ class ProviderPreferences(Gtk.Box):
                 logging.error(exc)
 
             if valid:
-                self.settings.instance_url = self.new_instance_url
+                self.provider.instance_url = self.new_instance_url
+                self.provider.reset_src_langs()
+                self.provider.reset_dest_langs()
                 self.instance_entry.remove_css_class('error')
-                self.instance_entry.props.text = self.settings.instance_url
+                self.instance_entry.props.text = self.provider.instance_url
             else:
                 self.instance_entry.add_css_class('error')
                 error_text = _('Not a valid {provider} instance')
@@ -95,7 +95,7 @@ class ProviderPreferences(Gtk.Box):
             self.instance_stack.props.visible_child_name = 'reset'
             self.instance_spinner.stop()
 
-        old_value = self.settings.instance_url
+        old_value = self.provider.instance_url
         new_value = self.instance_entry.props.text
 
         url = re.compile(r'https?://(www\.)?')
@@ -117,21 +117,18 @@ class ProviderPreferences(Gtk.Box):
     @Gtk.Template.Callback()
     def _on_instance_changed(self, _entry, _pspec):
         """ Called on self.instance_entry::notify::text signal """
-        if self.instance_entry.props.text == self.settings.instance_url:
+        if self.instance_entry.props.text == self.provider.instance_url:
             self.instance_entry.props.show_apply_button = False
         elif not self.instance_entry.props.show_apply_button:
             self.instance_entry.props.show_apply_button = True
 
     @Gtk.Template.Callback()
     def _on_reset_instance(self, _button):
-        """ Called on self.instance_reset::clicked signal """
-        if self.settings.instance_url != self.provider.defaults['instance_url']:
-            self.instance_stack.props.visible_child_name = 'spinner'
-            self.instance_spinner.start()
-            self.settings.instance_url = self.provider.defaults['instance_url']
+        if self.provider.instance_url != self.provider.defaults['instance_url']:
+            self.provider.reset_instance_url()
 
         self.instance_entry.remove_css_class('error')
-        self.instance_entry.props.text = self.settings.instance_url
+        self.instance_entry.props.text = self.provider.instance_url
 
     @Gtk.Template.Callback()
     def _on_api_key_apply(self, _row):
@@ -146,9 +143,9 @@ class ProviderPreferences(Gtk.Box):
                 logging.error(exc)
 
             if valid:
-                self.settings.api_key = self.new_api_key
+                self.provider.api_key = self.new_api_key
                 self.api_key_entry.remove_css_class('error')
-                self.api_key_entry.props.text = self.settings.api_key
+                self.api_key_entry.props.text = self.provider.api_key
             else:
                 self.api_key_entry.add_css_class('error')
                 error_text = _('Not a valid {provider} API key')
@@ -161,7 +158,7 @@ class ProviderPreferences(Gtk.Box):
             self.api_key_stack.props.visible_child_name = 'reset'
             self.api_key_spinner.stop()
 
-        old_value = self.settings.api_key
+        old_value = self.provider.api_key
         self.new_api_key = self.api_key_entry.get_text()
 
         # Validate
@@ -179,21 +176,16 @@ class ProviderPreferences(Gtk.Box):
 
     @Gtk.Template.Callback()
     def _on_reset_api_key(self, _button):
-        """ Called on self.api_key_reset::clicked signal """
-        if self.settings.api_key != self.provider.defaults['api_key']:
-            self.api_key_stack.props.visible_child_name = 'spinner'
-            self.api_key_spinner.start()
-            self.settings.api_key = self.provider.defaults['api_key']
-        self.api_key_entry.props.text = self.settings.api_key
+        """Called on self.api_key_reset::clicked signal"""
+        if self.provider.api_key != self.provider.defaults['api_key']:
+            self.provider.reset_api_key()
+
+        self.api_key_entry.remove_css_class('error')
+        self.api_key_entry.props.text = self.provider.api_key
 
     def _on_translator_loading(self, window, _value):
         self.page.props.sensitive = not window.translator_loading
 
         if not window.translator_loading:
-            self.instance_stack.props.visible_child_name = 'reset'
-            self.instance_spinner.stop()
-            self.api_key_stack.props.visible_child_name = 'reset'
-            self.api_key_spinner.stop()
-
             self.provider = self.providers[self.scope]
             self._check_settings()
