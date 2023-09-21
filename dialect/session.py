@@ -54,9 +54,9 @@ class Session(Soup.Session):
                 message_callback(data)
             except ResponseError as exc:
                 logging.warning(exc)
-                if (self.errors):
-                    self.errors + '/n'
-                self.errors = self.errors + str(exc)
+                if self.errors:
+                    self.errors += '/n'
+                self.errors += str(exc)
 
             # If all tasks are done, run main callback
             if callback is not None and len(messages) == 0:
