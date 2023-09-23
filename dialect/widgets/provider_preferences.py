@@ -12,7 +12,7 @@ from dialect.session import Session
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/provider-preferences.ui')
-class ProviderPreferences(Gtk.Box):
+class ProviderPreferences(Adw.Bin):
     __gtype_name__ = 'ProviderPreferences'
 
     # Properties

@@ -1,9 +1,9 @@
 using Gtk 4.0;
 
-template DialectShortcutsWindow : ShortcutsWindow {
+template $DialectShortcutsWindow : ShortcutsWindow {
   modal: true;
 
-  show => _on_show();
+  show => $_on_show();
 
   ShortcutsSection {
     section-name: "shortcuts";

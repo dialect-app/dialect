@@ -37,14 +37,25 @@ menu app-menu {
   }
 }
 
-template DialectWindow : Adw.ApplicationWindow {
+template $DialectWindow : Adw.ApplicationWindow {
   default-width: 800;
   default-height: 300;
+  width-request: 360;
+  height-request: 320;
   focus-widget: src_text;
+
+  Adw.Breakpoint {
+    condition ("max-width: 680px")
+    setters {
+      actionbar.revealed: true;
+      title_stack.visible-child-name: "label";
+      translator_box.orientation: vertical;
+    }
+  }
 
   Stack main_stack {
     transition-type: crossfade;
-    notify::visible-child-name => on_stack_page_change();
+    notify::visible-child-name => $on_stack_page_change();
 
     StackPage {
       name: "loading";
@@ -79,162 +90,150 @@ template DialectWindow : Adw.ApplicationWindow {
 
     StackPage {
       name: "error";
-      child: WindowHandle {
-        child: Box {
-          orientation: vertical;
+      child: Adw.ToolbarView {
 
-          Adw.HeaderBar {
-            styles [
-              "flat",
-            ]
-          }
+        [top]
+        Adw.HeaderBar {}
 
-          Adw.StatusPage error_page {
-            vexpand: true;
+        Adw.StatusPage error_page {
+          vexpand: true;
 
-            child: Adw.Squeezer {
-              homogeneous: false;
+          child: Adw.Squeezer {
+            homogeneous: false;
 
-              Box {
-                spacing: 12;
-                halign: center;
+            Box {
+              spacing: 12;
+              halign: center;
 
-                Button {
+              Button {
+                label: _("Retry");
+                clicked => $retry_load_translator();
+
+                styles [
+                  "pill",
+                  "suggested-action",
+                ]
+              }
+
+              Button {
+                label: _("Open Preferences");
+                action-name: "app.preferences";
+
+                styles [
+                  "pill",
+                ]
+              }
+            }
+
+            Box {
+              spacing: 12;
+              orientation: vertical;
+
+              Button error_retry_btn {
+                clicked => $retry_load_translator();
+
+                styles [
+                  "pill",
+                  "suggested-action",
+                ]
+
+                child: Label {
                   label: _("Retry");
-                  clicked => retry_load_translator();
+                  ellipsize: end;
+                };
+              }
 
-                  styles [
-                    "pill",
-                    "suggested-action",
-                  ]
-                }
+              Button error_preferences_btn {
+                action-name: "app.preferences";
 
-                Button {
+                styles [
+                  "pill",
+                ]
+
+                child: Label {
                   label: _("Open Preferences");
-                  action-name: "app.preferences";
-
-                  styles [
-                    "pill",
-                  ]
-                }
+                  ellipsize: end;
+                };
               }
-
-              Box {
-                spacing: 12;
-                orientation: vertical;
-
-                Button error_retry_btn {
-                  clicked => retry_load_translator();
-
-                  styles [
-                    "pill",
-                    "suggested-action",
-                  ]
-
-                  child: Label {
-                    label: _("Retry");
-                    ellipsize: end;
-                  };
-                }
-
-                Button error_preferences_btn {
-                  action-name: "app.preferences";
-
-                  styles [
-                    "pill",
-                  ]
-
-                  child: Label {
-                    label: _("Open Preferences");
-                    ellipsize: end;
-                  };
-                }
-              }
-            };
-          }
-        };
+            }
+          };
+        }
       };
     }
 
     StackPage {
       name: "api-key";
-      child: WindowHandle {
-        child: Box {
-          orientation: vertical;
+      child: Adw.ToolbarView {
 
-          Adw.HeaderBar {
-            styles [
-              "flat",
-            ]
-          }
+        [top]
+        Adw.HeaderBar {}
 
-          Adw.StatusPage key_page {
-            icon-name: "dialog-password-symbolic";
-            vexpand: true;
+        Adw.StatusPage key_page {
+          icon-name: "dialog-password-symbolic";
+          vexpand: true;
 
-            child: Adw.Squeezer {
-              homogeneous: false;
+          child: Adw.Squeezer {
+            homogeneous: false;
 
-              Box {
-                spacing: 12;
-                halign: center;
+            Box {
+              spacing: 12;
+              halign: center;
 
-                Button rmv_key_btn {
-                  visible: false;
+              Button rmv_key_btn {
+                visible: false;
+                label: _("Remove Key and Retry");
+                clicked => $remove_key_and_reload();
+
+                styles [
+                  "pill",
+                  "suggested-action",
+                ]
+              }
+
+              Button {
+                label: _("Open Preferences");
+                action-name: "app.preferences";
+
+                styles [
+                  "pill",
+                ]
+              }
+            }
+
+            Box {
+              spacing: 12;
+              orientation: vertical;
+
+              Button error_api_key_btn {
+                visible: false;
+                clicked => $remove_key_and_reload();
+
+                styles [
+                  "pill",
+                  "suggested-action",
+                ]
+
+                child: Label {
                   label: _("Remove Key and Retry");
-                  clicked => remove_key_and_reload();
+                  ellipsize: end;
+                };
+              }
 
-                  styles [
-                    "pill",
-                    "suggested-action",
-                  ]
-                }
+              Button error_preferences2_btn {
+                action-name: "app.preferences";
 
-                Button {
+                styles [
+                  "pill",
+                ]
+
+                child: Label {
                   label: _("Open Preferences");
-                  action-name: "app.preferences";
-
-                  styles [
-                    "pill",
-                  ]
-                }
+                  ellipsize: end;
+                };
               }
-
-              Box {
-                spacing: 12;
-                orientation: vertical;
-
-                Button error_api_key_btn {
-                  visible: false;
-                  clicked => remove_key_and_reload();
-
-                  styles [
-                    "pill",
-                    "suggested-action",
-                  ]
-
-                  child: Label {
-                    label: _("Remove Key and Retry");
-                    ellipsize: end;
-                  };
-                }
-
-                Button error_preferences2_btn {
-                  action-name: "app.preferences";
-
-                  styles [
-                    "pill",
-                  ]
-
-                  child: Label {
-                    label: _("Open Preferences");
-                    ellipsize: end;
-                  };
-                }
-              }
-            };
-          }
-        };
+            }
+          };
+        }
       };
     }
 
@@ -242,15 +241,11 @@ template DialectWindow : Adw.ApplicationWindow {
       name: "translate";
       child: Adw.ToastOverlay toast_overlay {
         vexpand: true;
-        child: Box {
-          orientation: vertical;
+        child: Adw.ToolbarView {
+
+          [top]
           Adw.HeaderBar {
             centering-policy: strict;
-
-            styles [
-              "flat"
-            ]
-
             title-widget: Stack title_stack {
               transition-type: crossfade;
 
@@ -259,9 +254,9 @@ template DialectWindow : Adw.ApplicationWindow {
                 child: Box langs_button_box {
                   spacing: 6;
 
-                  .LangSelector src_lang_selector {
-                    notify::selected => _on_src_lang_changed();
-                    user-selection-changed => translation();
+                  $LangSelector src_lang_selector {
+                    notify::selected => $_on_src_lang_changed();
+                    user-selection-changed => $translation();
                     tooltip-text: _("Change Source Language");
                   }
 
@@ -271,9 +266,9 @@ template DialectWindow : Adw.ApplicationWindow {
                     icon-name: "object-flip-horizontal-symbolic";
                   }
 
-                  .LangSelector dest_lang_selector {
-                    notify::selected => _on_dest_lang_changed();
-                    user-selection-changed => translation();
+                  $LangSelector dest_lang_selector {
+                    notify::selected => $_on_dest_lang_changed();
+                    user-selection-changed => $translation();
                     tooltip-text: _("Change Destination Language");
                   }
                 };
@@ -340,7 +335,7 @@ template DialectWindow : Adw.ApplicationWindow {
                     bottom-margin: 9;
 
                     EventControllerKey src_key_ctrlr {
-                      key-pressed => _update_trans_button();
+                      key-pressed => $_update_trans_button();
                     }
                   }
 
@@ -393,7 +388,7 @@ template DialectWindow : Adw.ApplicationWindow {
                       wrap: true;
                       wrap-mode: word_char;
 
-                      activate-link => _on_mistakes_clicked();
+                      activate-link => $_on_mistakes_clicked();
                     }
 
                     styles [
@@ -586,11 +581,11 @@ template DialectWindow : Adw.ApplicationWindow {
                 "flat",
               ]
 
-              .LangSelector src_lang_selector_m {
+              $LangSelector src_lang_selector_m {
                 selected: bind src_lang_selector.selected bidirectional;
                 tooltip-text: _("Change Source Language");
 
-                user-selection-changed => translation();
+                user-selection-changed => $translation();
               }
 
               [center]
@@ -602,11 +597,11 @@ template DialectWindow : Adw.ApplicationWindow {
               }
 
               [end]
-              .LangSelector dest_lang_selector_m {
+              $LangSelector dest_lang_selector_m {
                 selected: bind dest_lang_selector.selected bidirectional;
                 tooltip-text: _("Change Destination Language");
 
-                user-selection-changed => translation();
+                user-selection-changed => $translation();
               }
             }
           }
@@ -616,7 +611,7 @@ template DialectWindow : Adw.ApplicationWindow {
   }
 
   EventControllerKey win_key_ctrlr {
-    key-pressed => _on_key_event();
+    key-pressed => $_on_key_event();
   }
 }
 

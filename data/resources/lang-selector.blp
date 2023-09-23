@@ -1,9 +1,9 @@
 using Gtk 4.0;
 using Adw 1;
 
-template LangSelector : Adw.Bin {
+template $LangSelector : Adw.Bin {
 
-  notify::selected => _on_selected_changed();
+  notify::selected => $_on_selected_changed();
 
   MenuButton button {
     always-show-arrow: true;
@@ -29,8 +29,8 @@ template LangSelector : Adw.Bin {
     popover: Popover popover {
       height-request: 300;
 
-      show => _popover_show();
-      closed => _popover_closed();
+      show => $_popover_show();
+      closed => $_popover_closed();
 
       styles [
         "lang-selector",
@@ -46,8 +46,8 @@ template LangSelector : Adw.Bin {
           SearchEntry search {
             placeholder-text: _("Search Languages…");
 
-            changed => _on_search();
-            activate => _on_search_activate();
+            changed => $_on_search();
+            activate => $_on_search_activate();
           }
 
           styles [
@@ -69,7 +69,7 @@ template LangSelector : Adw.Bin {
                 ListBox recent_list {
                   selection-mode: single;
 
-                  row-activated => _activated();
+                  row-activated => $_activated();
                 }
 
                 Separator separator {
@@ -80,7 +80,7 @@ template LangSelector : Adw.Bin {
             ListBox lang_list {
               selection-mode: single;
 
-              row-activated => _activated();
+              row-activated => $_activated();
             }
           };
         }
