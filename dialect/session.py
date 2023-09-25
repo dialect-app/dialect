@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import logging
+from uuid import uuid4
 
 from gi.repository import GLib, Soup
 
@@ -15,6 +16,7 @@ class Session(Soup.Session):
     """
 
     instance = None
+    errors = {}
 
     def __init__(self):
         Soup.Session.__init__(self)
@@ -46,7 +48,7 @@ class Session(Soup.Session):
     def multiple(self, messages, callback=None):
         """Keep track of multiple async operations."""
 
-        def on_task_response(session, result, message_callback):
+        def on_task_response(session, result, message_callback, request_id):
             messages.pop()
 
             try:
@@ -54,20 +56,22 @@ class Session(Soup.Session):
                 message_callback(data)
             except ResponseError as exc:
                 logging.warning(exc)
-                if self.errors:
-                    self.errors += '/n'
-                self.errors += str(exc)
+                self.errors[request_id] += str(exc) + '/n'
 
             # If all tasks are done, run main callback
             if callback is not None and len(messages) == 0:
-                callback(errors=self.errors)
+                callback(errors=self.errors[request_id])
+                del self.errors[request_id]
 
-        self.errors = ''  # FIXME: We're assuming that multiple() isn't called twice simultaneously
+        request_id = uuid4()
+        self.errors[request_id] = ''
 
         for msg in messages:
             # msg[0]: Soup.Message
             # msg[1]: message callback
-            self.send_and_read_async(msg[0], 0, None, on_task_response, msg[1])
+            self.send_and_read_async(msg[0], 0, None, on_task_response, msg[1], request_id)
+
+        return request_id
 
 
 class ResponseError(Exception):
