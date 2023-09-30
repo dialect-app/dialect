@@ -64,6 +64,7 @@ class TranslateService(dbus.service.Object):
         # Translator
         self._load_translator()
         Settings.get().connect('changed', self._on_settings_changed)
+        Settings.get().connect('translator-changed', self._on_provider_changed)
 
     @dbus.service.method(in_signature='as', out_signature='as', **SBN)
     def GetInitialResultSet(self, terms):
@@ -187,6 +188,7 @@ class TranslateService(dbus.service.Object):
         return Settings.get().live_translation and Settings.get().sp_translation
 
     def _load_translator(self):
+        self.loaded = False
         provider = Settings.get().active_translator
         self.translator = TRANSLATORS[provider]()
 
@@ -215,13 +217,11 @@ class TranslateService(dbus.service.Object):
 
     def _on_settings_changed(self, _settings, key):
         if key.startswith('translator-'):
-            self.loaded = False
             self._load_translator()
         if key == 'live-translation' or key == 'sp-translation':
             self.live_enabled = self.is_live_enabled()
 
-    def _on_provider_changed(self, _settings, _key):
-        self.loaded = False
+    def _on_provider_changed(self, *args):
         self._load_translator()
 
 

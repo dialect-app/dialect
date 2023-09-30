@@ -101,9 +101,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         provider = self.translator.get_selected_item().name
         self.translator_config.props.sensitive = self._provider_has_settings(provider)
         if provider != Settings.get().active_translator:
-            self.parent.save_settings()
             Settings.get().active_translator = provider
-            self.parent.reload_translator()
 
     @Gtk.Template.Callback()
     def _switch_tts(self, row, _value):
@@ -112,7 +110,6 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         self.tts_config.props.sensitive = self._provider_has_settings(provider)
         if provider != Settings.get().active_tts:
             Settings.get().active_tts = provider
-            self.parent.load_tts()
 
     @Gtk.Template.Callback()
     def _provider_settings_tooltip(self, button, _pspec):
