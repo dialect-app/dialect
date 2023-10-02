@@ -11,7 +11,7 @@ from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk
 from dialect.define import APP_ID, PROFILE, RES_PATH, TRANS_NUMBER
 from dialect.languages import LanguagesListModel
 from dialect.providers import TRANSLATORS, TTS, ProviderFeature, ProviderError, ProviderErrorCode
-from dialect.providers.base import BaseProvider
+from dialect.providers.base import BaseProvider, Translation
 from dialect.settings import Settings
 from dialect.shortcuts import DialectShortcutsWindow
 from dialect.widgets import LangSelector, ThemeSwitcher
@@ -1031,7 +1031,7 @@ class DialectWindow(Adw.ApplicationWindow):
                         self.on_translation_fail
                     )
                 else:
-                    self.trans_mistakes = [None, None]
+                    self.trans_mistakes = (None, None)
                     self.trans_src_pron = None
                     self.trans_dest_pron = None
                     self.dest_buffer.props.text = ''
@@ -1039,20 +1039,20 @@ class DialectWindow(Adw.ApplicationWindow):
                     if not self.ongoing_trans:
                         self.translation_finish()
 
-    def on_translation_success(self, translation, lang):
+    def on_translation_success(self, translation: Translation):
         self.trans_warning.props.visible = False
 
-        if lang and self.src_lang_selector.selected == 'auto':
+        if translation.detected and self.src_lang_selector.selected == 'auto':
             if Settings.get().src_auto:
-                self.src_lang_selector.set_insight(lang)
+                self.src_lang_selector.set_insight(translation.detected)
             else:
-                self.src_lang_selector.selected = lang
+                self.src_lang_selector.selected = translation.detected
 
         self.dest_buffer.props.text = translation.text
 
-        self.trans_mistakes = translation.extra_data['possible-mistakes']
-        self.trans_src_pron = translation.extra_data['src-pronunciation']
-        self.trans_dest_pron = translation.extra_data['dest-pronunciation']
+        self.trans_mistakes = translation.mistakes
+        self.trans_src_pron = translation.pronunciation[0]
+        self.trans_dest_pron = translation.pronunciation[1]
 
         # FIXME: Make history work again
         # Finally, everything is saved in history
@@ -1064,7 +1064,7 @@ class DialectWindow(Adw.ApplicationWindow):
         )"""
 
         # Mistakes
-        if ProviderFeature.MISTAKES in self.provider['trans'].features and not self.trans_mistakes == [None, None]:
+        if ProviderFeature.MISTAKES in self.provider['trans'].features and not self.trans_mistakes == (None, None):
             self.mistakes_label.set_markup(_('Did you mean: ') + f'<a href="#">{self.trans_mistakes[0]}</a>')
             self.mistakes.props.reveal_child = True
         elif self.mistakes.props.reveal_child:
@@ -1073,7 +1073,7 @@ class DialectWindow(Adw.ApplicationWindow):
         # Pronunciation
         reveal = Settings.get().show_pronunciation
         if ProviderFeature.PRONUNCIATION in self.provider['trans'].features:
-            if self.trans_src_pron is not None and self.trans_mistakes == [None, None]:
+            if self.trans_src_pron is not None and self.trans_mistakes == (None, None):
                 self.src_pron_label.props.label = self.trans_src_pron
                 self.src_pron_revealer.props.reveal_child = reveal
             elif self.src_pron_revealer.props.reveal_child:

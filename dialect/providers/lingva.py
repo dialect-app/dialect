@@ -95,15 +95,10 @@ class Provider(SoupProvider):
                 dest_pronunciation = data['info']['pronunciation'].get('translation', None)
 
                 translation = Translation(
-                    data['translation'],
-                    {
-                        'possible-mistakes': [mistakes, mistakes],
-                        'src-pronunciation': src_pronunciation,
-                        'dest-pronunciation': dest_pronunciation,
-                    },
+                    data['translation'], detected, (mistakes, mistakes), (src_pronunciation, dest_pronunciation)
                 )
 
-                on_done(translation, detected)
+                on_done(translation)
 
             except Exception as exc:
                 error = 'Failed reading the translation data'

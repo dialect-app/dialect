@@ -515,13 +515,11 @@ class Provider(LocalProvider, SoupProvider):
 
                     result = Translation(
                         translated,
-                        {
-                            'possible-mistakes': [mistake, self._strip_html_tags(mistake)],
-                            'src-pronunciation': origin_pronunciation,
-                            'dest-pronunciation': pronunciation,
-                        },
+                        src,
+                        (mistake, self._strip_html_tags(mistake)),
+                        (origin_pronunciation, pronunciation),
                     )
-                    on_done(result, src)
+                    on_done(result)
 
                 except Exception as exc:
                     logging.warning(exc)

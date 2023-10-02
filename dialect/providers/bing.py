@@ -124,13 +124,10 @@ class Provider(SoupProvider):
 
                     translation = Translation(
                         data['translations'][0]['text'],
-                        {
-                            'possible-mistakes': [None, None],
-                            'src-pronunciation': None,
-                            'dest-pronunciation': pronunciation,
-                        },
+                        detected,
+                        pronunciation=(None, pronunciation)
                     )
-                    on_done(translation, detected)
+                    on_done(translation)
 
             except Exception as exc:
                 logging.warning(exc)

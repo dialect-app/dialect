@@ -157,15 +157,8 @@ class Provider(SoupProvider):
                     detected = data['lang'].split('-')[0]
 
                 if 'text' in data:
-                    result = Translation(
-                        data['text'][0],
-                        {
-                            'possible-mistakes': None,
-                            'src-pronunciation': None,
-                            'dest-pronunciation': None,
-                        },
-                    )
-                    on_done(result, detected)
+                    translation = Translation(data['text'][0], detected)
+                    on_done(translation)
 
                 else:
                     on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, 'Translation failed'))

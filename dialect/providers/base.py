@@ -66,16 +66,18 @@ class ProviderError:
 
 
 class Translation:
-    text = None
-    extra_data = {
-        'possible-mistakes': [None, None],
-        'src-pronunciation': None,
-        'dest-pronunciation': None,
-    }
 
-    def __init__(self, text, extra_data):
+    def __init__(
+        self,
+        text: str,
+        detected: None | str = None,
+        mistakes: tuple[None | str, None | str] = (None, None),
+        pronunciation: tuple[None | str, None | str] = (None, None),
+    ):
         self.text = text
-        self.extra_data = extra_data
+        self.detected = detected
+        self.mistakes = mistakes
+        self.pronunciation = pronunciation
 
 
 class BaseProvider:
@@ -243,7 +245,7 @@ class BaseProvider:
         text: str,
         src: str,
         dest: str,
-        on_done: Callable[[Translation, str | None], None],
+        on_done: Callable[[Translation], None],
         on_fail: Callable[[ProviderError], None],
     ):
         raise NotImplementedError()

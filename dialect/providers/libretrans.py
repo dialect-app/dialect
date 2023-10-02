@@ -40,7 +40,7 @@ class Provider(SoupProvider):
 
             try:
                 valid = data['info']['title'] == 'LibreTranslate'
-            except: # noqa
+            except:  # noqa
                 pass
 
             on_done(valid)
@@ -148,15 +148,8 @@ class Provider(SoupProvider):
     def translate(self, text, src, dest, on_done, on_fail):
         def on_response(data):
             detected = data.get('detectedLanguage', {}).get('language', None)
-            translation = Translation(
-                data['translatedText'],
-                {
-                    'possible-mistakes': [None, None],
-                    'src-pronunciation': None,
-                    'dest-pronunciation': None,
-                },
-            )
-            on_done(translation, detected)
+            translation = Translation(data['translatedText'], detected)
+            on_done(translation)
 
         # Request body
         data = {
