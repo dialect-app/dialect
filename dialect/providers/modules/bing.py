@@ -11,9 +11,9 @@ from dialect.providers.base import (
     ProviderFeature,
     ProviderError,
     ProviderErrorCode,
-    SoupProvider,
     Translation,
 )
+from dialect.providers.soup import SoupProvider
 from dialect.session import Session
 
 

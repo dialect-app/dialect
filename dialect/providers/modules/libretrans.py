@@ -9,9 +9,9 @@ from dialect.providers.base import (
     ProviderFeature,
     ProviderErrorCode,
     ProviderError,
-    SoupProvider,
     Translation,
 )
+from dialect.providers.soup import SoupProvider
 
 
 class Provider(SoupProvider):

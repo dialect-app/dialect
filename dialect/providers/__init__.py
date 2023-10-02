@@ -8,20 +8,19 @@ import pkgutil
 from gi.repository import Gio, GObject
 
 from dialect.providers.base import ProviderCapability, ProviderFeature, ProviderError, ProviderErrorCode  # noqa
-
+from dialect.providers import modules
 
 MODULES = {}
 TRANSLATORS = {}
 TTS = {}
-for _importer, modname, _ispkg in pkgutil.iter_modules(__path__):
-    if modname != 'base' and not modname.startswith('_'):
-        modclass = importlib.import_module('dialect.providers.' + modname).Provider
-        MODULES[modclass.name] = modclass
-        if modclass.capabilities:
-            if ProviderCapability.TRANSLATION in modclass.capabilities:
-                TRANSLATORS[modclass.name] = modclass
-            if ProviderCapability.TTS in modclass.capabilities:
-                TTS[modclass.name] = modclass
+for _importer, modname, _ispkg in pkgutil.iter_modules(modules.__path__):
+    modclass = importlib.import_module('dialect.providers.modules.' + modname).Provider
+    MODULES[modclass.name] = modclass
+    if modclass.capabilities:
+        if ProviderCapability.TRANSLATION in modclass.capabilities:
+            TRANSLATORS[modclass.name] = modclass
+        if ProviderCapability.TTS in modclass.capabilities:
+            TTS[modclass.name] = modclass
 
 
 def check_translator_availability(provider_name):

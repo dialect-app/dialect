@@ -13,14 +13,14 @@ from typing import List
 from gtts import gTTS, lang
 
 from dialect.providers.base import (
-    LocalProvider,
     ProviderCapability,
     ProviderError,
     ProviderErrorCode,
     ProviderFeature,
-    SoupProvider,
     Translation,
 )
+from dialect.providers.local import LocalProvider
+from dialect.providers.soup import SoupProvider
 
 RPC_ID = 'MkEWBc'
 
