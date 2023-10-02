@@ -7,43 +7,38 @@ import re
 from bs4 import BeautifulSoup
 
 from dialect.providers.base import (
-    ProviderError, SoupProvider, Translation, TranslationError
+    ProviderCapability,
+    ProviderFeature,
+    ProviderError,
+    ProviderErrorCode,
+    SoupProvider,
+    Translation,
 )
+from dialect.session import Session
 
 
 class Provider(SoupProvider):
-    __provider_type__ = 'soup'
-
     name = 'bing'
     prettyname = 'Bing'
-    translation = True
-    tts = False
-    definitions = False
-    change_instance = False
-    api_key_supported = False
+
+    capabilities = ProviderCapability.TRANSLATION
+    features = ProviderFeature.DETECTION | ProviderFeature.PRONUNCIATION
+
     defaults = {
         'instance_url': '',
         'api_key': '',
         'src_langs': ['en', 'fr', 'es', 'de'],
-        'dest_langs': ['fr', 'es', 'de', 'en']
+        'dest_langs': ['fr', 'es', 'de', 'en'],
     }
 
-    trans_init_requests = [
-        'parse_html'
-    ]
-
-    _headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-        'Accept': '*/*'
-    }
+    _headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)', 'Accept': '*/*'}
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         self.chars_limit = 1000  # Web UI limit
-        self.detection = True
-        self.pronunciation = True
 
+        # Session vars
         self._key = ''
         self._token = ''
         self._ig = ''
@@ -64,93 +59,103 @@ class Provider(SoupProvider):
         }
         return self.format_url('www.bing.com', '/ttranslatev3', params)
 
-    def format_parse_html_init(self):
-        return self.create_request('GET', self.html_url, headers=self._headers)
-
-    def parse_html_init(self, data):
-        if data:
+    def init_trans(self, on_done, on_fail):
+        def on_response(session, result):
             try:
-                soup = BeautifulSoup(data, 'html.parser')
+                data = Session.get_response(session, result)
+                if data:
+                    try:
+                        soup = BeautifulSoup(data, 'html.parser')
 
-                # Get Langs
-                langs = soup.find('optgroup', {'id': 't_tgtAllLang'})
-                for child in langs.findChildren():
-                    if child.name == 'option':
-                        self.languages.append(child['value'])
+                        # Get Langs
+                        langs = soup.find('optgroup', {'id': 't_tgtAllLang'})
+                        for child in langs.findChildren():
+                            if child.name == 'option':
+                                self.languages.append(child['value'])
 
-                # Get IID
-                iid = soup.find('div', {'id': 'rich_tta'})
-                self._iid = iid['data-iid']
+                        # Get IID
+                        iid = soup.find('div', {'id': 'rich_tta'})
+                        self._iid = iid['data-iid']
 
-                # Decode response bytes
-                data = data.decode('utf-8')
+                        # Decode response bytes
+                        data = data.decode('utf-8')
 
-                # Look for abuse prevention data
-                params = re.findall("var params_AbusePreventionHelper = \[(.*?)\];", data)[0]
-                abuse_params = params.replace('"', '').split(',')
-                self._key = abuse_params[0]
-                self._token = abuse_params[1]
+                        # Look for abuse prevention data
+                        params = re.findall("var params_AbusePreventionHelper = \[(.*?)\];", data)[0]  # noqa
+                        abuse_params = params.replace('"', '').split(',')
+                        self._key = abuse_params[0]
+                        self._token = abuse_params[1]
 
-                # Look for IG
-                self._ig = re.findall("IG:\"(.*?)\",", data)[0]
+                        # Look for IG
+                        self._ig = re.findall("IG:\"(.*?)\",", data)[0]
+
+                        on_done()
+
+                    except Exception as exc:
+                        error = 'Failed parsing HTML from bing.com'
+                        logging.warning(error, exc)
+                        on_fail(ProviderError(ProviderErrorCode.NETWORK, error))
+
+                else:
+                    on_fail(ProviderError(ProviderErrorCode.EMPTY, 'Could not get HTML from bing.com'))
 
             except Exception as exc:
-                self.error = 'Failed parsing HTML from bing.com'
-                logging.warning(self.error, str(exc))
+                logging.warning(exc)
+                on_fail(ProviderError(ProviderErrorCode.NETWORK, str(exc)))
 
-        else:
-            self.error = 'Could not get HTML from bing.com'
-            logging.warning(self.error)
+        # Message request to get bing's website html
+        message = self.create_message('GET', self.html_url, headers=self._headers)
+        # Do async request
+        self.send_and_read(message, on_response)
 
-    def format_translation(self, text, src, dest):
+    def translate(self, text, src, dest, on_done, on_fail):
+        def on_response(data):
+            try:
+                data = data[0]
+                detected = None
+                pronunciation = None
+
+                if 'translations' in data:
+                    if 'detectedLanguage' in data:
+                        detected = data['detectedLanguage']['language']
+
+                    if 'transliteration' in data['translations'][0]:
+                        pronunciation = data['translations'][0]['transliteration']['text']
+
+                    translation = Translation(
+                        data['translations'][0]['text'],
+                        {
+                            'possible-mistakes': [None, None],
+                            'src-pronunciation': None,
+                            'dest-pronunciation': pronunciation,
+                        },
+                    )
+                    on_done(translation, detected)
+
+            except Exception as exc:
+                logging.warning(exc)
+                on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, str(exc)))
+
+        # Increment requests count
+        self._count += 1
+
+        # Form data
         data = {
-            'fromLang': 'auto-detect',
+            'fromLang': 'auto-detect' if src == 'auto' else src,
             'text': text,
             'to': dest,
             'token': self._token,
-            'key': self._key
+            'key': self._key,
         }
+        # Request message
+        message = self.create_message('POST', self.translate_url, data, self._headers, True)
+        # Do async request
+        self.send_and_read_and_process_response(message, on_response, on_fail)
 
-        if src != 'auto':
-            data['fromLang'] = src
-
-        return self.create_request('POST', self.translate_url, data, self._headers, True)
-
-    def get_translation(self, data):
-        self._count += 1  # Increment requests count
-
-        data = self.read_data(data)
-        self._check_errors(data)
-
-        try:
-            data = data[0]
-            detected = None
-            pronunciation = None
-
-            if 'translations' in data:
-
-                if 'detectedLanguage' in data:
-                    detected = data['detectedLanguage']['language']
-
-                if 'transliteration' in data['translations'][0]:
-                    pronunciation = data['translations'][0]['transliteration']['text']
-
-                result = Translation(
-                    data['translations'][0]['text'],
-                    {
-                        'possible-mistakes': None,
-                        'src-pronunciation': None,
-                        'dest-pronunciation': pronunciation,
-                    }
-                )
-                return (result, detected)
-
-        except Exception as exc:
-            raise TranslationError(str(exc))
-
-    def _check_errors(self, data):
+    @staticmethod
+    def check_known_errors(data):
         if not data:
-            raise ProviderError('Request empty')
+            return ProviderError(ProviderErrorCode.EMPTY, 'Response is empty!')
 
         if 'errorMessage' in data:
             error = data['errorMessage']
@@ -158,4 +163,6 @@ class Provider(SoupProvider):
 
             match code:
                 case _:
-                    raise ProviderError(error)
+                    return ProviderError(ProviderErrorCode.UNEXPECTED, error)
+
+        return None

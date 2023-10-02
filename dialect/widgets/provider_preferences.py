@@ -9,6 +9,7 @@ from gi.repository import Adw, GObject, Gtk
 
 from dialect.define import RES_PATH
 from dialect.session import Session
+from dialect.providers import ProviderCapability, ProviderFeature
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/provider-preferences.ui')
@@ -40,9 +41,9 @@ class ProviderPreferences(Adw.Bin):
 
         self.title.props.subtitle = self.provider.prettyname
 
-        self.translation = self.provider.translation
-        self.tts = self.provider.tts
-        self.definitions = self.provider.definitions
+        self.translation = ProviderCapability.TRANSLATION in self.provider.capabilities
+        self.tts = ProviderCapability.TTS in self.provider.capabilities
+        self.definitions = ProviderCapability.DEFINITIONS in self.provider.capabilities
 
         # Check what entries to show
         self._check_settings()
@@ -58,8 +59,8 @@ class ProviderPreferences(Adw.Bin):
             self.get_root().parent.connect('notify::translator-loading', self._on_translator_loading)
 
     def _check_settings(self):
-        self.instance_entry.props.visible = self.provider.change_instance
-        self.api_key_entry.props.visible = self.provider.api_key_supported
+        self.instance_entry.props.visible = ProviderFeature.INSTANCES in self.provider.features
+        self.api_key_entry.props.visible = ProviderFeature.API_KEY in self.provider.features
 
     @Gtk.Template.Callback()
     def _on_back(self, _button):
@@ -69,14 +70,7 @@ class ProviderPreferences(Adw.Bin):
     @Gtk.Template.Callback()
     def _on_instance_apply(self, _row):
         """ Called on self.instance_entry::apply signal """
-        def on_validation_response(session, result):
-            valid = False
-            try:
-                data = Session.get_response(session, result)
-                valid = self.provider.validate_instance(data)
-            except Exception as exc:
-                logging.error(exc)
-
+        def on_done(valid):
             if valid:
                 self.provider.instance_url = self.new_instance_url
                 self.provider.reset_src_langs()
@@ -109,8 +103,8 @@ class ProviderPreferences(Adw.Bin):
             self.instance_stack.props.visible_child_name = 'spinner'
             self.instance_spinner.start()
 
-            validation = self.provider.format_validate_instance(self.new_instance_url)
-            Session.get().send_and_read_async(validation, 0, None, on_validation_response)
+            # TODO: Use on_fail to notify network error
+            self.provider.validate_instance(self.new_instance_url, on_done, lambda _: on_done(False))
         else:
             self.instance_entry.remove_css_class('error')
 
@@ -133,15 +127,7 @@ class ProviderPreferences(Adw.Bin):
     @Gtk.Template.Callback()
     def _on_api_key_apply(self, _row):
         """ Called on self.api_key_entry::apply signal """
-        def on_validation_response(session, result):
-            valid = False
-            try:
-                data = Session.get_response(session, result)
-                self.provider.validate_api_key(data)
-                valid = True
-            except Exception as exc:
-                logging.error(exc)
-
+        def on_done(valid):
             if valid:
                 self.provider.api_key = self.new_api_key
                 self.api_key_entry.remove_css_class('error')
@@ -169,8 +155,8 @@ class ProviderPreferences(Adw.Bin):
             self.api_key_stack.props.visible_child_name = 'spinner'
             self.api_key_spinner.start()
 
-            validation = self.provider.format_validate_api_key(self.new_api_key)
-            Session.get().send_and_read_async(validation, 0, None, on_validation_response)
+            # TODO: Use on_fail to notify network error
+            self.provider.validate_api_key(self.new_api_key, on_done, lambda _: on_done(False))
         else:
             self.api_key_entry.remove_css_class('error')
 

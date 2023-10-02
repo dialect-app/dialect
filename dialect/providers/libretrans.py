@@ -5,55 +5,50 @@
 import logging
 
 from dialect.providers.base import (
-    ApiKeyRequired, BatchSizeExceeded, CharactersLimitExceeded,
-    InvalidLangCode, InvalidApiKey, ProviderError, SoupProvider, Translation,
-    TranslationError
+    ProviderCapability,
+    ProviderFeature,
+    ProviderErrorCode,
+    ProviderError,
+    SoupProvider,
+    Translation,
 )
 
 
 class Provider(SoupProvider):
-    __provider_type__ = 'soup'
-
     name = 'libretranslate'
     prettyname = 'LibreTranslate'
-    translation = True
-    tts = False
-    definitions = False
-    change_instance = True
-    api_key_supported = True
+
+    capabilities = ProviderCapability.TRANSLATION
+    features = ProviderFeature.INSTANCES | ProviderFeature.DETECTION | ProviderFeature.PRONUNCIATION
+
     defaults = {
         'instance_url': 'libretranslate.de',
         'api_key': '',
         'src_langs': ['en', 'fr', 'es', 'de'],
-        'dest_langs': ['fr', 'es', 'de', 'en']
+        'dest_langs': ['fr', 'es', 'de', 'en'],
     }
-
-    trans_init_requests = [
-        'languages',
-        'settings'
-    ]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         self.chars_limit = 0
-        self.detection = True
-        self.api_key_supported = False  # For LT conditional api keys
 
     @staticmethod
-    def format_validate_instance(url):
-        url = Provider.format_url(url, '/spec')
-        return Provider.create_request('GET', url)
+    def validate_instance(url, on_done, on_fail):
+        def on_response(data):
+            valid = False
 
-    @staticmethod
-    def validate_instance(data):
-        data = Provider.read_data(data)
-        valid = False
+            try:
+                valid = data['info']['title'] == 'LibreTranslate'
+            except: # noqa
+                pass
 
-        if data and data is not None:
-            valid = data['info']['title'] == 'LibreTranslate'
+            on_done(valid)
 
-        return valid
+        # Message request to LT API spec endpoint
+        message = Provider.create_message('GET', Provider.format_url(url, '/spec'))
+        # Do async request
+        Provider.send_and_read_and_process_response(message, on_response, on_fail, False)
 
     @property
     def frontend_settings_url(self):
@@ -73,75 +68,115 @@ class Provider(SoupProvider):
 
     @property
     def translate_url(self):
-        return self.format_url(self.instance_url, '/translate')
+        self.format_url(self.instance_url, '/translate')
 
-    def format_languages_init(self):
-        return self.create_request('GET', self.lang_url)
+    def init_trans(self, on_done, on_fail):
+        def check_finished():
+            self._init_count -= 1
 
-    def languages_init(self, data):
-        try:
-            data = self.read_data(data)
-            self._check_errors(data)
-            for lang in data:
-                self.add_lang(lang['code'], lang['name'])
-        except Exception as exc:
-            logging.warning(exc)
-            self.error = str(exc)
+            if self._init_count == 0:
+                if self._init_error:
+                    on_fail(self._init_error)
+                else:
+                    on_done()
 
-    def format_settings_init(self):
-        return self.create_request('GET', self.frontend_settings_url)
+        def on_failed(error):
+            self._init_error = error
+            check_finished()
 
-    def settings_init(self, data):
-        try:
-            data = self.read_data(data)
-            self._check_errors(data)
-            self.suggestions = data.get('suggestions', False)
-            self.api_key_supported = data.get('apiKeys', False)
-            self.api_key_required = data.get('keyRequired', False)
-            self.chars_limit = data.get('charLimit', 0)
-        except Exception as exc:
-            logging.warning(exc)
-            self.error = str(exc)
+        def on_languages_response(data):
+            try:
+                for lang in data:
+                    self.add_lang(lang['code'], lang['name'])
 
-    def format_validate_api_key(self, api_key):
+                check_finished()
+
+            except Exception as exc:
+                logging.warning(exc)
+                on_failed(ProviderError(ProviderErrorCode.UNEXPECTED, str(exc)))
+
+        def on_settings_response(data):
+            try:
+                if data.get('suggestions', False):
+                    self.features ^= ProviderFeature.SUGGESTIONS
+                if data.get('apiKeys', False):
+                    self.features ^= ProviderFeature.API_KEY
+                if data.get('keyRequired', False):
+                    self.features ^= ProviderFeature.API_KEY_REQUIRED
+
+                self.chars_limit = data.get('charLimit', 0)
+
+                check_finished()
+
+            except Exception as exc:
+                logging.warning(exc)
+                on_failed(ProviderError(ProviderErrorCode.UNEXPECTED, str(exc)))
+
+        # Keep state of multiple request
+        self._init_count = 2
+        self._init_error = None
+
+        # Request messages
+        languages_message = self.create_message('GET', self.lang_url)
+        settings_message = self.create_message('GET', self.frontend_settings_url)
+
+        # Do async requests
+        self.send_and_read_and_process_response(languages_message, on_languages_response, on_failed)
+        self.send_and_read_and_process_response(settings_message, on_settings_response, on_failed)
+
+    def validate_api_key(self, key, on_done, on_fail):
+        def on_response(data):
+            valid = False
+            try:
+                valid = 'confidence' in data[0]
+            except:  # noqa
+                pass
+
+            on_done(valid)
+
+        # Form data
         data = {
             'q': 'hello',
-            'source': 'en',
-            'target': 'es',
-            'api_key': api_key,
+            'api_key': key,
         }
-        return self.create_request('POST', self.translate_url, data)
 
-    def validate_api_key(self, data):
-        self.get_translation(data)
+        # Request message
+        message = self.create_message('POST', self.detect_url, data, form=True)
+        # Do async request
+        self.send_and_read_and_process_response(message, on_response, on_fail)
 
-    def format_translation(self, text, src, dest):
+    def translate(self, text, src, dest, on_done, on_fail):
+        def on_response(data):
+            detected = data.get('detectedLanguage', {}).get('language', None)
+            translation = Translation(
+                data['translatedText'],
+                {
+                    'possible-mistakes': [None, None],
+                    'src-pronunciation': None,
+                    'dest-pronunciation': None,
+                },
+            )
+            on_done(translation, detected)
+
+        # Request body
         data = {
             'q': text,
             'source': src,
             'target': dest,
         }
-        if self.api_key and self.api_key_supported:
+        if self.api_key and ProviderFeature.API_KEY in self.features:
             data['api_key'] = self.api_key
 
-        return self.create_request('POST', self.translate_url, data)
+        # Request message
+        message = self.create_message('POST', self.translate_url, data)
+        # Do async request
+        self.send_and_read_and_process_response(message, on_response, on_fail)
 
-    def get_translation(self, data):
-        data = self.read_data(data)
-        self._check_errors(data)
-        detected = data.get('detectedLanguage', {}).get('language', None)
-        translation = Translation(
-            data['translatedText'],
-            {
-                'possible-mistakes': None,
-                'src-pronunciation': None,
-                'dest-pronunciation': None,
-            },
-        )
+    def suggest(self, text, src, dest, suggestion, on_done, on_fail):
+        def on_response(data):
+            on_done(data.get('success', False))
 
-        return (translation, detected)
-
-    def format_suggestion(self, text, src, dest, suggestion):
+        # Form data
         data = {
             'q': text,
             'source': src,
@@ -151,31 +186,29 @@ class Provider(SoupProvider):
         if self.api_key and self.api_key_supported:
             data['api_key'] = self.api_key
 
-        return self.create_request('POST', self.suggest_url, data, form=True)
+        # Request message
+        message = self.create_message('POST', self.suggest_url, data, form=True)
+        # Do async request
+        self.send_and_read_and_process_response(message, on_response, on_fail)
 
-    def get_suggestion(self, data):
-        data = self.read_data(data)
-        self._check_errors(data)
-        return data.get('success', False)
-
-    def _check_errors(self, data):
-        """Raises a proper Exception if an error is found in the data."""
+    @staticmethod
+    def check_known_errors(data):
         if not data:
-            raise ProviderError('Request empty')
+            return ProviderError(ProviderErrorCode.EMPTY, 'Response is empty!')
         if 'error' in data:
             error = data['error']
 
             if error == 'Please contact the server operator to obtain an API key':
-                raise ApiKeyRequired(error)
+                return ProviderError(ProviderErrorCode.API_KEY_REQUIRED, error)
             elif error == 'Invalid API key':
-                raise InvalidApiKey(error)
+                return ProviderError(ProviderErrorCode.API_KEY_INVALID, error)
             elif 'is not supported' in error:
-                raise InvalidLangCode(error)
+                return ProviderError(ProviderErrorCode.INVALID_LANG_CODE, error)
             elif 'exceeds text limit' in error:
-                raise BatchSizeExceeded(error)
+                return ProviderError(ProviderErrorCode.BATCH_SIZE_EXCEEDED, error)
             elif 'exceeds character limit' in error:
-                raise CharactersLimitExceeded(error)
+                return ProviderError(ProviderErrorCode.CHARACTERS_LIMIT_EXCEEDED, error)
             elif 'Cannot translate text' in error or 'format is not supported' in error:
-                raise TranslationError(error)
+                return ProviderError(ProviderErrorCode.TRANSLATION_FAILED, error)
             else:
-                raise ProviderError(error)
+                return ProviderError(ProviderErrorCode.UNEXPECTED, error)
