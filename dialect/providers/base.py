@@ -23,6 +23,8 @@ class ProviderCapability(Flag):
 
 
 class ProviderFeature(Flag):
+    NONE = auto()
+    """ Provider has no features """
     INSTANCES = auto()
     """ If it supports changing the instance url """
     API_KEY = auto()
@@ -83,7 +85,7 @@ class BaseProvider:
     """ Module name for UI display """
     capabilities: ProviderCapability | None = None
     """ Provider capabilities, translation, tts, etc """
-    features: ProviderFeature | None = None
+    features: ProviderFeature = ProviderFeature.NONE
     """ Provider features """
 
     defaults = {
