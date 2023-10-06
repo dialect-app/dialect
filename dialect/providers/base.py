@@ -64,7 +64,6 @@ class ProviderError:
 
 
 class Translation:
-
     def __init__(
         self,
         text: str,
@@ -80,7 +79,7 @@ class Translation:
 
 class BaseProvider:
     name = ''
-    """ Module name for itern use, like settings storing """
+    """ Module name for code use, like settings storing """
     prettyname = ''
     """ Module name for UI display """
     capabilities: ProviderCapability | None = None
@@ -94,6 +93,7 @@ class BaseProvider:
         'src_langs': ['en', 'fr', 'es', 'de'],
         'dest_langs': ['fr', 'es', 'de', 'en'],
     }
+    """ Default provider settings """
 
     def __init__(self):
         self.languages = []
@@ -113,6 +113,53 @@ class BaseProvider:
 
         # GSettings
         self.settings = Gio.Settings(f'{APP_ID}.translator', f'/app/drey/Dialect/translators/{self.name}/')
+
+    """
+    Providers API methods
+    """
+
+    @staticmethod
+    def validate_instance(url: str, on_done: Callable[[bool], None], on_fail: Callable[[ProviderError], None]):
+        raise NotImplementedError()
+
+    def validate_api_key(self, key: str, on_done: Callable[[bool], None], on_fail: Callable[[ProviderError], None]):
+        raise NotImplementedError()
+
+    def init_trans(self, on_done: Callable, on_fail: Callable[[ProviderError], None]):
+        on_done()
+
+    def init_tts(self, on_done: Callable, on_fail: Callable[[ProviderError], None]):
+        on_done()
+
+    def translate(
+        self,
+        text: str,
+        src: str,
+        dest: str,
+        on_done: Callable[[Translation], None],
+        on_fail: Callable[[ProviderError], None],
+    ):
+        raise NotImplementedError()
+
+    def suggest(
+        self,
+        text: str,
+        src: str,
+        dest: str,
+        suggestion: str,
+        on_done: Callable[[bool], None],
+        on_fail: Callable[[ProviderError], None],
+    ):
+        raise NotImplementedError()
+
+    def speech(
+        self,
+        text: str,
+        language: str,
+        on_done: Callable[[io.BytesIO], None],
+        on_fail: Callable[[ProviderError], None],
+    ):
+        raise NotImplementedError()
 
     """
     Provider settings helpers and properties
@@ -220,50 +267,3 @@ class BaseProvider:
             return self._languages_names.get(code, code)
 
         return name
-
-    """
-    Providers API methods
-    """
-
-    @staticmethod
-    def validate_instance(url: str, on_done: Callable[[bool], None], on_fail: Callable[[ProviderError], None]):
-        raise NotImplementedError()
-
-    def validate_api_key(self, key: str, on_done: Callable[[bool], None], on_fail: Callable[[ProviderError], None]):
-        raise NotImplementedError()
-
-    def init_trans(self, on_done: Callable, on_fail: Callable[[ProviderError], None]):
-        on_done()
-
-    def init_tts(self, on_done: Callable, on_fail: Callable[[ProviderError], None]):
-        on_done()
-
-    def translate(
-        self,
-        text: str,
-        src: str,
-        dest: str,
-        on_done: Callable[[Translation], None],
-        on_fail: Callable[[ProviderError], None],
-    ):
-        raise NotImplementedError()
-
-    def suggest(
-        self,
-        text: str,
-        src: str,
-        dest: str,
-        suggestion: str,
-        on_done: Callable[[bool], None],
-        on_fail: Callable[[ProviderError], None],
-    ):
-        raise NotImplementedError()
-
-    def speech(
-        self,
-        text: str,
-        language: str,
-        on_done: Callable[[io.BytesIO], None],
-        on_fail: Callable[[ProviderError], None],
-    ):
-        raise NotImplementedError()
