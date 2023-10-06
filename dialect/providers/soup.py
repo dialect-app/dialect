@@ -77,6 +77,7 @@ class SoupProvider(BaseProvider):
         on_continue: Callable[[dict], None],
         on_fail: Callable[[ProviderError], None],
         check_common: bool = True,
+        json: bool = True
     ):
         """Helper method for the most common workflow for processing soup responses
 
@@ -85,13 +86,16 @@ class SoupProvider(BaseProvider):
         """
 
         try:
-            data = SoupProvider.read_response(session, result)
+            if json:
+                data = SoupProvider.read_response(session, result)
 
-            if check_common:
-                error = SoupProvider.check_known_errors(data)
-                if error:
-                    on_fail(error)
-                    return
+                if check_common:
+                    error = SoupProvider.check_known_errors(data)
+                    if error:
+                        on_fail(error)
+                        return
+            else:
+                data = Session.get_response(session, result)                
 
             on_continue(data)
 
@@ -105,12 +109,13 @@ class SoupProvider(BaseProvider):
         on_continue: Callable[[dict], None],
         on_fail: Callable[[ProviderError], None],
         check_common: bool = True,
+        json: bool = True
     ):
         """Helper packaging send_and_read and process_response
 
         Avoids implementors having to deal with many callbacks."""
 
         def on_response(session: Session, result: Gio.AsyncResult):
-            SoupProvider.process_response(session, result, on_continue, on_fail, check_common)
+            SoupProvider.process_response(session, result, on_continue, on_fail, check_common, json)
 
         SoupProvider.send_and_read(message, on_response)

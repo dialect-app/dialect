@@ -43,7 +43,7 @@ class ProviderFeature(Flag):
 
 class ProviderErrorCode(Enum):
     UNEXPECTED = auto()
-    NETWORK = auto
+    NETWORK = auto()
     EMPTY = auto()
     API_KEY_REQUIRED = auto()
     API_KEY_INVALID = auto()

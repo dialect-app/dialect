@@ -410,124 +410,117 @@ class Provider(LocalProvider, SoupProvider):
         return self.format_url(url, params=params)
 
     def translate(self, text, src_lang, dest_lang, on_done, on_fail):
-        def on_response(session, result):
+        def on_response(data):
             try:
-                data = session.get_response(session, result)
+                token_found = False
+                square_bracket_counts = [0, 0]
+                resp = ''
+                data = data.decode('utf-8')
 
+                for line in data.split('\n'):
+                    token_found = token_found or f'"{RPC_ID}"' in line[:30]
+                    if not token_found:
+                        continue
+
+                    is_in_string = False
+                    for index, char in enumerate(line):
+                        if char == '\"' and line[max(0, index - 1)] != '\\':
+                            is_in_string = not is_in_string
+                        if not is_in_string:
+                            if char == '[':
+                                square_bracket_counts[0] += 1
+                            elif char == ']':
+                                square_bracket_counts[1] += 1
+
+                    resp += line
+                    if square_bracket_counts[0] == square_bracket_counts[1]:
+                        break
+
+                data = json.loads(resp)
+                parsed = json.loads(data[0][2])
+                translated_parts = None
+                translated = None
                 try:
-                    token_found = False
-                    square_bracket_counts = [0, 0]
-                    resp = ''
-                    data = data.decode('utf-8')
-
-                    for line in data.split('\n'):
-                        token_found = token_found or f'"{RPC_ID}"' in line[:30]
-                        if not token_found:
-                            continue
-
-                        is_in_string = False
-                        for index, char in enumerate(line):
-                            if char == '\"' and line[max(0, index - 1)] != '\\':
-                                is_in_string = not is_in_string
-                            if not is_in_string:
-                                if char == '[':
-                                    square_bracket_counts[0] += 1
-                                elif char == ']':
-                                    square_bracket_counts[1] += 1
-
-                        resp += line
-                        if square_bracket_counts[0] == square_bracket_counts[1]:
-                            break
-
-                    data = json.loads(resp)
-                    parsed = json.loads(data[0][2])
-                    translated_parts = None
-                    translated = None
-                    try:
-                        translated_parts = list(
-                            map(
-                                lambda part: TranslatedPart(
-                                    part[0] if len(part) > 0 else '', part[1] if len(part) >= 2 else []
-                                ),
-                                parsed[1][0][0][5],
-                            )
+                    translated_parts = list(
+                        map(
+                            lambda part: TranslatedPart(
+                                part[0] if len(part) > 0 else '', part[1] if len(part) >= 2 else []
+                            ),
+                            parsed[1][0][0][5],
                         )
-                    except TypeError:
-                        translated_parts = [
-                            TranslatedPart(parsed[1][0][1][0], [parsed[1][0][0][0], parsed[1][0][1][0]])
-                        ]
-
-                    first_iter = True
-                    translated = ""
-                    for part in translated_parts:
-                        if not part.text.isspace() and not first_iter:
-                            translated += " "
-                        if first_iter:
-                            first_iter = False
-                        translated += part.text
-
-                    src = None
-                    try:
-                        src = parsed[1][-1][1]
-                    except (IndexError, TypeError):
-                        pass
-
-                    if not src == src_lang:
-                        on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, 'source language mismatch'))
-                        return
-
-                    if src == 'auto':
-                        try:
-                            if parsed[0][2] in self.languages:
-                                src = parsed[0][2]
-                        except (IndexError, TypeError):
-                            pass
-
-                    dest = None
-                    try:
-                        dest = parsed[1][-1][2]
-                    except (IndexError, TypeError):
-                        pass
-
-                    if not dest == dest_lang:
-                        on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, 'destination language mismatch'))
-                        return
-
-                    origin_pronunciation = None
-                    try:
-                        origin_pronunciation = parsed[0][0]
-                    except (IndexError, TypeError):
-                        pass
-
-                    pronunciation = None
-                    try:
-                        pronunciation = parsed[1][0][0][1]
-                    except (IndexError, TypeError):
-                        pass
-
-                    mistake = None
-                    try:
-                        mistake = parsed[0][1][0][0][1]
-                        # Convert to pango markup
-                        mistake = mistake.replace('<em>', '<b>').replace('</em>', '</b>')
-                    except (IndexError, TypeError):
-                        pass
-
-                    result = Translation(
-                        translated,
-                        src,
-                        (mistake, self._strip_html_tags(mistake)),
-                        (origin_pronunciation, pronunciation),
                     )
-                    on_done(result)
+                except TypeError:
+                    translated_parts = [
+                        TranslatedPart(parsed[1][0][1][0], [parsed[1][0][0][0], parsed[1][0][1][0]])
+                    ]
 
-                except Exception as exc:
-                    logging.warning(exc)
-                    on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, str(exc)))
+                first_iter = True
+                translated = ""
+                for part in translated_parts:
+                    if not part.text.isspace() and not first_iter:
+                        translated += " "
+                    if first_iter:
+                        first_iter = False
+                    translated += part.text
+
+                src = None
+                try:
+                    src = parsed[1][-1][1]
+                except (IndexError, TypeError):
+                    pass
+
+                if not src == src_lang:
+                    on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, 'source language mismatch'))
+                    return
+
+                if src == 'auto':
+                    try:
+                        if parsed[0][2] in self.languages:
+                            src = parsed[0][2]
+                    except (IndexError, TypeError):
+                        pass
+
+                dest = None
+                try:
+                    dest = parsed[1][-1][2]
+                except (IndexError, TypeError):
+                    pass
+
+                if not dest == dest_lang:
+                    on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, 'destination language mismatch'))
+                    return
+
+                origin_pronunciation = None
+                try:
+                    origin_pronunciation = parsed[0][0]
+                except (IndexError, TypeError):
+                    pass
+
+                pronunciation = None
+                try:
+                    pronunciation = parsed[1][0][0][1]
+                except (IndexError, TypeError):
+                    pass
+
+                mistake = None
+                try:
+                    mistake = parsed[0][1][0][0][1]
+                    # Convert to pango markup
+                    mistake = mistake.replace('<em>', '<b>').replace('</em>', '</b>')
+                except (IndexError, TypeError):
+                    pass
+
+                result = Translation(
+                    translated,
+                    src,
+                    (mistake, self._strip_html_tags(mistake)),
+                    (origin_pronunciation, pronunciation),
+                )
+                on_done(result)
 
             except Exception as exc:
                 logging.warning(exc)
-                on_fail(ProviderError(ProviderErrorCode.NETWORK, str(exc)))
+                on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, str(exc)))
 
         # Form data
         data = {
@@ -538,7 +531,7 @@ class Provider(LocalProvider, SoupProvider):
         message = self.create_message('POST', self.translate_url, data, self._headers, True)
 
         # Do async request
-        self.send_and_read(message, on_response)
+        self.send_and_read_and_process_response(message, on_response, on_fail, json=False)
 
     def _strip_html_tags(self, text):
         """Strip html tags"""

@@ -60,53 +60,48 @@ class Provider(SoupProvider):
         return self.format_url('www.bing.com', '/ttranslatev3', params)
 
     def init_trans(self, on_done, on_fail):
-        def on_response(session, result):
-            try:
-                data = Session.get_response(session, result)
-                if data:
-                    try:
-                        soup = BeautifulSoup(data, 'html.parser')
+        def on_response(data):
+            if data:
+                try:
+                    soup = BeautifulSoup(data, 'html.parser')
 
-                        # Get Langs
-                        langs = soup.find('optgroup', {'id': 't_tgtAllLang'})
-                        for child in langs.findChildren():
-                            if child.name == 'option':
-                                self.languages.append(child['value'])
+                    # Get Langs
+                    langs = soup.find('optgroup', {'id': 't_tgtAllLang'})
+                    for child in langs.findChildren():
+                        if child.name == 'option':
+                            self.languages.append(child['value'])
 
-                        # Get IID
-                        iid = soup.find('div', {'id': 'rich_tta'})
-                        self._iid = iid['data-iid']
+                    # Get IID
+                    iid = soup.find('div', {'id': 'rich_tta'})
+                    self._iid = iid['data-iid']
 
-                        # Decode response bytes
-                        data = data.decode('utf-8')
+                    # Decode response bytes
+                    data = data.decode('utf-8')
 
-                        # Look for abuse prevention data
-                        params = re.findall("var params_AbusePreventionHelper = \[(.*?)\];", data)[0]  # noqa
-                        abuse_params = params.replace('"', '').split(',')
-                        self._key = abuse_params[0]
-                        self._token = abuse_params[1]
+                    # Look for abuse prevention data
+                    params = re.findall("var params_AbusePreventionHelper = \[(.*?)\];", data)[0]  # noqa
+                    abuse_params = params.replace('"', '').split(',')
+                    self._key = abuse_params[0]
+                    self._token = abuse_params[1]
 
-                        # Look for IG
-                        self._ig = re.findall("IG:\"(.*?)\",", data)[0]
+                    # Look for IG
+                    self._ig = re.findall("IG:\"(.*?)\",", data)[0]
 
-                        on_done()
+                    on_done()
 
-                    except Exception as exc:
-                        error = 'Failed parsing HTML from bing.com'
-                        logging.warning(error, exc)
-                        on_fail(ProviderError(ProviderErrorCode.NETWORK, error))
+                except Exception as exc:
+                    error = 'Failed parsing HTML from bing.com'
+                    logging.warning(error, exc)
+                    on_fail(ProviderError(ProviderErrorCode.NETWORK, error))
 
-                else:
-                    on_fail(ProviderError(ProviderErrorCode.EMPTY, 'Could not get HTML from bing.com'))
-
-            except Exception as exc:
-                logging.warning(exc)
-                on_fail(ProviderError(ProviderErrorCode.NETWORK, str(exc)))
+            else:
+                on_fail(ProviderError(ProviderErrorCode.EMPTY, 'Could not get HTML from bing.com'))
 
         # Message request to get bing's website html
         message = self.create_message('GET', self.html_url, headers=self._headers)
+
         # Do async request
-        self.send_and_read(message, on_response)
+        self.send_and_read_and_process_response(message, on_response, on_fail, json=False)
 
     def translate(self, text, src, dest, on_done, on_fail):
         def on_response(data):
