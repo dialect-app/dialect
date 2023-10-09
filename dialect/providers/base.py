@@ -9,8 +9,8 @@ from typing import Callable
 
 from gi.repository import Gio
 
-from dialect.define import APP_ID
-from dialect.languages import get_lang_name, normalize_lang_code
+from dialect.define import APP_ID, LANG_ALIASES
+from dialect.languages import get_lang_name
 
 
 class ProviderCapability(Flag):
@@ -160,6 +160,10 @@ class BaseProvider:
         on_fail: Callable[[ProviderError], None],
     ):
         raise NotImplementedError()
+    
+    @property
+    def lang_aliases(self) -> dict[str, str]:
+        return {}
 
     """
     Provider settings helpers and properties
@@ -229,11 +233,31 @@ class BaseProvider:
             params_str = '?' + params_str
 
         return protocol + url + path + params_str
+    
+    def normalize_lang_code(self, code):
+        code = code.replace('_', '-').lower()  # Normalize separator
+        codes = code.split('-')
+
+        if len(codes) == 2:  # Code contain a script or country code
+
+            if len(codes[1]) == 4:  # ISO 15924 (script)
+                codes[1] = codes[1].capitalize()
+
+            elif len(codes[1]) == 2:  # ISO 3166-1 (country)
+                codes[1] = codes[1].upper()
+
+            code = '-'.join(codes)
+
+        aliases = {**LANG_ALIASES, **self.lang_aliases}
+        if code in aliases:
+            code = aliases[code]
+
+        return code
 
     def add_lang(self, original_code, name=None, trans=True, tts=False):
         """Add lang supported by provider"""
 
-        code = normalize_lang_code(original_code)  # Get normalized lang code
+        code = self.normalize_lang_code(original_code)  # Get normalized lang code
 
         if trans:  # Add lang to supported languages list
             self.languages.append(code)

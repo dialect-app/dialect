@@ -11,6 +11,14 @@ VERSION = '@VERSION@'
 
 TRANS_NUMBER = 10  # number of translations to save in history
 
+LANG_ALIASES = {
+    'iw': 'he',  # Hebrew
+    'jw': 'jv',  # Javanese
+    'mni-Mtei': 'mni',  # Meiteilon (Manipuri)
+    'zh-CN': 'zh-Hans',
+    'zh-TW': 'zh-Hant',
+}
+
 LANGUAGES = {
     "aa": "Afar",
     "ab": "Abkhazian",
