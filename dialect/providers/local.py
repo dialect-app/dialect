@@ -11,5 +11,12 @@ from dialect.providers.base import BaseProvider
 class LocalProvider(BaseProvider):
     """Base class for providers needing local threaded helpers"""
 
-    def launch_thread(self, callback: Callable, *args):
-        threading.Thread(target=callback, args=args, daemon=True).start()
+    def launch_thread(self, worker: Callable, *args):
+        """
+        Launches a thread using Python's threading.
+
+        Args:
+            worker: Function to execute on the thread
+            *args: Args for the worker
+        """
+        threading.Thread(target=worker, args=args, daemon=True).start()
