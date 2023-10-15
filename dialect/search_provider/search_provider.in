@@ -64,7 +64,7 @@ class TranslateService(dbus.service.Object):
         # Translator
         self._load_translator()
         Settings.get().connect('changed', self._on_settings_changed)
-        Settings.get().connect('translator-changed', self._on_provider_changed)
+        Settings.get().connect('translator-changed', self._on_translator_changed)
 
     @dbus.service.method(in_signature='as', out_signature='as', **SBN)
     def GetInitialResultSet(self, terms):
@@ -212,8 +212,7 @@ class TranslateService(dbus.service.Object):
             self.load_failed = False
             self.dest_language = self.translator.dest_langs[0]
 
-            self.translator.settings.connect('changed::instance-url', self._on_provider_changed)
-            self.translator.settings.connect('changed::api-key', self._on_provider_changed)
+            self.translator.settings.connect('changed', self._on_translator_settings_changed)
 
     def _on_settings_changed(self, _settings, key):
         if key.startswith('translator-'):
@@ -221,9 +220,14 @@ class TranslateService(dbus.service.Object):
         if key == 'live-translation' or key == 'sp-translation':
             self.live_enabled = self.is_live_enabled()
 
-    def _on_provider_changed(self, *args):
+    def _on_translator_changed(self, *args):
         self._load_translator()
 
+    def _on_translator_settings_changed(self, _settings, key):
+        if key == 'src-langs' or key == 'dest-langs':
+            self.dest_language = self.translator.dest_langs[0]
+        else:
+            self._load_translator()
 
 if __name__ == "__main__":
     DBusGMainLoop(set_as_default=True)
