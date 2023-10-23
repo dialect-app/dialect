@@ -17,10 +17,18 @@ class Settings(Gio.Settings):
     Dialect settings handler
     """
 
+    __gsignals__ = {
+        'translator-changed': (GObject.SIGNAL_RUN_FIRST, None, (str,)),
+        'tts-changed': (GObject.SIGNAL_RUN_FIRST, None, (str,)),
+    }
+
     instance = None
 
     def __init__(self, *args):
         super().__init__(*args)
+
+        self._translators = self.get_child('translators')
+        self._tts = self.get_child('tts')
 
     @staticmethod
     def new():
@@ -37,15 +45,15 @@ class Settings(Gio.Settings):
 
     @property
     def translators_list(self):
-        return self.get_child('translators').get_strv('list')
+        return self._translators.get_strv('list')
 
     @translators_list.setter
     def translators_list(self, translators):
-        self.get_child('translators').set_strv('list', translators)
+        self._translators.set_strv('list', translators)
 
     @property
     def active_translator(self):
-        value = self.get_child('translators').get_string('active')
+        value = self._translators.get_string('active')
 
         if check_translator_availability(value):
             return value
@@ -55,7 +63,8 @@ class Settings(Gio.Settings):
 
     @active_translator.setter
     def active_translator(self, translator):
-        self.get_child('translators').set_string('active', translator)
+        self._translators.set_string('active', translator)
+        self.emit('translator-changed', translator)
 
     @property
     def window_size(self):
@@ -87,7 +96,7 @@ class Settings(Gio.Settings):
     @property
     def active_tts(self):
         """Return the user's preferred TTS service."""
-        value = self.get_child('tts').get_string('active')
+        value = self._tts.get_string('active')
 
         if value != '' and value not in TTS.keys():
             value = ''
@@ -98,7 +107,8 @@ class Settings(Gio.Settings):
     @active_tts.setter
     def active_tts(self, tts):
         """Set the user's preferred TTS service."""
-        self.get_child('tts').set_string('active', tts)
+        self._tts.set_string('active', tts)
+        self.emit('tts-changed', tts)
 
     @property
     def color_scheme(self):

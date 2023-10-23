@@ -206,6 +206,10 @@ class DialectWindow(Adw.ApplicationWindow):
         # Get languages available for speech
         self.load_tts()
 
+        # Listen to active providers changes
+        Settings.get().connect('translator-changed', self._on_active_provider_changed, 'trans')
+        Settings.get().connect('tts-changed', self._on_active_provider_changed, 'tts')
+
     def setup_selectors(self):
         # Languages models
         self.src_lang_model = LanguagesListModel(self._lang_names_func)
@@ -1265,7 +1269,15 @@ class DialectWindow(Adw.ApplicationWindow):
         # Load translator
         self.load_translator()
 
-    def _on_provider_changed(self, _settings, key, name):
+    def _on_active_provider_changed(self, _settings, _provider, kind):
+        self.save_settings()
+        match kind:
+            case 'trans':
+                self.reload_translator()
+            case 'tts':
+                self.load_tts()
+
+    def _on_provider_changed(self, _settings, _key, name):
         if not self.translator_loading:
             if name == self.provider['trans'].name:
                 self.reload_translator()

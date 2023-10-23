@@ -6,6 +6,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
+import locale
 import gettext
 
 import dbus
@@ -13,6 +14,7 @@ import dbus.service
 from dbus.mainloop.glib import DBusGMainLoop
 
 import gi
+
 gi.require_version('Soup', '3.0')
 from gi.repository import GLib
 
@@ -28,8 +30,14 @@ SBN = dict(dbus_interface=SEARCH_BUS_NAME)
 CLIPBOARD_PREFIX = 'copy-to-clipboard'
 ERROR_PREFIX = 'translation-error'
 
-gettext.install('dialect', '@localedir@')
-_ = gettext.gettext
+localedir = '@localedir@'
+langs_trans = gettext.translation('dialect-cldr-langs', localedir, fallback=True)
+ui_trans = gettext.translation('dialect', localedir, fallback=True)
+ui_trans.add_fallback(langs_trans)
+ui_trans.install(names=['gettext'])
+
+locale.bindtextdomain('dialect', localedir)
+locale.textdomain('dialect')
 
 
 class TranslateService(dbus.service.Object):
@@ -51,13 +59,12 @@ class TranslateService(dbus.service.Object):
         # Translations store
         self.translations = {}
         self.src_language = 'auto'
-        # src_language_saved = Settings.get().src_langs[0]
-        self.dest_language = Settings.get().dest_langs[0]
+        self.dest_language = None
 
         # Translator
         self._load_translator()
         Settings.get().connect('changed', self._on_settings_changed)
-        Settings.get().connect('provider-changed', self._on_provider_changed)
+        Settings.get().connect('translator-changed', self._on_translator_changed)
 
     @dbus.service.method(in_signature='as', out_signature='as', **SBN)
     def GetInitialResultSet(self, terms):
@@ -79,8 +86,7 @@ class TranslateService(dbus.service.Object):
 
         return [
             _('Translate “{text}” with {provider_name}').format(
-                text=text,
-                provider_name=TRANSLATORS[provider].prettyname
+                text=text, provider_name=TRANSLATORS[provider].prettyname
             )
         ]
 
@@ -98,15 +104,14 @@ class TranslateService(dbus.service.Object):
             text = translate_id
             if translate_id in self.translations:
                 text = self.translations[translate_id]
-            return [{
-                'id': translate_id,
-                'name': text,
-            }]
+            return [
+                {
+                    'id': translate_id,
+                    'name': text,
+                }
+            ]
 
-        elif (
-            len(ids) == 2 and translate_id in self.translations
-            and ids[1] == CLIPBOARD_PREFIX + ids[0]
-        ):
+        elif len(ids) == 2 and translate_id in self.translations and ids[1] == CLIPBOARD_PREFIX + ids[0]:
             text = self.translations[translate_id]
             lang = get_lang_name(self.dest_language)
             provider = Settings.get().active_translator
@@ -124,8 +129,8 @@ class TranslateService(dbus.service.Object):
                     'id': ids[1],
                     'name': _('Copy'),
                     'description': _('Copy translation to clipboard'),
-                    'clipboardText': text
-                }
+                    'clipboardText': text,
+                },
             ]
 
         else:
@@ -146,10 +151,7 @@ class TranslateService(dbus.service.Object):
     @dbus.service.method(in_signature='asu', terms='as', timestamp='u', **SBN)
     def LaunchSearch(self, terms, _timestamp):
         text = ' '.join(terms)
-        GLib.spawn_async_with_pipes(
-            None, ['@BIN@', '--text', text], None,
-            GLib.SpawnFlags.SEARCH_PATH, None
-        )
+        GLib.spawn_async_with_pipes(None, ['@BIN@', '--text', text], None, GLib.SpawnFlags.SEARCH_PATH, None)
 
     def translation(self, src_text=None):
         """Start a new translation"""
@@ -158,9 +160,7 @@ class TranslateService(dbus.service.Object):
         if self.src_language != self.dest_language and src_text != '':
             error_id = ERROR_PREFIX + src_text
 
-            message = self.translator.format_translation(
-                src_text, self.src_language, self.dest_language
-            )
+            message = self.translator.format_translation(src_text, self.src_language, self.dest_language)
 
             response = Session.get().send_and_read(message, None)
 
@@ -188,11 +188,9 @@ class TranslateService(dbus.service.Object):
         return Settings.get().live_translation and Settings.get().sp_translation
 
     def _load_translator(self):
+        self.loaded = False
         provider = Settings.get().active_translator
-        self.translator = TRANSLATORS[provider](
-            base_url=Settings.get().instance_url,
-            api_key=Settings.get().api_key
-        )
+        self.translator = TRANSLATORS[provider]()
 
         if self.translator.trans_init_requests:
             requests = []
@@ -208,24 +206,28 @@ class TranslateService(dbus.service.Object):
         if errors or self.translator.error:
             self.loaded = False
             self.load_failed = True
+            self.dest_language = None
         else:
             self.loaded = True
             self.load_failed = False
+            self.dest_language = self.translator.dest_langs[0]
+
+            self.translator.settings.connect('changed', self._on_translator_settings_changed)
 
     def _on_settings_changed(self, _settings, key):
         if key.startswith('translator-'):
-            self.loaded = False
             self._load_translator()
-            self.dest_language = Settings.get().dest_langs[0]
         if key == 'live-translation' or key == 'sp-translation':
             self.live_enabled = self.is_live_enabled()
 
-    def _on_provider_changed(self, _settings, name, key):
-        if name == Settings.get().active_translator and key in ('instance-url', 'api-key'):
-            self.loaded = False
-            self._load_translator()
-            self.dest_language = Settings.get().dest_langs[0]
+    def _on_translator_changed(self, *args):
+        self._load_translator()
 
+    def _on_translator_settings_changed(self, _settings, key):
+        if key == 'src-langs' or key == 'dest-langs':
+            self.dest_language = self.translator.dest_langs[0]
+        else:
+            self._load_translator()
 
 if __name__ == "__main__":
     DBusGMainLoop(set_as_default=True)
