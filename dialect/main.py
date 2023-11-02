@@ -8,6 +8,7 @@ import logging
 import sys
 
 import gi
+
 try:
     gi.require_version('Gdk', '4.0')
     gi.require_version('Gtk', '4.0')
@@ -125,6 +126,7 @@ class Dialect(Adw.Application):
         self.set_accels_for_action('win.forward', ['<Alt>Right'])
         self.set_accels_for_action('win.switch', ['<Primary>S'])
         self.set_accels_for_action('win.clear', ['<Primary>D'])
+        self.set_accels_for_action('win.capture', ['<Primary><ALT>C'])
         self.set_accels_for_action('win.paste', ['<Primary><Shift>V'])
         self.set_accels_for_action('win.copy', ['<Primary><Shift>C'])
         self.set_accels_for_action('win.listen-dest', ['<Primary>L'])
@@ -157,7 +159,7 @@ class Dialect(Adw.Application):
         about.props.version = VERSION
         about.props.developers = [
             "Mufeed Ali",
-            "Rafael Mardojai CM http://rafaelmardojai.com"
+            "Rafael Mardojai CM http://rafaelmardojai.com",
         ]
 
         about.props.transient_for = self.window
