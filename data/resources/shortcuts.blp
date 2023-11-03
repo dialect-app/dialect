@@ -22,6 +22,16 @@ template $DialectShortcutsWindow : ShortcutsWindow {
         action-name: "win.switch";
       }
 
+      ShortcutsShortcut from_shortcut {
+        title: C_("shortcuts window", "Select source language");
+        action-name: "win.from";
+      }
+
+      ShortcutsShortcut to_shortcut {
+        title: C_("shortcuts window", "Select destination language");
+        action-name: "win.to";
+      }
+
       ShortcutsShortcut {
         title: C_("shortcuts window", "Clear source text");
         action-name: "win.clear";

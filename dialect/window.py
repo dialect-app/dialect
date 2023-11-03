@@ -1,6 +1,7 @@
 # Copyright 2020 gi-lom
 # Copyright 2020-2022 Mufeed Ali
 # Copyright 2020-2022 Rafael Mardojai CM
+# Copyright 2023 Libretto
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
@@ -142,6 +143,14 @@ class DialectWindow(Adw.ApplicationWindow):
         switch_action = Gio.SimpleAction.new('switch', None)
         switch_action.connect('activate', self.ui_switch)
         self.add_action(switch_action)
+
+        from_action = Gio.SimpleAction.new('from', None)
+        from_action.connect('activate', self.ui_from)
+        self.add_action(from_action)
+
+        to_action = Gio.SimpleAction.new('to', None)
+        to_action.connect('activate', self.ui_to)
+        self.add_action(to_action)
 
         clear_action = Gio.SimpleAction.new('clear', None)
         clear_action.props.enabled = False
@@ -762,6 +771,12 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Switch all
         self.switch_all(src_language, dest_language, src_text, dest_text)
+
+    def ui_from(self, _action, _param):
+        self.src_lang_selector.button.popup()
+
+    def ui_to(self, _action, _param):
+        self.dest_lang_selector.button.popup()
 
     def ui_clear(self, _action, _param):
         self.src_buffer.props.text = ''
