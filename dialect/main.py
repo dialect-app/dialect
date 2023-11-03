@@ -124,6 +124,8 @@ class Dialect(Adw.Application):
         self.set_accels_for_action('win.back', ['<Alt>Left'])
         self.set_accels_for_action('win.forward', ['<Alt>Right'])
         self.set_accels_for_action('win.switch', ['<Primary>S'])
+        self.set_accels_for_action('win.from', ['<Primary>F'])
+        self.set_accels_for_action('win.to', ['<Primary>T'])
         self.set_accels_for_action('win.clear', ['<Primary>D'])
         self.set_accels_for_action('win.paste', ['<Primary><Shift>V'])
         self.set_accels_for_action('win.copy', ['<Primary><Shift>C'])
