@@ -34,9 +34,14 @@
   <launchable type="desktop-id">@app-id@.desktop</launchable>
   <translation type="gettext">dialect</translation>
   
-  <custom>
-    <value key="GnomeSoftware::key-colors">[(108, 236, 156), (0, 0, 0)]</value>
-  </custom>
+  <categories>
+    <category>Network</category>
+    <category>GTK</category>
+  </categories>
+  <keywords>
+    <keyword>translate</keyword>
+    <keyword>translation</keyword>
+  </keywords>  
 
   <screenshots>
     <screenshot type="default">
@@ -187,7 +192,7 @@
     <control>touch</control>
   </recommends>
   <custom>
-    <value key="Purism::form_factor">workstation</value>
     <value key="Purism::form_factor">mobile</value>
+    <value key="GnomeSoftware::key-colors">[(108, 236, 156), (0, 0, 0)]</value>
   </custom>
 </component>
