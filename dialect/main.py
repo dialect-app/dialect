@@ -125,6 +125,8 @@ class Dialect(Adw.Application):
         self.set_accels_for_action('win.forward', ['<Alt>Right'])
         self.set_accels_for_action('win.switch', ['<Primary>S'])
         self.set_accels_for_action('win.clear', ['<Primary>D'])
+        self.set_accels_for_action('win.inc-font', ['<Primary>plus'])
+        self.set_accels_for_action('win.dec-font', ['<Primary>minus'])
         self.set_accels_for_action('win.paste', ['<Primary><Shift>V'])
         self.set_accels_for_action('win.copy', ['<Primary><Shift>C'])
         self.set_accels_for_action('win.listen-dest', ['<Primary>L'])
