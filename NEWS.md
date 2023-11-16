@@ -1,5 +1,7 @@
 
 ### In Development
+
+### 2.2.0
 - Refactored providers implementation to ease future features
 - Added Lingva Text-to-speech support in addition to Google's
 - Added Bing translation provider
