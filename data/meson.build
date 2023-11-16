@@ -40,7 +40,7 @@ appstream_file = i18n.merge_file(
 appstreamcli = find_program('appstreamcli', required: false)
 if appstreamcli.found()
   test('Validate appstream file', appstreamcli,
-    args: ['validate', appstream_file.full_path()]
+    args: ['validate', '--no-net', appstream_file.full_path()]
   )
 endif
 
