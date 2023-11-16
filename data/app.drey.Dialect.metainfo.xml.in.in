@@ -50,6 +50,21 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="2.2.0" date="2023-11-16">
+      <description translatable="no">
+        <ul>
+          <li>Refactored providers implementation to ease future features</li>
+          <li>Added Lingva Text-to-speech support in addition to Google'ss</li>
+          <li>Added Bing translation provider</li>
+          <li>Added Yandex translation provider</li>
+          <li>Updated preferences window</li>
+          <li>Languages list now have localized sorting</li>
+          <li>Fixed Lingva Translate provider bugs</li>
+          <li>Updated translations</li>
+          <li>Fixed minor bugs</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.1.1" date="2022-10-22">
       <description translatable="no">
         <ul>
