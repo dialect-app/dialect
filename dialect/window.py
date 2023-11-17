@@ -1092,6 +1092,9 @@ class DialectWindow(Adw.ApplicationWindow):
             self.translation_finish()
 
     def on_translation_fail(self, error: ProviderError):
+        if not self.next_trans:
+            self.translation_finish()
+
         self.trans_warning.props.visible = True
         self.lookup_action('copy').props.enabled = False
         self.lookup_action('listen-src').props.enabled = False
