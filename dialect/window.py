@@ -801,7 +801,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.set_font_size(self.font_size + 5)
 
     def ui_dec_font(self, _action, _param):
-        new_size = self.font_size -5
+        new_size = self.font_size - 5
         if new_size >= 5:
             self.set_font_size(new_size)
 
