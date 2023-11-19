@@ -296,6 +296,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.check_apikey()
 
         def on_fail(error: ProviderError):
+            self.translator_loading = False
             self.loading_failed(error)
 
         provider = Settings.get().active_translator
