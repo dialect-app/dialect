@@ -148,7 +148,7 @@ class Provider(SoupProvider):
     def translate(self, text, src, dest, on_done, on_fail):
         def on_response(data):
             detected = data.get('detectedLanguage', {}).get('language', None)
-            translation = Translation(data['translatedText'], detected)
+            translation = Translation(data['translatedText'], (text, src, dest), detected)
             on_done(translation)
 
         # Request body

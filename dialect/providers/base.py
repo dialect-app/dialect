@@ -4,8 +4,9 @@
 
 import io
 import urllib.parse
+from dataclasses import dataclass
 from enum import Enum, Flag, auto
-from typing import Callable
+from typing import Callable, Optional
 
 from gi.repository import Gio
 
@@ -63,18 +64,13 @@ class ProviderError:
         self.message = message  # More detailed error info if needed
 
 
+@dataclass
 class Translation:
-    def __init__(
-        self,
-        text: str,
-        detected: None | str = None,
-        mistakes: tuple[None | str, None | str] = (None, None),
-        pronunciation: tuple[None | str, None | str] = (None, None),
-    ):
-        self.text = text
-        self.detected = detected
-        self.mistakes = mistakes
-        self.pronunciation = pronunciation
+    text: str
+    original: tuple[str, str, str]
+    detected: Optional[str] = None
+    mistakes: tuple[Optional[str], Optional[str]] = (None, None)  #
+    pronunciation: tuple[Optional[str], Optional[str]] = (None, None)
 
 
 class BaseProvider:
@@ -108,7 +104,7 @@ class BaseProvider:
         self.chars_limit = -1
         """ Translation char limit """
 
-        self.history = []
+        self.history: list[Translation] = []
         """ Here we save the translation history """
 
         # GSettings

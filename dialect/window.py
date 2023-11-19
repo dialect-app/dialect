@@ -664,18 +664,14 @@ class DialectWindow(Adw.ApplicationWindow):
             self.current_history -= 1
             self.history_update()
 
-    def add_history_entry(self, src_text, src_language, dest_language, dest_text):
+    def add_history_entry(self, translation: Translation):
         """Add a history entry to the history list."""
-        new_history_trans = {
-            'Languages': [src_language, dest_language],
-            'Text': [src_text, dest_text]
-        }
         if self.current_history > 0:
             del self.provider['trans'].history[: self.current_history]
             self.current_history = 0
         if len(self.provider['trans'].history) == TRANS_NUMBER:
             self.provider['trans'].history.pop()
-        self.provider['trans'].history.insert(0, new_history_trans)
+        self.provider['trans'].history.insert(0, translation)
         GLib.idle_add(self.reset_return_forward_btns)
 
     def switch_all(self, src_language, dest_language, src_text, dest_text):
@@ -683,7 +679,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.dest_lang_selector.selected = src_language
         self.src_buffer.props.text = dest_text
         self.dest_buffer.props.text = src_text
-        self.add_history_entry(src_language, dest_language, src_text, dest_text)
+        self.add_history_entry(Translation(src_text, (dest_text, src_language, dest_language)))
 
         # Re-enable widgets
         self.langs_button_box.props.sensitive = True
@@ -965,11 +961,11 @@ class DialectWindow(Adw.ApplicationWindow):
     # Retrieve translation history
     def history_update(self):
         self.reset_return_forward_btns()
-        lang_hist = self.provider['trans'].history[self.current_history]
-        self.src_lang_selector.selected = lang_hist['Languages'][0]
-        self.dest_lang_selector.selected = lang_hist['Languages'][1]
-        self.src_buffer.props.text = lang_hist['Text'][0]
-        self.dest_buffer.props.text = lang_hist['Text'][1]
+        translation = self.provider['trans'].history[self.current_history]
+        self.src_lang_selector.selected = translation.original[1]
+        self.dest_lang_selector.selected = translation.original[2]
+        self.src_buffer.props.text = translation.original[0]
+        self.dest_buffer.props.text = translation.text
 
     def appeared_before(self):
         src_language = self.src_lang_selector.selected
@@ -981,9 +977,9 @@ class DialectWindow(Adw.ApplicationWindow):
         )
         if (
             len(self.provider['trans'].history) >= self.current_history + 1
-            and (self.provider['trans'].history[self.current_history]['Languages'][0] == src_language or 'auto')
-            and self.provider['trans'].history[self.current_history]['Languages'][1] == dest_language
-            and self.provider['trans'].history[self.current_history]['Text'][0] == src_text
+            and (self.provider['trans'].history[self.current_history].original[1] == src_language or 'auto')
+            and self.provider['trans'].history[self.current_history].original[2] == dest_language
+            and self.provider['trans'].history[self.current_history].original[0] == src_text
         ):
             return True
         return False
@@ -1054,14 +1050,8 @@ class DialectWindow(Adw.ApplicationWindow):
         self.trans_src_pron = translation.pronunciation[0]
         self.trans_dest_pron = translation.pronunciation[1]
 
-        # FIXME: Make history work again
-        # Finally, everything is saved in history
-        """self.add_history_entry(
-            original[0],
-            original[1],
-            original[2],
-            dest_text
-        )"""
+        # Finally, translation is saved in history
+        self.add_history_entry(translation)
 
         # Mistakes
         if ProviderFeature.MISTAKES in self.provider['trans'].features and not self.trans_mistakes == (None, None):

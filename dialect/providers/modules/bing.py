@@ -119,7 +119,8 @@ class Provider(SoupProvider):
 
                     translation = Translation(
                         data['translations'][0]['text'],
-                        detected,
+                        (text, src, dest),
+                        detected=detected,
                         pronunciation=(None, pronunciation)
                     )
                     on_done(translation)

@@ -157,7 +157,7 @@ class Provider(SoupProvider):
                     detected = data['lang'].split('-')[0]
 
                 if 'text' in data:
-                    translation = Translation(data['text'][0], detected)
+                    translation = Translation(data['text'][0], (text, src, dest), detected)
                     on_done(translation)
 
                 else:

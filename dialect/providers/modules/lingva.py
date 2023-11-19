@@ -95,7 +95,11 @@ class Provider(SoupProvider):
                 dest_pronunciation = data['info']['pronunciation'].get('translation', None)
 
                 translation = Translation(
-                    data['translation'], detected, (mistakes, mistakes), (src_pronunciation, dest_pronunciation)
+                    data['translation'],
+                    (text, src, dest),
+                    detected,
+                    (mistakes, mistakes),
+                    (src_pronunciation, dest_pronunciation),
                 )
 
                 on_done(translation)
