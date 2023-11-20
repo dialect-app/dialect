@@ -580,7 +580,7 @@ class DialectWindow(Adw.ApplicationWindow):
             True
         )
 
-        if code == dest_code:
+        if self.provider['trans'].cmp_langs(code, dest_code):
             if len(self.dest_langs) >= 2:
                 code = self.dest_langs[1] if code == self.src_langs[0] else dest_code
             if self.src_langs:
@@ -626,7 +626,7 @@ class DialectWindow(Adw.ApplicationWindow):
             True
         )
 
-        if code == src_code:
+        if self.provider['trans'].cmp_langs(code, src_code):
             self.src_lang_selector.selected = self.dest_langs[0]
 
         # Disable or enable listen function.

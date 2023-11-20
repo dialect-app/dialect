@@ -354,6 +354,21 @@ class BaseProvider:
 
         return code
 
+    def cmp_langs(self, a: str, b: str) -> bool:
+        """
+        Compare two language codes.
+
+        It assumes that the codes have been normalized by `normalize_lang_code`.
+
+        This method exists so providers can add additional comparison logic.
+
+        Args:
+            a: First lang to compare
+            b: Second lang to compare
+        """
+
+        return a == b
+
     def add_lang(self, original_code: str, name: str = None, trans: bool = True, tts: bool = False):
         """
         Add lang supported by provider after normalization.
