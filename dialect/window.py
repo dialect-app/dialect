@@ -791,11 +791,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
     def set_font_size(self, size):
         self.font_size = size
-        self.font_css_provider.load_from_data(
-            "textview { font-size: "
-            + str(size)
-            + "pt; }"
-        )
+        self.font_css_provider.load_from_data(f'textview {{ font-size: { str(size) }pt; }}')
 
     def ui_inc_font(self, _action, _param):
         self.set_font_size(self.font_size + 5)
