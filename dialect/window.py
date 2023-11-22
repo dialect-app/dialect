@@ -152,13 +152,13 @@ class DialectWindow(Adw.ApplicationWindow):
         clear_action.connect('activate', self.ui_clear)
         self.add_action(clear_action)
 
-        inc_font_action = Gio.SimpleAction.new('inc-font', None)
-        inc_font_action.connect('activate', self.ui_inc_font)
-        self.add_action(inc_font_action)
+        font_size_inc_action = Gio.SimpleAction.new('font-size-inc', None)
+        font_size_inc_action.connect('activate', self.ui_font_size_inc)
+        self.add_action(font_size_inc_action)
 
-        dec_font_action = Gio.SimpleAction.new('dec-font', None)
-        dec_font_action.connect('activate', self.ui_dec_font)
-        self.add_action(dec_font_action)
+        font_size_dec_action = Gio.SimpleAction.new('font-size-dec', None)
+        font_size_dec_action.connect('activate', self.ui_font_size_dec)
+        self.add_action(font_size_dec_action)
 
         paste_action = Gio.SimpleAction.new('paste', None)
         paste_action.connect('activate', self.ui_paste)
@@ -795,10 +795,10 @@ class DialectWindow(Adw.ApplicationWindow):
         self.font_size = size
         self.font_css_provider.load_from_data(f'textview {{ font-size: { str(size) }pt; }}')
 
-    def ui_inc_font(self, _action, _param):
+    def ui_font_size_inc(self, _action, _param):
         self.set_font_size(self.font_size + 5)
 
-    def ui_dec_font(self, _action, _param):
+    def ui_font_size_dec(self, _action, _param):
         new_size = self.font_size - 5
         if new_size >= 5:
             self.set_font_size(new_size)
