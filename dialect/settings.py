@@ -1,8 +1,9 @@
 # Copyright 2021-2022 Mufeed Ali
 # Copyright 2021-2022 Rafael Mardojai CM
+# Copyright 2023 Libretto
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Gio, GLib, GObject
+from gi.repository import Gio, GLib, GObject, Gtk
 
 from dialect.define import APP_ID
 from dialect.providers import (
@@ -92,6 +93,20 @@ class Settings(Gio.Settings):
     def translate_accel_value(self):
         """Return the user's preferred translation shortcut value."""
         return self.get_int('translate-accel')
+
+    @property
+    def font_size(self):
+        """Return the user's preferred font size."""
+        value = self.get_int('font-size')
+
+        if value == 0:
+            return int(Gtk.Settings.get_default().get_property('gtk-font-name').split()[1])
+        else:
+            return value
+
+    @font_size.setter
+    def font_size(self, size):
+        self.set_int('font-size', size)
 
     @property
     def active_tts(self):

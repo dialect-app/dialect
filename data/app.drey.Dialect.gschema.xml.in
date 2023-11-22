@@ -28,6 +28,10 @@
         <!-- 0 = Ctrl+Enter | 1 = Enter -->
         <default>0</default>
     </key>
+    <key type="i" name="font-size">
+        <!-- 0 = System default font size -->
+        <default>0</default>
+    </key>
 
     <child name="tts" schema="@app-id@.TTSList" />
     <child name="translators" schema="@app-id@.TranslatorsList" />

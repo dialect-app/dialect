@@ -126,7 +126,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Text buffers font size
         self.font_css_provider = Gtk.CssProvider()
-        self.font_size = int(Gtk.Settings.get_default().get_property('gtk-font-name').split()[1])
+        self.font_size = Settings.get().font_size
 
         # Setup window
         self.setup_actions()
@@ -231,6 +231,8 @@ class DialectWindow(Adw.ApplicationWindow):
             self.font_css_provider,
             Gtk.STYLE_PROVIDER_PRIORITY_USER
         )
+        # Set text view font size
+        self.set_font_size(self.font_size)
 
     def setup_selectors(self):
         # Languages models
