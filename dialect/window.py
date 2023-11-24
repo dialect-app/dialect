@@ -126,7 +126,10 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Text buffers font size
         self.font_css_provider = Gtk.CssProvider()
-        self.font_size = Settings.get().font_size
+        if Settings.get().custom_default_font_size:
+            self.font_size = Settings.get().default_font_size
+        else:
+            self.font_size = int(Gtk.Settings.get_default().get_property('gtk-font-name').split()[1])
 
         # Setup window
         self.setup_actions()
@@ -800,7 +803,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
     def ui_font_size_dec(self, _action, _param):
         new_size = self.font_size - 5
-        if new_size >= 5:
+        if new_size >= 6:
             self.set_font_size(new_size)
 
     def ui_copy(self, _action, _param):

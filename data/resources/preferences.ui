@@ -121,6 +121,35 @@
             </child>
           </object>
         </child>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Appearance</property>
+            <child>
+              <object class="AdwExpanderRow" id="custom_default_font_size">
+                <property name="title" translatable="yes">Use Custom Font Size</property>
+                <property name="subtitle" translatable="yes">System font size is used otherwise.</property>
+                <property name="show-enable-switch">True</property>
+                <property name="enable-expansion">False</property>
+                <property name="expanded">True</property>
+                <child>
+                  <object class="AdwSpinRow" id="default_font_size">
+                    <property name="title" translatable="yes">Default Font Size</property>
+                    <property name="subtitle" translatable="yes">Changing the size via shortcuts does not overwrite this.</property>
+                    <property name="adjustment">
+                      <object class="GtkAdjustment">
+                        <property name="lower">6</property>
+                        <property name="upper">72</property>
+                        <property name="value">0</property>
+                        <property name="page-increment">10</property>
+                        <property name="step-increment">5</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
       </object>
     </child>
   </template>

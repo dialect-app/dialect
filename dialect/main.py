@@ -159,7 +159,8 @@ class Dialect(Adw.Application):
         about.props.version = VERSION
         about.props.developers = [
             "Mufeed Ali",
-            "Rafael Mardojai CM http://rafaelmardojai.com"
+            "Rafael Mardojai CM http://rafaelmardojai.com",
+            "Libretto"
         ]
 
         about.props.transient_for = self.window

@@ -95,18 +95,22 @@ class Settings(Gio.Settings):
         return self.get_int('translate-accel')
 
     @property
-    def font_size(self):
-        """Return the user's preferred font size."""
-        value = self.get_int('font-size')
+    def custom_default_font_size(self):
+        """Return whether the user wants a custom default font size."""
+        return self.get_boolean('custom-default-font-size')
 
-        if value == 0:
-            return int(Gtk.Settings.get_default().get_property('gtk-font-name').split()[1])
-        else:
-            return value
+    @custom_default_font_size.setter
+    def default_font_size(self, enabled):
+        self.set_boolean('custom-default-font-size', enabled)
 
-    @font_size.setter
-    def font_size(self, size):
-        self.set_int('font-size', size)
+    @property
+    def default_font_size(self):
+        """Return the user's preferred default font size."""
+        return self.get_int('default-font-size')
+
+    @default_font_size.setter
+    def default_font_size(self, size):
+        self.set_int('default-font-size', size)
 
     @property
     def active_tts(self):
