@@ -83,7 +83,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
 
         # Connect font size signals
         self.custom_default_font_size.connect("notify::enable-expansion", self._custom_default_font_size_switch)
-        self.default_font_size.get_adjustment().connect("value-changed", self._change_current_font_size)
+        self.default_font_size.get_adjustment().connect("value-changed", self._change_default_font_size)
 
     @Gtk.Template.Callback()
     def is_not_true(self, _widget, boolean):
@@ -151,7 +151,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
             self.parent.set_font_size(system_font_size)
             self.custom_default_font_size.set_enable_expansion(False)
 
-    def _change_current_font_size(self, row):
+    def _change_default_font_size(self, row):
         """Called on self.default_font_size.get_adjustment()::value-changed signal"""
         Settings.default_font_size = row.get_value()
         self.parent.set_font_size(row.get_value())
