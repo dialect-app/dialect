@@ -3,7 +3,7 @@
 # Copyright 2023 Libretto
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Gio, GLib, GObject, Gtk
+from gi.repository import Gio, GLib, GObject
 
 from dialect.define import APP_ID
 from dialect.providers import (
