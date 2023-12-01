@@ -127,6 +127,8 @@ class Dialect(Adw.Application):
         self.set_accels_for_action('win.from', ['<Primary>F'])
         self.set_accels_for_action('win.to', ['<Primary>T'])
         self.set_accels_for_action('win.clear', ['<Primary>D'])
+        self.set_accels_for_action('win.font-size-inc', ['<Primary>plus', '<Primary>KP_Add'])
+        self.set_accels_for_action('win.font-size-dec', ['<Primary>minus', '<Primary>KP_Subtract'])
         self.set_accels_for_action('win.paste', ['<Primary><Shift>V'])
         self.set_accels_for_action('win.copy', ['<Primary><Shift>C'])
         self.set_accels_for_action('win.listen-dest', ['<Primary>L'])
@@ -159,7 +161,8 @@ class Dialect(Adw.Application):
         about.props.version = VERSION
         about.props.developers = [
             "Mufeed Ali",
-            "Rafael Mardojai CM http://rafaelmardojai.com"
+            "Rafael Mardojai CM http://rafaelmardojai.com",
+            "Libretto"
         ]
 
         about.props.transient_for = self.window

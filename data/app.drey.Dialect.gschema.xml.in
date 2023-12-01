@@ -28,6 +28,13 @@
         <!-- 0 = Ctrl+Enter | 1 = Enter -->
         <default>0</default>
     </key>
+    <key type="b" name="custom-default-font-size">
+        <default>false</default>
+    </key>
+    <key type="i" name="default-font-size">
+        <!-- 0 = User has never enabled custom default font size before -->
+        <default>0</default>
+    </key>
 
     <child name="tts" schema="@app-id@.TTSList" />
     <child name="translators" schema="@app-id@.TranslatorsList" />

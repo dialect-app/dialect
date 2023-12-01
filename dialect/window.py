@@ -125,6 +125,13 @@ class DialectWindow(Adw.ApplicationWindow):
         bus.connect('message', self.on_gst_message)
         self.player_event = threading.Event()  # An event for letting us know when Gst is done playing
 
+        # Text buffers font size
+        self.font_css_provider = Gtk.CssProvider()
+        if Settings.get().custom_default_font_size:
+            self.font_size = Settings.get().default_font_size
+        else:
+            self.font_size = int(Gtk.Settings.get_default().get_property('gtk-font-name').split()[1])
+
         # Setup window
         self.setup_actions()
         self.setup()
@@ -156,6 +163,14 @@ class DialectWindow(Adw.ApplicationWindow):
         clear_action.props.enabled = False
         clear_action.connect('activate', self.ui_clear)
         self.add_action(clear_action)
+
+        font_size_inc_action = Gio.SimpleAction.new('font-size-inc', None)
+        font_size_inc_action.connect('activate', self.ui_font_size_inc)
+        self.add_action(font_size_inc_action)
+
+        font_size_dec_action = Gio.SimpleAction.new('font-size-dec', None)
+        font_size_dec_action.connect('activate', self.ui_font_size_dec)
+        self.add_action(font_size_dec_action)
 
         paste_action = Gio.SimpleAction.new('paste', None)
         paste_action.connect('activate', self.ui_paste)
@@ -218,6 +233,18 @@ class DialectWindow(Adw.ApplicationWindow):
         # Listen to active providers changes
         Settings.get().connect('translator-changed', self._on_active_provider_changed, 'trans')
         Settings.get().connect('tts-changed', self._on_active_provider_changed, 'tts')
+
+        # Connect text buffers to font css provider
+        self.src_text.get_style_context().add_provider(
+            self.font_css_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_USER
+        )
+        self.dest_text.get_style_context().add_provider(
+            self.font_css_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_USER
+        )
+        # Set text view font size
+        self.set_font_size(self.font_size)
 
     def setup_selectors(self):
         # Languages models
@@ -781,6 +808,18 @@ class DialectWindow(Adw.ApplicationWindow):
     def ui_clear(self, _action, _param):
         self.src_buffer.props.text = ''
         self.src_buffer.emit('end-user-action')
+
+    def set_font_size(self, size):
+        self.font_size = size
+        self.font_css_provider.load_from_data(f'textview {{ font-size: { str(size) }pt; }}')
+
+    def ui_font_size_inc(self, _action, _param):
+        self.set_font_size(self.font_size + 5)
+
+    def ui_font_size_dec(self, _action, _param):
+        new_size = self.font_size - 5
+        if new_size >= 6:
+            self.set_font_size(new_size)
 
     def ui_copy(self, _action, _param):
         dest_text = self.dest_buffer.get_text(
