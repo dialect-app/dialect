@@ -36,10 +36,13 @@ class Dialect(Adw.Application):
 
         # App window
         self.window = None
-        self.launch_text = ''
-        self.launch_langs = {}
+        # CLI
+        self.argv = {}
+        self._signal_handler = None
 
         # Add command line options
+        self.add_main_option('selection', b'n', GLib.OptionFlags.NONE,
+                             GLib.OptionArg.NONE, 'Translate text from the primary clipboard', None)
         self.add_main_option('text', b't', GLib.OptionFlags.NONE,
                              GLib.OptionArg.STRING, 'Text to translate', None)
         self.add_main_option('src', b's', GLib.OptionFlags.NONE,
@@ -50,6 +53,14 @@ class Dialect(Adw.Application):
         self.setup_actions()
 
     def do_activate(self):
+        def on_translator_loading(_win, _pspec):
+            if not self.window.translator_loading:
+                # Remove signal handler
+                if self._signal_handler:
+                    self.window.disconnect(self._signal_handler)
+                # Process CLI args
+                self.process_command_line()
+    
         self.window = self.props.active_window
 
         if not self.window:
@@ -59,42 +70,59 @@ class Dialect(Adw.Application):
                 # Translators: Do not translate the app name!
                 title=_('Dialect'),
                 default_height=height,
-                default_width=width,
-                text=self.launch_text,
-                langs=self.launch_langs
+                default_width=width
             )
+
+        # Decide when to process command line args
+        if self.window.translator_loading:
+            # Wait until translator is loaded
+            self._signal_handler = self.window.connect("notify::translator-loading", on_translator_loading)
+        else:
+            self.process_command_line()
 
         self.window.present()
 
     def do_command_line(self, command_line):
         options = command_line.get_options_dict()
-        options = options.end().unpack()
-        text = ''
-        langs = {
-            'src': None,
-            'dest': None
-        }
 
-        if 'text' in options:
-            text = options['text']
-        if 'src' in options:
-            langs['src'] = options['src']
-        if 'dest' in options:
-            langs['dest'] = options['dest']
-
-        if self.window is not None:
-            self.window.translate(text, langs['src'], langs['dest'])
-        else:
-            self.launch_text = text
-            self.launch_langs = langs
+        # Save CLI args values
+        self.argv = options.end().unpack()
 
         self.activate()
+
         return 0
 
     def do_startup(self):
         Adw.Application.do_startup(self)
 
         Gst.init(None)  # Init Gst
+
+    def process_command_line(self):
+        if not self.argv:
+            return
+
+        text = ''
+        langs = {
+            'src': None,
+            'dest': None
+        }
+        selection = 'selection' in self.argv
+            
+        if 'text' in self.argv:
+            text = self.argv['text']
+        if 'src' in self.argv:
+            langs['src'] = self.argv['src']
+        if 'dest' in self.argv:
+            langs['dest'] = self.argv['dest']
+
+        if self.window is not None:
+            if not text and selection:
+                self.window.translate_selection(langs['src'], langs['dest'])
+            elif text:
+                self.window.translate(text, langs['src'], langs['dest'])
+
+        # Clean CLI args
+        self.argv = {}
 
     def setup_actions(self):
         """ Setup menu actions """
