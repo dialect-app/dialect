@@ -37,8 +37,10 @@ def normalize_lang_code(code):
 
 
 def get_lang_name(code):
-    name = gettext(LANGUAGES.get(code, ''))
-    return name if name else None
+    name = LANGUAGES.get(code)
+    if name:
+        name = gettext(name)
+    return name
 
 
 class LangObject(GObject.Object):
