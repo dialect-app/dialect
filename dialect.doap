@@ -19,7 +19,7 @@
       <foaf:account>
         <foaf:OnlineAccount>
             <foaf:accountServiceHomepage rdf:resource="https://github.com/"/>
-            <foaf:accountName>fushinari</foaf:accountName>
+            <foaf:accountName>mufeedali</foaf:accountName>
         </foaf:OnlineAccount>
       </foaf:account>
     </foaf:Person>

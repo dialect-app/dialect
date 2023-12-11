@@ -1,5 +1,10 @@
 
 ### In Development
+- Make text views font size configurable and temporally modify it with shortcuts or scroll
+- Fix search provider always running in the background
+- Allow opening language selector with keyboard shortcuts
+
+### 2.2.0
 - Refactored providers implementation to ease future features
 - Added Lingva Text-to-speech support in addition to Google's
 - Added Bing translation provider

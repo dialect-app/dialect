@@ -24,18 +24,31 @@
       <li>Clipboard buttons</li>
     </ul>
   </description>
-  <url type="homepage">https://apps.gnome.org/app/app.drey.Dialect/</url>
+  <url type="homepage">https://apps.gnome.org/Dialect/</url>
   <url type="bugtracker">https://github.com/dialect-app/dialect/issues/</url>
   <url type="translate">https://hosted.weblate.org/engage/dialect/</url>
+  <url type="vcs-browser">https://github.com/dialect-app/dialect/</url>
   <developer_name>The Dialect Authors</developer_name>
   <content_rating type="oars-1.1" />
 
   <launchable type="desktop-id">@app-id@.desktop</launchable>
   <translation type="gettext">dialect</translation>
   
-  <custom>
-    <value key="GnomeSoftware::key-colors">[(108, 236, 156), (0, 0, 0)]</value>
-  </custom>
+  <categories>
+    <category>Network</category>
+    <category>GTK</category>
+  </categories>
+  <keywords>
+    <keyword>translate</keyword>
+    <keyword>translation</keyword>
+    <keyword>Google Translate</keyword>
+    <keyword>LibreTranslate</keyword>
+    <keyword>Lingva Translate</keyword>
+    <keyword>Bing Microsoft Translator</keyword>
+    <keyword>Bing Translator</keyword>
+    <keyword>Microsoft Translator</keyword>
+    <keyword>Yandex Translate</keyword>
+  </keywords>  
 
   <screenshots>
     <screenshot type="default">
@@ -49,8 +62,23 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="2.2.0" date="2023-11-16">
+      <description translatable="no">
+        <ul>
+          <li>Refactored providers implementation to ease future features</li>
+          <li>Added Lingva Text-to-speech support in addition to Google'ss</li>
+          <li>Added Bing translation provider</li>
+          <li>Added Yandex translation provider</li>
+          <li>Updated preferences window</li>
+          <li>Languages list now have localized sorting</li>
+          <li>Fixed Lingva Translate provider bugs</li>
+          <li>Updated translations</li>
+          <li>Fixed minor bugs</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.1.1" date="2022-10-22">
-      <description>
+      <description translatable="no">
         <ul>
           <li>Updated translations</li>
           <li>Fixed minor bugs</li>
@@ -58,7 +86,7 @@
       </description>
     </release>
     <release version="2.1.0" date="2022-10-18">
-      <description>
+      <description translatable="no">
         <ul>
           <li>Update to use libadwaita 1.2 widgets</li>
           <li>Updated translations</li>
@@ -67,7 +95,7 @@
       </description>
     </release>
     <release version="2.0.2" date="2022-07-17">
-      <description>
+      <description translatable="no">
         <ul>
           <li>Fixed responsive implementation</li>
           <li>Fixed small stylings</li>
@@ -76,14 +104,14 @@
       </description>
     </release>
     <release version="2.0.1" date="2022-07-14">
-      <description>
+      <description translatable="no">
         <ul>
           <li>Fixed an issue with scale factor</li>
         </ul>
       </description>
     </release>
     <release version="2.0.0" date="2022-07-13">
-      <description>
+      <description translatable="no">
         <ul>
           <li>Ported to GTK4 and libadwaita</li>
           <li>New in-app color scheme switcher</li>
@@ -101,14 +129,14 @@
       </description>
     </release>
     <release version="1.4.1" date="2021-10-20">
-      <description>
+      <description translatable="no">
         <ul>
           <li>Fix shortcut bug</li>
         </ul>
       </description>
     </release>
     <release version="1.4.0" date="2021-10-18">
-      <description>
+      <description translatable="no">
         <ul>
           <li>Added accels for most actions</li>
           <li>Added localized language names</li>
@@ -118,7 +146,7 @@
       </description>
     </release>
     <release version="1.3.0" date="2021-05-07">
-      <description>
+      <description translatable="no">
         <ul>
           <li>Backend refactor</li>
           <li>Added option to disable Google TTS</li>
@@ -128,7 +156,7 @@
       </description>
     </release>
     <release version="1.2.0" date="2021-03-08">
-      <description>
+      <description translatable="no">
         <ul>
           <li>Switch to a new icon</li>
           <li>Added LibreTranslate backend</li>
@@ -140,7 +168,7 @@
       </description>
     </release>
     <release version="1.1.1" date="2020-12-08">
-      <description>
+      <description translatable="no">
         <ul>
           <li>Added a shortcuts window</li>
           <li>Added Indonesian translation</li>
@@ -150,7 +178,7 @@
       </description>
     </release>
     <release version="1.1.0" date="2020-10-30">
-      <description>
+      <description translatable="no">
         <ul>
           <li>Added a search provider for GNOME</li>
           <li>Added support for "Did you mean" suggestions</li>
@@ -167,7 +195,7 @@
       </description>
     </release>
     <release version="1.0.0" date="2020-10-14">
-      <description>
+      <description translatable="no">
         <p>Initial release.</p>
       </description>
     </release>
@@ -186,7 +214,7 @@
     <control>touch</control>
   </recommends>
   <custom>
-    <value key="Purism::form_factor">workstation</value>
     <value key="Purism::form_factor">mobile</value>
+    <value key="GnomeSoftware::key-colors">[(108, 236, 156), (0, 0, 0)]</value>
   </custom>
 </component>

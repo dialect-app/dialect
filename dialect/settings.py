@@ -1,5 +1,6 @@
 # Copyright 2021-2022 Mufeed Ali
 # Copyright 2021-2022 Rafael Mardojai CM
+# Copyright 2023 Libretto
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from gi.repository import Gio, GLib, GObject
@@ -17,10 +18,18 @@ class Settings(Gio.Settings):
     Dialect settings handler
     """
 
+    __gsignals__ = {
+        'translator-changed': (GObject.SIGNAL_RUN_FIRST, None, (str,)),
+        'tts-changed': (GObject.SIGNAL_RUN_FIRST, None, (str,)),
+    }
+
     instance = None
 
     def __init__(self, *args):
         super().__init__(*args)
+
+        self._translators = self.get_child('translators')
+        self._tts = self.get_child('tts')
 
     @staticmethod
     def new():
@@ -37,15 +46,15 @@ class Settings(Gio.Settings):
 
     @property
     def translators_list(self):
-        return self.get_child('translators').get_strv('list')
+        return self._translators.get_strv('list')
 
     @translators_list.setter
     def translators_list(self, translators):
-        self.get_child('translators').set_strv('list', translators)
+        self._translators.set_strv('list', translators)
 
     @property
     def active_translator(self):
-        value = self.get_child('translators').get_string('active')
+        value = self._translators.get_string('active')
 
         if check_translator_availability(value):
             return value
@@ -55,7 +64,8 @@ class Settings(Gio.Settings):
 
     @active_translator.setter
     def active_translator(self, translator):
-        self.get_child('translators').set_string('active', translator)
+        self._translators.set_string('active', translator)
+        self.emit('translator-changed', translator)
 
     @property
     def window_size(self):
@@ -85,9 +95,27 @@ class Settings(Gio.Settings):
         return self.get_int('translate-accel')
 
     @property
+    def custom_default_font_size(self):
+        """Return whether the user wants a custom default font size."""
+        return self.get_boolean('custom-default-font-size')
+
+    @custom_default_font_size.setter
+    def default_font_size(self, enabled):
+        self.set_boolean('custom-default-font-size', enabled)
+
+    @property
+    def default_font_size(self):
+        """Return the user's preferred default font size."""
+        return self.get_int('default-font-size')
+
+    @default_font_size.setter
+    def default_font_size(self, size):
+        self.set_int('default-font-size', size)
+
+    @property
     def active_tts(self):
         """Return the user's preferred TTS service."""
-        value = self.get_child('tts').get_string('active')
+        value = self._tts.get_string('active')
 
         if value != '' and value not in TTS.keys():
             value = ''
@@ -98,7 +126,8 @@ class Settings(Gio.Settings):
     @active_tts.setter
     def active_tts(self, tts):
         """Set the user's preferred TTS service."""
-        self.get_child('tts').set_string('active', tts)
+        self._tts.set_string('active', tts)
+        self.emit('tts-changed', tts)
 
     @property
     def color_scheme(self):

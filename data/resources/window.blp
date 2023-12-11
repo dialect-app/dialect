@@ -248,6 +248,7 @@ template $DialectWindow : Adw.ApplicationWindow {
             centering-policy: strict;
             title-widget: Stack title_stack {
               transition-type: crossfade;
+              hhomogeneous: false;
 
               StackPage {
                 name: "selector";
@@ -327,16 +328,13 @@ template $DialectWindow : Adw.ApplicationWindow {
                 ScrolledWindow {
                   vexpand: true;
 
-                  TextView src_text {
-                    wrap-mode: word_char;
+                  $TextView src_text {
                     left-margin: 9;
                     right-margin: 9;
                     top-margin: 9;
                     bottom-margin: 9;
 
-                    EventControllerKey src_key_ctrlr {
-                      key-pressed => $_update_trans_button();
-                    }
+                    activate => $_on_src_activated();
                   }
 
                   styles [
@@ -460,9 +458,8 @@ template $DialectWindow : Adw.ApplicationWindow {
                 ScrolledWindow {
                   vexpand: true;
 
-                  TextView dest_text {
+                  $TextView dest_text {
                     editable: false;
-                    wrap-mode: word_char;
                     left-margin: 9;
                     right-margin: 9;
                     top-margin: 9;

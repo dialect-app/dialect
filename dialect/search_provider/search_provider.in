@@ -3,18 +3,18 @@
 # Copyright 2020 Nikita Kravets
 # Copyright 2020-2022 Rafael Mardojai CM
 # Copyright 2021-2022 Mufeed Ali
+# Copyright 2023 Markus Göllnitz
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+import sys
 import logging
+import locale
 import gettext
 
-import dbus
-import dbus.service
-from dbus.mainloop.glib import DBusGMainLoop
-
 import gi
+
 gi.require_version('Soup', '3.0')
-from gi.repository import GLib
+from gi.repository import GLib, Gio
 
 from dialect.session import Session
 from dialect.settings import Settings
@@ -22,26 +22,52 @@ from dialect.languages import get_lang_name
 from dialect.providers import TRANSLATORS
 from dialect.providers.base import ApiKeyRequired, InvalidApiKey
 
-SEARCH_BUS_NAME = 'org.gnome.Shell.SearchProvider2'
-SBN = dict(dbus_interface=SEARCH_BUS_NAME)
-
 CLIPBOARD_PREFIX = 'copy-to-clipboard'
 ERROR_PREFIX = 'translation-error'
 
-gettext.install('dialect', '@localedir@')
-_ = gettext.gettext
+localedir = '@localedir@'
+langs_trans = gettext.translation('dialect-cldr-langs', localedir, fallback=True)
+ui_trans = gettext.translation('dialect', localedir, fallback=True)
+ui_trans.add_fallback(langs_trans)
+ui_trans.install(names=['gettext'])
 
+locale.bindtextdomain('dialect', localedir)
+locale.textdomain('dialect')
 
-class TranslateService(dbus.service.Object):
-    bus_name = '@APP_ID@.SearchProvider'
-    _object_path = '@object_path@'
+dbus_interface_description = '''
+<!DOCTYPE node PUBLIC
+'-//freedesktop//DTD D-BUS Object Introspection 1.0//EN'
+'http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd'>
+<node>
+  <interface name="org.gnome.Shell.SearchProvider2">
+    <method name="GetInitialResultSet">
+      <arg type="as" name="terms" direction="in" />
+      <arg type="as" name="results" direction="out" />
+    </method>
+    <method name="GetSubsearchResultSet">
+      <arg type="as" name="previous_results" direction="in" />
+      <arg type="as" name="terms" direction="in" />
+      <arg type="as" name="results" direction="out" />
+    </method>
+    <method name="GetResultMetas">
+      <arg type="as" name="identifiers" direction="in" />
+      <arg type="aa{sv}" name="metas" direction="out" />
+    </method>
+    <method name="ActivateResult">
+      <arg type="s" name="identifier" direction="in" />
+      <arg type="as" name="terms" direction="in" />
+      <arg type="u" name="timestamp" direction="in" />
+    </method>
+    <method name="LaunchSearch">
+      <arg type="as" name="terms" direction="in" />
+      <arg type="u" name="timestamp" direction="in" />
+    </method>
+  </interface>
+</node>
+'''
 
+class TranslateService:
     def __init__(self):
-        # init dbus
-        self.session_bus = dbus.SessionBus()
-        bus_name = dbus.service.BusName(self.bus_name, bus=self.session_bus)
-        dbus.service.Object.__init__(self, bus_name, self._object_path)
-
         self.loaded = False
         self.load_failed = False
 
@@ -51,15 +77,13 @@ class TranslateService(dbus.service.Object):
         # Translations store
         self.translations = {}
         self.src_language = 'auto'
-        # src_language_saved = Settings.get().src_langs[0]
-        self.dest_language = Settings.get().dest_langs[0]
+        self.dest_language = None
 
         # Translator
         self._load_translator()
         Settings.get().connect('changed', self._on_settings_changed)
-        Settings.get().connect('provider-changed', self._on_provider_changed)
+        Settings.get().connect('translator-changed', self._on_translator_changed)
 
-    @dbus.service.method(in_signature='as', out_signature='as', **SBN)
     def GetInitialResultSet(self, terms):
         """
         Join separate terms in one ID line, start translation and send this line back
@@ -79,16 +103,13 @@ class TranslateService(dbus.service.Object):
 
         return [
             _('Translate “{text}” with {provider_name}').format(
-                text=text,
-                provider_name=TRANSLATORS[provider].prettyname
+                text=text, provider_name=TRANSLATORS[provider].prettyname
             )
         ]
 
-    @dbus.service.method(in_signature='asas', out_signature='as', **SBN)
     def GetSubsearchResultSet(self, _previous_results, new_terms):
         return self.GetInitialResultSet(new_terms)
 
-    @dbus.service.method(in_signature='as', out_signature='aa{sv}', **SBN)
     def GetResultMetas(self, ids):
         """Send translated text"""
 
@@ -98,15 +119,14 @@ class TranslateService(dbus.service.Object):
             text = translate_id
             if translate_id in self.translations:
                 text = self.translations[translate_id]
-            return [{
-                'id': translate_id,
-                'name': text,
-            }]
+            return [
+                {
+                    'id': GLib.Variant("s", translate_id),
+                    'name': GLib.Variant("s", text),
+                }
+            ]
 
-        elif (
-            len(ids) == 2 and translate_id in self.translations
-            and ids[1] == CLIPBOARD_PREFIX + ids[0]
-        ):
+        elif len(ids) == 2 and translate_id in self.translations and ids[1] == CLIPBOARD_PREFIX + ids[0]:
             text = self.translations[translate_id]
             lang = get_lang_name(self.dest_language)
             provider = Settings.get().active_translator
@@ -116,40 +136,35 @@ class TranslateService(dbus.service.Object):
 
             return [
                 {
-                    'id': translate_id,
-                    'name': text,
-                    'description': description,
+                    'id': GLib.Variant("s", translate_id),
+                    'name': GLib.Variant("s", text),
+                    'description': GLib.Variant("s", description),
                 },
                 {
-                    'id': ids[1],
-                    'name': _('Copy'),
-                    'description': _('Copy translation to clipboard'),
-                    'clipboardText': text
-                }
+                    'id': GLib.Variant("s", ids[1]),
+                    'name': GLib.Variant("s", _('Copy')),
+                    'description': GLib.Variant("s", _('Copy translation to clipboard')),
+                    'clipboardText': GLib.Variant("s", text),
+                },
             ]
 
         else:
             # Probably never needed, just in case
             return [
                 dict(
-                    id=id,
-                    name=id,
+                    id=GLib.Variant("s", id),
+                    name=GLib.Variant("s", id),
                 )
                 for id in ids
             ]
 
-    @dbus.service.method(in_signature='sasu', **SBN)
     def ActivateResult(self, result_id, terms, timestamp):
         if not result_id.startswith(CLIPBOARD_PREFIX):
             self.LaunchSearch(terms, timestamp)
 
-    @dbus.service.method(in_signature='asu', terms='as', timestamp='u', **SBN)
     def LaunchSearch(self, terms, _timestamp):
         text = ' '.join(terms)
-        GLib.spawn_async_with_pipes(
-            None, ['@BIN@', '--text', text], None,
-            GLib.SpawnFlags.SEARCH_PATH, None
-        )
+        GLib.spawn_async_with_pipes(None, ['@BIN@', '--text', text], None, GLib.SpawnFlags.SEARCH_PATH, None)
 
     def translation(self, src_text=None):
         """Start a new translation"""
@@ -158,9 +173,7 @@ class TranslateService(dbus.service.Object):
         if self.src_language != self.dest_language and src_text != '':
             error_id = ERROR_PREFIX + src_text
 
-            message = self.translator.format_translation(
-                src_text, self.src_language, self.dest_language
-            )
+            message = self.translator.format_translation(src_text, self.src_language, self.dest_language)
 
             response = Session.get().send_and_read(message, None)
 
@@ -188,11 +201,9 @@ class TranslateService(dbus.service.Object):
         return Settings.get().live_translation and Settings.get().sp_translation
 
     def _load_translator(self):
+        self.loaded = False
         provider = Settings.get().active_translator
-        self.translator = TRANSLATORS[provider](
-            base_url=Settings.get().instance_url,
-            api_key=Settings.get().api_key
-        )
+        self.translator = TRANSLATORS[provider]()
 
         if self.translator.trans_init_requests:
             requests = []
@@ -208,26 +219,66 @@ class TranslateService(dbus.service.Object):
         if errors or self.translator.error:
             self.loaded = False
             self.load_failed = True
+            self.dest_language = None
         else:
             self.loaded = True
             self.load_failed = False
+            self.dest_language = self.translator.dest_langs[0]
+
+            self.translator.settings.connect('changed', self._on_translator_settings_changed)
 
     def _on_settings_changed(self, _settings, key):
         if key.startswith('translator-'):
-            self.loaded = False
             self._load_translator()
-            self.dest_language = Settings.get().dest_langs[0]
         if key == 'live-translation' or key == 'sp-translation':
             self.live_enabled = self.is_live_enabled()
 
-    def _on_provider_changed(self, _settings, name, key):
-        if name == Settings.get().active_translator and key in ('instance-url', 'api-key'):
-            self.loaded = False
-            self._load_translator()
-            self.dest_language = Settings.get().dest_langs[0]
+    def _on_translator_changed(self, *args):
+        self._load_translator()
 
+    def _on_translator_settings_changed(self, _settings, key):
+        if key == 'src-langs' or key == 'dest-langs':
+            self.dest_language = self.translator.dest_langs[0]
+        else:
+            self._load_translator()
+
+class TranslateServiceApplication(Gio.Application):
+
+  def __init__(self):
+    Gio.Application.__init__(self,
+                             application_id='@APP_ID@.SearchProvider',
+                             flags=Gio.ApplicationFlags.IS_SERVICE,
+                             inactivity_timeout=10000)
+    self.service_object = TranslateService()
+    self.search_interface = Gio.DBusNodeInfo.new_for_xml(dbus_interface_description).interfaces[0]
+
+  def do_dbus_register(self, connection, object_path):
+    try:
+      connection.register_object(object_path=object_path,
+                                 interface_info=self.search_interface,
+                                 method_call_closure=self.on_dbus_method_call)
+    except:
+      self.quit()
+      return False
+    finally:
+      return True
+
+  def on_dbus_method_call(self, connection, sender, object_path, interface_name, method_name, parameters, invocation):
+    self.hold()
+
+    method = getattr(self.service_object, method_name)
+    arguments = list(parameters.unpack())
+
+    results = method(*arguments),
+    if results == (None,):
+      results = ()
+    results_type = "(" + "".join(map(lambda argument_info: argument_info.signature, self.search_interface.lookup_method(method_name).out_args)) + ")"
+    wrapped_results = GLib.Variant(results_type, results)
+
+    invocation.return_value(wrapped_results)
+
+    self.release()
 
 if __name__ == "__main__":
-    DBusGMainLoop(set_as_default=True)
-    TranslateService()
-    GLib.MainLoop().run()
+    app = TranslateServiceApplication()
+    sys.exit(app.run())
