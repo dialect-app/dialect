@@ -68,7 +68,7 @@ class Provider(SoupProvider):
 
     @property
     def translate_url(self):
-        self.format_url(self.instance_url, '/translate')
+        return self.format_url(self.instance_url, '/translate')
 
     def init_trans(self, on_done, on_fail):
         def check_finished():
