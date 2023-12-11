@@ -227,7 +227,7 @@ class DialectWindow(Adw.ApplicationWindow):
         Settings.get().connect('tts-changed', self._on_active_provider_changed, 'tts')
 
         # Bind text views font size
-        self.src_text.bind_property('font-size', self.dest_text, 'font-size')
+        self.src_text.bind_property('font-size', self.dest_text, 'font-size', GObject.BindingFlags.BIDIRECTIONAL)
 
         # Set initial saved text view font size
         if Settings.get().custom_default_font_size:
