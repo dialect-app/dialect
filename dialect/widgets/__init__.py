@@ -4,4 +4,5 @@
 
 from dialect.widgets.lang_selector import LangSelector # noqa
 from dialect.widgets.provider_preferences import ProviderPreferences  # noqa
+from dialect.widgets.textview import TextView  # noqa
 from dialect.widgets.theme_switcher import ThemeSwitcher  # noqa

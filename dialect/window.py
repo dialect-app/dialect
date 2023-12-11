@@ -18,7 +18,7 @@ from dialect.providers.base import ApiKeyRequired, InvalidApiKey, ProviderError
 from dialect.session import Session, ResponseError
 from dialect.settings import Settings
 from dialect.shortcuts import DialectShortcutsWindow
-from dialect.widgets import LangSelector, ThemeSwitcher
+from dialect.widgets import LangSelector, TextView, ThemeSwitcher
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/window.ui')
@@ -51,7 +51,7 @@ class DialectWindow(Adw.ApplicationWindow):
     mistakes: Gtk.Revealer = Gtk.Template.Child()
     mistakes_label: Gtk.Label = Gtk.Template.Child()
     char_counter: Gtk.Label = Gtk.Template.Child()
-    src_text: Gtk.TextView = Gtk.Template.Child()
+    src_text: TextView = Gtk.Template.Child()
     clear_btn: Gtk.Button = Gtk.Template.Child()
     paste_btn: Gtk.Button = Gtk.Template.Child()
     src_voice_btn: Gtk.Button = Gtk.Template.Child()
@@ -60,7 +60,7 @@ class DialectWindow(Adw.ApplicationWindow):
     dest_box: Gtk.Box = Gtk.Template.Child()
     dest_pron_revealer: Gtk.Revealer = Gtk.Template.Child()
     dest_pron_label: Gtk.Label = Gtk.Template.Child()
-    dest_text: Gtk.TextView = Gtk.Template.Child()
+    dest_text: TextView = Gtk.Template.Child()
     dest_toolbar_stack: Gtk.Stack = Gtk.Template.Child()
     trans_spinner: Gtk.Spinner = Gtk.Template.Child()
     trans_warning: Gtk.Image = Gtk.Template.Child()
@@ -75,7 +75,6 @@ class DialectWindow(Adw.ApplicationWindow):
     toast: Adw.Toast | None = None  # for notification management
     toast_overlay: Adw.ToastOverlay = Gtk.Template.Child()
 
-    src_key_ctrlr: Gtk.EventControllerKey = Gtk.Template.Child()
     win_key_ctrlr: Gtk.EventControllerKey = Gtk.Template.Child()
 
     # Window Launch Tracking
@@ -123,14 +122,7 @@ class DialectWindow(Adw.ApplicationWindow):
         bus = self.player.get_bus()
         bus.add_signal_watch()
         bus.connect('message', self.on_gst_message)
-        self.player_event = threading.Event()  # An event for letting us know when Gst is done playing
-
-        # Text buffers font size
-        self.font_css_provider = Gtk.CssProvider()
-        if Settings.get().custom_default_font_size:
-            self.font_size = Settings.get().default_font_size
-        else:
-            self.font_size = int(Gtk.Settings.get_default().get_property('gtk-font-name').split()[1])
+        self.player_event = threading.Event()  # An event for letting us know when Gst is done playing        
 
         # Setup window
         self.setup_actions()
@@ -234,17 +226,20 @@ class DialectWindow(Adw.ApplicationWindow):
         Settings.get().connect('translator-changed', self._on_active_provider_changed, 'trans')
         Settings.get().connect('tts-changed', self._on_active_provider_changed, 'tts')
 
-        # Connect text buffers to font css provider
-        self.src_text.get_style_context().add_provider(
-            self.font_css_provider,
-            Gtk.STYLE_PROVIDER_PRIORITY_USER
+        # Bind text views font size
+        self.src_text.bind_property('font-size', self.dest_text, 'font-size', GObject.BindingFlags.BIDIRECTIONAL)
+
+        # Set initial saved text view font size
+        if Settings.get().custom_default_font_size:
+            font_size = Settings.get().default_font_size
+            self.set_font_size(font_size)
+
+        # Set src textview mod key requirement
+        self.src_text.activate_mod = not bool(Settings.get().translate_accel_value)
+        Settings.get().connect(
+            'changed::translate-accel',
+            lambda s, _k: self.src_text.set_property('activate_mod', not bool(s.translate_accel_value))
         )
-        self.dest_text.get_style_context().add_provider(
-            self.font_css_provider,
-            Gtk.STYLE_PROVIDER_PRIORITY_USER
-        )
-        # Set text view font size
-        self.set_font_size(self.font_size)
 
     def setup_selectors(self):
         # Languages models
@@ -810,16 +805,13 @@ class DialectWindow(Adw.ApplicationWindow):
         self.src_buffer.emit('end-user-action')
 
     def set_font_size(self, size):
-        self.font_size = size
-        self.font_css_provider.load_from_data(f'textview {{ font-size: { str(size) }pt; }}')
+        self.src_text.font_size = size
 
     def ui_font_size_inc(self, _action, _param):
-        self.set_font_size(self.font_size + 5)
+        self.src_text.font_size_inc()
 
     def ui_font_size_dec(self, _action, _param):
-        new_size = self.font_size - 5
-        if new_size >= 6:
-            self.set_font_size(new_size)
+        self.src_text.font_size_dec()
 
     def ui_copy(self, _action, _param):
         dest_text = self.dest_buffer.get_text(
@@ -1017,29 +1009,10 @@ class DialectWindow(Adw.ApplicationWindow):
         return Gdk.EVENT_PROPAGATE
 
     @Gtk.Template.Callback()
-    def _update_trans_button(self, _button, keyval, _keycode, state):
-        """ Called on self.src_key_ctrlr::key-pressed signal
-            Starts translation when user presses the translate keyboard shorcut
-        """
-        modifiers = state & Gtk.accelerator_get_default_mod_mask()
-
-        control_mask = Gdk.ModifierType.CONTROL_MASK
-        enter_keys = (Gdk.KEY_Return, Gdk.KEY_KP_Enter)
-
+    def _on_src_activated(self, _texview):
+        """ Called on self.src_text::active signal """
         if not Settings.get().live_translation:
-            if control_mask == modifiers:
-                if keyval in enter_keys:
-                    if not Settings.get().translate_accel_value:
-                        self.translation()
-                        return Gdk.EVENT_STOP
-                    return Gdk.EVENT_PROPAGATE
-            elif keyval in enter_keys:
-                if Settings.get().translate_accel_value:
-                    self.translation()
-                    return Gdk.EVENT_STOP
-                return Gdk.EVENT_PROPAGATE
-
-        return Gdk.EVENT_PROPAGATE
+            self.translation()
 
     @Gtk.Template.Callback()
     def _on_mistakes_clicked(self, _button, _data):
