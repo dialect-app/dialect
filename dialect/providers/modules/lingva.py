@@ -89,10 +89,10 @@ class Provider(SoupProvider):
     def translate(self, text, src, dest, on_done, on_fail):
         def on_response(data):
             try:
-                detected = data['info'].get('detectedSource', None)
-                mistakes = data['info'].get('typo', None)
-                src_pronunciation = data['info']['pronunciation'].get('query', None)
-                dest_pronunciation = data['info']['pronunciation'].get('translation', None)
+                detected = data.get('info', {}).get('detectedSource', None)
+                mistakes = data.get('info', {}).get('typo', None)
+                src_pronunciation = data.get('info', {}).get('pronunciation', {}).get('query', None)
+                dest_pronunciation = data.get('info', {}).get('pronunciation', {}).get('translation', None)
 
                 translation = Translation(
                     data['translation'],
