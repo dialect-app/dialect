@@ -9,7 +9,7 @@ from gi.repository import Adw, Gio, Gtk
 
 from dialect.define import RES_PATH
 from dialect.settings import Settings
-from dialect.providers import ProvidersListModel, MODULES, TTS
+from dialect.providers import ProviderFeature, ProvidersListModel, MODULES, TTS
 from dialect.widgets import ProviderPreferences
 
 
@@ -101,7 +101,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         if not name:
             return False
 
-        if MODULES[name].change_instance or MODULES[name].api_key_supported:
+        if ProviderFeature.INSTANCES in MODULES[name].features or ProviderFeature.API_KEY in MODULES[name].features:
             return True
 
         return False

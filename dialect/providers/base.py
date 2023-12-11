@@ -3,42 +3,93 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import io
-import json
-import logging
 import urllib.parse
+from dataclasses import dataclass
+from enum import Enum, Flag, auto
+from typing import Callable, Optional
 
-from gi.repository import GLib, Gio, Soup
+from gi.repository import Gio
 
-from dialect.define import APP_ID
-from dialect.languages import get_lang_name, normalize_lang_code
+from dialect.define import APP_ID, LANG_ALIASES
+from dialect.languages import get_lang_name
+
+
+class ProviderCapability(Flag):
+    TRANSLATION = auto()
+    """ If it provides translation """
+    TTS = auto()
+    """ If it provides text-to-speech """
+    DEFINITIONS = auto()
+    """ If it provides dictionary definitions """
+
+
+class ProviderFeature(Flag):
+    NONE = auto()
+    """ Provider has no features """
+    INSTANCES = auto()
+    """ If it supports changing the instance url """
+    API_KEY = auto()
+    """ If the api key is supported but not necessary """
+    API_KEY_REQUIRED = auto()
+    """ If the api key is required for the provider to work """
+    DETECTION = auto()
+    """ If it supports detecting text language (Auto translation) """
+    MISTAKES = auto()
+    """ If it supports showing translation mistakes """
+    PRONUNCIATION = auto()
+    """ If it supports showing translation pronunciation """
+    SUGGESTIONS = auto()
+    """ If it supports sending translation suggestions to the service """
+
+
+class ProviderErrorCode(Enum):
+    UNEXPECTED = auto()
+    NETWORK = auto()
+    EMPTY = auto()
+    API_KEY_REQUIRED = auto()
+    API_KEY_INVALID = auto()
+    INVALID_LANG_CODE = auto()
+    BATCH_SIZE_EXCEEDED = auto()
+    CHARACTERS_LIMIT_EXCEEDED = auto()
+    SERVICE_LIMIT_REACHED = auto()
+    TRANSLATION_FAILED = auto()
+    TTS_FAILED = auto()
+
+
+class ProviderError:
+    """Helper error handing class to be passed between callbacks"""
+
+    def __init__(self, code: ProviderErrorCode, message: str = '') -> None:
+        self.code = code  # Serves for quick error matching
+        self.message = message  # More detailed error info if needed
+
+
+@dataclass
+class Translation:
+    text: str
+    original: tuple[str, str, str]
+    detected: Optional[str] = None
+    mistakes: tuple[Optional[str], Optional[str]] = (None, None)  #
+    pronunciation: tuple[Optional[str], Optional[str]] = (None, None)
 
 
 class BaseProvider:
-    __provider_type__ = ''
-    """ The type of engine used by the provider
-    str or dict if you want to use diferent engines per feature
-    """
     name = ''
-    """ Module name for itern use, like settings storing """
+    """ Module name for code use, like settings storing """
     prettyname = ''
     """ Module name for UI display """
-    translation = False
-    """ If it provides translation """
-    tts = False
-    """ If it provides text-to-speech """
-    definitions = False
-    """ If it provides dict definitions """
-    change_instance = False
-    """ If it supports changing the instance url """
-    api_key_supported = False
-    """ If it supports setting api keys """
+    capabilities: ProviderCapability | None = None
+    """ Provider capabilities, translation, tts, etc """
+    features: ProviderFeature = ProviderFeature.NONE
+    """ Provider features """
 
     defaults = {
         'instance_url': '',
         'api_key': '',
         'src_langs': ['en', 'fr', 'es', 'de'],
-        'dest_langs': ['fr', 'es', 'de', 'en']
+        'dest_langs': ['fr', 'es', 'de', 'en'],
     }
+    """ Default provider settings """
 
     def __init__(self):
         self.languages = []
@@ -52,24 +103,144 @@ class BaseProvider:
 
         self.chars_limit = -1
         """ Translation char limit """
-        self.detection = False
-        """ If it supports deteting text language (Auto translation) """
-        self.mistakes = False
-        """ If it supports showing translation mistakes """
-        self.pronunciation = False
-        """ If it supports showing translation pronunciation """
-        self.suggestions = False
-        """ If it supports sending translation suggestions to the service """
-        self.api_key_required = False
-        """ If the api key is required for the provider to work """
-        self.history = []
+
+        self.history: list[Translation] = []
         """ Here we save the translation history """
 
         # GSettings
         self.settings = Gio.Settings(f'{APP_ID}.translator', f'/app/drey/Dialect/translators/{self.name}/')
 
+    """
+    Providers API methods
+    """
+
+    @staticmethod
+    def validate_instance(url: str, on_done: Callable[[bool], None], on_fail: Callable[[ProviderError], None]):
+        """
+        Validate an instance of the provider.
+
+        Args:
+            url: The instance URL to test, only hostname and tld, e.g. libretranslate.com, localhost
+            on_done: Called when the validation is done, argument is the result of the validation
+            on_fail: Called when there's a fail in the validation process
+        """
+        raise NotImplementedError()
+
+    def validate_api_key(self, key: str, on_done: Callable[[bool], None], on_fail: Callable[[ProviderError], None]):
+        """
+        Validate an API key.
+
+        Args:
+            key: The API key to validate
+            on_done: Called when the validation is done, argument is the result of the validation
+            on_fail: Called when there's a fail in the validation process
+        """
+        raise NotImplementedError()
+
+    def init_trans(self, on_done: Callable, on_fail: Callable[[ProviderError], None]):
+        """
+        Initializes the provider translation capabilities.
+
+        Args:
+            on_done: Called after the provider was successfully initialized
+            on_fail: Called after any error on initialization
+        """
+        on_done()
+
+    def init_tts(self, on_done: Callable, on_fail: Callable[[ProviderError], None]):
+        """
+        Initializes the provider text-to-speech capabilities.
+
+        Args:
+            on_done: Called after the provider was successfully initialized
+            on_fail: Called after any error on initialization
+        """
+        on_done()
+
+    def translate(
+        self,
+        text: str,
+        src: str,
+        dest: str,
+        on_done: Callable[[Translation], None],
+        on_fail: Callable[[ProviderError], None],
+    ):
+        """
+        Translates text in the provider.
+
+        Args:
+            text: The text to translate
+            src: The lang code of the source text
+            dest: The lang code to translate the text to
+            on_done: Called after the text was successfully translated
+            on_fail: Called after any error on translation
+        """
+        raise NotImplementedError()
+
+    def suggest(
+        self,
+        text: str,
+        src: str,
+        dest: str,
+        suggestion: str,
+        on_done: Callable[[bool], None],
+        on_fail: Callable[[ProviderError], None],
+    ):
+        """
+        Sends a translation suggestion to the provider.
+
+        Args:
+            text: Original text without translation
+            src: The lang code of the original text
+            dest: The lang code of the translated text
+            suggestion: Suggested translation for text
+            on_done: Called after the suggestion was successfully send, argument means if it was accepted or rejected
+            on_fail: Called after any error on the suggestion process
+        """
+        raise NotImplementedError()
+
+    def speech(
+        self,
+        text: str,
+        language: str,
+        on_done: Callable[[io.BytesIO], None],
+        on_fail: Callable[[ProviderError], None],
+    ):
+        """
+        Generate speech audio from text
+
+        Args:
+            text: Text to generate speech from
+            language: The lang code of text
+            on_done: Called after the process successful
+            on_fail: Called after any error on the speech process
+        """
+        raise NotImplementedError()
+
+    @property
+    def lang_aliases(self) -> dict[str, str]:
+        """
+        Mapping of Dialect/CLDR's lang codes to the provider ones.
+
+        Some providers might use different lang codes from the ones used by Dialect to for example get localized
+        language names.
+
+        This dict is used by `add_lang` so lang codes can later be denormalized with `denormalize_lang`.
+
+        Codes must be formatted with the criteria from normalize_lang_code, because this value would be used by
+        `add_lang` after normalization.
+
+        Check `dialect.define.LANG_ALIASES` for reference mappings.
+        """
+        return {}
+
+    """
+    Provider settings helpers and properties
+    """
+
     @property
     def instance_url(self):
+        """Instance url saved on settings."""
         return self.settings.get_string('instance-url') or self.defaults['instance_url']
 
     @instance_url.setter
@@ -77,10 +248,12 @@ class BaseProvider:
         self.settings.set_string('instance-url', url)
 
     def reset_instance_url(self):
+        """Resets saved instance url."""
         self.instance_url = ''
 
     @property
     def api_key(self):
+        """API key saved on settings."""
         return self.settings.get_string('api-key') or self.defaults['api_key']
 
     @api_key.setter
@@ -88,10 +261,12 @@ class BaseProvider:
         self.settings.set_string('api-key', api_key)
 
     def reset_api_key(self):
+        """Resets saved API key."""
         self.api_key = ''
 
     @property
     def src_langs(self):
+        """Saved recent source langs of the user."""
         return self.settings.get_strv('src-langs') or self.defaults['src_langs']
 
     @src_langs.setter
@@ -99,10 +274,12 @@ class BaseProvider:
         self.settings.set_strv('src-langs', src_langs)
 
     def reset_src_langs(self):
+        """Reset saved recent user source langs"""
         self.src_langs = []
 
     @property
     def dest_langs(self):
+        """Saved recent destination langs of the user."""
         return self.settings.get_strv('dest-langs') or self.defaults['dest_langs']
 
     @dest_langs.setter
@@ -110,11 +287,25 @@ class BaseProvider:
         self.settings.set_strv('dest-langs', dest_langs)
 
     def reset_dest_langs(self):
+        """Reset saved recent user destination langs"""
         self.dest_langs = []
+
+    """
+    General provider helpers
+    """
 
     @staticmethod
     def format_url(url: str, path: str = '', params: dict = {}, http: bool = False):
-        """ Formats a given url with path with the https protocol """
+        """
+        Compose a HTTP url with the given pieces.
+
+        If url is localhost, `http` is ignored and HTTP protocol is forced.
+
+        url: Base url, hostname and tld
+        path: Path of the url
+        params: Params to populate a url query
+        http: If HTTP should be used instead of HTTPS
+        """
 
         if not path.startswith('/'):
             path = '/' + path
@@ -129,10 +320,69 @@ class BaseProvider:
 
         return protocol + url + path + params_str
 
-    def add_lang(self, original_code, name=None, trans=True, tts=False):
-        """ Add lang supported by provider """
+    def normalize_lang_code(self, code: str):
+        """
+        Normalice a language code to Dialect's criteria.
 
-        code = normalize_lang_code(original_code)  # Get normalized lang code
+        Criteria:
+        - Codes must be lowercase, e.g. ES => es
+        - Codes can have a second code delimited by a hyphen, e.g. zh_CN => zh-CN
+        - If second code is two chars long it's considered a country code and must be uppercase, e.g. zh-cn => zh-CN
+        - If second code is four chars long it's considered a script code and must be capitalized,
+        e.g. zh-HANS => zh-Hans
+
+        This method also maps lang codes aliases using `lang_aliases` and `dialect.define.LANG_ALIASES`.
+
+        Args:
+            code: Language ISO code
+        """
+        code = code.replace('_', '-').lower()  # Normalize separator
+        codes = code.split('-')
+
+        if len(codes) == 2:  # Code contain a script or country code
+            if len(codes[1]) == 4:  # ISO 15924 (script)
+                codes[1] = codes[1].capitalize()
+
+            elif len(codes[1]) == 2:  # ISO 3166-1 (country)
+                codes[1] = codes[1].upper()
+
+            code = '-'.join(codes)
+
+        aliases = {**LANG_ALIASES, **self.lang_aliases}
+        if code in aliases:
+            code = aliases[code]
+
+        return code
+
+    def cmp_langs(self, a: str, b: str) -> bool:
+        """
+        Compare two language codes.
+
+        It assumes that the codes have been normalized by `normalize_lang_code`.
+
+        This method exists so providers can add additional comparison logic.
+
+        Args:
+            a: First lang to compare
+            b: Second lang to compare
+        """
+
+        return a == b
+
+    def add_lang(self, original_code: str, name: str = None, trans: bool = True, tts: bool = False):
+        """
+        Add lang supported by provider after normalization.
+
+        Normalized lang codes are saved for latter denormalization using `denormalize_lang`.
+
+        Args:
+            original_code: Lang code to add
+            name: Language name to fallback in case Dialect doesn't provide one
+            trans: Add language as supported for translation
+            tts: Add language as supported for text-to-speech
+        """
+
+        code = self.normalize_lang_code(original_code)  # Get normalized lang code
 
         if trans:  # Add lang to supported languages list
             self.languages.append(code)
@@ -147,8 +397,15 @@ class BaseProvider:
             # Save name provider by the service
             self._languages_names[code] = name
 
-    def denormalize_lang(self, *codes):
-        """ Get denormalized lang code if available """
+    def denormalize_lang(self, *codes: str) -> str | tuple[str]:
+        """
+        Get denormalized lang code if available.
+
+        This method will return a tuple with the same length of given codes or a str if only one code was passed.
+
+        Args:
+        *codes: Lang codes to denormalize
+        """
 
         if len(codes) == 1:
             return self._nonstandard_langs.get(codes[0], codes[0])
@@ -158,219 +415,15 @@ class BaseProvider:
             result.append(self._nonstandard_langs.get(code, code))
         return tuple(result)
 
-    def get_lang_name(self, code):
-        """ Get language name """
+    def get_lang_name(self, code: str) -> str:
+        """
+        Get a localized language name.
+
+        Fallback to a name provided by the provider if available or ultimately just the code.
+        """
         name = get_lang_name(code)  # Try getting translated name from Dialect
 
         if name is None:  # Get name from provider if available
             return self._languages_names.get(code, code)
 
         return name
-
-
-class LocalProvider(BaseProvider):
-    """ Base class for providers using the local threaded engine """
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    def init_trans(self):
-        pass
-
-    def init_tts(self):
-        pass
-
-    def init_def(self):
-        pass
-
-    def translate(self, text: str, src: str, dest: str):
-        pass
-
-    def suggest(self, text: str, src: str, dest: str, suggestion: str) -> bool:
-        pass
-
-    def download_speech(self, text: str, language: str, file: io.BytesIO):
-        pass
-
-
-class SoupProvider(BaseProvider):
-    """ Base class for providers using the libsoup engine """
-
-    trans_init_requests = []
-    """ List of request to do before using the provider """
-    tts_init_requests = []
-    """ List of request to do before using the provider """
-    def_init_requests = []
-    """ List of request to do before using the provider """
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-        self.error = ''
-        """ Loading error when initializing """
-
-    @staticmethod
-    def encode_data(data) -> GLib.Bytes | None:
-        """ Convert dict to JSON and bytes """
-        data_glib_bytes = None
-        try:
-            data_bytes = json.dumps(data).encode('utf-8')
-            data_glib_bytes = GLib.Bytes.new(data_bytes)
-        except Exception as exc:
-            logging.warning(exc)
-        return data_glib_bytes
-
-    @staticmethod
-    def read_data(data: bytes) -> dict:
-        """ Get JSON data from bytes """
-        return json.loads(
-                data
-            ) if data else {}
-
-    @staticmethod
-    def create_request(method: str, url: str, data={}, headers: dict = {}, form: bool = False) -> Soup.Message:
-        """ Helper for creating Soup.Message """
-
-        if form and data:
-            form_data = Soup.form_encode_hash(data)
-            message = Soup.Message.new_from_encoded_form(method, url, form_data)
-        else:
-            message = Soup.Message.new(method, url)
-        if data and not form:
-            data = SoupProvider.encode_data(data)
-            message.set_request_body_from_bytes('application/json', data)
-        if headers:
-            for name, value in headers.items():
-                message.get_request_headers().append(name, value)
-        if 'User-Agent' not in headers:
-            message.get_request_headers().append('User-Agent', 'Dialect App')
-        return message
-
-    @staticmethod
-    def format_validate_instance(url: str) -> Soup.Message:
-        pass
-
-    @staticmethod
-    def validate_instance(data: bytes) -> bool:
-        pass
-
-    def format_validate_api_key(self, api_key: str) -> Soup.Message:
-        pass
-
-    def validate_api_key(self, data: bytes):
-        pass
-
-    def format_translation(self, text: str, src: str, dest: str) -> Soup.Message:
-        pass
-
-    def get_translation(self, data: bytes):
-        pass
-
-    def format_suggestion(self, text: str, src: str, dest: str, suggestion: str) -> Soup.Message:
-        pass
-
-    def get_suggestion(self, data: bytes) -> bool:
-        pass
-
-    def format_speech(self, text: str, language: str) -> Soup.Message:
-        pass
-
-    def get_speech(self, data: bytes, file: io.BytesIO):
-        pass
-
-
-class ProviderError(Exception):
-    """Base Exception for Translator related errors."""
-
-    def __init__(self, cause, message='Translator Error'):
-        self.cause = cause
-        self.message = message
-        super().__init__(self.message)
-
-    def __str__(self):
-        return f'{self.message}: {self.cause}'
-
-
-class ApiKeyRequired(ProviderError):
-    """Exception raised when API key is required."""
-
-    def __init__(self, cause, message='API Key Required'):
-        self.cause = cause
-        self.message = message
-        super().__init__(self.cause, self.message)
-
-
-class InvalidApiKey(ProviderError):
-    """Exception raised when an invalid API key is found."""
-
-    def __init__(self, cause, message='Invalid API Key'):
-        self.cause = cause
-        self.message = message
-        super().__init__(self.cause, self.message)
-
-
-class InvalidLangCode(ProviderError):
-    """Exception raised when an invalid lang code is sent."""
-
-    def __init__(self, cause, message='Invalid Lang Code'):
-        self.cause = cause
-        self.message = message
-        super().__init__(self.cause, self.message)
-
-
-class BatchSizeExceeded(ProviderError):
-    """Exception raised when the batch size limit has been exceeded."""
-
-    def __init__(self, cause, message='Batch Size Exceeded'):
-        self.cause = cause
-        self.message = message
-        super().__init__(self.cause, self.message)
-
-
-class CharactersLimitExceeded(ProviderError):
-    """Exception raised when the char limit has been exceeded."""
-
-    def __init__(self, cause, message='Characters Limit Exceeded'):
-        self.cause = cause
-        self.message = message
-        super().__init__(self.cause, self.message)
-
-
-class ServiceLimitReached(ProviderError):
-    """Exception raised when the service limit has been reached."""
-
-    def __init__(self, cause, message='Service Limit Reached'):
-        self.cause = cause
-        self.message = message
-        super().__init__(self.cause, self.message)
-
-
-class TranslationError(ProviderError):
-    """Exception raised when translation fails."""
-
-    def __init__(self, cause, message='Translation has failed'):
-        self.cause = cause
-        self.message = message
-        super().__init__(self.cause, self.message)
-
-
-class TextToSpeechError(ProviderError):
-    """Exception raised when tts fails."""
-
-    def __init__(self, cause, message='Text to Speech has failed'):
-        self.cause = cause
-        self.message = message
-        super().__init__(self.message)
-
-
-class Translation:
-    text = None
-    extra_data = {
-        'possible-mistakes': None,
-        'src-pronunciation': None,
-        'dest-pronunciation': None,
-    }
-
-    def __init__(self, text, extra_data):
-        self.text = text
-        self.extra_data = extra_data
