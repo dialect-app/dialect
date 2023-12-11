@@ -7,35 +7,6 @@ from gi.repository import Gio, GObject
 from dialect.define import LANGUAGES
 
 
-ALIASES = {
-    'iw': 'he',  # Hebrew
-    'jw': 'jv',  # Javanese
-    'mni-Mtei': 'mni',  # Meiteilon (Manipuri)
-    'zh-CN': 'zh-Hans',
-    'zh-TW': 'zh-Hant',
-}
-
-
-def normalize_lang_code(code):
-    code = code.replace('_', '-')  # Normalize separator
-    codes = code.split('-')
-
-    if len(codes) == 2:  # Code contain a script or country code
-
-        if len(codes[1]) == 4:  # ISO 15924 (script)
-            codes[1] = codes[1].capitalize()
-
-        elif len(codes[1]) == 2:  # ISO 3166-1 (country)
-            codes[1] = codes[1].upper()
-
-        code = '-'.join(codes)
-
-    if code in ALIASES:
-        code = ALIASES[code]
-
-    return code
-
-
 def get_lang_name(code):
     name = LANGUAGES.get(code)
     if name:

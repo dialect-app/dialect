@@ -3,21 +3,28 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import importlib
+import logging
 import pkgutil
 
 from gi.repository import Gio, GObject
 
+from dialect.providers.base import ProviderCapability, ProviderFeature, ProviderError, ProviderErrorCode  # noqa
+from dialect.providers import modules
+
 MODULES = {}
 TRANSLATORS = {}
 TTS = {}
-for _importer, modname, _ispkg in pkgutil.iter_modules(__path__):
-    if modname != 'base':
-        modclass = importlib.import_module('dialect.providers.' + modname).Provider
+for _importer, modname, _ispkg in pkgutil.iter_modules(modules.__path__):
+    try:
+        modclass = importlib.import_module('dialect.providers.modules.' + modname).Provider
         MODULES[modclass.name] = modclass
-        if modclass.translation:
-            TRANSLATORS[modclass.name] = modclass
-        if modclass.tts:
-            TTS[modclass.name] = modclass
+        if modclass.capabilities:
+            if ProviderCapability.TRANSLATION in modclass.capabilities:
+                TRANSLATORS[modclass.name] = modclass
+            if ProviderCapability.TTS in modclass.capabilities:
+                TTS[modclass.name] = modclass
+    except Exception as exc:
+        logging.warning(f'Could not load the {modname} provider: {exc}')
 
 
 def check_translator_availability(provider_name):
