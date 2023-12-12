@@ -55,7 +55,6 @@ template $DialectWindow : Adw.ApplicationWindow {
 
   Stack main_stack {
     transition-type: crossfade;
-    notify::visible-child-name => $on_stack_page_change();
 
     StackPage {
       name: "loading";

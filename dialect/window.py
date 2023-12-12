@@ -23,7 +23,7 @@ class DialectWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'DialectWindow'
 
     # Properties
-    translator_loading = GObject.Property(type=bool, default=False)
+    translator_loading = GObject.Property(type=bool, default=True)
 
     # Child widgets
     menu_btn: Gtk.MenuButton = Gtk.Template.Child()
@@ -74,9 +74,6 @@ class DialectWindow(Adw.ApplicationWindow):
 
     win_key_ctrlr: Gtk.EventControllerKey = Gtk.Template.Child()
 
-    # Window Launch Tracking
-    launch = True
-
     # Providers objects
     provider: dict[str, BaseProvider] = {
         'trans': None,
@@ -104,12 +101,8 @@ class DialectWindow(Adw.ApplicationWindow):
     # Suggestions
     before_suggest = None
 
-    def __init__(self, text, langs, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-        # Options passed to command line
-        self.launch_text = text
-        self.launch_langs = langs
 
         # Application object
         self.app = kwargs['application']
@@ -429,17 +422,6 @@ class DialectWindow(Adw.ApplicationWindow):
         self.provider['trans'].reset_api_key()
         self.load_translator()
 
-    @Gtk.Template.Callback()
-    def on_stack_page_change(self, _stack, _param):
-        if self.main_stack.props.visible_child_name == 'translate' and self.launch:
-            # Page being set to "Translate" means the translator is fully ready
-            # We can now translate as per CLI parameters
-
-            self.launch = False  # Prevent reoccurrence of CLI parameter translation
-
-            if self.launch_text != '':
-                self.translate(self.launch_text, self.launch_langs['src'], self.launch_langs['dest'])    
-
     def load_tts(self):
         def on_done():
             self.download_speech()
@@ -537,6 +519,14 @@ class DialectWindow(Adw.ApplicationWindow):
         self.src_buffer.props.text = text
         # Run translation
         self.translation()
+
+    def translate_selection(self, src_lang, dest_lang):
+        def on_paste(clipboard, result):
+            text = clipboard.read_text_finish(result)
+            self.translate(text, src_lang, dest_lang)
+        
+        clipboard = Gdk.Display.get_default().get_primary_clipboard()
+        clipboard.read_text_async(None, on_paste)
 
     def save_settings(self, *args, **kwargs):
         if not self.is_maximized():
