@@ -806,12 +806,12 @@ class DialectWindow(Adw.ApplicationWindow):
         )
 
         src, dest = self.provider['trans'].denormalize_lang(
-            self.provider['trans'].history[self.current_history]['Languages'][0],
-            self.provider['trans'].history[self.current_history]['Languages'][1]
+            self.provider['trans'].history[self.current_history].original[1],
+            self.provider['trans'].history[self.current_history].original[2]
         )
 
         self.provider['trans'].suggest(
-            self.provider['trans'].history[self.current_history]['Text'][0],
+            self.provider['trans'].history[self.current_history].original[0],
             src,
             dest,
             dest_text,
