@@ -193,6 +193,8 @@ class Dialect(Adw.Application):
             "Libretto"
         ]
 
+        about.add_link(_('Donate'), 'https://opencollective.com/dialect')
+
         about.props.transient_for = self.window
         about.present()
 
