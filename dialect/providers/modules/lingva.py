@@ -26,7 +26,7 @@ class Provider(SoupProvider):
     )
 
     defaults = {
-        'instance_url': 'lingva.ml',
+        'instance_url': 'lingva.dialectapp.org',
         'api_key': '',
         'src_langs': ['en', 'fr', 'es', 'de'],
         'dest_langs': ['fr', 'es', 'de', 'en'],

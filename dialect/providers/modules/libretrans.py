@@ -22,7 +22,7 @@ class Provider(SoupProvider):
     features = ProviderFeature.INSTANCES | ProviderFeature.DETECTION | ProviderFeature.PRONUNCIATION
 
     defaults = {
-        'instance_url': 'libretranslate.de',
+        'instance_url': 'lt.dialectapp.org',
         'api_key': '',
         'src_langs': ['en', 'fr', 'es', 'de'],
         'dest_langs': ['fr', 'es', 'de', 'en'],
