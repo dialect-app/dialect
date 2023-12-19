@@ -69,7 +69,7 @@ class Provider(SoupProvider):
                     langs = soup.find('optgroup', {'id': 't_tgtAllLang'})
                     for child in langs.findChildren():
                         if child.name == 'option':
-                            self.languages.append(child['value'])
+                            self.add_lang(child['value'], child.contents[0])
 
                     # Get IID
                     iid = soup.find('div', {'id': 'rich_tta'})
