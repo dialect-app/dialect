@@ -147,3 +147,6 @@ dmypy.json
 
 # Subprojects
 /subprojects/blueprint-compiler
+
+# Finder system file
+.DS_Store
