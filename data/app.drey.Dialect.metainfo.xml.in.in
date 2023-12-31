@@ -34,22 +34,6 @@
 
   <launchable type="desktop-id">@app-id@.desktop</launchable>
   <translation type="gettext">dialect</translation>
-  
-  <categories>
-    <category>Network</category>
-    <category>GTK</category>
-  </categories>
-  <keywords>
-    <keyword>translate</keyword>
-    <keyword>translation</keyword>
-    <keyword>Google Translate</keyword>
-    <keyword>LibreTranslate</keyword>
-    <keyword>Lingva Translate</keyword>
-    <keyword>Bing Microsoft Translator</keyword>
-    <keyword>Bing Translator</keyword>
-    <keyword>Microsoft Translator</keyword>
-    <keyword>Yandex Translate</keyword>
-  </keywords>  
 
   <screenshots>
     <screenshot type="default">
