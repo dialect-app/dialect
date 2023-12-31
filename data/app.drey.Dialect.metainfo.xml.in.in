@@ -29,7 +29,11 @@
   <url type="bugtracker">https://github.com/dialect-app/dialect/issues/</url>
   <url type="translate">https://hosted.weblate.org/engage/dialect/</url>
   <url type="vcs-browser">https://github.com/dialect-app/dialect/</url>
+  <!-- developer_name tag deprecated with Appstream 1.0 -->
   <developer_name>The Dialect Authors</developer_name>
+  <developer id="github.com">
+      <name>The Dialect Authors</name>
+  </developer>
   <content_rating type="oars-1.1" />
 
   <launchable type="desktop-id">@app-id@.desktop</launchable>
