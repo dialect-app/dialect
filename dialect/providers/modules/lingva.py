@@ -140,8 +140,7 @@ class Provider(SoupProvider):
         # Do async request
         self.send_and_read_and_process_response(message, on_response, on_fail)
 
-    @staticmethod
-    def check_known_errors(data):
+    def check_known_errors(self, _status, data):
         """Raises a proper Exception if an error is found in the data."""
         if not data:
             return ProviderError(ProviderErrorCode.EMPTY, 'Response is empty!')
