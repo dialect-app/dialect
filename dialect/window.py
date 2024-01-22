@@ -353,16 +353,7 @@ class DialectWindow(Adw.ApplicationWindow):
             if valid:
                 self.main_stack.props.visible_child_name = 'translate'
             else:
-                self.key_page.props.title = _('The provided API key is invalid')
-                if ProviderFeature.API_KEY_REQUIRED in self.provider['trans'].features:
-                    self.key_page.props.description = _('Please set a valid API key in the preferences.')
-                else:
-                    self.key_page.props.description = _(
-                        'Please set a valid API key or unset the API key in the preferences.'
-                    )
-                    self.rmv_key_btn.props.visible = True
-                    self.error_api_key_btn.props.visible = True
-                self.main_stack.props.visible_child_name = 'api-key'
+                self.api_key_failed()
 
         def on_fail(error: ProviderError):
             self.loading_failed(error)
@@ -374,44 +365,66 @@ class DialectWindow(Adw.ApplicationWindow):
                 not self.provider['trans'].api_key
                 and ProviderFeature.API_KEY_REQUIRED in self.provider['trans'].features
             ):
-                self.key_page.props.title = _('API key is required to use the service')
-                self.key_page.props.description = _('Please set an API key in the preferences.')
-                self.main_stack.props.visible_child_name = 'api-key'
+                self.api_key_failed(required=True)
             else:
                 self.main_stack.props.visible_child_name = 'translate'
         else:
             self.main_stack.props.visible_child_name = 'translate'
 
     def loading_failed(self, error: ProviderError):
-        self.main_stack.props.visible_child_name = 'error'
+        # Api Key error
+        if error.code in (ProviderErrorCode.API_KEY_INVALID, ProviderErrorCode.API_KEY_REQUIRED):
+            self.api_key_failed(error.code == ProviderErrorCode.API_KEY_REQUIRED)
 
-        service = self.provider['trans'].prettyname
-        url = self.provider['trans'].instance_url
+        # Other errors
+        else:
+            self.main_stack.props.visible_child_name = 'error'
 
-        title = _('Failed loading the translation service')
-        description = _('Please report this in the Dialect bug tracker if the issue persists.')
-        if ProviderFeature.INSTANCES in self.provider['trans'].features:
-            description = _((
-                'Failed loading "{url}", check if the instance address is correct or report in the Dialect bug tracker'
-                ' if the issue persists.'
-            ))
-            description = description.format(url=url)
+            service = self.provider['trans'].prettyname
+            url = self.provider['trans'].instance_url
 
-        if error.code == ProviderErrorCode.NETWORK:
-            title = _('Couldn’t connect to the translation service')
-            description = _('We can’t connect to the server. Please check for network issues.')
+            title = _('Failed loading the translation service')
+            description = _('Please report this in the Dialect bug tracker if the issue persists.')
             if ProviderFeature.INSTANCES in self.provider['trans'].features:
                 description = _((
-                    'We can’t connect to the {service} instance "{url}".\n'
-                    'Please check for network issues or if the address is correct.'
+                    'Failed loading "{url}", check if the instance address is correct or report in the Dialect bug tracker'
+                    ' if the issue persists.'
                 ))
-                description = description.format(service=service, url=url)
+                description = description.format(url=url)
 
-        if error.message:
-            description = description + '\n\n<small><tt>' + error.message + '</tt></small>'
+            if error.code == ProviderErrorCode.NETWORK:
+                title = _('Couldn’t connect to the translation service')
+                description = _('We can’t connect to the server. Please check for network issues.')
+                if ProviderFeature.INSTANCES in self.provider['trans'].features:
+                    description = _((
+                        'We can’t connect to the {service} instance "{url}".\n'
+                        'Please check for network issues or if the address is correct.'
+                    ))
+                    description = description.format(service=service, url=url)
 
-        self.error_page.props.title = title
-        self.error_page.props.description = description
+            if error.message:
+                description = description + '\n\n<small><tt>' + error.message + '</tt></small>'
+
+            self.error_page.props.title = title
+            self.error_page.props.description = description
+
+    def api_key_failed(self, required = False):
+        if required:
+            self.key_page.props.title = _('API key is required to use the service')
+            self.key_page.props.description = _('Please set an API key in the preferences.')
+
+        else:
+            self.key_page.props.title = _('The provided API key is invalid')
+            if ProviderFeature.API_KEY_REQUIRED in self.provider['trans'].features:
+                self.key_page.props.description = _('Please set a valid API key in the preferences.')
+            else:
+                self.key_page.props.description = _(
+                    'Please set a valid API key or unset the API key in the preferences.'
+                )
+                self.rmv_key_btn.props.visible = True
+                self.error_api_key_btn.props.visible = True
+
+        self.main_stack.props.visible_child_name = 'api-key'
 
     @Gtk.Template.Callback()
     def retry_load_translator(self, _button):
@@ -1123,7 +1136,7 @@ class DialectWindow(Adw.ApplicationWindow):
                 )
             case ProviderErrorCode.API_KEY_INVALID:
                 self.send_notification(
-                    _('Translation failed, check for network issues'),
+                    _('The provided API key is invalid'),
                     action={
                         'label': _('Retry'),
                         'name': 'win.translation',
