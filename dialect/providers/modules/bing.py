@@ -101,7 +101,7 @@ class Provider(SoupProvider):
         message = self.create_message('GET', self.html_url, headers=self._headers)
 
         # Do async request
-        self.send_and_read_and_process_response(message, on_response, on_fail, json=False)
+        self.send_and_read_and_process_response(message, on_response, on_fail, False, False)
 
     def translate(self, text, src, dest, on_done, on_fail):
         def on_response(data):
@@ -145,8 +145,7 @@ class Provider(SoupProvider):
         # Do async request
         self.send_and_read_and_process_response(message, on_response, on_fail)
 
-    @staticmethod
-    def check_known_errors(data):
+    def check_known_errors(self, _status, data):
         if not data:
             return ProviderError(ProviderErrorCode.EMPTY, 'Response is empty!')
 

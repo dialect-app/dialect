@@ -532,7 +532,7 @@ class Provider(LocalProvider, SoupProvider):
         message = self.create_message('POST', self.translate_url, data, self._headers, True)
 
         # Do async request
-        self.send_and_read_and_process_response(message, on_response, on_fail, json=False)
+        self.send_and_read_and_process_response(message, on_response, on_fail, False, False)
 
     def _strip_html_tags(self, text):
         """Strip html tags"""
