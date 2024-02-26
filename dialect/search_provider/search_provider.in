@@ -20,7 +20,7 @@ from dialect.session import Session
 from dialect.settings import Settings
 from dialect.languages import get_lang_name
 from dialect.providers import TRANSLATORS
-from dialect.providers.base import ApiKeyRequired, InvalidApiKey
+from dialect.providers.base import ProviderErrorCode
 
 CLIPBOARD_PREFIX = 'copy-to-clipboard'
 ERROR_PREFIX = 'translation-error'
@@ -84,33 +84,62 @@ class TranslateService:
         Settings.get().connect('changed', self._on_settings_changed)
         Settings.get().connect('translator-changed', self._on_translator_changed)
 
-    def GetInitialResultSet(self, terms):
+    def GetInitialResultSet(self, terms, callback):
         """
         Join separate terms in one ID line, start translation and send this line back
         on start of input
         """
+
+        def on_done(translation):
+            self.translations[text] = translation.text
+            callback([text, CLIPBOARD_PREFIX + text])
+
+        def on_fail(error):
+            match error.code:
+                case ProviderErrorCode.NETWORK:
+                    self.translations[error_id] = _('Translation failed, check for network issues')
+                case ProviderErrorCode.API_KEY_INVALID:
+                    self.translations[error_id] = _('The provided API key is invalid')
+                case ProviderErrorCode.API_KEY_REQUIRED:
+                    self.translations[error_id] = _('API key is required to use the service')
+                case _:
+                    self.translations[error_id] = _('Translation failed') 
+            callback([error_id])
+
         text = ' '.join(terms)
-        provider = Settings.get().active_translator
 
         if self.live_enabled:
             if not self.loaded:
                 return self.GetInitialResultSet(terms)
-            translation_id = self.translation(text)
-            results = [translation_id]
-            if not translation_id.startswith(ERROR_PREFIX):
-                results.append(CLIPBOARD_PREFIX + text)
-            return results
 
-        return [
-            _('Translate “{text}” with {provider_name}').format(
-                text=text, provider_name=TRANSLATORS[provider].prettyname
+            # If the two languages are the same, nothing is done
+            if self.src_language != self.dest_language and text != '':
+                error_id = ERROR_PREFIX + text
+
+                src, dest = self.translator.denormalize_lang(self.src_language, self.dest_language)
+                self.translator.translate(
+                    text,
+                    src,
+                    dest,
+                    on_done,
+                    on_fail
+                )
+
+        else:
+            provider = Settings.get().active_translator
+
+            callback(
+                [
+                    _('Translate “{text}” with {provider_name}').format(
+                        text=text, provider_name=TRANSLATORS[provider].prettyname
+                    )
+                ]
             )
-        ]
 
-    def GetSubsearchResultSet(self, _previous_results, new_terms):
-        return self.GetInitialResultSet(new_terms)
+    def GetSubsearchResultSet(self, _previous_results, new_terms, callback):
+        self.GetInitialResultSet(new_terms, callback)
 
-    def GetResultMetas(self, ids):
+    def GetResultMetas(self, ids, callback):
         """Send translated text"""
 
         translate_id = ids[0]
@@ -119,113 +148,84 @@ class TranslateService:
             text = translate_id
             if translate_id in self.translations:
                 text = self.translations[translate_id]
-            return [
-                {
-                    'id': GLib.Variant("s", translate_id),
-                    'name': GLib.Variant("s", text),
-                }
-            ]
+
+            callback(
+                [
+                    {
+                        'id': GLib.Variant("s", translate_id),
+                        'name': GLib.Variant("s", text),
+                    }
+                ]
+            )
 
         elif len(ids) == 2 and translate_id in self.translations and ids[1] == CLIPBOARD_PREFIX + ids[0]:
             text = self.translations[translate_id]
-            lang = get_lang_name(self.dest_language)
+            lang = self.translator.get_lang_name(self.dest_language)
             provider = Settings.get().active_translator
             description = f'{lang} — {TRANSLATORS[provider].prettyname}' if self.live_enabled else ''
 
             self.translations.clear()
 
-            return [
-                {
-                    'id': GLib.Variant("s", translate_id),
-                    'name': GLib.Variant("s", text),
-                    'description': GLib.Variant("s", description),
-                },
-                {
-                    'id': GLib.Variant("s", ids[1]),
-                    'name': GLib.Variant("s", _('Copy')),
-                    'description': GLib.Variant("s", _('Copy translation to clipboard')),
-                    'clipboardText': GLib.Variant("s", text),
-                },
-            ]
+            callback(
+                [
+                    {
+                        'id': GLib.Variant("s", translate_id),
+                        'name': GLib.Variant("s", text),
+                        'description': GLib.Variant("s", description),
+                    },
+                    {
+                        'id': GLib.Variant("s", ids[1]),
+                        'name': GLib.Variant("s", _('Copy')),
+                        'description': GLib.Variant("s", _('Copy translation to clipboard')),
+                        'clipboardText': GLib.Variant("s", text),
+                    },
+                ]
+            )
 
         else:
             # Probably never needed, just in case
-            return [
-                dict(
-                    id=GLib.Variant("s", id),
-                    name=GLib.Variant("s", id),
-                )
-                for id in ids
-            ]
+            callback(
+                [
+                    dict(
+                        id=GLib.Variant("s", id),
+                        name=GLib.Variant("s", id),
+                    )
+                    for id in ids
+                ]
+            )
 
-    def ActivateResult(self, result_id, terms, timestamp):
+    def ActivateResult(self, result_id, terms, timestamp, callback):
         if not result_id.startswith(CLIPBOARD_PREFIX):
             self.LaunchSearch(terms, timestamp)
+
+        callback((None,))
 
     def LaunchSearch(self, terms, _timestamp):
         text = ' '.join(terms)
         GLib.spawn_async_with_pipes(None, ['@BIN@', '--text', text], None, GLib.SpawnFlags.SEARCH_PATH, None)
 
-    def translation(self, src_text=None):
-        """Start a new translation"""
-
-        # If the two languages are the same, nothing is done
-        if self.src_language != self.dest_language and src_text != '':
-            error_id = ERROR_PREFIX + src_text
-
-            message = self.translator.format_translation(src_text, self.src_language, self.dest_language)
-
-            response = Session.get().send_and_read(message, None)
-
-            if response:
-                try:
-                    data = response.get_data()
-                    (translation, _lang) = self.translator.get_translation(data)
-
-                    self.translations[src_text] = translation.text
-                    return src_text
-                except InvalidApiKey as exc:
-                    logging.error(exc)
-                    self.translations[error_id] = _('The provided API key is invalid')
-                except ApiKeyRequired as exc:
-                    logging.error(exc)
-                    self.translations[error_id] = _('API key is required to use the service')
-                except Exception as exc:
-                    logging.error(exc)
-            else:
-                self.translations[error_id] = _('Translation failed, check for network issues')
-
-            return error_id
-
     def is_live_enabled(self):
         return Settings.get().live_translation and Settings.get().sp_translation
 
     def _load_translator(self):
-        self.loaded = False
-        provider = Settings.get().active_translator
-        self.translator = TRANSLATORS[provider]()
-
-        if self.translator.trans_init_requests:
-            requests = []
-            for name in self.translator.trans_init_requests:
-                message = getattr(self.translator, f'format_{name}_init')()
-                callback = getattr(self.translator, f'{name}_init')
-                requests.append([message, callback])
-            Session.get().multiple(requests, self._on_loaded)
-        else:
-            self._on_loaded('')
-
-    def _on_loaded(self, errors):
-        if errors or self.translator.error:
-            self.loaded = False
-            self.load_failed = True
-            self.dest_language = None
-        else:
+        def on_done():
             self.loaded = True
             self.load_failed = False
             self.dest_language = self.translator.dest_langs[0]
 
             self.translator.settings.connect('changed', self._on_translator_settings_changed)
+
+        def on_fail(_error):
+            self.loaded = False
+            self.load_failed = True
+            self.dest_language = None
+
+        self.loaded = False
+        provider = Settings.get().active_translator
+        self.translator = TRANSLATORS[provider]()
+
+        # Init translator
+        self.translator.init_trans(on_done, on_fail)
 
     def _on_settings_changed(self, _settings, key):
         if key.startswith('translator-'):
@@ -264,20 +264,24 @@ class TranslateServiceApplication(Gio.Application):
       return True
 
   def on_dbus_method_call(self, connection, sender, object_path, interface_name, method_name, parameters, invocation):
+    def return_value(results):
+        results = results,
+        if results == (None,):
+            results = ()
+        results_type = "(" + "".join(map(lambda argument_info: argument_info.signature, self.search_interface.lookup_method(method_name).out_args)) + ")"
+        wrapped_results = GLib.Variant(results_type, results)
+
+        invocation.return_value(wrapped_results)
+
+        self.release()
+
     self.hold()
 
     method = getattr(self.service_object, method_name)
     arguments = list(parameters.unpack())
+    arguments.append(return_value)
 
-    results = method(*arguments),
-    if results == (None,):
-      results = ()
-    results_type = "(" + "".join(map(lambda argument_info: argument_info.signature, self.search_interface.lookup_method(method_name).out_args)) + ")"
-    wrapped_results = GLib.Variant(results_type, results)
-
-    invocation.return_value(wrapped_results)
-
-    self.release()
+    method(*arguments)
 
 if __name__ == "__main__":
     app = TranslateServiceApplication()
