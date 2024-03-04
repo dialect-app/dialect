@@ -35,7 +35,12 @@ Dialect is available for Fedora 33 and later:
 ```bash
 sudo dnf install dialect
 ```
+### Debian
 
+Dialect is available in Debian 12:
+```bash
+sudo apt-get install dialect
+```
 ## Building
 
 ### Requirements
