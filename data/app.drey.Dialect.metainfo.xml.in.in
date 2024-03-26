@@ -206,4 +206,8 @@
     <value key="Purism::form_factor">mobile</value>
     <value key="GnomeSoftware::key-colors">[(108, 236, 156), (0, 0, 0)]</value>
   </custom>
+  <branding>
+    <color type="primary" scheme_preference="light">#a1f6b4</color>
+    <color type="primary" scheme_preference="dark">#157b4c</color>
+  </branding>
 </component>
