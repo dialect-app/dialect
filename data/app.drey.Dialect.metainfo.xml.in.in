@@ -52,7 +52,7 @@
   </screenshots>
   <releases>
     <release version="2.2.0" date="2023-11-16">
-      <description translatable="no">
+      <description translate="no">
         <ul>
           <li>Refactored providers implementation to ease future features</li>
           <li>Added Lingva Text-to-speech support in addition to Google'ss</li>
@@ -67,7 +67,7 @@
       </description>
     </release>
     <release version="2.1.1" date="2022-10-22">
-      <description translatable="no">
+      <description translate="no">
         <ul>
           <li>Updated translations</li>
           <li>Fixed minor bugs</li>
@@ -75,7 +75,7 @@
       </description>
     </release>
     <release version="2.1.0" date="2022-10-18">
-      <description translatable="no">
+      <description translate="no">
         <ul>
           <li>Update to use libadwaita 1.2 widgets</li>
           <li>Updated translations</li>
@@ -84,7 +84,7 @@
       </description>
     </release>
     <release version="2.0.2" date="2022-07-17">
-      <description translatable="no">
+      <description translate="no">
         <ul>
           <li>Fixed responsive implementation</li>
           <li>Fixed small stylings</li>
@@ -93,14 +93,14 @@
       </description>
     </release>
     <release version="2.0.1" date="2022-07-14">
-      <description translatable="no">
+      <description translate="no">
         <ul>
           <li>Fixed an issue with scale factor</li>
         </ul>
       </description>
     </release>
     <release version="2.0.0" date="2022-07-13">
-      <description translatable="no">
+      <description translate="no">
         <ul>
           <li>Ported to GTK4 and libadwaita</li>
           <li>New in-app color scheme switcher</li>
@@ -118,14 +118,14 @@
       </description>
     </release>
     <release version="1.4.1" date="2021-10-20">
-      <description translatable="no">
+      <description translate="no">
         <ul>
           <li>Fix shortcut bug</li>
         </ul>
       </description>
     </release>
     <release version="1.4.0" date="2021-10-18">
-      <description translatable="no">
+      <description translate="no">
         <ul>
           <li>Added accels for most actions</li>
           <li>Added localized language names</li>
@@ -135,7 +135,7 @@
       </description>
     </release>
     <release version="1.3.0" date="2021-05-07">
-      <description translatable="no">
+      <description translate="no">
         <ul>
           <li>Backend refactor</li>
           <li>Added option to disable Google TTS</li>
@@ -145,7 +145,7 @@
       </description>
     </release>
     <release version="1.2.0" date="2021-03-08">
-      <description translatable="no">
+      <description translate="no">
         <ul>
           <li>Switch to a new icon</li>
           <li>Added LibreTranslate backend</li>
@@ -157,7 +157,7 @@
       </description>
     </release>
     <release version="1.1.1" date="2020-12-08">
-      <description translatable="no">
+      <description translate="no">
         <ul>
           <li>Added a shortcuts window</li>
           <li>Added Indonesian translation</li>
@@ -167,7 +167,7 @@
       </description>
     </release>
     <release version="1.1.0" date="2020-10-30">
-      <description translatable="no">
+      <description translate="no">
         <ul>
           <li>Added a search provider for GNOME</li>
           <li>Added support for "Did you mean" suggestions</li>
@@ -184,7 +184,7 @@
       </description>
     </release>
     <release version="1.0.0" date="2020-10-14">
-      <description translatable="no">
+      <description translate="no">
         <p>Initial release.</p>
       </description>
     </release>
