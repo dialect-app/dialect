@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="DialectPreferencesWindow" parent="AdwPreferencesWindow">
-    <property name="default_height">420</property>
-    <property name="default_width">600</property>
-    <property name="modal">True</property>
-    <property name="search-enabled">False</property>
+  <template class="DialectPreferencesWindow" parent="AdwPreferencesDialog">
     <child>
       <object class="AdwPreferencesPage">
         <child>

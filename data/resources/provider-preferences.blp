@@ -1,22 +1,16 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $ProviderPreferences : Adw.Bin {
-  notify::parent => $_on_parent();
+template $ProviderPreferences : Adw.NavigationPage {
+  title: _('Provider Preferences');
 
   Adw.ToolbarView {
 
     [top]
     Adw.HeaderBar {
-
       title-widget: Adw.WindowTitle title {
         title: _('Provider Preferences');
       };
-
-      Button {
-        icon-name: "go-previous-symbolic";
-        clicked => $_on_back();
-      }
     }
 
     Adw.PreferencesPage page {

@@ -2,18 +2,16 @@
 # Copyright 2023 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-import logging
 import re
 
 from gi.repository import Adw, GObject, Gtk
 
 from dialect.define import RES_PATH
-from dialect.session import Session
 from dialect.providers import ProviderCapability, ProviderFeature
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/provider-preferences.ui')
-class ProviderPreferences(Adw.Bin):
+class ProviderPreferences(Adw.NavigationPage):
     __gtype_name__ = 'ProviderPreferences'
 
     # Properties
@@ -33,11 +31,12 @@ class ProviderPreferences(Adw.Bin):
     api_key_reset = Gtk.Template.Child()
     api_key_spinner = Gtk.Template.Child()
 
-    def __init__(self, providers, scope, **kwargs):
+    def __init__(self, scope, dialog, window, **kwargs):
         super().__init__(**kwargs)
-        self.providers = providers
         self.scope = scope
-        self.provider = providers[scope]
+        self.provider = window.provider[scope]
+        self.dialog = dialog
+        self.window = window
 
         self.title.props.subtitle = self.provider.prettyname
 
@@ -52,20 +51,12 @@ class ProviderPreferences(Adw.Bin):
         self.instance_entry.props.text = self.provider.instance_url
         self.api_key_entry.props.text = self.provider.api_key
 
-    @Gtk.Template.Callback()
-    def _on_parent(self, _view, _pspec):
         # Main window progress
-        if self.props.parent is not None:
-            self.get_root().parent.connect('notify::translator-loading', self._on_translator_loading)
+        self.window.connect('notify::translator-loading', self._on_translator_loading)            
 
     def _check_settings(self):
         self.instance_entry.props.visible = ProviderFeature.INSTANCES in self.provider.features
         self.api_key_entry.props.visible = ProviderFeature.API_KEY in self.provider.features
-
-    @Gtk.Template.Callback()
-    def _on_back(self, _button):
-        """ Called on self.back_btn::clicked signal """
-        self.get_root().close_subpage()
 
     @Gtk.Template.Callback()
     def _on_instance_apply(self, _row):
@@ -82,7 +73,7 @@ class ProviderPreferences(Adw.Bin):
                 error_text = _('Not a valid {provider} instance')
                 error_text = error_text.format(provider=self.provider.prettyname)
                 toast = Adw.Toast.new(error_text)
-                self.get_root().add_toast(toast)
+                self.dialog.add_toast(toast)
 
             self.instance_entry.props.sensitive = True
             self.api_key_entry.props.sensitive = True
@@ -137,7 +128,7 @@ class ProviderPreferences(Adw.Bin):
                 error_text = _('Not a valid {provider} API key')
                 error_text = error_text.format(provider=self.provider.prettyname)
                 toast = Adw.Toast.new(error_text)
-                self.get_root().add_toast(toast)
+                self.dialog.add_toast(toast)
 
             self.instance_entry.props.sensitive = True
             self.api_key_entry.props.sensitive = True
@@ -173,5 +164,5 @@ class ProviderPreferences(Adw.Bin):
         self.page.props.sensitive = not window.translator_loading
 
         if not window.translator_loading:
-            self.provider = self.providers[self.scope]
+            self.provider = self.window.provider[self.scope]
             self._check_settings()

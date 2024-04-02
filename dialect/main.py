@@ -177,8 +177,7 @@ class Dialect(Adw.Application):
     def _on_preferences(self, _action, _param):
         """ Show preferences window """
         window = DialectPreferencesWindow(self.window)
-        window.props.transient_for = self.window
-        window.present()
+        window.present(self.window)
 
     def _on_about(self, _action, _param):
         """ Show about dialog """
@@ -195,8 +194,7 @@ class Dialect(Adw.Application):
 
         about.add_link(_('Donate'), 'https://opencollective.com/dialect')
 
-        about.props.transient_for = self.window
-        about.present()
+        about.present(self.window)
 
     def _on_quit(self, _action, _param):
         self.quit()

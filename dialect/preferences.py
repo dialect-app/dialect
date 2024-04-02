@@ -14,10 +14,10 @@ from dialect.widgets import ProviderPreferences
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/preferences.ui')
-class DialectPreferencesWindow(Adw.PreferencesWindow):
+class DialectPreferencesWindow(Adw.PreferencesDialog):
     __gtype_name__ = 'DialectPreferencesWindow'
 
-    parent = NotImplemented
+    window = NotImplemented
 
     # Child widgets
     live_translation = Gtk.Template.Child()
@@ -31,10 +31,10 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
     custom_default_font_size = Gtk.Template.Child()
     default_font_size = Gtk.Template.Child()
 
-    def __init__(self, parent, **kwargs):
+    def __init__(self, window, **kwargs):
         super().__init__(**kwargs)
 
-        self.parent = parent
+        self.window = window
 
         # Bind preferences with GSettings
         Settings.get().bind('live-translation', self.live_translation, 'enable-expansion',
@@ -75,7 +75,7 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         self.tts_config.connect('clicked', self._open_provider, 'tts')
 
         # Translator loading
-        self.parent.connect('notify::translator-loading', self._on_translator_loading)
+        self.window.connect('notify::translator-loading', self._on_translator_loading)
 
         # Search Provider
         if os.getenv('XDG_CURRENT_DESKTOP') != 'GNOME':
@@ -93,9 +93,9 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
         return not boolean
 
     def _open_provider(self, _button, scope):
-        if self.parent.provider[scope] is not None:
-            page = ProviderPreferences(self.parent.provider, scope)
-            self.present_subpage(page)
+        if self.window.provider[scope] is not None:
+            page = ProviderPreferences(scope, self, self.window)
+            self.push_subpage(page)
 
     def _provider_has_settings(self, name):
         if not name:
@@ -143,15 +143,15 @@ class DialectPreferencesWindow(Adw.PreferencesWindow):
                 # User has never set custom size before
                 Settings.default_font_size = system_font_size
                 self.default_font_size.set_value(system_font_size)
-                self.parent.set_font_size(system_font_size)
+                self.window.set_font_size(system_font_size)
 
             else:
-                self.parent.set_font_size(Settings.get().default_font_size)
+                self.window.set_font_size(Settings.get().default_font_size)
         else:
-            self.parent.set_font_size(system_font_size)
+            self.window.set_font_size(system_font_size)
             self.custom_default_font_size.set_enable_expansion(False)
 
     def _change_default_font_size(self, row):
         """Called on self.default_font_size.get_adjustment()::value-changed signal"""
         Settings.default_font_size = row.get_value()
-        self.parent.set_font_size(row.get_value())
+        self.window.set_font_size(row.get_value())
