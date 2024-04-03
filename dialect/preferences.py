@@ -14,8 +14,8 @@ from dialect.widgets import ProviderPreferences
 
 
 @Gtk.Template(resource_path=f'{RES_PATH}/preferences.ui')
-class DialectPreferencesWindow(Adw.PreferencesDialog):
-    __gtype_name__ = 'DialectPreferencesWindow'
+class DialectPreferencesDialog(Adw.PreferencesDialog):
+    __gtype_name__ = 'DialectPreferencesDialog'
 
     window = NotImplemented
 
