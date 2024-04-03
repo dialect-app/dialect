@@ -51,6 +51,17 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="2.3.0" date="2024-04-03">
+      <description translate="no">
+        <ul>
+          <li>Make text views font size configurable and temporally modify it with shortcuts or scroll</li>
+          <li>Fix search provider always running in the background</li>
+          <li>Allow opening language selector with keyboard shortcuts</li>
+          <li>Add --selection CLI option to translate the primary clipboard</li>
+          <li>Use new GNOME 46 adaptive dialogs</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.2.0" date="2023-11-16">
       <description translate="no">
         <ul>

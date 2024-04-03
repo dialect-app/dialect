@@ -1,8 +1,12 @@
 
 ### In Development
+
+### 2.3.0
 - Make text views font size configurable and temporally modify it with shortcuts or scroll
 - Fix search provider always running in the background
 - Allow opening language selector with keyboard shortcuts
+- Add --selection CLI option to translate the primary clipboard
+- Use new GNOME 46 adaptive dialogs
 
 ### 2.2.0
 - Refactored providers implementation to ease future features
