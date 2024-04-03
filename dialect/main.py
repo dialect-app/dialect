@@ -20,7 +20,7 @@ except ImportError or ValueError:
     logging.error('Error: GObject dependencies not met.')
 
 from dialect.define import APP_ID, RES_PATH, VERSION
-from dialect.preferences import DialectPreferencesWindow
+from dialect.preferences import DialectPreferencesDialog
 from dialect.settings import Settings
 from dialect.window import DialectWindow
 
@@ -176,7 +176,7 @@ class Dialect(Adw.Application):
 
     def _on_preferences(self, _action, _param):
         """ Show preferences window """
-        window = DialectPreferencesWindow(self.window)
+        window = DialectPreferencesDialog(self.window)
         window.present(self.window)
 
     def _on_about(self, _action, _param):
