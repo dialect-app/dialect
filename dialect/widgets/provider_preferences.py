@@ -55,7 +55,7 @@ class ProviderPreferences(Adw.NavigationPage):
         self.api_key_entry.props.text = self.provider.api_key
 
         # Main window progress
-        self.window.connect('notify::translator-loading', self._on_translator_loading)            
+        self.window.connect('notify::translator-loading', self._on_translator_loading)
 
     def _check_settings(self):
         def on_usage(usage, limit):
@@ -78,7 +78,8 @@ class ProviderPreferences(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     def _on_instance_apply(self, _row):
-        """ Called on self.instance_entry::apply signal """
+        """Called on self.instance_entry::apply signal"""
+
         def on_done(valid):
             if valid:
                 self.provider.instance_url = self.new_instance_url
@@ -119,7 +120,7 @@ class ProviderPreferences(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     def _on_instance_changed(self, _entry, _pspec):
-        """ Called on self.instance_entry::notify::text signal """
+        """Called on self.instance_entry::notify::text signal"""
         if self.instance_entry.props.text == self.provider.instance_url:
             self.instance_entry.props.show_apply_button = False
         elif not self.instance_entry.props.show_apply_button:
@@ -135,7 +136,8 @@ class ProviderPreferences(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     def _on_api_key_apply(self, _row):
-        """ Called on self.api_key_entry::apply signal """
+        """Called on self.api_key_entry::apply signal"""
+
         def on_done(valid):
             if valid:
                 self.provider.api_key = self.new_api_key

@@ -12,9 +12,7 @@ from dialect.define import RES_PATH
 @Gtk.Template(resource_path=f'{RES_PATH}/lang-selector.ui')
 class LangSelector(Adw.Bin):
     __gtype_name__ = 'LangSelector'
-    __gsignals__ = {
-        'user-selection-changed': (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())
-    }
+    __gsignals__ = {'user-selection-changed': (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())}
 
     # Properties
     selected = GObject.Property(type=str)  # Code of the selected lang
@@ -70,7 +68,7 @@ class LangSelector(Adw.Bin):
 
     @Gtk.Template.Callback()
     def _on_selected_changed(self, _self, _pspec):
-        """ Called on self::notify::selected signal """
+        """Called on self::notify::selected signal"""
 
         if self.model is not None:
             self.model.set_selected(self.selected)
@@ -84,7 +82,7 @@ class LangSelector(Adw.Bin):
 
     @Gtk.Template.Callback()
     def _activated(self, _list, row):
-        """ Called on self.(recent_list, lang_list)::row-activated signal """
+        """Called on self.(recent_list, lang_list)::row-activated signal"""
         # Close popover
         self.popover.popdown()
         # Set selected property
@@ -93,12 +91,12 @@ class LangSelector(Adw.Bin):
 
     @Gtk.Template.Callback()
     def _popover_show(self, _popover):
-        """ Called on self.popover::show signal """
+        """Called on self.popover::show signal"""
         self.search.grab_focus()
 
     @Gtk.Template.Callback()
     def _popover_closed(self, _popover):
-        """ Called on self.popover::closed signal """
+        """Called on self.popover::closed signal"""
         # Reset scroll
         vscroll = self.scroll.get_vadjustment()
         vscroll.props.value = 0
@@ -119,7 +117,7 @@ class LangSelector(Adw.Bin):
 
     @Gtk.Template.Callback()
     def _on_search(self, _entry):
-        """ Called on self.search::changed signal """
+        """Called on self.search::changed signal"""
         if self.search.props.text != '':
             self.revealer.props.reveal_child = False
         else:
@@ -129,7 +127,7 @@ class LangSelector(Adw.Bin):
 
     @Gtk.Template.Callback()
     def _on_search_activate(self, _entry):
-        """ Called on self.search::activate signal """
+        """Called on self.search::activate signal"""
         if self.search.props.text:
             row = self.lang_list.get_row_at_index(0)
             if row:
@@ -158,9 +156,4 @@ class LangRow(Gtk.ListBoxRow):
         self.lang = lang
         self.name.props.label = self.lang.name
 
-        self.lang.bind_property(
-            'selected',
-            self.selection,
-            'visible',
-            GObject.BindingFlags.SYNC_CREATE
-        )
+        self.lang.bind_property('selected', self.selection, 'visible', GObject.BindingFlags.SYNC_CREATE)

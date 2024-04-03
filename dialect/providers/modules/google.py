@@ -450,9 +450,7 @@ class Provider(LocalProvider, SoupProvider):
                         )
                     )
                 except TypeError:
-                    translated_parts = [
-                        TranslatedPart(parsed[1][0][1][0], [parsed[1][0][0][0], parsed[1][0][1][0]])
-                    ]
+                    translated_parts = [TranslatedPart(parsed[1][0][1][0], [parsed[1][0][0][0], parsed[1][0][1][0]])]
 
                 first_iter = True
                 translated = ""

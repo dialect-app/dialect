@@ -121,7 +121,7 @@ class Provider(SoupProvider):
                         data['translations'][0]['text'],
                         (text, src, dest),
                         detected=detected,
-                        pronunciation=(None, pronunciation)
+                        pronunciation=(None, pronunciation),
                     )
                     on_done(translation)
 

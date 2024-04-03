@@ -30,15 +30,11 @@ class TextView(Gtk.TextView):
         self.add_controller(scroll_ctrlr)
 
         # Custom font
-        self._font_size = int(
-            Gtk.Settings.get_default().get_property('gtk-font-name').split()[1]
-        )
+        self._font_size = int(Gtk.Settings.get_default().get_property('gtk-font-name').split()[1])
         self._font_css_provider = Gtk.CssProvider()
 
         # Add font CSS provider
-        self.get_style_context().add_provider(
-            self._font_css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
-        )
+        self.get_style_context().add_provider(self._font_css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
 
     @GObject.Property(type=int)
     def font_size(self) -> int:
@@ -63,7 +59,7 @@ class TextView(Gtk.TextView):
         modifiers = state & Gtk.accelerator_get_default_mod_mask()
         control_mask = Gdk.ModifierType.CONTROL_MASK
         enter_keys = (Gdk.KEY_Return, Gdk.KEY_KP_Enter)
-        
+
         # Activate with mod key pressed
         if control_mask == modifiers:
             if keyval in enter_keys:
@@ -76,7 +72,7 @@ class TextView(Gtk.TextView):
             if not self.activate_mod:
                 self.emit('activate')
                 return Gdk.EVENT_STOP
-        
+
         return Gdk.EVENT_PROPAGATE
 
     def _on_scroll(self, ctrl: Gtk.EventControllerScroll, _dx: float, dy: float):

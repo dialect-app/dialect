@@ -67,4 +67,4 @@ class LanguagesListModel(GObject.GObject, Gio.ListModel):
 
     def set_selected(self, code):
         for item in self.langs:
-            item.props.selected = (item.code == code)
+            item.props.selected = item.code == code

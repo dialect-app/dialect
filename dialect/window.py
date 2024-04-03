@@ -81,10 +81,7 @@ class DialectWindow(Adw.ApplicationWindow):
     win_key_ctrlr: Gtk.EventControllerKey = Gtk.Template.Child()
 
     # Providers objects
-    provider: dict[str, BaseProvider] = {
-        'trans': None,
-        'tts': None
-    }
+    provider: dict[str, BaseProvider] = {'trans': None, 'tts': None}
 
     # Text to speech
     current_speech = {}
@@ -233,7 +230,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.src_text.activate_mod = not bool(Settings.get().translate_accel_value)
         Settings.get().connect(
             'changed::translate-accel',
-            lambda s, _k: self.src_text.set_property('activate_mod', not bool(s.translate_accel_value))
+            lambda s, _k: self.src_text.set_property('activate_mod', not bool(s.translate_accel_value)),
         )
 
     def setup_selectors(self):
@@ -392,20 +389,24 @@ class DialectWindow(Adw.ApplicationWindow):
             title = _('Failed loading the translation service')
             description = _('Please report this in the Dialect bug tracker if the issue persists.')
             if ProviderFeature.INSTANCES in self.provider['trans'].features:
-                description = _((
-                    'Failed loading "{url}", check if the instance address is correct or report in the Dialect bug tracker'
-                    ' if the issue persists.'
-                ))
+                description = _(
+                    (
+                        'Failed loading "{url}", check if the instance address is correct or report in the Dialect bug tracker'
+                        ' if the issue persists.'
+                    )
+                )
                 description = description.format(url=url)
 
             if error.code == ProviderErrorCode.NETWORK:
                 title = _('Couldn’t connect to the translation service')
                 description = _('We can’t connect to the server. Please check for network issues.')
                 if ProviderFeature.INSTANCES in self.provider['trans'].features:
-                    description = _((
-                        'We can’t connect to the {service} instance "{url}".\n'
-                        'Please check for network issues or if the address is correct.'
-                    ))
+                    description = _(
+                        (
+                            'We can’t connect to the {service} instance "{url}".\n'
+                            'Please check for network issues or if the address is correct.'
+                        )
+                    )
                     description = description.format(service=service, url=url)
 
             if error.message:
@@ -414,7 +415,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.error_page.props.title = title
             self.error_page.props.description = description
 
-    def api_key_failed(self, required = False):
+    def api_key_failed(self, required=False):
         if required:
             self.key_page.props.title = _('API key is required to use the service')
             self.key_page.props.description = _('Please set an API key in the preferences.')
@@ -492,30 +493,17 @@ class DialectWindow(Adw.ApplicationWindow):
         else:
             action = None
 
-        self.send_notification(
-            _('A network issue has occurred. Please try again.'),
-            action=action
-        )
+        self.send_notification(_('A network issue has occurred. Please try again.'), action=action)
 
-        src_text = self.src_buffer.get_text(
-            self.src_buffer.get_start_iter(),
-            self.src_buffer.get_end_iter(),
-            True
-        )
-        dest_text = self.dest_buffer.get_text(
-            self.dest_buffer.get_start_iter(),
-            self.dest_buffer.get_end_iter(),
-            True
-        )
+        src_text = self.src_buffer.get_text(self.src_buffer.get_start_iter(), self.src_buffer.get_end_iter(), True)
+        dest_text = self.dest_buffer.get_text(self.dest_buffer.get_start_iter(), self.dest_buffer.get_end_iter(), True)
 
         if self.provider['tts'].tts_languages:
             self.lookup_action('listen-src').set_enabled(
-                self.src_lang_selector.selected in self.provider['tts'].tts_languages
-                and src_text != ''
+                self.src_lang_selector.selected in self.provider['tts'].tts_languages and src_text != ''
             )
             self.lookup_action('listen-dest').set_enabled(
-                self.dest_lang_selector.selected in self.provider['tts'].tts_languages
-                and dest_text != ''
+                self.dest_lang_selector.selected in self.provider['tts'].tts_languages and dest_text != ''
             )
         else:
             self.lookup_action('listen-src').props.enabled = src_text != ''
@@ -588,41 +576,29 @@ class DialectWindow(Adw.ApplicationWindow):
             self.dest_voice_btn.props.child = self.dest_voice_spinner
             self.dest_voice_spinner.start()
         else:
-            src_text = self.src_buffer.get_text(
-                self.src_buffer.get_start_iter(),
-                self.src_buffer.get_end_iter(),
-                True
-            )
+            src_text = self.src_buffer.get_text(self.src_buffer.get_start_iter(), self.src_buffer.get_end_iter(), True)
             self.lookup_action('listen-src').set_enabled(
-                self.src_lang_selector.selected in self.provider['tts'].tts_languages
-                and src_text != ''
+                self.src_lang_selector.selected in self.provider['tts'].tts_languages and src_text != ''
             )
             self.src_voice_btn.props.child = self.src_voice_image
             self.src_voice_spinner.stop()
 
             dest_text = self.dest_buffer.get_text(
-                self.dest_buffer.get_start_iter(),
-                self.dest_buffer.get_end_iter(),
-                True
+                self.dest_buffer.get_start_iter(), self.dest_buffer.get_end_iter(), True
             )
             self.lookup_action('listen-dest').set_enabled(
-                self.dest_lang_selector.selected in self.provider['tts'].tts_languages
-                and dest_text != ''
+                self.dest_lang_selector.selected in self.provider['tts'].tts_languages and dest_text != ''
             )
             self.dest_voice_btn.props.child = self.dest_voice_image
             self.dest_voice_spinner.stop()
 
     @Gtk.Template.Callback()
     def _on_src_lang_changed(self, _obj, _param):
-        """ Called on self.src_lang_selector::notify::selected signal """
+        """Called on self.src_lang_selector::notify::selected signal"""
 
         code = self.src_lang_selector.selected
         dest_code = self.dest_lang_selector.selected
-        src_text = self.src_buffer.get_text(
-            self.src_buffer.get_start_iter(),
-            self.src_buffer.get_end_iter(),
-            True
-        )
+        src_text = self.src_buffer.get_text(self.src_buffer.get_start_iter(), self.src_buffer.get_end_iter(), True)
 
         if self.provider['trans'].cmp_langs(code, dest_code):
             valid = find_item_match(first_exclude(self.src_langs, dest_code), self.provider['trans'].dest_languages)
@@ -633,9 +609,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Disable or enable listen function.
         if self.provider['tts'] and Settings.get().active_tts != '':
-            self.lookup_action('listen-src').set_enabled(
-                code in self.provider['tts'].tts_languages and src_text != ''
-            )
+            self.lookup_action('listen-src').set_enabled(code in self.provider['tts'].tts_languages and src_text != '')
 
         if code in self.provider['trans'].src_languages:
             # Update saved src langs list
@@ -656,15 +630,11 @@ class DialectWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def _on_dest_lang_changed(self, _obj, _param):
-        """ Called on self.dest_lang_selector::notify::selected signal """
+        """Called on self.dest_lang_selector::notify::selected signal"""
 
         code = self.dest_lang_selector.selected
         src_code = self.src_lang_selector.selected
-        dest_text = self.dest_buffer.get_text(
-            self.dest_buffer.get_start_iter(),
-            self.dest_buffer.get_end_iter(),
-            True
-        )
+        dest_text = self.dest_buffer.get_text(self.dest_buffer.get_start_iter(), self.dest_buffer.get_end_iter(), True)
 
         if self.provider['trans'].cmp_langs(code, src_code):
             valid = find_item_match(first_exclude(self.dest_langs, src_code), self.provider['trans'].src_languages)
@@ -745,16 +715,8 @@ class DialectWindow(Adw.ApplicationWindow):
         self.lookup_action('translation').props.enabled = False
         src_language = self.src_lang_selector.selected
         dest_language = self.dest_lang_selector.selected
-        src_text = self.src_buffer.get_text(
-            self.src_buffer.get_start_iter(),
-            self.src_buffer.get_end_iter(),
-            True
-        )
-        dest_text = self.dest_buffer.get_text(
-            self.dest_buffer.get_start_iter(),
-            self.dest_buffer.get_end_iter(),
-            True
-        )
+        src_text = self.src_buffer.get_text(self.src_buffer.get_start_iter(), self.src_buffer.get_end_iter(), True)
+        dest_text = self.dest_buffer.get_text(self.dest_buffer.get_start_iter(), self.dest_buffer.get_end_iter(), True)
         if src_language == 'auto':
             return
 
@@ -781,11 +743,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.src_text.font_size_dec()
 
     def ui_copy(self, _action, _param):
-        dest_text = self.dest_buffer.get_text(
-            self.dest_buffer.get_start_iter(),
-            self.dest_buffer.get_end_iter(),
-            True
-        )
+        dest_text = self.dest_buffer.get_text(self.dest_buffer.get_start_iter(), self.dest_buffer.get_end_iter(), True)
         clipboard = Gdk.Display.get_default().get_clipboard()
         clipboard.set(dest_text)
 
@@ -805,9 +763,7 @@ class DialectWindow(Adw.ApplicationWindow):
     def ui_suggest(self, _action, _param):
         self.dest_toolbar_stack.props.visible_child_name = 'edit'
         self.before_suggest = self.dest_buffer.get_text(
-            self.dest_buffer.get_start_iter(),
-            self.dest_buffer.get_end_iter(),
-            True
+            self.dest_buffer.get_start_iter(), self.dest_buffer.get_end_iter(), True
         )
         self.dest_text.props.editable = True
 
@@ -827,24 +783,15 @@ class DialectWindow(Adw.ApplicationWindow):
             self.send_notification(_('Suggestion failed.'))
             self.dest_text.props.editable = False
 
-        dest_text = self.dest_buffer.get_text(
-            self.dest_buffer.get_start_iter(),
-            self.dest_buffer.get_end_iter(),
-            True
-        )
+        dest_text = self.dest_buffer.get_text(self.dest_buffer.get_start_iter(), self.dest_buffer.get_end_iter(), True)
 
         src, dest = self.provider['trans'].denormalize_lang(
             self.provider['trans'].history[self.current_history].original[1],
-            self.provider['trans'].history[self.current_history].original[2]
+            self.provider['trans'].history[self.current_history].original[2],
         )
 
         self.provider['trans'].suggest(
-            self.provider['trans'].history[self.current_history].original[0],
-            src,
-            dest,
-            dest_text,
-            on_done,
-            on_fail
+            self.provider['trans'].history[self.current_history].original[0], src, dest, dest_text, on_done, on_fail
         )
 
         self.before_suggest = None
@@ -854,23 +801,15 @@ class DialectWindow(Adw.ApplicationWindow):
         if self.before_suggest is not None:
             self.dest_buffer.props.text = self.before_suggest
             self.before_suggest = None
-        self.dest_text.props.editable = False       
+        self.dest_text.props.editable = False
 
     def ui_src_voice(self, _action, _param):
-        src_text = self.src_buffer.get_text(
-            self.src_buffer.get_start_iter(),
-            self.src_buffer.get_end_iter(),
-            True
-        )
+        src_text = self.src_buffer.get_text(self.src_buffer.get_start_iter(), self.src_buffer.get_end_iter(), True)
         src_language = self.src_lang_selector.selected
         self._pre_speech(src_text, src_language, 'src')
 
     def ui_dest_voice(self, _action, _param):
-        dest_text = self.dest_buffer.get_text(
-            self.dest_buffer.get_start_iter(),
-            self.dest_buffer.get_end_iter(),
-            True
-        )
+        dest_text = self.dest_buffer.get_text(self.dest_buffer.get_start_iter(), self.dest_buffer.get_end_iter(), True)
         dest_language = self.dest_lang_selector.selected
         self._pre_speech(dest_text, dest_language, 'dest')
 
@@ -879,11 +818,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.voice_loading = True
             self.toggle_voice_spinner(True)
 
-            self.current_speech = {
-                'text': text,
-                'lang': lang,
-                'called_from': called_from
-            }
+            self.current_speech = {'text': text, 'lang': lang, 'called_from': called_from}
 
             self.download_speech()
 
@@ -926,14 +861,16 @@ class DialectWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def _on_key_event(self, _button, keyval, _keycode, state):
-        """ Called on self.win_key_ctrlr::key-pressed signal """
+        """Called on self.win_key_ctrlr::key-pressed signal"""
         modifiers = state & Gtk.accelerator_get_default_mod_mask()
         shift_mask = Gdk.ModifierType.SHIFT_MASK
         unicode_key_val = Gdk.keyval_to_unicode(keyval)
-        if (GLib.unichar_isgraph(chr(unicode_key_val))
-                and modifiers in (shift_mask, 0)
-                and not self.dest_text.props.editable
-                and not self.src_text.is_focus()):
+        if (
+            GLib.unichar_isgraph(chr(unicode_key_val))
+            and modifiers in (shift_mask, 0)
+            and not self.dest_text.props.editable
+            and not self.src_text.is_focus()
+        ):
             self.src_text.grab_focus()
             end_iter = self.src_buffer.get_end_iter()
             self.src_buffer.insert(end_iter, chr(unicode_key_val))
@@ -942,13 +879,13 @@ class DialectWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def _on_src_activated(self, _texview):
-        """ Called on self.src_text::active signal """
+        """Called on self.src_text::active signal"""
         if not Settings.get().live_translation:
             self.translation()
 
     @Gtk.Template.Callback()
     def _on_mistakes_clicked(self, _button, _data):
-        """ Called on self.mistakes_label::activate-link signal """
+        """Called on self.mistakes_label::activate-link signal"""
         self.mistakes.props.reveal_child = False
         self.src_buffer.props.text = self.trans_mistakes[1]
         # Run translation again
@@ -968,18 +905,14 @@ class DialectWindow(Adw.ApplicationWindow):
 
             if char_count >= self.provider['trans'].chars_limit:
                 self.send_notification(_('{} characters limit reached!').format(self.provider['trans'].chars_limit))
-                buffer.delete(
-                    buffer.get_iter_at_offset(self.provider['trans'].chars_limit),
-                    buffer.get_end_iter()
-                )
+                buffer.delete(buffer.get_iter_at_offset(self.provider['trans'].chars_limit), buffer.get_end_iter())
 
         sensitive = char_count != 0
         self.lookup_action('translation').props.enabled = sensitive
         self.lookup_action('clear').props.enabled = sensitive
         if not self.voice_loading and self.provider['tts']:
             self.lookup_action('listen-src').set_enabled(
-                self.src_lang_selector.selected in self.provider['tts'].tts_languages
-                and sensitive
+                self.src_lang_selector.selected in self.provider['tts'].tts_languages and sensitive
             )
         elif not self.voice_loading and not self.provider['tts']:
             self.lookup_action('listen-src').props.enabled = sensitive
@@ -988,13 +921,11 @@ class DialectWindow(Adw.ApplicationWindow):
         sensitive = buffer.get_char_count() != 0
         self.lookup_action('copy').props.enabled = sensitive
         self.lookup_action('suggest').set_enabled(
-            ProviderFeature.SUGGESTIONS in self.provider['trans'].features
-            and sensitive
+            ProviderFeature.SUGGESTIONS in self.provider['trans'].features and sensitive
         )
         if not self.voice_loading and self.provider['tts']:
             self.lookup_action('listen-dest').set_enabled(
-                self.dest_lang_selector.selected in self.provider['tts'].tts_languages
-                and sensitive
+                self.dest_lang_selector.selected in self.provider['tts'].tts_languages and sensitive
             )
         elif not self.voice_loading and self.provider['tts'] is not None and not self.provider['tts'].tts_languages:
             self.lookup_action('listen-dest').props.enabled = sensitive
@@ -1020,11 +951,7 @@ class DialectWindow(Adw.ApplicationWindow):
     def appeared_before(self):
         src_language = self.src_lang_selector.selected
         dest_language = self.dest_lang_selector.selected
-        src_text = self.src_buffer.get_text(
-            self.src_buffer.get_start_iter(),
-            self.src_buffer.get_end_iter(),
-            True
-        )
+        src_text = self.src_buffer.get_text(self.src_buffer.get_start_iter(), self.src_buffer.get_end_iter(), True)
         if (
             len(self.provider['trans'].history) >= self.current_history + 1
             and (self.provider['trans'].history[self.current_history].original[1] == src_language or 'auto')
@@ -1038,20 +965,12 @@ class DialectWindow(Adw.ApplicationWindow):
     def translation(self, _action=None, _param=None):
         # If it's like the last translation then it's useless to continue
         if not self.appeared_before():
-            src_text = self.src_buffer.get_text(
-                self.src_buffer.get_start_iter(),
-                self.src_buffer.get_end_iter(),
-                True
-            )
+            src_text = self.src_buffer.get_text(self.src_buffer.get_start_iter(), self.src_buffer.get_end_iter(), True)
             src_language = self.src_lang_selector.selected
             dest_language = self.dest_lang_selector.selected
 
             if self.ongoing_trans:
-                self.next_trans = {
-                    'text': src_text,
-                    'src': src_language,
-                    'dest': dest_language
-                }
+                self.next_trans = {'text': src_text, 'src': src_language, 'dest': dest_language}
                 return
 
             if self.next_trans:
@@ -1070,11 +989,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
                     src, dest = self.provider['trans'].denormalize_lang(src_language, dest_language)
                     self.provider['trans'].translate(
-                        src_text,
-                        src,
-                        dest,
-                        self.on_translation_success,
-                        self.on_translation_fail
+                        src_text, src, dest, self.on_translation_success, self.on_translation_fail
                     )
                 else:
                     self.trans_mistakes = (None, None)
@@ -1147,7 +1062,7 @@ class DialectWindow(Adw.ApplicationWindow):
                     action={
                         'label': _('Retry'),
                         'name': 'win.translation',
-                    }
+                    },
                 )
             case ProviderErrorCode.API_KEY_INVALID:
                 self.send_notification(
@@ -1155,7 +1070,7 @@ class DialectWindow(Adw.ApplicationWindow):
                     action={
                         'label': _('Retry'),
                         'name': 'win.translation',
-                    }
+                    },
                 )
             case ProviderErrorCode.API_KEY_REQUIRED:
                 self.send_notification(
@@ -1163,7 +1078,7 @@ class DialectWindow(Adw.ApplicationWindow):
                     action={
                         'label': _('Preferences'),
                         'name': 'app.preferences',
-                    }
+                    },
                 )
             case _:
                 self.send_notification(
@@ -1171,8 +1086,8 @@ class DialectWindow(Adw.ApplicationWindow):
                     action={
                         'label': _('Retry'),
                         'name': 'win.translation',
-                    }
-                )            
+                    },
+                )
 
     def translation_loading(self):
         self.trans_spinner.show()

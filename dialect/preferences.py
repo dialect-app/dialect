@@ -37,18 +37,16 @@ class DialectPreferencesDialog(Adw.PreferencesDialog):
         self.window = window
 
         # Bind preferences with GSettings
-        Settings.get().bind('live-translation', self.live_translation, 'enable-expansion',
-                            Gio.SettingsBindFlags.DEFAULT)
-        Settings.get().bind('sp-translation', self.search_provider, 'active',
-                            Gio.SettingsBindFlags.DEFAULT)
-        Settings.get().bind('translate-accel', self.translate_accel,
-                            'selected', Gio.SettingsBindFlags.DEFAULT)
-        Settings.get().bind('src-auto', self.src_auto, 'active',
-                            Gio.SettingsBindFlags.DEFAULT)
-        Settings.get().bind('custom-default-font-size', self.custom_default_font_size, 'enable-expansion',
-                            Gio.SettingsBindFlags.DEFAULT)
-        Settings.get().bind('default-font-size', self.default_font_size, 'value',
-                            Gio.SettingsBindFlags.DEFAULT)
+        Settings.get().bind(
+            'live-translation', self.live_translation, 'enable-expansion', Gio.SettingsBindFlags.DEFAULT
+        )
+        Settings.get().bind('sp-translation', self.search_provider, 'active', Gio.SettingsBindFlags.DEFAULT)
+        Settings.get().bind('translate-accel', self.translate_accel, 'selected', Gio.SettingsBindFlags.DEFAULT)
+        Settings.get().bind('src-auto', self.src_auto, 'active', Gio.SettingsBindFlags.DEFAULT)
+        Settings.get().bind(
+            'custom-default-font-size', self.custom_default_font_size, 'enable-expansion', Gio.SettingsBindFlags.DEFAULT
+        )
+        Settings.get().bind('default-font-size', self.default_font_size, 'value', Gio.SettingsBindFlags.DEFAULT)
 
         self.translator_config.props.sensitive = False
         self.tts_config.props.sensitive = False
@@ -61,7 +59,7 @@ class DialectPreferencesDialog(Adw.PreferencesDialog):
             self.translator_config.props.sensitive = self._provider_has_settings(Settings.get().active_translator)
 
         # Setup TTS chooser
-        if (len(TTS) >= 1):
+        if len(TTS) >= 1:
             tts_model = ProvidersListModel('tts', True)
             with self.tts.freeze_notify():
                 self.tts.set_model(tts_model)
@@ -87,8 +85,8 @@ class DialectPreferencesDialog(Adw.PreferencesDialog):
 
     @Gtk.Template.Callback()
     def is_not_true(self, _widget, boolean):
-        """ Check if boolean is not true
-            template binding closure function
+        """Check if boolean is not true
+        template binding closure function
         """
         return not boolean
 

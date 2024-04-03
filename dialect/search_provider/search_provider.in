@@ -63,6 +63,7 @@ dbus_interface_description = '''
 </node>
 '''
 
+
 class TranslateService:
     def __init__(self):
         self.loaded = False
@@ -100,7 +101,7 @@ class TranslateService:
                 case ProviderErrorCode.API_KEY_REQUIRED:
                     self.translations[error_id] = _('API key is required to use the service')
                 case _:
-                    self.translations[error_id] = _('Translation failed') 
+                    self.translations[error_id] = _('Translation failed')
             callback([error_id])
 
         text = ' '.join(terms)
@@ -114,13 +115,7 @@ class TranslateService:
                 error_id = ERROR_PREFIX + text
 
                 src, dest = self.translator.denormalize_lang(self.src_language, self.dest_language)
-                self.translator.translate(
-                    text,
-                    src,
-                    dest,
-                    on_done,
-                    on_fail
-                )
+                self.translator.translate(text, src, dest, on_done, on_fail)
 
         else:
             provider = Settings.get().active_translator
@@ -239,46 +234,60 @@ class TranslateService:
         else:
             self._load_translator()
 
+
 class TranslateServiceApplication(Gio.Application):
+    def __init__(self):
+        Gio.Application.__init__(
+            self,
+            application_id='@APP_ID@.SearchProvider',
+            flags=Gio.ApplicationFlags.IS_SERVICE,
+            inactivity_timeout=10000,
+        )
+        self.service_object = TranslateService()
+        self.search_interface = Gio.DBusNodeInfo.new_for_xml(dbus_interface_description).interfaces[0]
 
-  def __init__(self):
-    Gio.Application.__init__(self,
-                             application_id='@APP_ID@.SearchProvider',
-                             flags=Gio.ApplicationFlags.IS_SERVICE,
-                             inactivity_timeout=10000)
-    self.service_object = TranslateService()
-    self.search_interface = Gio.DBusNodeInfo.new_for_xml(dbus_interface_description).interfaces[0]
+    def do_dbus_register(self, connection, object_path):
+        try:
+            connection.register_object(
+                object_path=object_path,
+                interface_info=self.search_interface,
+                method_call_closure=self.on_dbus_method_call,
+            )
+        except:
+            self.quit()
+            return False
+        finally:
+            return True
 
-  def do_dbus_register(self, connection, object_path):
-    try:
-      connection.register_object(object_path=object_path,
-                                 interface_info=self.search_interface,
-                                 method_call_closure=self.on_dbus_method_call)
-    except:
-      self.quit()
-      return False
-    finally:
-      return True
+    def on_dbus_method_call(self, connection, sender, object_path, interface_name, method_name, parameters, invocation):
+        def return_value(results):
+            results = (results,)
+            if results == (None,):
+                results = ()
+            results_type = (
+                "("
+                + "".join(
+                    map(
+                        lambda argument_info: argument_info.signature,
+                        self.search_interface.lookup_method(method_name).out_args,
+                    )
+                )
+                + ")"
+            )
+            wrapped_results = GLib.Variant(results_type, results)
 
-  def on_dbus_method_call(self, connection, sender, object_path, interface_name, method_name, parameters, invocation):
-    def return_value(results):
-        results = results,
-        if results == (None,):
-            results = ()
-        results_type = "(" + "".join(map(lambda argument_info: argument_info.signature, self.search_interface.lookup_method(method_name).out_args)) + ")"
-        wrapped_results = GLib.Variant(results_type, results)
+            invocation.return_value(wrapped_results)
 
-        invocation.return_value(wrapped_results)
+            self.release()
 
-        self.release()
+        self.hold()
 
-    self.hold()
+        method = getattr(self.service_object, method_name)
+        arguments = list(parameters.unpack())
+        arguments.append(return_value)
 
-    method = getattr(self.service_object, method_name)
-    arguments = list(parameters.unpack())
-    arguments.append(return_value)
+        method(*arguments)
 
-    method(*arguments)
 
 if __name__ == "__main__":
     app = TranslateServiceApplication()
