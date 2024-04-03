@@ -19,6 +19,6 @@ class DialectShortcutsWindow(Gtk.ShortcutsWindow):
 
     @Gtk.Template.Callback()
     def _on_show(self, _data):
-        """ Called on self::show signal """
+        """Called on self::show signal"""
         self.translate_shortcut.props.visible = not Settings.get().live_translation
         self.translate_shortcut.props.accelerator = Settings.get().translate_accel

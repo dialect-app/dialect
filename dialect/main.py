@@ -29,11 +29,7 @@ from dialect.window import DialectWindow
 
 class Dialect(Adw.Application):
     def __init__(self):
-        Adw.Application.__init__(
-            self,
-            application_id=APP_ID,
-            flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE
-        )
+        Adw.Application.__init__(self, application_id=APP_ID, flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE)
         self.set_resource_base_path(RES_PATH)
 
         # App window
@@ -43,14 +39,17 @@ class Dialect(Adw.Application):
         self._signal_handler = None
 
         # Add command line options
-        self.add_main_option('selection', b'n', GLib.OptionFlags.NONE,
-                             GLib.OptionArg.NONE, 'Translate text from the primary clipboard', None)
-        self.add_main_option('text', b't', GLib.OptionFlags.NONE,
-                             GLib.OptionArg.STRING, 'Text to translate', None)
-        self.add_main_option('src', b's', GLib.OptionFlags.NONE,
-                             GLib.OptionArg.STRING, 'Source lang code', None)
-        self.add_main_option('dest', b'd', GLib.OptionFlags.NONE,
-                             GLib.OptionArg.STRING, 'Destination lang code', None)
+        self.add_main_option(
+            'selection',
+            b'n',
+            GLib.OptionFlags.NONE,
+            GLib.OptionArg.NONE,
+            'Translate text from the primary clipboard',
+            None,
+        )
+        self.add_main_option('text', b't', GLib.OptionFlags.NONE, GLib.OptionArg.STRING, 'Text to translate', None)
+        self.add_main_option('src', b's', GLib.OptionFlags.NONE, GLib.OptionArg.STRING, 'Source lang code', None)
+        self.add_main_option('dest', b'd', GLib.OptionFlags.NONE, GLib.OptionArg.STRING, 'Destination lang code', None)
 
         self.setup_actions()
 
@@ -62,7 +61,7 @@ class Dialect(Adw.Application):
                     self.window.disconnect(self._signal_handler)
                 # Process CLI args
                 self.process_command_line()
-    
+
         self.window = self.props.active_window
 
         if not self.window:
@@ -72,7 +71,7 @@ class Dialect(Adw.Application):
                 # Translators: Do not translate the app name!
                 title=_('Dialect'),
                 default_height=height,
-                default_width=width
+                default_width=width,
             )
 
         # Decide when to process command line args
@@ -104,12 +103,9 @@ class Dialect(Adw.Application):
             return
 
         text = ''
-        langs = {
-            'src': None,
-            'dest': None
-        }
+        langs = {'src': None, 'dest': None}
         selection = 'selection' in self.argv
-            
+
         if 'text' in self.argv:
             text = self.argv['text']
         if 'src' in self.argv:
@@ -127,11 +123,9 @@ class Dialect(Adw.Application):
         self.argv = {}
 
     def setup_actions(self):
-        """ Setup menu actions """
+        """Setup menu actions"""
 
-        pronunciation = Gio.SimpleAction.new_stateful(
-            'pronunciation', None, Settings.get().show_pronunciation_value
-        )
+        pronunciation = Gio.SimpleAction.new_stateful('pronunciation', None, Settings.get().show_pronunciation_value)
         pronunciation.connect('change-state', self._on_pronunciation)
         self.add_action(pronunciation)
 
@@ -166,7 +160,7 @@ class Dialect(Adw.Application):
         self.set_accels_for_action('win.show-help-overlay', ['<Primary>question'])
 
     def _on_pronunciation(self, action, value):
-        """ Update show pronunciation setting """
+        """Update show pronunciation setting"""
         action.props.state = value
         Settings.get().show_pronunciation = value
 
@@ -177,22 +171,18 @@ class Dialect(Adw.Application):
             self.window.dest_pron_revealer.props.reveal_child = value
 
     def _on_preferences(self, _action, _param):
-        """ Show preferences window """
+        """Show preferences window"""
         window = DialectPreferencesDialog(self.window)
         window.present(self.window)
 
     def _on_about(self, _action, _param):
-        """ Show about dialog """
+        """Show about dialog"""
         builder = Gtk.Builder.new_from_resource(f'{RES_PATH}/about.ui')
         about = builder.get_object('about')
 
         about.props.application_icon = APP_ID
         about.props.version = VERSION
-        about.props.developers = [
-            "Mufeed Ali",
-            "Rafael Mardojai CM http://rafaelmardojai.com",
-            "Libretto"
-        ]
+        about.props.developers = ["Mufeed Ali", "Rafael Mardojai CM http://rafaelmardojai.com", "Libretto"]
 
         about.add_link(_('Donate'), 'https://opencollective.com/dialect')
 

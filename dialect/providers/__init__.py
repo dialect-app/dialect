@@ -73,11 +73,8 @@ class ProvidersListModel(GObject.GObject, Gio.ListModel):
     def __init__(self, p_type='', show_disabled=False):
         super().__init__()
 
-        if (p_type):  # If we want to get an specific provider type
-            types = {
-                'translators': TRANSLATORS,
-                'tts': TTS
-            }
+        if p_type:  # If we want to get an specific provider type
+            types = {'translators': TRANSLATORS, 'tts': TTS}
             providers = types.get(p_type)
         else:  # Get all providers
             providers = MODULES

@@ -52,22 +52,15 @@ class ThemeSwitcher(Gtk.Box):
 
         self.color_scheme = Settings.get().color_scheme
 
-        Settings.get().bind(
-            'color-scheme',
-            self,
-            'selected_color_scheme',
-            Gio.SettingsBindFlags.DEFAULT
-        )
+        Settings.get().bind('color-scheme', self, 'selected_color_scheme', Gio.SettingsBindFlags.DEFAULT)
 
         self.style_manager.bind_property(
-            'system-supports-color-schemes',
-            self, 'show_system',
-            GObject.BindingFlags.SYNC_CREATE
+            'system-supports-color-schemes', self, 'show_system', GObject.BindingFlags.SYNC_CREATE
         )
 
     @Gtk.Template.Callback()
     def _on_color_scheme_changed(self, _widget, _paramspec):
-        """ Called on (self.system, self.light, self.dark)::notify::active signal """
+        """Called on (self.system, self.light, self.dark)::notify::active signal"""
         if self.system.props.active:
             self.selected_color_scheme = 'auto'
         if self.light.props.active:
