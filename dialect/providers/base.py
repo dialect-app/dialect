@@ -32,6 +32,8 @@ class ProviderFeature(Flag):
     """ If the api key is supported but not necessary """
     API_KEY_REQUIRED = auto()
     """ If the api key is required for the provider to work """
+    API_KEY_USAGE = auto()
+    """ If the service reports api usage """
     DETECTION = auto()
     """ If it supports detecting text language (Auto translation) """
     MISTAKES = auto()
@@ -217,6 +219,20 @@ class BaseProvider:
         """
         raise NotImplementedError()
 
+    def api_char_usage(
+        self,
+        on_done: Callable[[int, int], None],
+        on_fail: Callable[[ProviderError], None],
+    ):
+        """
+        Retrieves the API usage status
+
+        Args:
+            on_done: Called after the process successful, with the usage and limit as args
+            on_fail: Called after any error on the speech process
+        """
+        raise NotImplementedError()  
+
     @property
     def lang_aliases(self) -> dict[str, str]:
         """
@@ -301,10 +317,11 @@ class BaseProvider:
 
         If url is localhost, `http` is ignored and HTTP protocol is forced.
 
-        url: Base url, hostname and tld
-        path: Path of the url
-        params: Params to populate a url query
-        http: If HTTP should be used instead of HTTPS
+        Args:
+            url: Base url, hostname and tld
+            path: Path of the url
+            params: Params to populate a url query
+            http: If HTTP should be used instead of HTTPS
         """
 
         if not path.startswith('/'):
