@@ -5,7 +5,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
-import random
 
 from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk
 
@@ -15,6 +14,7 @@ from dialect.providers import TRANSLATORS, TTS, ProviderFeature, ProviderError, 
 from dialect.providers.base import BaseProvider, Translation
 from dialect.settings import Settings
 from dialect.shortcuts import DialectShortcutsWindow
+from dialect.utils import find_item_match, first_exclude
 from dialect.widgets import LangSelector, TextView, ThemeSwitcher
 
 
@@ -297,18 +297,18 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.app.lookup_action('pronunciation').props.enabled = True
 
             # Update langs
-            self.src_lang_model.set_langs(self.provider['trans'].languages)
-            self.dest_lang_model.set_langs(self.provider['trans'].languages)
+            self.src_lang_model.set_langs(self.provider['trans'].src_languages)
+            self.dest_lang_model.set_langs(self.provider['trans'].dest_languages)
 
             # Update selected langs
             set_auto = Settings.get().src_auto and ProviderFeature.DETECTION in self.provider['trans'].features
-            src_lang = self.provider['trans'].languages[0]
-            if self.src_langs and self.src_langs[0] in self.provider['trans'].languages:
+            src_lang = self.provider['trans'].src_languages[0]
+            if self.src_langs and self.src_langs[0] in self.provider['trans'].src_languages:
                 src_lang = self.src_langs[0]
             self.src_lang_selector.selected = 'auto' if set_auto else src_lang
 
-            dest_lang = self.provider['trans'].languages[1]
-            if self.dest_langs and self.dest_langs[0] in self.provider['trans'].languages:
+            dest_lang = self.provider['trans'].dest_languages[1]
+            if self.dest_langs and self.dest_langs[0] in self.provider['trans'].dest_languages:
                 dest_lang = self.dest_langs[0]
             self.dest_lang_selector.selected = dest_lang
 
@@ -335,8 +335,8 @@ class DialectWindow(Adw.ApplicationWindow):
         # Translator object
         self.provider['trans'] = TRANSLATORS[provider]()
         # Get saved languages
-        self.src_langs = self.provider['trans'].src_langs
-        self.dest_langs = self.provider['trans'].dest_langs
+        self.src_langs = self.provider['trans'].recent_src_langs
+        self.dest_langs = self.provider['trans'].recent_dest_langs
         # Do provider init
         self.provider['trans'].init_trans(on_done, on_fail)
 
@@ -525,7 +525,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.src_lang_selector.selected = 'auto'
         else:
             self.src_lang_selector.selected = src_lang
-        if dest_lang is not None and dest_lang in self.provider['trans'].languages:
+        if dest_lang is not None and dest_lang in self.provider['trans'].dest_languages:
             self.dest_lang_selector.selected = dest_lang
             self.dest_lang_selector.emit('user-selection-changed')
         # Set text to src buffer
@@ -537,7 +537,7 @@ class DialectWindow(Adw.ApplicationWindow):
         def on_paste(clipboard, result):
             text = clipboard.read_text_finish(result)
             self.translate(text, src_lang, dest_lang)
-        
+
         clipboard = Gdk.Display.get_default().get_primary_clipboard()
         clipboard.read_text_async(None, on_paste)
 
@@ -546,8 +546,8 @@ class DialectWindow(Adw.ApplicationWindow):
             size = self.get_default_size()
             Settings.get().window_size = (size.width, size.height)
         if self.provider['trans'] is not None:
-            self.provider['trans'].src_langs = self.src_langs
-            self.provider['trans'].dest_langs = self.dest_langs
+            self.provider['trans'].recent_src_langs = self.src_langs
+            self.provider['trans'].recent_dest_langs = self.dest_langs
 
     def send_notification(self, text, queue=False, action=None, timeout=5, priority=Adw.ToastPriority.NORMAL):
         """
@@ -619,14 +619,11 @@ class DialectWindow(Adw.ApplicationWindow):
         )
 
         if self.provider['trans'].cmp_langs(code, dest_code):
-            if len(self.dest_langs) >= 2:
-                code = self.dest_langs[1] if code == self.src_langs[0] else dest_code
-            if self.src_langs:
-                self.dest_lang_selector.selected = self.src_langs[0]
-            else:
-                options = list(self.provider['trans'].languages)
-                options.remove(code)
-                self.dest_lang_selector.selected = random.choice(options)
+            valid = find_item_match(first_exclude(self.src_langs, dest_code), self.provider['trans'].dest_languages)
+            if not valid:
+                valid = first_exclude(self.provider['trans'].dest_languages, dest_code)
+
+            self.dest_lang_selector.selected = valid
 
         # Disable or enable listen function.
         if self.provider['tts'] and Settings.get().active_tts != '':
@@ -634,10 +631,7 @@ class DialectWindow(Adw.ApplicationWindow):
                 code in self.provider['tts'].tts_languages and src_text != ''
             )
 
-        # Disable or enable switch function.
-        self.lookup_action('switch').props.enabled = code != 'auto'
-
-        if code in self.provider['trans'].languages:
+        if code in self.provider['trans'].src_languages:
             # Update saved src langs list
             if code in self.src_langs:
                 # Bring lang to the top
@@ -652,6 +646,8 @@ class DialectWindow(Adw.ApplicationWindow):
         # Rewrite recent langs
         self.src_recent_lang_model.set_langs(self.src_langs, auto=True)
 
+        self._check_switch_enabled()
+
     @Gtk.Template.Callback()
     def _on_dest_lang_changed(self, _obj, _param):
         """ Called on self.dest_lang_selector::notify::selected signal """
@@ -665,7 +661,11 @@ class DialectWindow(Adw.ApplicationWindow):
         )
 
         if self.provider['trans'].cmp_langs(code, src_code):
-            self.src_lang_selector.selected = self.dest_langs[0]
+            valid = find_item_match(first_exclude(self.dest_langs, src_code), self.provider['trans'].src_languages)
+            if not valid:
+                valid = first_exclude(self.provider['trans'].src_languages, src_code)
+
+            self.src_lang_selector.selected = valid
 
         # Disable or enable listen function.
         if self.provider['tts'] and Settings.get().active_tts != '':
@@ -686,6 +686,15 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Rewrite recent langs
         self.dest_recent_lang_model.set_langs(self.dest_langs)
+
+        self._check_switch_enabled()
+
+    def _check_switch_enabled(self):
+        # Disable or enable switch function.
+        self.lookup_action('switch').props.enabled = (
+            self.src_lang_selector.selected in self.provider['trans'].dest_languages
+            and self.dest_lang_selector.selected in self.provider['trans'].src_languages
+        )
 
     """
     User interface functions
@@ -1075,7 +1084,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         if translation.detected and self.src_lang_selector.selected == 'auto':
             if Settings.get().src_auto:
-                self.src_lang_selector.set_insight(translation.detected)
+                self.src_lang_selector.set_insight(self.provider['tts'].normalize_lang_code(translation.detected))
             else:
                 self.src_lang_selector.selected = translation.detected
 

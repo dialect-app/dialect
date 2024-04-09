@@ -370,7 +370,7 @@ class Provider(LocalProvider, SoupProvider):
 
     def init_tts(self, on_done, on_fail):
         for code in lang.tts_langs().keys():
-            self.add_lang(code, trans=False, tts=True)
+            self.add_lang(code, trans_src=False, trans_dest=False, tts=True)
 
         on_done()
 

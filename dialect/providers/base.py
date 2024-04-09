@@ -44,6 +44,19 @@ class ProviderFeature(Flag):
     """ If it supports sending translation suggestions to the service """
 
 
+class ProvideLangModel(Enum):
+    STATIC = auto()
+    """
+    The provider populate its `src_languages` and `dest_languages` properties.
+    The `cmp_langs` method will be used to decide if one code can be translated to another.
+    """
+    DYNAMIC = auto()
+    """
+    The provider only populate its `src_languages` property.
+    The `dest_langs_for` method will be used to get possible destination codes for a code.
+    """
+
+
 class ProviderErrorCode(Enum):
     UNEXPECTED = auto()
     NETWORK = auto()
@@ -84,6 +97,8 @@ class BaseProvider:
     """ Provider capabilities, translation, tts, etc """
     features: ProviderFeature = ProviderFeature.NONE
     """ Provider features """
+    lang_model: ProvideLangModel = ProvideLangModel.STATIC
+    """ Translation language model """
 
     defaults = {
         'instance_url': '',
@@ -94,8 +109,10 @@ class BaseProvider:
     """ Default provider settings """
 
     def __init__(self):
-        self.languages = []
-        """ Languages available for translating """
+        self.src_languages = []
+        """ Source languages available for translating """
+        self.dest_languages = []
+        """ Destination languages available for translating """
         self.tts_languages = []
         """ Languages available for TTS """
         self._nonstandard_langs = {}
@@ -231,7 +248,28 @@ class BaseProvider:
             on_done: Called after the process successful, with the usage and limit as args
             on_fail: Called after any error on the speech process
         """
-        raise NotImplementedError()  
+        raise NotImplementedError()
+
+    def cmp_langs(self, a: str, b: str) -> bool:
+        """
+        Compare two language codes.
+
+        It assumes that the codes have been normalized by `normalize_lang_code`.
+
+        This method exists so providers can add additional comparison logic.
+
+        Args:
+            a: First lang to compare
+            b: Second lang to compare
+        """
+
+        return a == b
+
+    def dest_langs_for(self, code: str) -> list[str]:
+        """
+        Get the available destination languages for a source language.
+        """
+        raise NotImplementedError()
 
     @property
     def lang_aliases(self) -> dict[str, str]:
@@ -281,12 +319,12 @@ class BaseProvider:
         self.api_key = ''
 
     @property
-    def src_langs(self):
+    def recent_src_langs(self):
         """Saved recent source langs of the user."""
         return self.settings.get_strv('src-langs') or self.defaults['src_langs']
 
-    @src_langs.setter
-    def src_langs(self, src_langs):
+    @recent_src_langs.setter
+    def recent_src_langs(self, src_langs):
         self.settings.set_strv('src-langs', src_langs)
 
     def reset_src_langs(self):
@@ -294,12 +332,12 @@ class BaseProvider:
         self.src_langs = []
 
     @property
-    def dest_langs(self):
+    def recent_dest_langs(self):
         """Saved recent destination langs of the user."""
         return self.settings.get_strv('dest-langs') or self.defaults['dest_langs']
 
-    @dest_langs.setter
-    def dest_langs(self, dest_langs):
+    @recent_dest_langs.setter
+    def recent_dest_langs(self, dest_langs):
         self.settings.set_strv('dest-langs', dest_langs)
 
     def reset_dest_langs(self):
@@ -371,22 +409,14 @@ class BaseProvider:
 
         return code
 
-    def cmp_langs(self, a: str, b: str) -> bool:
-        """
-        Compare two language codes.
-
-        It assumes that the codes have been normalized by `normalize_lang_code`.
-
-        This method exists so providers can add additional comparison logic.
-
-        Args:
-            a: First lang to compare
-            b: Second lang to compare
-        """
-
-        return a == b
-
-    def add_lang(self, original_code: str, name: str = None, trans: bool = True, tts: bool = False):
+    def add_lang(
+        self,
+        original_code: str,
+        name: str = None,
+        trans_src: bool = True,
+        trans_dest: bool = True,
+        tts: bool = False,
+    ):
         """
         Add lang supported by provider after normalization.
 
@@ -401,8 +431,10 @@ class BaseProvider:
 
         code = self.normalize_lang_code(original_code)  # Get normalized lang code
 
-        if trans:  # Add lang to supported languages list
-            self.languages.append(code)
+        if trans_src:  # Add lang to supported languages list
+            self.src_languages.append(code)
+        if trans_dest:
+            self.dest_languages.append(code)
         if tts:  # Add lang to supported TTS languages list
             self.tts_languages.append(code)
 
