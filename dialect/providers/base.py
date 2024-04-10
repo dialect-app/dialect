@@ -8,10 +8,9 @@ from dataclasses import dataclass
 from enum import Enum, Flag, auto
 from typing import Callable, Optional
 
-from gi.repository import Gio
-
-from dialect.define import APP_ID, LANG_ALIASES
+from dialect.define import LANG_ALIASES
 from dialect.languages import get_lang_name
+from dialect.providers.settings import ProviderSettings
 
 
 class ProviderCapability(Flag):
@@ -127,7 +126,7 @@ class BaseProvider:
         """ Here we save the translation history """
 
         # GSettings
-        self.settings = Gio.Settings(f'{APP_ID}.translator', f'/app/drey/Dialect/translators/{self.name}/')
+        self.settings = ProviderSettings(self.name)
 
     """
     Providers API methods
@@ -295,11 +294,11 @@ class BaseProvider:
     @property
     def instance_url(self):
         """Instance url saved on settings."""
-        return self.settings.get_string('instance-url') or self.defaults['instance_url']
+        return self.settings.instance_url or self.defaults['instance_url']
 
     @instance_url.setter
     def instance_url(self, url):
-        self.settings.set_string('instance-url', url)
+        self.settings.instance_url = url
 
     def reset_instance_url(self):
         """Resets saved instance url."""
@@ -308,11 +307,11 @@ class BaseProvider:
     @property
     def api_key(self):
         """API key saved on settings."""
-        return self.settings.get_string('api-key') or self.defaults['api_key']
+        return self.settings.api_key or self.defaults['api_key']
 
     @api_key.setter
     def api_key(self, api_key):
-        self.settings.set_string('api-key', api_key)
+        self.settings.api_key = api_key
 
     def reset_api_key(self):
         """Resets saved API key."""
@@ -321,28 +320,28 @@ class BaseProvider:
     @property
     def recent_src_langs(self):
         """Saved recent source langs of the user."""
-        return self.settings.get_strv('src-langs') or self.defaults['src_langs']
+        return self.settings.src_langs or self.defaults['src_langs']
 
     @recent_src_langs.setter
     def recent_src_langs(self, src_langs):
-        self.settings.set_strv('src-langs', src_langs)
+        self.settings.src_langs = src_langs
 
     def reset_src_langs(self):
         """Reset saved recent user source langs"""
-        self.src_langs = []
+        self.recent_src_langs = []
 
     @property
     def recent_dest_langs(self):
         """Saved recent destination langs of the user."""
-        return self.settings.get_strv('dest-langs') or self.defaults['dest_langs']
+        return self.settings.dest_langs or self.defaults['dest_langs']
 
     @recent_dest_langs.setter
     def recent_dest_langs(self, dest_langs):
-        self.settings.set_strv('dest-langs', dest_langs)
+        self.settings.dest_langs = dest_langs
 
     def reset_dest_langs(self):
         """Reset saved recent user destination langs"""
-        self.dest_langs = []
+        self.recent_dest_langs = []
 
     """
     General provider helpers
