@@ -4,7 +4,7 @@
 
 import logging
 from tempfile import NamedTemporaryFile
-import urllib
+from urllib.parse import quote
 
 from dialect.providers.base import (
     ProviderCapability,
@@ -109,7 +109,7 @@ class Provider(SoupProvider):
                 on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, error))
 
         # Format url query data
-        text = urllib.parse.quote(text, safe='')
+        text = quote(text, safe='')
         url = self.translate_url.format(text=text, src=src, dest=dest)
 
         # Request message

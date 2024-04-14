@@ -175,7 +175,7 @@ class Provider(SoupProvider):
             'target': dest,
             's': suggestion,
         }
-        if self.api_key and self.api_key_supported:
+        if self.api_key and ProviderFeature.API_KEY in self.features:
             data['api_key'] = self.api_key
 
         # Request message
