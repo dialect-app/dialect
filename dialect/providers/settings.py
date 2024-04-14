@@ -4,7 +4,7 @@
 
 import logging
 
-from gi.repository import Gio, GLib, GObject, Secret
+from gi.repository import Gio, GLib, Secret
 
 from dialect.define import APP_ID
 

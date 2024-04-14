@@ -132,8 +132,7 @@ class BaseProvider:
     Providers API methods
     """
 
-    @staticmethod
-    def validate_instance(url: str, on_done: Callable[[bool], None], on_fail: Callable[[ProviderError], None]):
+    def validate_instance(self, url: str, on_done: Callable[[bool], None], on_fail: Callable[[ProviderError], None]):
         """
         Validate an instance of the provider.
 

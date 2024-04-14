@@ -33,8 +33,7 @@ class Provider(SoupProvider):
 
         self.chars_limit = 0
 
-    @staticmethod
-    def validate_instance(url, on_done, on_fail):
+    def validate_instance(self, url, on_done, on_fail):
         def on_response(data):
             valid = False
 
@@ -46,9 +45,9 @@ class Provider(SoupProvider):
             on_done(valid)
 
         # Message request to LT API spec endpoint
-        message = Provider.create_message('GET', Provider.format_url(url, '/spec'))
+        message = self.create_message('GET', self.format_url(url, '/spec'))
         # Do async request
-        Provider.send_and_read_and_process_response(message, on_response, on_fail, False)
+        self.send_and_read_and_process_response(message, on_response, on_fail, False)
 
     @property
     def frontend_settings_url(self):

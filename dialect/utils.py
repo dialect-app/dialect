@@ -11,8 +11,8 @@ def find_item_match(list1: list[str], list2: list[str]) -> str | None:
         list1: List to iterate
         list2: List to check against
     """
-    list2 = set(list2)
-    return next((i for i in list1 if i in list2), None)
+    set_to_check = set(list2)
+    return next((i for i in list1 if i in set_to_check), None)
 
 
 def first_exclude(list_: list[str], exclude: str) -> str | None:
