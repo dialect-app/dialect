@@ -78,6 +78,25 @@ template $ProviderPreferences : Adw.NavigationPage {
           }
         }
       }
+
+      Adw.PreferencesGroup api_usage_group {
+        title: _("Character Usage");
+        visible: false;
+
+        Box {
+          orientation: vertical;
+          spacing: 3;
+
+          LevelBar api_usage {
+
+          }
+
+          Label api_usage_label {
+
+          }
+        }
+
+      }
     }
   }
 }

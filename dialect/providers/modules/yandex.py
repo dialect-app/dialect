@@ -39,7 +39,7 @@ class Provider(SoupProvider):
         self._uuid = str(uuid4()).replace('-', '')
 
     def init_trans(self, on_done, on_fail):
-        self.languages = [
+        languages = [
             'af',
             'sq',
             'am',
@@ -141,6 +141,8 @@ class Provider(SoupProvider):
             'yi',
             'zu',
         ]
+        for code in languages:
+            self.add_lang(code)
 
         on_done()
 

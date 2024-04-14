@@ -8,8 +8,13 @@ import pkgutil
 
 from gi.repository import Gio, GObject
 
-from dialect.providers.base import ProviderCapability, ProviderFeature, ProviderError, ProviderErrorCode  # noqa
 from dialect.providers import modules
+from dialect.providers.base import (  # noqa
+    ProviderCapability,
+    ProviderError,
+    ProviderErrorCode,
+    ProviderFeature,
+)
 
 MODULES = {}
 TRANSLATORS = {}

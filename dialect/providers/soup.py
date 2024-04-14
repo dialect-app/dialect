@@ -6,7 +6,7 @@ import json
 import logging
 from typing import Callable
 
-from gi.repository import GLib, Gio, Soup
+from gi.repository import Gio, GLib, Soup
 
 from dialect.providers.base import BaseProvider, ProviderError, ProviderErrorCode
 from dialect.session import Session
@@ -18,8 +18,7 @@ class SoupProvider(BaseProvider):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    @staticmethod
-    def encode_data(data) -> GLib.Bytes | None:
+    def encode_data(self, data) -> GLib.Bytes | None:
         """
         Convert Python data to JSON and bytes.
 
@@ -34,8 +33,7 @@ class SoupProvider(BaseProvider):
             logging.warning(exc)
         return data_glib_bytes
 
-    @staticmethod
-    def create_message(method: str, url: str, data={}, headers: dict = {}, form: bool = False) -> Soup.Message:
+    def create_message(self, method: str, url: str, data={}, headers: dict = {}, form: bool = False) -> Soup.Message:
         """
         Create a libsoup's message.
 
@@ -56,7 +54,7 @@ class SoupProvider(BaseProvider):
         else:
             message = Soup.Message.new(method, url)
         if data and not form:
-            data = SoupProvider.encode_data(data)
+            data = self.encode_data(data)
             message.set_request_body_from_bytes('application/json', data)
         if headers:
             for name, value in headers.items():
@@ -65,8 +63,7 @@ class SoupProvider(BaseProvider):
             message.get_request_headers().append('User-Agent', 'Dialect App')
         return message
 
-    @staticmethod
-    def send_and_read(message: Soup.Message, callback: Callable[[Session, Gio.AsyncResult], None]):
+    def send_and_read(self, message: Soup.Message, callback: Callable[[Session, Gio.AsyncResult], None]):
         """
         Helper method for libsoup's send_and_read_async.
 
@@ -78,8 +75,7 @@ class SoupProvider(BaseProvider):
         """
         Session.get().send_and_read_async(message, 0, None, callback)
 
-    @staticmethod
-    def read_data(data: bytes) -> dict:
+    def read_data(self, data: bytes) -> dict:
         """
         Get JSON data from bytes.
 
@@ -88,8 +84,7 @@ class SoupProvider(BaseProvider):
         """
         return json.loads(data) if data else {}
 
-    @staticmethod
-    def read_response(session: Session, result: Gio.AsyncResult) -> dict:
+    def read_response(self, session: Session, result: Gio.AsyncResult) -> dict:
         """
         Get JSON data from session result.
 
@@ -100,10 +95,9 @@ class SoupProvider(BaseProvider):
             result: Result of send_and_read_async callback
         """
         response = session.get_response(session, result)
-        return SoupProvider.read_data(response)
+        return self.read_data(response)
 
-    @staticmethod
-    def check_known_errors(data: dict) -> None | ProviderError:
+    def check_known_errors(self, status: Soup.Status, data: dict) -> None | ProviderError:
         """
         Checks data for possible response errors and return a found error if any.
 
@@ -114,10 +108,11 @@ class SoupProvider(BaseProvider):
         """
         return None
 
-    @staticmethod
     def process_response(
+        self,
         session: Session,
         result: Gio.AsyncResult,
+        message: Soup.Message,
         on_continue: Callable[[dict | bytes], None],
         on_fail: Callable[[ProviderError], None],
         check_common: bool = True,
@@ -135,6 +130,7 @@ class SoupProvider(BaseProvider):
         Args:
             session: Session where the request wa sent
             result: Result of send_and_read_async callback
+            message: The message that was sent
             on_continue: Called after data was got successfully
             on_fail: Called after any error on request or in check_known_errors
             check_common: If response data should be checked for errors using check_known_errors
@@ -143,15 +139,15 @@ class SoupProvider(BaseProvider):
 
         try:
             if json:
-                data = SoupProvider.read_response(session, result)
-
-                if check_common:
-                    error = SoupProvider.check_known_errors(data)
-                    if error:
-                        on_fail(error)
-                        return
+                data = self.read_response(session, result)
             else:
                 data = Session.get_response(session, result)
+
+            if check_common:
+                error = self.check_known_errors(message.get_status(), data)
+                if error:
+                    on_fail(error)
+                    return
 
             on_continue(data)
 
@@ -159,8 +155,8 @@ class SoupProvider(BaseProvider):
             logging.warning(exc)
             on_fail(ProviderError(ProviderErrorCode.NETWORK, str(exc)))
 
-    @staticmethod
     def send_and_read_and_process_response(
+        self,
         message: Soup.Message,
         on_continue: Callable[[dict | bytes], None],
         on_fail: Callable[[ProviderError], None],
@@ -180,6 +176,6 @@ class SoupProvider(BaseProvider):
         """
 
         def on_response(session: Session, result: Gio.AsyncResult):
-            SoupProvider.process_response(session, result, on_continue, on_fail, check_common, json)
+            self.process_response(session, result, message, on_continue, on_fail, check_common, json)
 
-        SoupProvider.send_and_read(message, on_response)
+        self.send_and_read(message, on_response)

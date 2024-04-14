@@ -49,11 +49,12 @@ sudo apt-get install dialect
 - PyGObject `python-gobject`
 - GTK4 `gtk4`
 - libadwaita (>= 1.4.0) `libadwaita`
+- libsoup (>= 3.0) `libsoup`
+- libsecret
 - GStreamer 1.0 `gstreamer`
 - Meson `meson`
 - Ninja `ninja`
 - gTTS `python-gtts`
-- D-Bus `python-dbus`
 - Beautiful Soup `python-beautifulsoup4`
 
 If official packages are not available for any of the python dependencies, you can install them from pip:

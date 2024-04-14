@@ -4,7 +4,7 @@
 
 import logging
 from tempfile import NamedTemporaryFile
-import urllib
+from urllib.parse import quote
 
 from dialect.providers.base import (
     ProviderCapability,
@@ -37,8 +37,7 @@ class Provider(SoupProvider):
 
         self.chars_limit = 5000
 
-    @staticmethod
-    def validate_instance(url, on_done, on_fail):
+    def validate_instance(self, url, on_done, on_fail):
         def on_response(data):
             valid = False
             try:
@@ -49,9 +48,9 @@ class Provider(SoupProvider):
             on_done(valid)
 
         # Lingva translation endpoint
-        message = Provider.create_message('GET', Provider.format_url(url, '/api/v1/en/es/hello'))
+        message = self.create_message('GET', self.format_url(url, '/api/v1/en/es/hello'))
         # Do async request
-        Provider.send_and_read_and_process_response(message, on_response, on_fail, False)
+        self.send_and_read_and_process_response(message, on_response, on_fail, False)
 
     @property
     def lang_url(self):
@@ -110,7 +109,7 @@ class Provider(SoupProvider):
                 on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, error))
 
         # Format url query data
-        text = urllib.parse.quote(text, safe='')
+        text = quote(text, safe='')
         url = self.translate_url.format(text=text, src=src, dest=dest)
 
         # Request message
@@ -140,8 +139,7 @@ class Provider(SoupProvider):
         # Do async request
         self.send_and_read_and_process_response(message, on_response, on_fail)
 
-    @staticmethod
-    def check_known_errors(data):
+    def check_known_errors(self, _status, data):
         """Raises a proper Exception if an error is found in the data."""
         if not data:
             return ProviderError(ProviderErrorCode.EMPTY, 'Response is empty!')

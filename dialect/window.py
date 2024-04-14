@@ -5,16 +5,22 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
-import random
 
 from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk
 
 from dialect.define import APP_ID, PROFILE, RES_PATH, TRANS_NUMBER
 from dialect.languages import LanguagesListModel
-from dialect.providers import TRANSLATORS, TTS, ProviderFeature, ProviderError, ProviderErrorCode
+from dialect.providers import (
+    TRANSLATORS,
+    TTS,
+    ProviderError,
+    ProviderErrorCode,
+    ProviderFeature,
+)
 from dialect.providers.base import BaseProvider, Translation
 from dialect.settings import Settings
 from dialect.shortcuts import DialectShortcutsWindow
+from dialect.utils import find_item_match, first_exclude
 from dialect.widgets import LangSelector, TextView, ThemeSwitcher
 
 
@@ -297,18 +303,18 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.app.lookup_action('pronunciation').props.enabled = True
 
             # Update langs
-            self.src_lang_model.set_langs(self.provider['trans'].languages)
-            self.dest_lang_model.set_langs(self.provider['trans'].languages)
+            self.src_lang_model.set_langs(self.provider['trans'].src_languages)
+            self.dest_lang_model.set_langs(self.provider['trans'].dest_languages)
 
             # Update selected langs
             set_auto = Settings.get().src_auto and ProviderFeature.DETECTION in self.provider['trans'].features
-            src_lang = self.provider['trans'].languages[0]
-            if self.src_langs and self.src_langs[0] in self.provider['trans'].languages:
+            src_lang = self.provider['trans'].src_languages[0]
+            if self.src_langs and self.src_langs[0] in self.provider['trans'].src_languages:
                 src_lang = self.src_langs[0]
             self.src_lang_selector.selected = 'auto' if set_auto else src_lang
 
-            dest_lang = self.provider['trans'].languages[1]
-            if self.dest_langs and self.dest_langs[0] in self.provider['trans'].languages:
+            dest_lang = self.provider['trans'].dest_languages[1]
+            if self.dest_langs and self.dest_langs[0] in self.provider['trans'].dest_languages:
                 dest_lang = self.dest_langs[0]
             self.dest_lang_selector.selected = dest_lang
 
@@ -335,8 +341,8 @@ class DialectWindow(Adw.ApplicationWindow):
         # Translator object
         self.provider['trans'] = TRANSLATORS[provider]()
         # Get saved languages
-        self.src_langs = self.provider['trans'].src_langs
-        self.dest_langs = self.provider['trans'].dest_langs
+        self.src_langs = self.provider['trans'].recent_src_langs
+        self.dest_langs = self.provider['trans'].recent_dest_langs
         # Do provider init
         self.provider['trans'].init_trans(on_done, on_fail)
 
@@ -353,16 +359,7 @@ class DialectWindow(Adw.ApplicationWindow):
             if valid:
                 self.main_stack.props.visible_child_name = 'translate'
             else:
-                self.key_page.props.title = _('The provided API key is invalid')
-                if ProviderFeature.API_KEY_REQUIRED in self.provider['trans'].features:
-                    self.key_page.props.description = _('Please set a valid API key in the preferences.')
-                else:
-                    self.key_page.props.description = _(
-                        'Please set a valid API key or unset the API key in the preferences.'
-                    )
-                    self.rmv_key_btn.props.visible = True
-                    self.error_api_key_btn.props.visible = True
-                self.main_stack.props.visible_child_name = 'api-key'
+                self.api_key_failed()
 
         def on_fail(error: ProviderError):
             self.loading_failed(error)
@@ -374,44 +371,66 @@ class DialectWindow(Adw.ApplicationWindow):
                 not self.provider['trans'].api_key
                 and ProviderFeature.API_KEY_REQUIRED in self.provider['trans'].features
             ):
-                self.key_page.props.title = _('API key is required to use the service')
-                self.key_page.props.description = _('Please set an API key in the preferences.')
-                self.main_stack.props.visible_child_name = 'api-key'
+                self.api_key_failed(required=True)
             else:
                 self.main_stack.props.visible_child_name = 'translate'
         else:
             self.main_stack.props.visible_child_name = 'translate'
 
     def loading_failed(self, error: ProviderError):
-        self.main_stack.props.visible_child_name = 'error'
+        # Api Key error
+        if error.code in (ProviderErrorCode.API_KEY_INVALID, ProviderErrorCode.API_KEY_REQUIRED):
+            self.api_key_failed(error.code == ProviderErrorCode.API_KEY_REQUIRED)
 
-        service = self.provider['trans'].prettyname
-        url = self.provider['trans'].instance_url
+        # Other errors
+        else:
+            self.main_stack.props.visible_child_name = 'error'
 
-        title = _('Failed loading the translation service')
-        description = _('Please report this in the Dialect bug tracker if the issue persists.')
-        if ProviderFeature.INSTANCES in self.provider['trans'].features:
-            description = _((
-                'Failed loading "{url}", check if the instance address is correct or report in the Dialect bug tracker'
-                ' if the issue persists.'
-            ))
-            description = description.format(url=url)
+            service = self.provider['trans'].prettyname
+            url = self.provider['trans'].instance_url
 
-        if error.code == ProviderErrorCode.NETWORK:
-            title = _('Couldn’t connect to the translation service')
-            description = _('We can’t connect to the server. Please check for network issues.')
+            title = _('Failed loading the translation service')
+            description = _('Please report this in the Dialect bug tracker if the issue persists.')
             if ProviderFeature.INSTANCES in self.provider['trans'].features:
                 description = _((
-                    'We can’t connect to the {service} instance "{url}".\n'
-                    'Please check for network issues or if the address is correct.'
+                    'Failed loading "{url}", check if the instance address is correct or report in the Dialect bug tracker'
+                    ' if the issue persists.'
                 ))
-                description = description.format(service=service, url=url)
+                description = description.format(url=url)
 
-        if error.message:
-            description = description + '\n\n<small><tt>' + error.message + '</tt></small>'
+            if error.code == ProviderErrorCode.NETWORK:
+                title = _('Couldn’t connect to the translation service')
+                description = _('We can’t connect to the server. Please check for network issues.')
+                if ProviderFeature.INSTANCES in self.provider['trans'].features:
+                    description = _((
+                        'We can’t connect to the {service} instance "{url}".\n'
+                        'Please check for network issues or if the address is correct.'
+                    ))
+                    description = description.format(service=service, url=url)
 
-        self.error_page.props.title = title
-        self.error_page.props.description = description
+            if error.message:
+                description = description + '\n\n<small><tt>' + error.message + '</tt></small>'
+
+            self.error_page.props.title = title
+            self.error_page.props.description = description
+
+    def api_key_failed(self, required = False):
+        if required:
+            self.key_page.props.title = _('API key is required to use the service')
+            self.key_page.props.description = _('Please set an API key in the preferences.')
+
+        else:
+            self.key_page.props.title = _('The provided API key is invalid')
+            if ProviderFeature.API_KEY_REQUIRED in self.provider['trans'].features:
+                self.key_page.props.description = _('Please set a valid API key in the preferences.')
+            else:
+                self.key_page.props.description = _(
+                    'Please set a valid API key or unset the API key in the preferences.'
+                )
+                self.rmv_key_btn.props.visible = True
+                self.error_api_key_btn.props.visible = True
+
+        self.main_stack.props.visible_child_name = 'api-key'
 
     @Gtk.Template.Callback()
     def retry_load_translator(self, _button):
@@ -512,7 +531,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.src_lang_selector.selected = 'auto'
         else:
             self.src_lang_selector.selected = src_lang
-        if dest_lang is not None and dest_lang in self.provider['trans'].languages:
+        if dest_lang is not None and dest_lang in self.provider['trans'].dest_languages:
             self.dest_lang_selector.selected = dest_lang
             self.dest_lang_selector.emit('user-selection-changed')
         # Set text to src buffer
@@ -524,7 +543,7 @@ class DialectWindow(Adw.ApplicationWindow):
         def on_paste(clipboard, result):
             text = clipboard.read_text_finish(result)
             self.translate(text, src_lang, dest_lang)
-        
+
         clipboard = Gdk.Display.get_default().get_primary_clipboard()
         clipboard.read_text_async(None, on_paste)
 
@@ -533,8 +552,8 @@ class DialectWindow(Adw.ApplicationWindow):
             size = self.get_default_size()
             Settings.get().window_size = (size.width, size.height)
         if self.provider['trans'] is not None:
-            self.provider['trans'].src_langs = self.src_langs
-            self.provider['trans'].dest_langs = self.dest_langs
+            self.provider['trans'].recent_src_langs = self.src_langs
+            self.provider['trans'].recent_dest_langs = self.dest_langs
 
     def send_notification(self, text, queue=False, action=None, timeout=5, priority=Adw.ToastPriority.NORMAL):
         """
@@ -606,14 +625,11 @@ class DialectWindow(Adw.ApplicationWindow):
         )
 
         if self.provider['trans'].cmp_langs(code, dest_code):
-            if len(self.dest_langs) >= 2:
-                code = self.dest_langs[1] if code == self.src_langs[0] else dest_code
-            if self.src_langs:
-                self.dest_lang_selector.selected = self.src_langs[0]
-            else:
-                options = list(self.provider['trans'].languages)
-                options.remove(code)
-                self.dest_lang_selector.selected = random.choice(options)
+            valid = find_item_match(first_exclude(self.src_langs, dest_code), self.provider['trans'].dest_languages)
+            if not valid:
+                valid = first_exclude(self.provider['trans'].dest_languages, dest_code)
+
+            self.dest_lang_selector.selected = valid
 
         # Disable or enable listen function.
         if self.provider['tts'] and Settings.get().active_tts != '':
@@ -621,10 +637,7 @@ class DialectWindow(Adw.ApplicationWindow):
                 code in self.provider['tts'].tts_languages and src_text != ''
             )
 
-        # Disable or enable switch function.
-        self.lookup_action('switch').props.enabled = code != 'auto'
-
-        if code in self.provider['trans'].languages:
+        if code in self.provider['trans'].src_languages:
             # Update saved src langs list
             if code in self.src_langs:
                 # Bring lang to the top
@@ -639,6 +652,8 @@ class DialectWindow(Adw.ApplicationWindow):
         # Rewrite recent langs
         self.src_recent_lang_model.set_langs(self.src_langs, auto=True)
 
+        self._check_switch_enabled()
+
     @Gtk.Template.Callback()
     def _on_dest_lang_changed(self, _obj, _param):
         """ Called on self.dest_lang_selector::notify::selected signal """
@@ -652,7 +667,11 @@ class DialectWindow(Adw.ApplicationWindow):
         )
 
         if self.provider['trans'].cmp_langs(code, src_code):
-            self.src_lang_selector.selected = self.dest_langs[0]
+            valid = find_item_match(first_exclude(self.dest_langs, src_code), self.provider['trans'].src_languages)
+            if not valid:
+                valid = first_exclude(self.provider['trans'].src_languages, src_code)
+
+            self.src_lang_selector.selected = valid
 
         # Disable or enable listen function.
         if self.provider['tts'] and Settings.get().active_tts != '':
@@ -673,6 +692,15 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Rewrite recent langs
         self.dest_recent_lang_model.set_langs(self.dest_langs)
+
+        self._check_switch_enabled()
+
+    def _check_switch_enabled(self):
+        # Disable or enable switch function.
+        self.lookup_action('switch').props.enabled = (
+            self.src_lang_selector.selected in self.provider['trans'].dest_languages
+            and self.dest_lang_selector.selected in self.provider['trans'].src_languages
+        )
 
     """
     User interface functions
@@ -1062,7 +1090,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         if translation.detected and self.src_lang_selector.selected == 'auto':
             if Settings.get().src_auto:
-                self.src_lang_selector.set_insight(translation.detected)
+                self.src_lang_selector.set_insight(self.provider['tts'].normalize_lang_code(translation.detected))
             else:
                 self.src_lang_selector.selected = translation.detected
 
@@ -1123,7 +1151,7 @@ class DialectWindow(Adw.ApplicationWindow):
                 )
             case ProviderErrorCode.API_KEY_INVALID:
                 self.send_notification(
-                    _('Translation failed, check for network issues'),
+                    _('The provided API key is invalid'),
                     action={
                         'label': _('Retry'),
                         'name': 'win.translation',

@@ -8,8 +8,8 @@ import os
 from gi.repository import Adw, Gio, Gtk
 
 from dialect.define import RES_PATH
+from dialect.providers import MODULES, TTS, ProviderFeature, ProvidersListModel
 from dialect.settings import Settings
-from dialect.providers import ProviderFeature, ProvidersListModel, MODULES, TTS
 from dialect.widgets import ProviderPreferences
 
 

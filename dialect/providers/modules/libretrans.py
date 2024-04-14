@@ -33,8 +33,7 @@ class Provider(SoupProvider):
 
         self.chars_limit = 0
 
-    @staticmethod
-    def validate_instance(url, on_done, on_fail):
+    def validate_instance(self, url, on_done, on_fail):
         def on_response(data):
             valid = False
 
@@ -46,9 +45,9 @@ class Provider(SoupProvider):
             on_done(valid)
 
         # Message request to LT API spec endpoint
-        message = Provider.create_message('GET', Provider.format_url(url, '/spec'))
+        message = self.create_message('GET', self.format_url(url, '/spec'))
         # Do async request
-        Provider.send_and_read_and_process_response(message, on_response, on_fail, False)
+        self.send_and_read_and_process_response(message, on_response, on_fail, False)
 
     @property
     def frontend_settings_url(self):
@@ -176,7 +175,7 @@ class Provider(SoupProvider):
             'target': dest,
             's': suggestion,
         }
-        if self.api_key and self.api_key_supported:
+        if self.api_key and ProviderFeature.API_KEY in self.features:
             data['api_key'] = self.api_key
 
         # Request message
@@ -184,8 +183,7 @@ class Provider(SoupProvider):
         # Do async request
         self.send_and_read_and_process_response(message, on_response, on_fail)
 
-    @staticmethod
-    def check_known_errors(data):
+    def check_known_errors(self, _status, data):
         if not data:
             return ProviderError(ProviderErrorCode.EMPTY, 'Response is empty!')
         if 'error' in data:

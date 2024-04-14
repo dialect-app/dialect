@@ -34,6 +34,7 @@ sources = [
   'session.py',
   'settings.py',
   'shortcuts.py',
+  'utils.py',
   'window.py',
 ]
 # Install sources

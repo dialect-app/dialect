@@ -7,9 +7,9 @@ from gi.repository import Gio, GLib, GObject
 
 from dialect.define import APP_ID
 from dialect.providers import (
+    TTS,
     check_translator_availability,
     get_fallback_translator_name,
-    TTS,
 )
 
 
@@ -100,7 +100,7 @@ class Settings(Gio.Settings):
         return self.get_boolean('custom-default-font-size')
 
     @custom_default_font_size.setter
-    def default_font_size(self, enabled):
+    def custom_default_font_size(self, enabled):
         self.set_boolean('custom-default-font-size', enabled)
 
     @property

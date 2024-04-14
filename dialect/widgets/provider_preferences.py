@@ -30,6 +30,9 @@ class ProviderPreferences(Adw.NavigationPage):
     api_key_stack = Gtk.Template.Child()
     api_key_reset = Gtk.Template.Child()
     api_key_spinner = Gtk.Template.Child()
+    api_usage_group = Gtk.Template.Child()
+    api_usage = Gtk.Template.Child()
+    api_usage_label = Gtk.Template.Child()
 
     def __init__(self, scope, dialog, window, **kwargs):
         super().__init__(**kwargs)
@@ -55,8 +58,23 @@ class ProviderPreferences(Adw.NavigationPage):
         self.window.connect('notify::translator-loading', self._on_translator_loading)            
 
     def _check_settings(self):
+        def on_usage(usage, limit):
+            level = usage / limit
+            label = _('{usage:n} of {limit:n} characters').format(usage=usage, limit=limit)
+
+            self.api_usage.props.value = level
+            self.api_usage_label.props.label = label
+            self.api_usage_group.props.visible = True
+
+        def on_usage_fail(_error):
+            pass
+
         self.instance_entry.props.visible = ProviderFeature.INSTANCES in self.provider.features
         self.api_key_entry.props.visible = ProviderFeature.API_KEY in self.provider.features
+
+        self.api_usage_group.props.visible = False
+        if ProviderFeature.API_KEY_USAGE in self.provider.features:
+            self.provider.api_char_usage(on_usage, on_usage_fail)
 
     @Gtk.Template.Callback()
     def _on_instance_apply(self, _row):

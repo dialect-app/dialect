@@ -8,10 +8,9 @@ from dataclasses import dataclass
 from enum import Enum, Flag, auto
 from typing import Callable, Optional
 
-from gi.repository import Gio
-
-from dialect.define import APP_ID, LANG_ALIASES
+from dialect.define import LANG_ALIASES
 from dialect.languages import get_lang_name
+from dialect.providers.settings import ProviderSettings
 
 
 class ProviderCapability(Flag):
@@ -32,6 +31,8 @@ class ProviderFeature(Flag):
     """ If the api key is supported but not necessary """
     API_KEY_REQUIRED = auto()
     """ If the api key is required for the provider to work """
+    API_KEY_USAGE = auto()
+    """ If the service reports api usage """
     DETECTION = auto()
     """ If it supports detecting text language (Auto translation) """
     MISTAKES = auto()
@@ -40,6 +41,19 @@ class ProviderFeature(Flag):
     """ If it supports showing translation pronunciation """
     SUGGESTIONS = auto()
     """ If it supports sending translation suggestions to the service """
+
+
+class ProvideLangModel(Enum):
+    STATIC = auto()
+    """
+    The provider populate its `src_languages` and `dest_languages` properties.
+    The `cmp_langs` method will be used to decide if one code can be translated to another.
+    """
+    DYNAMIC = auto()
+    """
+    The provider only populate its `src_languages` property.
+    The `dest_langs_for` method will be used to get possible destination codes for a code.
+    """
 
 
 class ProviderErrorCode(Enum):
@@ -82,6 +96,8 @@ class BaseProvider:
     """ Provider capabilities, translation, tts, etc """
     features: ProviderFeature = ProviderFeature.NONE
     """ Provider features """
+    lang_model: ProvideLangModel = ProvideLangModel.STATIC
+    """ Translation language model """
 
     defaults = {
         'instance_url': '',
@@ -92,8 +108,10 @@ class BaseProvider:
     """ Default provider settings """
 
     def __init__(self):
-        self.languages = []
-        """ Languages available for translating """
+        self.src_languages = []
+        """ Source languages available for translating """
+        self.dest_languages = []
+        """ Destination languages available for translating """
         self.tts_languages = []
         """ Languages available for TTS """
         self._nonstandard_langs = {}
@@ -108,14 +126,13 @@ class BaseProvider:
         """ Here we save the translation history """
 
         # GSettings
-        self.settings = Gio.Settings(f'{APP_ID}.translator', f'/app/drey/Dialect/translators/{self.name}/')
+        self.settings = ProviderSettings(self.name, self.defaults)
 
     """
     Providers API methods
     """
 
-    @staticmethod
-    def validate_instance(url: str, on_done: Callable[[bool], None], on_fail: Callable[[ProviderError], None]):
+    def validate_instance(self, url: str, on_done: Callable[[bool], None], on_fail: Callable[[ProviderError], None]):
         """
         Validate an instance of the provider.
 
@@ -217,6 +234,41 @@ class BaseProvider:
         """
         raise NotImplementedError()
 
+    def api_char_usage(
+        self,
+        on_done: Callable[[int, int], None],
+        on_fail: Callable[[ProviderError], None],
+    ):
+        """
+        Retrieves the API usage status
+
+        Args:
+            on_done: Called after the process successful, with the usage and limit as args
+            on_fail: Called after any error on the speech process
+        """
+        raise NotImplementedError()
+
+    def cmp_langs(self, a: str, b: str) -> bool:
+        """
+        Compare two language codes.
+
+        It assumes that the codes have been normalized by `normalize_lang_code`.
+
+        This method exists so providers can add additional comparison logic.
+
+        Args:
+            a: First lang to compare
+            b: Second lang to compare
+        """
+
+        return a == b
+
+    def dest_langs_for(self, code: str) -> list[str]:
+        """
+        Get the available destination languages for a source language.
+        """
+        raise NotImplementedError()
+
     @property
     def lang_aliases(self) -> dict[str, str]:
         """
@@ -241,11 +293,11 @@ class BaseProvider:
     @property
     def instance_url(self):
         """Instance url saved on settings."""
-        return self.settings.get_string('instance-url') or self.defaults['instance_url']
+        return self.settings.instance_url or self.defaults['instance_url']
 
     @instance_url.setter
     def instance_url(self, url):
-        self.settings.set_string('instance-url', url)
+        self.settings.instance_url = url
 
     def reset_instance_url(self):
         """Resets saved instance url."""
@@ -254,41 +306,41 @@ class BaseProvider:
     @property
     def api_key(self):
         """API key saved on settings."""
-        return self.settings.get_string('api-key') or self.defaults['api_key']
+        return self.settings.api_key or self.defaults['api_key']
 
     @api_key.setter
     def api_key(self, api_key):
-        self.settings.set_string('api-key', api_key)
+        self.settings.api_key = api_key
 
     def reset_api_key(self):
         """Resets saved API key."""
         self.api_key = ''
 
     @property
-    def src_langs(self):
+    def recent_src_langs(self):
         """Saved recent source langs of the user."""
-        return self.settings.get_strv('src-langs') or self.defaults['src_langs']
+        return self.settings.src_langs or self.defaults['src_langs']
 
-    @src_langs.setter
-    def src_langs(self, src_langs):
-        self.settings.set_strv('src-langs', src_langs)
+    @recent_src_langs.setter
+    def recent_src_langs(self, src_langs):
+        self.settings.src_langs = src_langs
 
     def reset_src_langs(self):
         """Reset saved recent user source langs"""
-        self.src_langs = []
+        self.recent_src_langs = []
 
     @property
-    def dest_langs(self):
+    def recent_dest_langs(self):
         """Saved recent destination langs of the user."""
-        return self.settings.get_strv('dest-langs') or self.defaults['dest_langs']
+        return self.settings.dest_langs or self.defaults['dest_langs']
 
-    @dest_langs.setter
-    def dest_langs(self, dest_langs):
-        self.settings.set_strv('dest-langs', dest_langs)
+    @recent_dest_langs.setter
+    def recent_dest_langs(self, dest_langs):
+        self.settings.dest_langs = dest_langs
 
     def reset_dest_langs(self):
         """Reset saved recent user destination langs"""
-        self.dest_langs = []
+        self.recent_dest_langs = []
 
     """
     General provider helpers
@@ -301,10 +353,11 @@ class BaseProvider:
 
         If url is localhost, `http` is ignored and HTTP protocol is forced.
 
-        url: Base url, hostname and tld
-        path: Path of the url
-        params: Params to populate a url query
-        http: If HTTP should be used instead of HTTPS
+        Args:
+            url: Base url, hostname and tld
+            path: Path of the url
+            params: Params to populate a url query
+            http: If HTTP should be used instead of HTTPS
         """
 
         if not path.startswith('/'):
@@ -354,22 +407,14 @@ class BaseProvider:
 
         return code
 
-    def cmp_langs(self, a: str, b: str) -> bool:
-        """
-        Compare two language codes.
-
-        It assumes that the codes have been normalized by `normalize_lang_code`.
-
-        This method exists so providers can add additional comparison logic.
-
-        Args:
-            a: First lang to compare
-            b: Second lang to compare
-        """
-
-        return a == b
-
-    def add_lang(self, original_code: str, name: str = None, trans: bool = True, tts: bool = False):
+    def add_lang(
+        self,
+        original_code: str,
+        name: str = None,
+        trans_src: bool = True,
+        trans_dest: bool = True,
+        tts: bool = False,
+    ):
         """
         Add lang supported by provider after normalization.
 
@@ -384,8 +429,10 @@ class BaseProvider:
 
         code = self.normalize_lang_code(original_code)  # Get normalized lang code
 
-        if trans:  # Add lang to supported languages list
-            self.languages.append(code)
+        if trans_src:  # Add lang to supported languages list
+            self.src_languages.append(code)
+        if trans_dest:
+            self.dest_languages.append(code)
         if tts:  # Add lang to supported TTS languages list
             self.tts_languages.append(code)
 
