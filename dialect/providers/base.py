@@ -126,7 +126,7 @@ class BaseProvider:
         """ Here we save the translation history """
 
         # GSettings
-        self.settings = ProviderSettings(self.name)
+        self.settings = ProviderSettings(self.name, self.defaults)
 
     """
     Providers API methods

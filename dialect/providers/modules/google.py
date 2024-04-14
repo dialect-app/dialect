@@ -475,7 +475,7 @@ class Provider(LocalProvider, SoupProvider):
 
                 if src == 'auto':
                     try:
-                        if parsed[0][2] in self.languages:
+                        if parsed[0][2] in self.src_languages:
                             src = parsed[0][2]
                     except (IndexError, TypeError):
                         pass

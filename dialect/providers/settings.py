@@ -23,11 +23,12 @@ class ProviderSettings(Gio.Settings):
     Helper class for providers settings
     """
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, defaults: dict[str, list[str]]):
         super().__init__(f'{APP_ID}.translator', f'/app/drey/Dialect/translators/{name}/')
 
         self.name = name
         self._secret_attr = {'provider': name}
+        self.defaults = defaults  # set of per-provider defaults
 
     @property
     def instance_url(self) -> str:
