@@ -8,6 +8,7 @@ import logging
 import sys
 
 import gi
+
 try:
     gi.require_version('Gdk', '4.0')
     gi.require_version('Gtk', '4.0')

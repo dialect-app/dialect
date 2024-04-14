@@ -8,7 +8,6 @@ from gi.repository import Gio, GLib, Secret
 
 from dialect.define import APP_ID
 
-
 SECRETS_SCHEMA = Secret.Schema.new(
     APP_ID,
     Secret.SchemaFlags.NONE,

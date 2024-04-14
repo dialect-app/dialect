@@ -4,11 +4,11 @@
 # Copyright 2020 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-import os
-import sys
-import signal
-import locale
 import gettext
+import locale
+import os
+import signal
+import sys
 
 pkgdatadir = '@pkgdatadir@'
 localedir = '@localedir@'

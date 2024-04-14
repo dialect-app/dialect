@@ -10,7 +10,13 @@ from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk
 
 from dialect.define import APP_ID, PROFILE, RES_PATH, TRANS_NUMBER
 from dialect.languages import LanguagesListModel
-from dialect.providers import TRANSLATORS, TTS, ProviderFeature, ProviderError, ProviderErrorCode
+from dialect.providers import (
+    TRANSLATORS,
+    TTS,
+    ProviderError,
+    ProviderErrorCode,
+    ProviderFeature,
+)
 from dialect.providers.base import BaseProvider, Translation
 from dialect.settings import Settings
 from dialect.shortcuts import DialectShortcutsWindow

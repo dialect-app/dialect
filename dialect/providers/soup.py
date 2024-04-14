@@ -6,7 +6,7 @@ import json
 import logging
 from typing import Callable
 
-from gi.repository import GLib, Gio, Soup
+from gi.repository import Gio, GLib, Soup
 
 from dialect.providers.base import BaseProvider, ProviderError, ProviderErrorCode
 from dialect.session import Session

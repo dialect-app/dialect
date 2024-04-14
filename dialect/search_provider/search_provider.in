@@ -6,21 +6,18 @@
 # Copyright 2023 Markus Göllnitz
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-import sys
-import logging
-import locale
 import gettext
+import locale
+import sys
 
 import gi
 
 gi.require_version('Soup', '3.0')
-from gi.repository import GLib, Gio
+from gi.repository import Gio, GLib
 
-from dialect.session import Session
-from dialect.settings import Settings
-from dialect.languages import get_lang_name
 from dialect.providers import TRANSLATORS
 from dialect.providers.base import ProviderErrorCode
+from dialect.settings import Settings
 
 CLIPBOARD_PREFIX = 'copy-to-clipboard'
 ERROR_PREFIX = 'translation-error'

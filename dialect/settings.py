@@ -7,9 +7,9 @@ from gi.repository import Gio, GLib, GObject
 
 from dialect.define import APP_ID
 from dialect.providers import (
+    TTS,
     check_translator_availability,
     get_fallback_translator_name,
-    TTS,
 )
 
 
