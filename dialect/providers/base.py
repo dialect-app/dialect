@@ -293,7 +293,7 @@ class BaseProvider:
     @property
     def instance_url(self):
         """Instance url saved on settings."""
-        return self.settings.instance_url or self.defaults['instance_url']
+        return self.settings.instance_url
 
     @instance_url.setter
     def instance_url(self, url):
@@ -306,7 +306,7 @@ class BaseProvider:
     @property
     def api_key(self):
         """API key saved on settings."""
-        return self.settings.api_key or self.defaults['api_key']
+        return self.settings.api_key
 
     @api_key.setter
     def api_key(self, api_key):
@@ -319,7 +319,7 @@ class BaseProvider:
     @property
     def recent_src_langs(self):
         """Saved recent source langs of the user."""
-        return self.settings.src_langs or self.defaults['src_langs']
+        return self.settings.src_langs
 
     @recent_src_langs.setter
     def recent_src_langs(self, src_langs):
@@ -332,7 +332,7 @@ class BaseProvider:
     @property
     def recent_dest_langs(self):
         """Saved recent destination langs of the user."""
-        return self.settings.dest_langs or self.defaults['dest_langs']
+        return self.settings.dest_langs
 
     @recent_dest_langs.setter
     def recent_dest_langs(self, dest_langs):

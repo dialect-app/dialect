@@ -26,20 +26,20 @@ class ProviderSettings(Gio.Settings):
         super().__init__(f'{APP_ID}.translator', f'/app/drey/Dialect/translators/{name}/')
 
         self.name = name
-        self._secret_attr = {'provider': name}
         self.defaults = defaults  # set of per-provider defaults
+        self._secret_attr = {'provider': name}
 
     @property
     def instance_url(self) -> str:
         """Instance url."""
-        return self.get_string('instance-url')
+        return self.get_string('instance-url') or self.defaults['instance_url']
 
     @instance_url.setter
     def instance_url(self, url: str):
         self.set_string('instance-url', url)
 
     @property
-    def api_key(self) -> str | None:
+    def api_key(self) -> str:
         """API key."""
 
         # Check if we have an old API KEY in GSettings for migration
@@ -49,11 +49,11 @@ class ProviderSettings(Gio.Settings):
             return gsettings
 
         try:
-            return Secret.password_lookup_sync(SECRETS_SCHEMA, self._secret_attr, None)
+            return Secret.password_lookup_sync(SECRETS_SCHEMA, self._secret_attr, None) or self.defaults['api_key']
         except GLib.GError as exc:
             logging.warning(exc)
 
-        return None
+        return self.defaults['api_key']
 
     @api_key.setter
     def api_key(self, api_key: str):
