@@ -134,7 +134,7 @@ class DialectPreferencesDialog(Adw.PreferencesDialog):
     def _custom_default_font_size_switch(self, row, _value):
         """Called on self.custom_default_font_size::notify::enable-expansion signal"""
         enabled = row.get_enable_expansion()
-        system_font_size = int(Gtk.Settings.get_default().get_property('gtk-font-name').split()[1])
+        system_font_size = int(Gtk.Settings.get_default().get_property('gtk-font-name').split(", ")[1])
 
         if enabled:
             if Settings.get().default_font_size == 0:

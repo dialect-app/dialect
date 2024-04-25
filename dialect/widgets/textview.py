@@ -30,7 +30,7 @@ class TextView(Gtk.TextView):
         self.add_controller(scroll_ctrlr)
 
         # Custom font
-        self._font_size = int(Gtk.Settings.get_default().get_property('gtk-font-name').split()[1])
+        self._font_size = int(Gtk.Settings.get_default().get_property('gtk-font-name').split(", ")[1])
         self._font_css_provider = Gtk.CssProvider()
 
         # Add font CSS provider
