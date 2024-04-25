@@ -29,32 +29,38 @@ class Provider(SoupProvider):
     )
 
     defaults = {
-        'instance_url': 'api-free.deepl.com',
+        'instance_url': '',
         'api_key': '',
         'src_langs': ['en', 'fr', 'es', 'de'],
         'dest_langs': ['fr', 'es', 'de', 'en-US'],
     }
+
+    _api_free = 'api-free.deepl.com'
+    _api_pro = 'api.deepl.com'
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         self.chars_limit = 5000
 
+        # DeepL API Free keys can be identified by the suffix ":fx"
+        self.api_url = self._api_free if self.api_key.endswith(':fx') else self._api_pro
+
     @property
     def source_lang_url(self):
-        return self.format_url(self.instance_url, f'/{API_V}/languages', {'type': 'source'})
+        return self.format_url(self.api_url, f'/{API_V}/languages', {'type': 'source'})
     
     @property
     def target_lang_url(self):
-        return self.format_url(self.instance_url, f'/{API_V}/languages', {'type': 'target'})
+        return self.format_url(self.api_url, f'/{API_V}/languages', {'type': 'target'})
 
     @property
     def translate_url(self):
-        return self.format_url(self.instance_url, f'/{API_V}/translate')
+        return self.format_url(self.api_url, f'/{API_V}/translate')
 
     @property
     def usage_url(self):
-        return self.format_url(self.instance_url, f"/{API_V}/usage")
+        return self.format_url(self.api_url, f"/{API_V}/usage")
 
     @property
     def headers(self):
