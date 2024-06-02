@@ -1,6 +1,10 @@
 
 ### In Development
 
+### 2.4.0
+- Add DeepL provider
+- Bug fixes
+
 ### 2.3.0
 - Make text views font size configurable and temporally modify it with shortcuts or scroll
 - Fix search provider always running in the background
