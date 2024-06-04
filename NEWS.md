@@ -1,6 +1,9 @@
 
 ### In Development
 
+### 2.4.1
+- Bug fixes
+
 ### 2.4.0
 - Add DeepL provider
 - Bug fixes

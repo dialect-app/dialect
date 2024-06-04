@@ -51,6 +51,13 @@
     </screenshot>
   </screenshots>
   <releases>
+  <release version="2.4.1" date="2024-06-04">
+      <description translate="no">
+        <ul>
+          <li>Bug fixes</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.4.0" date="2024-06-02">
       <description translate="no">
         <ul>
