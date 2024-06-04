@@ -44,12 +44,15 @@ class Provider(SoupProvider):
         self.chars_limit = 5000
 
         # DeepL API Free keys can be identified by the suffix ":fx"
-        self.api_url = self._api_free if self.api_key.endswith(':fx') else self._api_pro
+        self.api_url = self.__get_api_url(self.api_key)
+
+    def __get_api_url(self, api_key: str) -> str:
+        return self._api_free if api_key.endswith(':fx') else self._api_pro
 
     @property
     def source_lang_url(self):
         return self.format_url(self.api_url, f'/{API_V}/languages', {'type': 'source'})
-    
+
     @property
     def target_lang_url(self):
         return self.format_url(self.api_url, f'/{API_V}/languages', {'type': 'target'})
@@ -105,17 +108,20 @@ class Provider(SoupProvider):
 
         # Do async requests
         self.send_and_read_and_process_response(src_langs_message, lambda d: on_languages_response(d, 'src'), on_failed)
-        self.send_and_read_and_process_response(dest_langs_message, lambda d: on_languages_response(d, 'dest'), on_failed)
+        self.send_and_read_and_process_response(
+            dest_langs_message, lambda d: on_languages_response(d, 'dest'), on_failed
+        )
 
     def validate_api_key(self, key, on_done, on_fail):
         def on_response(_data):
-            valid = languages_message.get_status() == 200
-            on_done(valid)
+            on_done(True)
 
+        api_url = self.__get_api_url(key)
+        url = self.format_url(api_url, f'/{API_V}/languages', {'type': 'source'})
         # Headers
         headers = {'Authorization': f'DeepL-Auth-Key {key}'}
         # Request messages
-        languages_message = self.create_message('GET', self.source_lang_url, headers=headers)
+        languages_message = self.create_message('GET', url, headers=headers)
         # Do async requests
         self.send_and_read_and_process_response(languages_message, on_response, on_fail)
 
