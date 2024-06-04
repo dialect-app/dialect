@@ -3,7 +3,7 @@
 # Copyright 2023 Libretto
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Gio, GLib, GObject
+from gi.repository import Gio, GLib, GObject, Gtk
 
 from dialect.define import APP_ID
 from dialect.providers import (
@@ -111,6 +111,20 @@ class Settings(Gio.Settings):
     @default_font_size.setter
     def default_font_size(self, size):
         self.set_int('default-font-size', size)
+
+    @property
+    def system_font_size(self):
+        """Return the systems's default font size."""
+        gtk_font_name = Gtk.Settings.get_default().get_property('gtk-font-name')
+        gtk_font_name_parts = gtk_font_name.split(' ')
+        if len(gtk_font_name_parts) != 2:
+            # Font name probably is in the form of "Font Name, 11"
+            gtk_font_name_parts = gtk_font_name.split(', ')
+
+        try:
+            return int(gtk_font_name_parts[1])
+        except ValueError or IndexError:
+            return 11
 
     @property
     def active_tts(self):

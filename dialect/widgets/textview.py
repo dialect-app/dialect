@@ -5,6 +5,8 @@
 
 from gi.repository import Gdk, GObject, Gtk
 
+from dialect.settings import Settings
+
 
 class TextView(Gtk.TextView):
     __gtype_name__ = 'TextView'
@@ -30,7 +32,7 @@ class TextView(Gtk.TextView):
         self.add_controller(scroll_ctrlr)
 
         # Custom font
-        self._font_size = int(Gtk.Settings.get_default().get_property('gtk-font-name').split(", ")[1])
+        self._font_size = Settings.get().system_font_size
         self._font_css_provider = Gtk.CssProvider()
 
         # Add font CSS provider
