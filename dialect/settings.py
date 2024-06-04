@@ -115,14 +115,10 @@ class Settings(Gio.Settings):
     @property
     def system_font_size(self):
         """Return the systems's default font size."""
-        gtk_font_name = Gtk.Settings.get_default().get_property('gtk-font-name')
-        gtk_font_name_parts = gtk_font_name.split(' ')
-        if len(gtk_font_name_parts) != 2:
-            # Font name probably is in the form of "Font Name, 11"
-            gtk_font_name_parts = gtk_font_name.split(', ')
+        gtk_font_name = Gtk.Settings.get_default().get_property('gtk-font-name').split(' ')
 
         try:
-            return int(gtk_font_name_parts[1])
+            return int(gtk_font_name[-1])
         except ValueError or IndexError:
             return 11
 
