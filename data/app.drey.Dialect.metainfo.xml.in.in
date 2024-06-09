@@ -18,6 +18,7 @@
       <li>Translation based on Lingva Translate API</li>
       <li>Translation based on Bing</li>
       <li>Translation based on Yandex</li>
+      <li>Translation based on DeepL</li>
       <li>Text to speech</li>
       <li>Translation history</li>
       <li>Automatic language detection</li>
