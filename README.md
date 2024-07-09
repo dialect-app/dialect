@@ -22,7 +22,7 @@ A translation app for GNOME.
 
 ### Flathub
 
-<a href='https://flathub.org/apps/details/app.drey.Dialect'><img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+<a href='https://flathub.org/apps/details/app.drey.Dialect'><img alt='Download on Flathub' src='https://flathub.org/api/badge?svg&locale=en'/></a>
 
 ### AUR
 
