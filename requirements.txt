@@ -1,0 +1,2 @@
+gtts
+beautifulsoup4
