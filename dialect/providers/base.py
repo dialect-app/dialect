@@ -73,7 +73,7 @@ class ProviderErrorCode(Enum):
 class ProviderError:
     """Helper error handing class to be passed between callbacks"""
 
-    def __init__(self, code: ProviderErrorCode, message: str = '') -> None:
+    def __init__(self, code: ProviderErrorCode, message: str = "") -> None:
         self.code = code  # Serves for quick error matching
         self.message = message  # More detailed error info if needed
 
@@ -88,9 +88,9 @@ class Translation:
 
 
 class BaseProvider:
-    name = ''
+    name = ""
     """ Module name for code use, like settings storing """
-    prettyname = ''
+    prettyname = ""
     """ Module name for UI display """
     capabilities: ProviderCapability | None = None
     """ Provider capabilities, translation, tts, etc """
@@ -100,10 +100,10 @@ class BaseProvider:
     """ Translation language model """
 
     defaults = {
-        'instance_url': '',
-        'api_key': '',
-        'src_langs': ['en', 'fr', 'es', 'de'],
-        'dest_langs': ['fr', 'es', 'de', 'en'],
+        "instance_url": "",
+        "api_key": "",
+        "src_langs": ["en", "fr", "es", "de"],
+        "dest_langs": ["fr", "es", "de", "en"],
     }
     """ Default provider settings """
 
@@ -301,7 +301,7 @@ class BaseProvider:
 
     def reset_instance_url(self):
         """Resets saved instance url."""
-        self.instance_url = ''
+        self.instance_url = ""
 
     @property
     def api_key(self):
@@ -314,7 +314,7 @@ class BaseProvider:
 
     def reset_api_key(self):
         """Resets saved API key."""
-        self.api_key = ''
+        self.api_key = ""
 
     @property
     def recent_src_langs(self):
@@ -347,7 +347,7 @@ class BaseProvider:
     """
 
     @staticmethod
-    def format_url(url: str, path: str = '', params: dict = {}, http: bool = False):
+    def format_url(url: str, path: str = "", params: dict = {}, http: bool = False):
         """
         Compose a HTTP url with the given pieces.
 
@@ -360,16 +360,16 @@ class BaseProvider:
             http: If HTTP should be used instead of HTTPS
         """
 
-        if not path.startswith('/'):
-            path = '/' + path
+        if not path.startswith("/"):
+            path = "/" + path
 
-        protocol = 'https://'
-        if url.startswith('localhost:') or http:
-            protocol = 'http://'
+        protocol = "https://"
+        if url.startswith("localhost:") or http:
+            protocol = "http://"
 
         params_str = urllib.parse.urlencode(params)
         if params_str:
-            params_str = '?' + params_str
+            params_str = "?" + params_str
 
         return protocol + url + path + params_str
 
@@ -389,8 +389,8 @@ class BaseProvider:
         Args:
             code: Language ISO code
         """
-        code = code.replace('_', '-').lower()  # Normalize separator
-        codes = code.split('-')
+        code = code.replace("_", "-").lower()  # Normalize separator
+        codes = code.split("-")
 
         if len(codes) == 2:  # Code contain a script or country code
             if len(codes[1]) == 4:  # ISO 15924 (script)
@@ -399,7 +399,7 @@ class BaseProvider:
             elif len(codes[1]) == 2:  # ISO 3166-1 (country)
                 codes[1] = codes[1].upper()
 
-            code = '-'.join(codes)
+            code = "-".join(codes)
 
         aliases = {**LANG_ALIASES, **self.lang_aliases}
         if code in aliases:

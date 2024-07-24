@@ -9,10 +9,10 @@ from gi.repository import Adw, Gdk, GObject, Gtk
 from dialect.define import RES_PATH
 
 
-@Gtk.Template(resource_path=f'{RES_PATH}/lang-selector.ui')
+@Gtk.Template(resource_path=f"{RES_PATH}/lang-selector.ui")
 class LangSelector(Adw.Bin):
-    __gtype_name__ = 'LangSelector'
-    __gsignals__ = {'user-selection-changed': (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())}
+    __gtype_name__ = "LangSelector"
+    __gsignals__ = {"user-selection-changed": (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())}
 
     # Properties
     selected = GObject.Property(type=str)  # Code of the selected lang
@@ -38,14 +38,14 @@ class LangSelector(Adw.Bin):
         # Setup search entry
         self.search.set_key_capture_widget(self.popover)
         key_events = Gtk.EventControllerKey.new()
-        key_events.connect('key-pressed', self._on_key_pressed)
+        key_events.connect("key-pressed", self._on_key_pressed)
         self.search.add_controller(key_events)
 
     def bind_models(self, langs, recent):
         self.model = langs
         self.recent_model = recent
 
-        self.recent_model.connect('items-changed', self._on_recent_changed)
+        self.recent_model.connect("items-changed", self._on_recent_changed)
 
         self.filter = Gtk.CustomFilter()
         self.filter.set_filter_func(self._filter_langs)
@@ -57,8 +57,8 @@ class LangSelector(Adw.Bin):
         self.recent_list.bind_model(self.recent_model, self._create_lang_row)
 
     def set_insight(self, code):
-        if self.selected == 'auto':
-            self.insight.props.label = f'({self._get_lang_name(code)})'
+        if self.selected == "auto":
+            self.insight.props.label = f"({self._get_lang_name(code)})"
 
     def _get_lang_name(self, code):
         return self.model.names_func(code)
@@ -73,12 +73,12 @@ class LangSelector(Adw.Bin):
         if self.model is not None:
             self.model.set_selected(self.selected)
 
-            if self.selected == 'auto':
-                self.label.props.label = _('Auto')
+            if self.selected == "auto":
+                self.label.props.label = _("Auto")
             else:
                 self.label.props.label = self._get_lang_name(self.selected)
 
-            self.insight.props.label = ''
+            self.insight.props.label = ""
 
     @Gtk.Template.Callback()
     def _activated(self, _list, row):
@@ -87,7 +87,7 @@ class LangSelector(Adw.Bin):
         self.popover.popdown()
         # Set selected property
         self.selected = row.lang.code
-        self.emit('user-selection-changed')
+        self.emit("user-selection-changed")
 
     @Gtk.Template.Callback()
     def _popover_show(self, _popover):
@@ -101,7 +101,7 @@ class LangSelector(Adw.Bin):
         vscroll = self.scroll.get_vadjustment()
         vscroll.props.value = 0
         # Clear search
-        self.search.props.text = ''
+        self.search.props.text = ""
 
     def _create_lang_row(self, lang):
         return LangRow(lang)
@@ -118,12 +118,12 @@ class LangSelector(Adw.Bin):
     @Gtk.Template.Callback()
     def _on_search(self, _entry):
         """Called on self.search::changed signal"""
-        if self.search.props.text != '':
+        if self.search.props.text != "":
             self.revealer.props.reveal_child = False
         else:
             self.revealer.props.reveal_child = True
 
-        self.filter.emit('changed', Gtk.FilterChange.DIFFERENT)
+        self.filter.emit("changed", Gtk.FilterChange.DIFFERENT)
 
     @Gtk.Template.Callback()
     def _on_search_activate(self, _entry):
@@ -131,7 +131,7 @@ class LangSelector(Adw.Bin):
         if self.search.props.text:
             row = self.lang_list.get_row_at_index(0)
             if row:
-                self.lang_list.emit('row-activated', row)
+                self.lang_list.emit("row-activated", row)
         return Gdk.EVENT_PROPAGATE
 
     def _on_key_pressed(self, _controller, keyval, _keycode, _mod):
@@ -143,9 +143,9 @@ class LangSelector(Adw.Bin):
             return Gdk.EVENT_STOP
 
 
-@Gtk.Template(resource_path=f'{RES_PATH}/lang-row.ui')
+@Gtk.Template(resource_path=f"{RES_PATH}/lang-row.ui")
 class LangRow(Gtk.ListBoxRow):
-    __gtype_name__ = 'LangRow'
+    __gtype_name__ = "LangRow"
 
     # Widgets
     name = Gtk.Template.Child()
@@ -156,4 +156,4 @@ class LangRow(Gtk.ListBoxRow):
         self.lang = lang
         self.name.props.label = self.lang.name
 
-        self.lang.bind_property('selected', self.selection, 'visible', GObject.BindingFlags.SYNC_CREATE)
+        self.lang.bind_property("selected", self.selection, "visible", GObject.BindingFlags.SYNC_CREATE)

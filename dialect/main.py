@@ -10,16 +10,16 @@ import sys
 import gi
 
 try:
-    gi.require_version('Gdk', '4.0')
-    gi.require_version('Gtk', '4.0')
-    gi.require_version('Gst', '1.0')
-    gi.require_version('Adw', '1')
-    gi.require_version('Secret', '1')
-    gi.require_version('Soup', '3.0')
+    gi.require_version("Gdk", "4.0")
+    gi.require_version("Gtk", "4.0")
+    gi.require_version("Gst", "1.0")
+    gi.require_version("Adw", "1")
+    gi.require_version("Secret", "1")
+    gi.require_version("Soup", "3.0")
 
     from gi.repository import Adw, Gio, GLib, Gst, Gtk
 except ImportError or ValueError:
-    logging.error('Error: GObject dependencies not met.')
+    logging.error("Error: GObject dependencies not met.")
 
 from dialect.define import APP_ID, RES_PATH, VERSION
 from dialect.preferences import DialectPreferencesDialog
@@ -40,16 +40,16 @@ class Dialect(Adw.Application):
 
         # Add command line options
         self.add_main_option(
-            'selection',
-            b'n',
+            "selection",
+            b"n",
             GLib.OptionFlags.NONE,
             GLib.OptionArg.NONE,
-            'Translate text from the primary clipboard',
+            "Translate text from the primary clipboard",
             None,
         )
-        self.add_main_option('text', b't', GLib.OptionFlags.NONE, GLib.OptionArg.STRING, 'Text to translate', None)
-        self.add_main_option('src', b's', GLib.OptionFlags.NONE, GLib.OptionArg.STRING, 'Source lang code', None)
-        self.add_main_option('dest', b'd', GLib.OptionFlags.NONE, GLib.OptionArg.STRING, 'Destination lang code', None)
+        self.add_main_option("text", b"t", GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "Text to translate", None)
+        self.add_main_option("src", b"s", GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "Source lang code", None)
+        self.add_main_option("dest", b"d", GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "Destination lang code", None)
 
         self.setup_actions()
 
@@ -69,7 +69,7 @@ class Dialect(Adw.Application):
             self.window = DialectWindow(
                 application=self,
                 # Translators: Do not translate the app name!
-                title=_('Dialect'),
+                title=_("Dialect"),
                 default_height=height,
                 default_width=width,
             )
@@ -102,22 +102,22 @@ class Dialect(Adw.Application):
         if not self.argv:
             return
 
-        text = ''
-        langs = {'src': None, 'dest': None}
-        selection = 'selection' in self.argv
+        text = ""
+        langs = {"src": None, "dest": None}
+        selection = "selection" in self.argv
 
-        if 'text' in self.argv:
-            text = self.argv['text']
-        if 'src' in self.argv:
-            langs['src'] = self.argv['src']
-        if 'dest' in self.argv:
-            langs['dest'] = self.argv['dest']
+        if "text" in self.argv:
+            text = self.argv["text"]
+        if "src" in self.argv:
+            langs["src"] = self.argv["src"]
+        if "dest" in self.argv:
+            langs["dest"] = self.argv["dest"]
 
         if self.window is not None:
             if not text and selection:
-                self.window.translate_selection(langs['src'], langs['dest'])
+                self.window.translate_selection(langs["src"], langs["dest"])
             elif text:
-                self.window.translate(text, langs['src'], langs['dest'])
+                self.window.translate(text, langs["src"], langs["dest"])
 
         # Clean CLI args
         self.argv = {}
@@ -125,39 +125,39 @@ class Dialect(Adw.Application):
     def setup_actions(self):
         """Setup menu actions"""
 
-        pronunciation = Gio.SimpleAction.new_stateful('pronunciation', None, Settings.get().show_pronunciation_value)
-        pronunciation.connect('change-state', self._on_pronunciation)
+        pronunciation = Gio.SimpleAction.new_stateful("pronunciation", None, Settings.get().show_pronunciation_value)
+        pronunciation.connect("change-state", self._on_pronunciation)
         self.add_action(pronunciation)
 
-        preferences = Gio.SimpleAction.new('preferences', None)
-        preferences.connect('activate', self._on_preferences)
+        preferences = Gio.SimpleAction.new("preferences", None)
+        preferences.connect("activate", self._on_preferences)
         self.add_action(preferences)
 
-        about = Gio.SimpleAction.new('about', None)
-        about.connect('activate', self._on_about)
+        about = Gio.SimpleAction.new("about", None)
+        about.connect("activate", self._on_about)
         self.add_action(about)
 
-        quit_action = Gio.SimpleAction.new('quit', None)
-        quit_action.connect('activate', self._on_quit)
+        quit_action = Gio.SimpleAction.new("quit", None)
+        quit_action.connect("activate", self._on_quit)
         self.add_action(quit_action)
 
-        self.set_accels_for_action('app.pronunciation', ['<Primary>P'])
-        self.set_accels_for_action('app.preferences', ['<Primary>comma'])
-        self.set_accels_for_action('app.quit', ['<Primary>Q'])
+        self.set_accels_for_action("app.pronunciation", ["<Primary>P"])
+        self.set_accels_for_action("app.preferences", ["<Primary>comma"])
+        self.set_accels_for_action("app.quit", ["<Primary>Q"])
 
-        self.set_accels_for_action('win.back', ['<Alt>Left'])
-        self.set_accels_for_action('win.forward', ['<Alt>Right'])
-        self.set_accels_for_action('win.switch', ['<Primary>S'])
-        self.set_accels_for_action('win.from', ['<Primary>F'])
-        self.set_accels_for_action('win.to', ['<Primary>T'])
-        self.set_accels_for_action('win.clear', ['<Primary>D'])
-        self.set_accels_for_action('win.font-size-inc', ['<Primary>plus', '<Primary>KP_Add'])
-        self.set_accels_for_action('win.font-size-dec', ['<Primary>minus', '<Primary>KP_Subtract'])
-        self.set_accels_for_action('win.paste', ['<Primary><Shift>V'])
-        self.set_accels_for_action('win.copy', ['<Primary><Shift>C'])
-        self.set_accels_for_action('win.listen-dest', ['<Primary>L'])
-        self.set_accels_for_action('win.listen-src', ['<Primary><Shift>L'])
-        self.set_accels_for_action('win.show-help-overlay', ['<Primary>question'])
+        self.set_accels_for_action("win.back", ["<Alt>Left"])
+        self.set_accels_for_action("win.forward", ["<Alt>Right"])
+        self.set_accels_for_action("win.switch", ["<Primary>S"])
+        self.set_accels_for_action("win.from", ["<Primary>F"])
+        self.set_accels_for_action("win.to", ["<Primary>T"])
+        self.set_accels_for_action("win.clear", ["<Primary>D"])
+        self.set_accels_for_action("win.font-size-inc", ["<Primary>plus", "<Primary>KP_Add"])
+        self.set_accels_for_action("win.font-size-dec", ["<Primary>minus", "<Primary>KP_Subtract"])
+        self.set_accels_for_action("win.paste", ["<Primary><Shift>V"])
+        self.set_accels_for_action("win.copy", ["<Primary><Shift>C"])
+        self.set_accels_for_action("win.listen-dest", ["<Primary>L"])
+        self.set_accels_for_action("win.listen-src", ["<Primary><Shift>L"])
+        self.set_accels_for_action("win.show-help-overlay", ["<Primary>question"])
 
     def _on_pronunciation(self, action, value):
         """Update show pronunciation setting"""
@@ -177,14 +177,14 @@ class Dialect(Adw.Application):
 
     def _on_about(self, _action, _param):
         """Show about dialog"""
-        builder = Gtk.Builder.new_from_resource(f'{RES_PATH}/about.ui')
-        about = builder.get_object('about')
+        builder = Gtk.Builder.new_from_resource(f"{RES_PATH}/about.ui")
+        about = builder.get_object("about")
 
         about.props.application_icon = APP_ID
         about.props.version = VERSION
         about.props.developers = ["Mufeed Ali", "Rafael Mardojai CM http://rafaelmardojai.com", "Libretto"]
 
-        about.add_link(_('Donate'), 'https://opencollective.com/dialect')
+        about.add_link(_("Donate"), "https://opencollective.com/dialect")
 
         about.present(self.window)
 

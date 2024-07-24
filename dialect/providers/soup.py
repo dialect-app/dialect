@@ -27,7 +27,7 @@ class SoupProvider(BaseProvider):
         """
         data_glib_bytes = None
         try:
-            data_bytes = json.dumps(data).encode('utf-8')
+            data_bytes = json.dumps(data).encode("utf-8")
             data_glib_bytes = GLib.Bytes.new(data_bytes)
         except Exception as exc:
             logging.warning(exc)
@@ -55,12 +55,12 @@ class SoupProvider(BaseProvider):
             message = Soup.Message.new(method, url)
         if data and not form:
             data = self.encode_data(data)
-            message.set_request_body_from_bytes('application/json', data)
+            message.set_request_body_from_bytes("application/json", data)
         if headers:
             for name, value in headers.items():
                 message.get_request_headers().append(name, value)
-        if 'User-Agent' not in headers:
-            message.get_request_headers().append('User-Agent', 'Dialect App')
+        if "User-Agent" not in headers:
+            message.get_request_headers().append("User-Agent", "Dialect App")
         return message
 
     def send_and_read(self, message: Soup.Message, callback: Callable[[Session, Gio.AsyncResult], None]):

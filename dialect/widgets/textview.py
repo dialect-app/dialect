@@ -9,8 +9,8 @@ from dialect.settings import Settings
 
 
 class TextView(Gtk.TextView):
-    __gtype_name__ = 'TextView'
-    __gsignals__ = {'activate': (GObject.SIGNAL_RUN_FIRST, None, ())}
+    __gtype_name__ = "TextView"
+    __gsignals__ = {"activate": (GObject.SIGNAL_RUN_FIRST, None, ())}
 
     activate_mod: bool = GObject.Property(type=bool, default=True)
     """If activation requieres the mod key"""
@@ -23,12 +23,12 @@ class TextView(Gtk.TextView):
 
         # Key press controller
         key_ctrlr = Gtk.EventControllerKey()
-        key_ctrlr.connect('key-pressed', self._on_key_pressed)
+        key_ctrlr.connect("key-pressed", self._on_key_pressed)
         self.add_controller(key_ctrlr)
 
         # Scroll controller
         scroll_ctrlr = Gtk.EventControllerScroll.new(Gtk.EventControllerScrollFlags.VERTICAL)
-        scroll_ctrlr.connect('scroll', self._on_scroll)
+        scroll_ctrlr.connect("scroll", self._on_scroll)
         self.add_controller(scroll_ctrlr)
 
         # Custom font
@@ -47,7 +47,7 @@ class TextView(Gtk.TextView):
         # Save value
         self._font_size = value
         # Update CSS
-        self._font_css_provider.load_from_data(f'textview {{ font-size: { str(value) }pt; }}')
+        self._font_css_provider.load_from_data(f"textview {{ font-size: { str(value) }pt; }}")
 
     def font_size_inc(self):
         self.font_size += 5
@@ -66,13 +66,13 @@ class TextView(Gtk.TextView):
         if control_mask == modifiers:
             if keyval in enter_keys:
                 if self.activate_mod:
-                    self.emit('activate')
+                    self.emit("activate")
                     return Gdk.EVENT_STOP
 
         # Activate without mod key pressed
         elif keyval in enter_keys:
             if not self.activate_mod:
-                self.emit('activate')
+                self.emit("activate")
                 return Gdk.EVENT_STOP
 
         return Gdk.EVENT_PROPAGATE

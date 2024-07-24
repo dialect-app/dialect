@@ -15,7 +15,7 @@ def get_lang_name(code):
 
 
 class LangObject(GObject.Object):
-    __gtype_name__ = 'LangObject'
+    __gtype_name__ = "LangObject"
 
     code = GObject.Property(type=str)
     name = GObject.Property(type=str)
@@ -33,7 +33,7 @@ class LangObject(GObject.Object):
 
 
 class LanguagesListModel(GObject.GObject, Gio.ListModel):
-    __gtype_name__ = 'LanguagesListModel'
+    __gtype_name__ = "LanguagesListModel"
 
     def __init__(self, names_func=get_lang_name):
         super().__init__()
@@ -58,7 +58,7 @@ class LanguagesListModel(GObject.GObject, Gio.ListModel):
         self.langs.clear()
 
         if auto:
-            self.langs.append(LangObject('auto', _('Auto')))
+            self.langs.append(LangObject("auto", _("Auto")))
 
         for code in langs:
             self.langs.append(LangObject(code, self.names_func(code)))

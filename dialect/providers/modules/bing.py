@@ -18,20 +18,20 @@ from dialect.session import Session
 
 
 class Provider(SoupProvider):
-    name = 'bing'
-    prettyname = 'Bing'
+    name = "bing"
+    prettyname = "Bing"
 
     capabilities = ProviderCapability.TRANSLATION
     features = ProviderFeature.DETECTION | ProviderFeature.PRONUNCIATION
 
     defaults = {
-        'instance_url': '',
-        'api_key': '',
-        'src_langs': ['en', 'fr', 'es', 'de'],
-        'dest_langs': ['fr', 'es', 'de', 'en'],
+        "instance_url": "",
+        "api_key": "",
+        "src_langs": ["en", "fr", "es", "de"],
+        "dest_langs": ["fr", "es", "de", "en"],
     }
 
-    _headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)', 'Accept': '*/*'}
+    _headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", "Accept": "*/*"}
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -39,66 +39,66 @@ class Provider(SoupProvider):
         self.chars_limit = 1000  # Web UI limit
 
         # Session vars
-        self._key = ''
-        self._token = ''
-        self._ig = ''
-        self._iid = ''
+        self._key = ""
+        self._token = ""
+        self._ig = ""
+        self._iid = ""
         self._count = 1
 
     @property
     def html_url(self):
-        return self.format_url('www.bing.com', '/translator')
+        return self.format_url("www.bing.com", "/translator")
 
     @property
     def translate_url(self):
         params = {
-            'isVertical': '1',
-            '': '',
-            'IG': self._ig,
-            'IID': f'{self._iid}.{self._count}',
+            "isVertical": "1",
+            "": "",
+            "IG": self._ig,
+            "IID": f"{self._iid}.{self._count}",
         }
-        return self.format_url('www.bing.com', '/ttranslatev3', params)
+        return self.format_url("www.bing.com", "/ttranslatev3", params)
 
     def init_trans(self, on_done, on_fail):
         def on_response(data):
             if data:
                 try:
-                    soup = BeautifulSoup(data, 'html.parser')
+                    soup = BeautifulSoup(data, "html.parser")
 
                     # Get Langs
-                    langs = soup.find('optgroup', {'id': 't_tgtAllLang'})
+                    langs = soup.find("optgroup", {"id": "t_tgtAllLang"})
                     for child in langs.findChildren():
-                        if child.name == 'option':
-                            self.add_lang(child['value'], child.contents[0])
+                        if child.name == "option":
+                            self.add_lang(child["value"], child.contents[0])
 
                     # Get IID
-                    iid = soup.find('div', {'id': 'rich_tta'})
-                    self._iid = iid['data-iid']
+                    iid = soup.find("div", {"id": "rich_tta"})
+                    self._iid = iid["data-iid"]
 
                     # Decode response bytes
-                    data = data.decode('utf-8')
+                    data = data.decode("utf-8")
 
                     # Look for abuse prevention data
                     params = re.findall("var params_AbusePreventionHelper = \[(.*?)\];", data)[0]  # noqa
-                    abuse_params = params.replace('"', '').split(',')
+                    abuse_params = params.replace('"', "").split(",")
                     self._key = abuse_params[0]
                     self._token = abuse_params[1]
 
                     # Look for IG
-                    self._ig = re.findall("IG:\"(.*?)\",", data)[0]
+                    self._ig = re.findall('IG:"(.*?)",', data)[0]
 
                     on_done()
 
                 except Exception as exc:
-                    error = 'Failed parsing HTML from bing.com'
+                    error = "Failed parsing HTML from bing.com"
                     logging.warning(error, exc)
                     on_fail(ProviderError(ProviderErrorCode.NETWORK, error))
 
             else:
-                on_fail(ProviderError(ProviderErrorCode.EMPTY, 'Could not get HTML from bing.com'))
+                on_fail(ProviderError(ProviderErrorCode.EMPTY, "Could not get HTML from bing.com"))
 
         # Message request to get bing's website html
-        message = self.create_message('GET', self.html_url, headers=self._headers)
+        message = self.create_message("GET", self.html_url, headers=self._headers)
 
         # Do async request
         self.send_and_read_and_process_response(message, on_response, on_fail, False, False)
@@ -110,15 +110,15 @@ class Provider(SoupProvider):
                 detected = None
                 pronunciation = None
 
-                if 'translations' in data:
-                    if 'detectedLanguage' in data:
-                        detected = data['detectedLanguage']['language']
+                if "translations" in data:
+                    if "detectedLanguage" in data:
+                        detected = data["detectedLanguage"]["language"]
 
-                    if 'transliteration' in data['translations'][0]:
-                        pronunciation = data['translations'][0]['transliteration']['text']
+                    if "transliteration" in data["translations"][0]:
+                        pronunciation = data["translations"][0]["transliteration"]["text"]
 
                     translation = Translation(
-                        data['translations'][0]['text'],
+                        data["translations"][0]["text"],
                         (text, src, dest),
                         detected=detected,
                         pronunciation=(None, pronunciation),
@@ -134,24 +134,24 @@ class Provider(SoupProvider):
 
         # Form data
         data = {
-            'fromLang': 'auto-detect' if src == 'auto' else src,
-            'text': text,
-            'to': dest,
-            'token': self._token,
-            'key': self._key,
+            "fromLang": "auto-detect" if src == "auto" else src,
+            "text": text,
+            "to": dest,
+            "token": self._token,
+            "key": self._key,
         }
         # Request message
-        message = self.create_message('POST', self.translate_url, data, self._headers, True)
+        message = self.create_message("POST", self.translate_url, data, self._headers, True)
         # Do async request
         self.send_and_read_and_process_response(message, on_response, on_fail)
 
     def check_known_errors(self, _status, data):
         if not data:
-            return ProviderError(ProviderErrorCode.EMPTY, 'Response is empty!')
+            return ProviderError(ProviderErrorCode.EMPTY, "Response is empty!")
 
-        if 'errorMessage' in data:
-            error = data['errorMessage']
-            code = data['statusCode']
+        if "errorMessage" in data:
+            error = data["errorMessage"]
+            code = data["statusCode"]
 
             match code:
                 case _:

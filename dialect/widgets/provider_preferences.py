@@ -10,9 +10,9 @@ from dialect.define import RES_PATH
 from dialect.providers import ProviderCapability, ProviderFeature
 
 
-@Gtk.Template(resource_path=f'{RES_PATH}/provider-preferences.ui')
+@Gtk.Template(resource_path=f"{RES_PATH}/provider-preferences.ui")
 class ProviderPreferences(Adw.NavigationPage):
-    __gtype_name__ = 'ProviderPreferences'
+    __gtype_name__ = "ProviderPreferences"
 
     # Properties
     translation = GObject.Property(type=bool, default=False)
@@ -55,12 +55,12 @@ class ProviderPreferences(Adw.NavigationPage):
         self.api_key_entry.props.text = self.provider.api_key
 
         # Main window progress
-        self.window.connect('notify::translator-loading', self._on_translator_loading)
+        self.window.connect("notify::translator-loading", self._on_translator_loading)
 
     def _check_settings(self):
         def on_usage(usage, limit):
             level = usage / limit
-            label = _('{usage:n} of {limit:n} characters').format(usage=usage, limit=limit)
+            label = _("{usage:n} of {limit:n} characters").format(usage=usage, limit=limit)
 
             self.api_usage.props.value = level
             self.api_usage_label.props.label = label
@@ -86,38 +86,38 @@ class ProviderPreferences(Adw.NavigationPage):
                 self.provider.instance_url = self.new_instance_url
                 self.provider.reset_src_langs()
                 self.provider.reset_dest_langs()
-                self.instance_entry.remove_css_class('error')
+                self.instance_entry.remove_css_class("error")
                 self.instance_entry.props.text = self.provider.instance_url
             else:
-                self.instance_entry.add_css_class('error')
-                error_text = _('Not a valid {provider} instance')
+                self.instance_entry.add_css_class("error")
+                error_text = _("Not a valid {provider} instance")
                 error_text = error_text.format(provider=self.provider.prettyname)
                 toast = Adw.Toast.new(error_text)
                 self.dialog.add_toast(toast)
 
             self.instance_entry.props.sensitive = True
             self.api_key_entry.props.sensitive = True
-            self.instance_stack.props.visible_child_name = 'reset'
+            self.instance_stack.props.visible_child_name = "reset"
             self.instance_spinner.stop()
 
         old_value = self.provider.instance_url
         new_value = self.instance_entry.props.text
 
-        url = re.compile(r'https?://(www\.)?')
-        self.new_instance_url = url.sub('', new_value).strip().strip('/')
+        url = re.compile(r"https?://(www\.)?")
+        self.new_instance_url = url.sub("", new_value).strip().strip("/")
 
         # Validate
         if self.new_instance_url != old_value:
             # Progress feedback
             self.instance_entry.props.sensitive = False
             self.api_key_entry.props.sensitive = False
-            self.instance_stack.props.visible_child_name = 'spinner'
+            self.instance_stack.props.visible_child_name = "spinner"
             self.instance_spinner.start()
 
             # TODO: Use on_fail to notify network error
             self.provider.validate_instance(self.new_instance_url, on_done, lambda _: on_done(False))
         else:
-            self.instance_entry.remove_css_class('error')
+            self.instance_entry.remove_css_class("error")
 
     @Gtk.Template.Callback()
     def _on_instance_changed(self, _entry, _pspec):
@@ -129,10 +129,10 @@ class ProviderPreferences(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     def _on_reset_instance(self, _button):
-        if self.provider.instance_url != self.provider.defaults['instance_url']:
+        if self.provider.instance_url != self.provider.defaults["instance_url"]:
             self.provider.reset_instance_url()
 
-        self.instance_entry.remove_css_class('error')
+        self.instance_entry.remove_css_class("error")
         self.instance_entry.props.text = self.provider.instance_url
 
     @Gtk.Template.Callback()
@@ -142,18 +142,18 @@ class ProviderPreferences(Adw.NavigationPage):
         def on_done(valid):
             if valid:
                 self.provider.api_key = self.new_api_key
-                self.api_key_entry.remove_css_class('error')
+                self.api_key_entry.remove_css_class("error")
                 self.api_key_entry.props.text = self.provider.api_key
             else:
-                self.api_key_entry.add_css_class('error')
-                error_text = _('Not a valid {provider} API key')
+                self.api_key_entry.add_css_class("error")
+                error_text = _("Not a valid {provider} API key")
                 error_text = error_text.format(provider=self.provider.prettyname)
                 toast = Adw.Toast.new(error_text)
                 self.dialog.add_toast(toast)
 
             self.instance_entry.props.sensitive = True
             self.api_key_entry.props.sensitive = True
-            self.api_key_stack.props.visible_child_name = 'reset'
+            self.api_key_stack.props.visible_child_name = "reset"
             self.api_key_spinner.stop()
 
         old_value = self.provider.api_key
@@ -164,21 +164,21 @@ class ProviderPreferences(Adw.NavigationPage):
             # Progress feedback
             self.instance_entry.props.sensitive = False
             self.api_key_entry.props.sensitive = False
-            self.api_key_stack.props.visible_child_name = 'spinner'
+            self.api_key_stack.props.visible_child_name = "spinner"
             self.api_key_spinner.start()
 
             # TODO: Use on_fail to notify network error
             self.provider.validate_api_key(self.new_api_key, on_done, lambda _: on_done(False))
         else:
-            self.api_key_entry.remove_css_class('error')
+            self.api_key_entry.remove_css_class("error")
 
     @Gtk.Template.Callback()
     def _on_reset_api_key(self, _button):
         """Called on self.api_key_reset::clicked signal"""
-        if self.provider.api_key != self.provider.defaults['api_key']:
+        if self.provider.api_key != self.provider.defaults["api_key"]:
             self.provider.reset_api_key()
 
-        self.api_key_entry.remove_css_class('error')
+        self.api_key_entry.remove_css_class("error")
         self.api_key_entry.props.text = self.provider.api_key
 
     def _on_translator_loading(self, window, _value):

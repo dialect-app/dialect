@@ -56,7 +56,7 @@ class Session(Soup.Session):
                 message_callback(data)
             except ResponseError as exc:
                 logging.warning(exc)
-                self.errors[request_id] += str(exc) + '/n'
+                self.errors[request_id] += str(exc) + "/n"
 
             # If all tasks are done, run main callback
             if callback is not None and len(messages) == 0:
@@ -64,7 +64,7 @@ class Session(Soup.Session):
                 del self.errors[request_id]
 
         request_id = uuid4()
-        self.errors[request_id] = ''
+        self.errors[request_id] = ""
 
         for msg in messages:
             # msg[0]: Soup.Message
@@ -77,10 +77,10 @@ class Session(Soup.Session):
 class ResponseError(Exception):
     """Exception raised when response fails."""
 
-    def __init__(self, cause, message='Response has failed'):
+    def __init__(self, cause, message="Response has failed"):
         self.cause = cause
         self.message = message
         super().__init__(self.message)
 
     def __str__(self):
-        return f'{self.message}: {self.cause}'
+        return f"{self.message}: {self.cause}"

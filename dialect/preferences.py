@@ -13,9 +13,9 @@ from dialect.settings import Settings
 from dialect.widgets import ProviderPreferences
 
 
-@Gtk.Template(resource_path=f'{RES_PATH}/preferences.ui')
+@Gtk.Template(resource_path=f"{RES_PATH}/preferences.ui")
 class DialectPreferencesDialog(Adw.PreferencesDialog):
-    __gtype_name__ = 'DialectPreferencesDialog'
+    __gtype_name__ = "DialectPreferencesDialog"
 
     window = NotImplemented
 
@@ -38,21 +38,21 @@ class DialectPreferencesDialog(Adw.PreferencesDialog):
 
         # Bind preferences with GSettings
         Settings.get().bind(
-            'live-translation', self.live_translation, 'enable-expansion', Gio.SettingsBindFlags.DEFAULT
+            "live-translation", self.live_translation, "enable-expansion", Gio.SettingsBindFlags.DEFAULT
         )
-        Settings.get().bind('sp-translation', self.search_provider, 'active', Gio.SettingsBindFlags.DEFAULT)
-        Settings.get().bind('translate-accel', self.translate_accel, 'selected', Gio.SettingsBindFlags.DEFAULT)
-        Settings.get().bind('src-auto', self.src_auto, 'active', Gio.SettingsBindFlags.DEFAULT)
+        Settings.get().bind("sp-translation", self.search_provider, "active", Gio.SettingsBindFlags.DEFAULT)
+        Settings.get().bind("translate-accel", self.translate_accel, "selected", Gio.SettingsBindFlags.DEFAULT)
+        Settings.get().bind("src-auto", self.src_auto, "active", Gio.SettingsBindFlags.DEFAULT)
         Settings.get().bind(
-            'custom-default-font-size', self.custom_default_font_size, 'enable-expansion', Gio.SettingsBindFlags.DEFAULT
+            "custom-default-font-size", self.custom_default_font_size, "enable-expansion", Gio.SettingsBindFlags.DEFAULT
         )
-        Settings.get().bind('default-font-size', self.default_font_size, 'value', Gio.SettingsBindFlags.DEFAULT)
+        Settings.get().bind("default-font-size", self.default_font_size, "value", Gio.SettingsBindFlags.DEFAULT)
 
         self.translator_config.props.sensitive = False
         self.tts_config.props.sensitive = False
 
         # Setup translator chooser
-        trans_model = ProvidersListModel('translators')
+        trans_model = ProvidersListModel("translators")
         with self.translator.freeze_notify():
             self.translator.set_model(trans_model)
             self.translator.props.selected = trans_model.get_index_by_name(Settings.get().active_translator)
@@ -60,7 +60,7 @@ class DialectPreferencesDialog(Adw.PreferencesDialog):
 
         # Setup TTS chooser
         if len(TTS) >= 1:
-            tts_model = ProvidersListModel('tts', True)
+            tts_model = ProvidersListModel("tts", True)
             with self.tts.freeze_notify():
                 self.tts.set_model(tts_model)
                 self.tts.props.selected = tts_model.get_index_by_name(Settings.get().active_tts)
@@ -69,14 +69,14 @@ class DialectPreferencesDialog(Adw.PreferencesDialog):
             self.tts.props.visible = False
 
         # Providers Settings
-        self.translator_config.connect('clicked', self._open_provider, 'trans')
-        self.tts_config.connect('clicked', self._open_provider, 'tts')
+        self.translator_config.connect("clicked", self._open_provider, "trans")
+        self.tts_config.connect("clicked", self._open_provider, "tts")
 
         # Translator loading
-        self.window.connect('notify::translator-loading', self._on_translator_loading)
+        self.window.connect("notify::translator-loading", self._on_translator_loading)
 
         # Search Provider
-        if os.getenv('XDG_CURRENT_DESKTOP') != 'GNOME':
+        if os.getenv("XDG_CURRENT_DESKTOP") != "GNOME":
             self.search_provider.props.visible = False
 
         # Connect font size signals

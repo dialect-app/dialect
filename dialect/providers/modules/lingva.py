@@ -17,8 +17,8 @@ from dialect.providers.soup import SoupProvider
 
 
 class Provider(SoupProvider):
-    name = 'lingva'
-    prettyname = 'Lingva Translate'
+    name = "lingva"
+    prettyname = "Lingva Translate"
 
     capabilities = ProviderCapability.TRANSLATION | ProviderCapability.TTS
     features = (
@@ -26,10 +26,10 @@ class Provider(SoupProvider):
     )
 
     defaults = {
-        'instance_url': 'lingva.dialectapp.org',
-        'api_key': '',
-        'src_langs': ['en', 'fr', 'es', 'de'],
-        'dest_langs': ['fr', 'es', 'de', 'en'],
+        "instance_url": "lingva.dialectapp.org",
+        "api_key": "",
+        "src_langs": ["en", "fr", "es", "de"],
+        "dest_langs": ["fr", "es", "de", "en"],
     }
 
     def __init__(self, **kwargs):
@@ -41,41 +41,41 @@ class Provider(SoupProvider):
         def on_response(data):
             valid = False
             try:
-                valid = 'translation' in data
+                valid = "translation" in data
             except:  # noqa
                 pass
 
             on_done(valid)
 
         # Lingva translation endpoint
-        message = self.create_message('GET', self.format_url(url, '/api/v1/en/es/hello'))
+        message = self.create_message("GET", self.format_url(url, "/api/v1/en/es/hello"))
         # Do async request
         self.send_and_read_and_process_response(message, on_response, on_fail, False)
 
     @property
     def lang_url(self):
-        return self.format_url(self.instance_url, '/api/v1/languages/')
+        return self.format_url(self.instance_url, "/api/v1/languages/")
 
     @property
     def translate_url(self):
-        return self.format_url(self.instance_url, '/api/v1/{src}/{dest}/{text}')
+        return self.format_url(self.instance_url, "/api/v1/{src}/{dest}/{text}")
 
     @property
     def speech_url(self):
-        return self.format_url(self.instance_url, '/api/v1/audio/{lang}/{text}')
+        return self.format_url(self.instance_url, "/api/v1/audio/{lang}/{text}")
 
     def init(self, on_done, on_fail):
         def on_response(data):
-            if 'languages' in data:
-                for lang in data['languages']:
-                    if lang['code'] != 'auto':
-                        self.add_lang(lang['code'], lang['name'], tts=True)
+            if "languages" in data:
+                for lang in data["languages"]:
+                    if lang["code"] != "auto":
+                        self.add_lang(lang["code"], lang["name"], tts=True)
                 on_done()
             else:
-                on_fail(ProviderError(ProviderErrorCode.UNEXPECTED, 'No langs found in server.'))
+                on_fail(ProviderError(ProviderErrorCode.UNEXPECTED, "No langs found in server."))
 
         # Languages message request
-        message = self.create_message('GET', self.lang_url)
+        message = self.create_message("GET", self.lang_url)
         # Do async request
         self.send_and_read_and_process_response(message, on_response, on_fail)
 
@@ -88,13 +88,13 @@ class Provider(SoupProvider):
     def translate(self, text, src, dest, on_done, on_fail):
         def on_response(data):
             try:
-                detected = data.get('info', {}).get('detectedSource', None)
-                mistakes = data.get('info', {}).get('typo', None)
-                src_pronunciation = data.get('info', {}).get('pronunciation', {}).get('query', None)
-                dest_pronunciation = data.get('info', {}).get('pronunciation', {}).get('translation', None)
+                detected = data.get("info", {}).get("detectedSource", None)
+                mistakes = data.get("info", {}).get("typo", None)
+                src_pronunciation = data.get("info", {}).get("pronunciation", {}).get("query", None)
+                dest_pronunciation = data.get("info", {}).get("pronunciation", {}).get("translation", None)
 
                 translation = Translation(
-                    data['translation'],
+                    data["translation"],
                     (text, src, dest),
                     detected,
                     (mistakes, mistakes),
@@ -104,37 +104,37 @@ class Provider(SoupProvider):
                 on_done(translation)
 
             except Exception as exc:
-                error = 'Failed reading the translation data'
+                error = "Failed reading the translation data"
                 logging.warning(error, exc)
                 on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, error))
 
         # Format url query data
-        text = quote(text, safe='')
+        text = quote(text, safe="")
         url = self.translate_url.format(text=text, src=src, dest=dest)
 
         # Request message
-        message = self.create_message('GET', url)
+        message = self.create_message("GET", url)
 
         # Do async request
         self.send_and_read_and_process_response(message, on_response, on_fail)
 
     def speech(self, text, language, on_done, on_fail):
         def on_response(data):
-            if 'audio' in data:
+            if "audio" in data:
                 file = NamedTemporaryFile()
-                audio = bytearray(data['audio'])
+                audio = bytearray(data["audio"])
                 file.write(audio)
                 file.seek(0)
 
                 on_done(file)
             else:
-                on_fail(ProviderError(ProviderErrorCode.TTS_FAILED, 'No audio was found.'))
+                on_fail(ProviderError(ProviderErrorCode.TTS_FAILED, "No audio was found."))
 
         # Format url query data
         url = self.speech_url.format(text=text, lang=language)
 
         # Request message
-        message = self.create_message('GET', url)
+        message = self.create_message("GET", url)
 
         # Do async request
         self.send_and_read_and_process_response(message, on_response, on_fail)
@@ -142,11 +142,11 @@ class Provider(SoupProvider):
     def check_known_errors(self, _status, data):
         """Raises a proper Exception if an error is found in the data."""
         if not data:
-            return ProviderError(ProviderErrorCode.EMPTY, 'Response is empty!')
-        if 'error' in data:
-            error = data['error']
+            return ProviderError(ProviderErrorCode.EMPTY, "Response is empty!")
+        if "error" in data:
+            error = data["error"]
 
-            if error == 'Invalid target language' or error == 'Invalid source language':
+            if error == "Invalid target language" or error == "Invalid source language":
                 return ProviderError(ProviderErrorCode.INVALID_LANG_CODE, error)
             else:
                 return ProviderError(ProviderErrorCode.UNEXPECTED, error)

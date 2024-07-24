@@ -12,27 +12,27 @@ import sys
 
 import gi
 
-gi.require_version('Secret', '1')
-gi.require_version('Soup', '3.0')
+gi.require_version("Secret", "1")
+gi.require_version("Soup", "3.0")
 from gi.repository import Gio, GLib
 
 from dialect.providers import TRANSLATORS
 from dialect.providers.base import ProviderErrorCode
 from dialect.settings import Settings
 
-CLIPBOARD_PREFIX = 'copy-to-clipboard'
-ERROR_PREFIX = 'translation-error'
+CLIPBOARD_PREFIX = "copy-to-clipboard"
+ERROR_PREFIX = "translation-error"
 
-localedir = '@localedir@'
-langs_trans = gettext.translation('dialect-cldr-langs', localedir, fallback=True)
-ui_trans = gettext.translation('dialect', localedir, fallback=True)
+localedir = "@localedir@"
+langs_trans = gettext.translation("dialect-cldr-langs", localedir, fallback=True)
+ui_trans = gettext.translation("dialect", localedir, fallback=True)
 ui_trans.add_fallback(langs_trans)
-ui_trans.install(names=['gettext'])
+ui_trans.install(names=["gettext"])
 
-locale.bindtextdomain('dialect', localedir)
-locale.textdomain('dialect')
+locale.bindtextdomain("dialect", localedir)
+locale.textdomain("dialect")
 
-dbus_interface_description = '''
+dbus_interface_description = """
 <!DOCTYPE node PUBLIC
 '-//freedesktop//DTD D-BUS Object Introspection 1.0//EN'
 'http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd'>
@@ -62,7 +62,7 @@ dbus_interface_description = '''
     </method>
   </interface>
 </node>
-'''
+"""
 
 
 class TranslateService:
@@ -75,13 +75,13 @@ class TranslateService:
 
         # Translations store
         self.translations = {}
-        self.src_language = 'auto'
+        self.src_language = "auto"
         self.dest_language = None
 
         # Translator
         self._load_translator()
-        Settings.get().connect('changed', self._on_settings_changed)
-        Settings.get().connect('translator-changed', self._on_translator_changed)
+        Settings.get().connect("changed", self._on_settings_changed)
+        Settings.get().connect("translator-changed", self._on_translator_changed)
 
     def GetInitialResultSet(self, terms, callback):
         """
@@ -96,28 +96,28 @@ class TranslateService:
         def on_fail(error):
             match error.code:
                 case ProviderErrorCode.NETWORK:
-                    self.translations[error_id] = _('Translation failed, check for network issues')
+                    self.translations[error_id] = _("Translation failed, check for network issues")
                 case ProviderErrorCode.API_KEY_INVALID:
-                    self.translations[error_id] = _('The provided API key is invalid')
+                    self.translations[error_id] = _("The provided API key is invalid")
                 case ProviderErrorCode.API_KEY_REQUIRED:
-                    self.translations[error_id] = _('API key is required to use the service')
+                    self.translations[error_id] = _("API key is required to use the service")
                 case _:
-                    self.translations[error_id] = _('Translation failed')
+                    self.translations[error_id] = _("Translation failed")
             callback([error_id])
 
-        text = ' '.join(terms)
+        text = " ".join(terms)
 
         if self.live_enabled:
             error_id = ERROR_PREFIX + text
 
             if self.load_failed:
-                self.translations[error_id] = _('Failed loading the translation service')
+                self.translations[error_id] = _("Failed loading the translation service")
                 callback([error_id])
             elif not self.loaded:
                 return self.GetInitialResultSet(terms)
 
             # If the two languages are the same, nothing is done
-            if self.src_language != self.dest_language and text != '':
+            if self.src_language != self.dest_language and text != "":
                 src, dest = self.translator.denormalize_lang(self.src_language, self.dest_language)
                 self.translator.translate(text, src, dest, on_done, on_fail)
 
@@ -126,7 +126,7 @@ class TranslateService:
 
             callback(
                 [
-                    _('Translate “{text}” with {provider_name}').format(
+                    _("Translate “{text}” with {provider_name}").format(
                         text=text, provider_name=TRANSLATORS[provider].prettyname
                     )
                 ]
@@ -148,8 +148,8 @@ class TranslateService:
             callback(
                 [
                     {
-                        'id': GLib.Variant("s", translate_id),
-                        'name': GLib.Variant("s", text),
+                        "id": GLib.Variant("s", translate_id),
+                        "name": GLib.Variant("s", text),
                     }
                 ]
             )
@@ -158,22 +158,22 @@ class TranslateService:
             text = self.translations[translate_id]
             lang = self.translator.get_lang_name(self.dest_language)
             provider = Settings.get().active_translator
-            description = f'{lang} — {TRANSLATORS[provider].prettyname}' if self.live_enabled else ''
+            description = f"{lang} — {TRANSLATORS[provider].prettyname}" if self.live_enabled else ""
 
             self.translations.clear()
 
             callback(
                 [
                     {
-                        'id': GLib.Variant("s", translate_id),
-                        'name': GLib.Variant("s", text),
-                        'description': GLib.Variant("s", description),
+                        "id": GLib.Variant("s", translate_id),
+                        "name": GLib.Variant("s", text),
+                        "description": GLib.Variant("s", description),
                     },
                     {
-                        'id': GLib.Variant("s", ids[1]),
-                        'name': GLib.Variant("s", _('Copy')),
-                        'description': GLib.Variant("s", _('Copy translation to clipboard')),
-                        'clipboardText': GLib.Variant("s", text),
+                        "id": GLib.Variant("s", ids[1]),
+                        "name": GLib.Variant("s", _("Copy")),
+                        "description": GLib.Variant("s", _("Copy translation to clipboard")),
+                        "clipboardText": GLib.Variant("s", text),
                     },
                 ]
             )
@@ -197,8 +197,8 @@ class TranslateService:
         callback((None,))
 
     def LaunchSearch(self, terms, _timestamp):
-        text = ' '.join(terms)
-        GLib.spawn_async_with_pipes(None, ['@BIN@', '--text', text], None, GLib.SpawnFlags.SEARCH_PATH, None)
+        text = " ".join(terms)
+        GLib.spawn_async_with_pipes(None, ["@BIN@", "--text", text], None, GLib.SpawnFlags.SEARCH_PATH, None)
 
     def is_live_enabled(self):
         return Settings.get().live_translation and Settings.get().sp_translation
@@ -209,7 +209,7 @@ class TranslateService:
             self.load_failed = False
             self.dest_language = self.translator.recent_dest_langs[0]
 
-            self.translator.settings.connect('changed', self._on_translator_settings_changed)
+            self.translator.settings.connect("changed", self._on_translator_settings_changed)
 
         def on_fail(_error):
             self.loaded = False
@@ -224,16 +224,16 @@ class TranslateService:
         self.translator.init_trans(on_done, on_fail)
 
     def _on_settings_changed(self, _settings, key):
-        if key.startswith('translator-'):
+        if key.startswith("translator-"):
             self._load_translator()
-        if key == 'live-translation' or key == 'sp-translation':
+        if key == "live-translation" or key == "sp-translation":
             self.live_enabled = self.is_live_enabled()
 
     def _on_translator_changed(self, *args):
         self._load_translator()
 
     def _on_translator_settings_changed(self, _settings, key):
-        if key == 'src-langs' or key == 'dest-langs':
+        if key == "src-langs" or key == "dest-langs":
             self.dest_language = self.translator.recent_dest_langs[0]
         else:
             self._load_translator()
@@ -243,7 +243,7 @@ class TranslateServiceApplication(Gio.Application):
     def __init__(self):
         Gio.Application.__init__(
             self,
-            application_id='@APP_ID@.SearchProvider',
+            application_id="@APP_ID@.SearchProvider",
             flags=Gio.ApplicationFlags.IS_SERVICE,
             inactivity_timeout=10000,
         )
