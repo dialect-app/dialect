@@ -1005,7 +1005,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         if translation.detected and self.src_lang_selector.selected == 'auto':
             if Settings.get().src_auto:
-                self.src_lang_selector.set_insight(self.provider['tts'].normalize_lang_code(translation.detected))
+                self.src_lang_selector.set_insight(self.provider['trans'].normalize_lang_code(translation.detected))
             else:
                 self.src_lang_selector.selected = translation.detected
 

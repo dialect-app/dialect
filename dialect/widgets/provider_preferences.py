@@ -69,12 +69,13 @@ class ProviderPreferences(Adw.NavigationPage):
         def on_usage_fail(_error):
             pass
 
-        self.instance_entry.props.visible = ProviderFeature.INSTANCES in self.provider.features
-        self.api_key_entry.props.visible = ProviderFeature.API_KEY in self.provider.features
+        if self.provider:
+            self.instance_entry.props.visible = ProviderFeature.INSTANCES in self.provider.features
+            self.api_key_entry.props.visible = ProviderFeature.API_KEY in self.provider.features
 
-        self.api_usage_group.props.visible = False
-        if ProviderFeature.API_KEY_USAGE in self.provider.features:
-            self.provider.api_char_usage(on_usage, on_usage_fail)
+            self.api_usage_group.props.visible = False
+            if ProviderFeature.API_KEY_USAGE in self.provider.features:
+                self.provider.api_char_usage(on_usage, on_usage_fail)
 
     @Gtk.Template.Callback()
     def _on_instance_apply(self, _row):
