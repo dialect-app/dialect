@@ -12,6 +12,7 @@ import sys
 
 import gi
 
+gi.require_version('Secret', '1')
 gi.require_version('Soup', '3.0')
 from gi.repository import Gio, GLib
 
@@ -107,13 +108,16 @@ class TranslateService:
         text = ' '.join(terms)
 
         if self.live_enabled:
-            if not self.loaded:
+            error_id = ERROR_PREFIX + text
+
+            if self.load_failed:
+                self.translations[error_id] = _('Failed loading the translation service')
+                callback([error_id])
+            elif not self.loaded:
                 return self.GetInitialResultSet(terms)
 
             # If the two languages are the same, nothing is done
             if self.src_language != self.dest_language and text != '':
-                error_id = ERROR_PREFIX + text
-
                 src, dest = self.translator.denormalize_lang(self.src_language, self.dest_language)
                 self.translator.translate(text, src, dest, on_done, on_fail)
 
@@ -203,7 +207,7 @@ class TranslateService:
         def on_done():
             self.loaded = True
             self.load_failed = False
-            self.dest_language = self.translator.dest_langs[0]
+            self.dest_language = self.translator.recent_dest_langs[0]
 
             self.translator.settings.connect('changed', self._on_translator_settings_changed)
 
@@ -230,7 +234,7 @@ class TranslateService:
 
     def _on_translator_settings_changed(self, _settings, key):
         if key == 'src-langs' or key == 'dest-langs':
-            self.dest_language = self.translator.dest_langs[0]
+            self.dest_language = self.translator.recent_dest_langs[0]
         else:
             self._load_translator()
 

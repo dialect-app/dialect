@@ -3,7 +3,7 @@
 # Copyright 2023 Libretto
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Gio, GLib, GObject, Gtk
+from gi.repository import Gio, GLib, GObject
 
 from dialect.define import APP_ID
 from dialect.providers import (
@@ -115,6 +115,8 @@ class Settings(Gio.Settings):
     @property
     def system_font_size(self):
         """Return the systems's default font size."""
+        from gi.repository import Gtk
+
         gtk_font_name = Gtk.Settings.get_default().get_property('gtk-font-name').split(' ')
 
         try:
