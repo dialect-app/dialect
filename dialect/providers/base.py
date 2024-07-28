@@ -5,8 +5,7 @@
 import urllib.parse
 from dataclasses import dataclass
 from enum import Enum, Flag, auto
-from typing import Callable, IO
-
+from typing import IO, Callable
 
 from dialect.define import LANG_ALIASES
 from dialect.languages import get_lang_name

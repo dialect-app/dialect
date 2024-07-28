@@ -7,7 +7,7 @@ import re
 from gi.repository import Adw, Gdk, GObject, Gtk
 
 from dialect.define import RES_PATH
-from dialect.languages import LanguagesListModel, LangObject
+from dialect.languages import LangObject, LanguagesListModel
 
 
 @Gtk.Template(resource_path=f"{RES_PATH}/lang-selector.ui")

@@ -8,9 +8,9 @@ from bs4 import BeautifulSoup, Tag
 
 from dialect.providers.base import (
     ProviderCapability,
-    ProviderFeature,
     ProviderError,
     ProviderErrorCode,
+    ProviderFeature,
     Translation,
 )
 from dialect.providers.soup import SoupProvider

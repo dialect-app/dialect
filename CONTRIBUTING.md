@@ -11,6 +11,12 @@ To format run:
 black dialect
 ```
 
+We also use [isort](https://pycqa.github.io/isort/) for imports sorting.
+
+```sh
+isort dialect
+```
+
 ### Type Annotations
 
 We try to use Python type annotations whenever is possible.
