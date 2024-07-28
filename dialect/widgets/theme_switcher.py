@@ -12,7 +12,7 @@ from dialect.define import RES_PATH
 from dialect.settings import Settings
 
 
-@Gtk.Template(resource_path=f"{RES_PATH}/theme-switcher.ui")
+@Gtk.Template(resource_path=f"{RES_PATH}/widgets/theme_switcher.ui")
 class ThemeSwitcher(Gtk.Box):
     __gtype_name__ = "ThemeSwitcher"
 

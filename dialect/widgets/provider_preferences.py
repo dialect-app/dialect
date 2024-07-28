@@ -16,7 +16,7 @@ if typing.TYPE_CHECKING:
     from dialect.window import DialectWindow
 
 
-@Gtk.Template(resource_path=f"{RES_PATH}/provider-preferences.ui")
+@Gtk.Template(resource_path=f"{RES_PATH}/widgets/provider_preferences.ui")
 class ProviderPreferences(Adw.NavigationPage):
     __gtype_name__ = "ProviderPreferences"
 

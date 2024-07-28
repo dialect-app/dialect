@@ -10,7 +10,7 @@ from dialect.define import RES_PATH
 from dialect.languages import LangObject, LanguagesListModel
 
 
-@Gtk.Template(resource_path=f"{RES_PATH}/lang-selector.ui")
+@Gtk.Template(resource_path=f"{RES_PATH}/widgets/lang_selector.ui")
 class LangSelector(Adw.Bin):
     __gtype_name__ = "LangSelector"
     __gsignals__ = {"user-selection-changed": (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())}
@@ -148,7 +148,7 @@ class LangSelector(Adw.Bin):
             return Gdk.EVENT_STOP
 
 
-@Gtk.Template(resource_path=f"{RES_PATH}/lang-row.ui")
+@Gtk.Template(resource_path=f"{RES_PATH}/widgets/lang_row.ui")
 class LangRow(Gtk.ListBoxRow):
     __gtype_name__ = "LangRow"
 
