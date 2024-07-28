@@ -7,9 +7,10 @@ from dataclasses import dataclass
 from enum import Enum, Flag, auto
 from typing import Callable, IO
 
+
 from dialect.define import LANG_ALIASES
 from dialect.languages import get_lang_name
-from dialect.providers.settings import ProviderSettings
+from dialect.providers.settings import ProviderDefaults, ProviderSettings
 
 
 class ProviderCapability(Flag):
@@ -98,7 +99,7 @@ class BaseProvider:
     lang_model: ProvideLangModel = ProvideLangModel.STATIC
     """ Translation language model """
 
-    defaults = {
+    defaults: ProviderDefaults = {
         "instance_url": "",
         "api_key": "",
         "src_langs": ["en", "fr", "es", "de"],
@@ -444,7 +445,7 @@ class BaseProvider:
             # Save name provider by the service
             self._languages_names[code] = name
 
-    def denormalize_lang(self, *codes: str) -> str | tuple[str]:
+    def denormalize_lang(self, *codes: str) -> str | tuple[str, ...]:
         """
         Get denormalized lang code if available.
 
@@ -462,7 +463,7 @@ class BaseProvider:
             result.append(self._nonstandard_langs.get(code, code))
         return tuple(result)
 
-    def get_lang_name(self, code: str) -> str:
+    def get_lang_name(self, code: str) -> str | None:
         """
         Get a localized language name.
 

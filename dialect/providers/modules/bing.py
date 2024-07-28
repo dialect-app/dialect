@@ -4,7 +4,7 @@
 import logging
 import re
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 from dialect.providers.base import (
     ProviderCapability,
@@ -66,19 +66,21 @@ class Provider(SoupProvider):
 
                     # Get Langs
                     langs = soup.find("optgroup", {"id": "t_tgtAllLang"})
-                    for child in langs.findChildren():
-                        if child.name == "option":
-                            self.add_lang(child["value"], child.contents[0])
+                    if isinstance(langs, Tag):
+                        for child in langs.findChildren():
+                            if child.name == "option":
+                                self.add_lang(child["value"], child.contents[0])
 
                     # Get IID
                     iid = soup.find("div", {"id": "rich_tta"})
-                    self._iid = iid["data-iid"]
+                    if isinstance(iid, Tag):
+                        self._iid = iid["data-iid"]
 
                     # Decode response bytes
                     data = data.decode("utf-8")
 
                     # Look for abuse prevention data
-                    params = re.findall("var params_AbusePreventionHelper = \[(.*?)\];", data)[0]  # noqa
+                    params = re.findall(r"var params_AbusePreventionHelper = \[(.*?)\];", data)[0]  # noqa
                     abuse_params = params.replace('"', "").split(",")
                     self._key = abuse_params[0]
                     self._token = abuse_params[1]

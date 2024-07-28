@@ -12,7 +12,7 @@ class TextView(Gtk.TextView):
     __gtype_name__ = "TextView"
     __gsignals__ = {"activate": (GObject.SIGNAL_RUN_FIRST, None, ())}
 
-    activate_mod: bool = GObject.Property(type=bool, default=True)
+    activate_mod: bool = GObject.Property(type=bool, default=True)  # type: ignore
     """If activation requieres the mod key"""
 
     def __init__(self, **kwargs):
@@ -39,7 +39,7 @@ class TextView(Gtk.TextView):
         self.get_style_context().add_provider(self._font_css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
 
     @GObject.Property(type=int)
-    def font_size(self) -> int:
+    def font_size(self) -> int:  # type: ignore
         return self._font_size
 
     @font_size.setter

@@ -4,10 +4,6 @@
 
 from __future__ import annotations
 
-import logging
-from typing import Callable
-from uuid import uuid4
-
 from gi.repository import Gio, GLib, Soup
 
 
@@ -19,14 +15,13 @@ class Session(Soup.Session):
     instance = None
     errors = {}
 
-    def __init__(self):
-        Soup.Session.__init__(self)
+    def __init__(self, *args):
+        super().__init__(*args)
 
     @staticmethod
     def new() -> Session:
         """Create a new instance of Session."""
-        s_session = Soup.Session()
-        s_session.__class__ = Session
+        s_session = Session()
         return s_session
 
     @staticmethod
@@ -43,7 +38,7 @@ class Session(Soup.Session):
             data = response.get_data()
 
             return data
-        except GLib.GError as exc:
+        except GLib.Error as exc:
             raise ResponseError(exc.message) from exc
 
 

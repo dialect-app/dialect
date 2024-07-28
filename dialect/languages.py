@@ -9,7 +9,7 @@ from gi.repository import Gio, GObject
 from dialect.define import LANGUAGES
 
 
-def get_lang_name(code: str) -> str:
+def get_lang_name(code: str) -> str | None:
     name = LANGUAGES.get(code)
     if name:
         name = gettext(name)
@@ -19,9 +19,9 @@ def get_lang_name(code: str) -> str:
 class LangObject(GObject.Object):
     __gtype_name__ = "LangObject"
 
-    code: str = GObject.Property(type=str)
-    name: str = GObject.Property(type=str)
-    selected: bool = GObject.Property(type=bool, default=False)
+    code: str = GObject.Property(type=str)  # type: ignore
+    name: str = GObject.Property(type=str)  # type: ignore
+    selected: bool = GObject.Property(type=bool, default=False)  # type: ignore
 
     def __init__(self, code: str, name: str, selected=False):
         super().__init__()
@@ -37,11 +37,11 @@ class LangObject(GObject.Object):
 class LanguagesListModel(GObject.GObject, Gio.ListModel):
     __gtype_name__ = "LanguagesListModel"
 
-    def __init__(self, names_func: Callable[[str], str] = get_lang_name):
+    def __init__(self, names_func: Callable[[str], str | None] = get_lang_name):
         super().__init__()
 
         self.names_func = names_func
-        self.langs: list[str] = []
+        self.langs: list[LangObject] = []
 
     def __iter__(self):
         return iter(self.langs)
@@ -63,7 +63,7 @@ class LanguagesListModel(GObject.GObject, Gio.ListModel):
             self.langs.append(LangObject("auto", _("Auto")))
 
         for code in langs:
-            self.langs.append(LangObject(code, self.names_func(code)))
+            self.langs.append(LangObject(code, self.names_func(code) or code))
 
         self.items_changed(0, removed, len(self.langs))
 

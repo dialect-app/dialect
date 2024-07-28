@@ -16,19 +16,19 @@ class LangSelector(Adw.Bin):
     __gsignals__ = {"user-selection-changed": (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())}
 
     # Properties
-    selected: str = GObject.Property(type=str)  # Code of the selected lang
+    selected: str = GObject.Property(type=str)  # type: ignore
 
     # Child Widgets
-    button: Gtk.MenuButton = Gtk.Template.Child()
-    label: Gtk.Label = Gtk.Template.Child()
-    insight: Gtk.Label = Gtk.Template.Child()
-    popover: Gtk.Popover = Gtk.Template.Child()
-    search: Gtk.SearchEntry = Gtk.Template.Child()
-    scroll: Gtk.ScrolledWindow = Gtk.Template.Child()
-    revealer: Gtk.Revealer = Gtk.Template.Child()
-    recent_list: Gtk.ListBox = Gtk.Template.Child()
-    separator: Gtk.Separator = Gtk.Template.Child()
-    lang_list: Gtk.ListBox = Gtk.Template.Child()
+    button: Gtk.MenuButton = Gtk.Template.Child()  # type: ignore
+    label: Gtk.Label = Gtk.Template.Child()  # type: ignore
+    insight: Gtk.Label = Gtk.Template.Child()  # type: ignore
+    popover: Gtk.Popover = Gtk.Template.Child()  # type: ignore
+    search: Gtk.SearchEntry = Gtk.Template.Child()  # type: ignore
+    scroll: Gtk.ScrolledWindow = Gtk.Template.Child()  # type: ignore
+    revealer: Gtk.Revealer = Gtk.Template.Child()  # type: ignore
+    recent_list: Gtk.ListBox = Gtk.Template.Child()  # type: ignore
+    separator: Gtk.Separator = Gtk.Template.Child()  # type: ignore
+    lang_list: Gtk.ListBox = Gtk.Template.Child()  # type: ignore
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -50,9 +50,10 @@ class LangSelector(Adw.Bin):
 
         self.filter = Gtk.CustomFilter()
         self.filter.set_filter_func(self._filter_langs)
-        sorter = Gtk.CustomSorter.new(self._sort_langs)
-        sorted_model = Gtk.SortListModel.new(model=self.model, sorter=sorter)
-        filter_model = Gtk.FilterListModel.new(sorted_model, self.filter)
+        sorter = Gtk.CustomSorter()
+        sorter.set_sort_func(self._sort_langs)
+        sorted_model = Gtk.SortListModel(model=self.model, sorter=sorter)
+        filter_model = Gtk.FilterListModel(model=sorted_model, filter=self.filter)
         self.lang_list.bind_model(filter_model, self._create_lang_row)
 
         self.recent_list.bind_model(self.recent_model, self._create_lang_row)
@@ -61,11 +62,14 @@ class LangSelector(Adw.Bin):
         if self.selected == "auto":
             self.insight.props.label = f"({self._get_lang_name(code)})"
 
-    def _get_lang_name(self, code: str):
-        return self.model.names_func(code)
+    def _get_lang_name(self, code: str) -> str:
+        if self.model:
+            return self.model.names_func(code) or code
+        return code
 
     def _on_recent_changed(self, _model, _position: int, _removed: int, _added: int):
-        self.recent_model.set_selected(self.selected)
+        if self.recent_model:
+            self.recent_model.set_selected(self.selected)
 
     @Gtk.Template.Callback()
     def _on_selected_changed(self, _self, _pspec):
@@ -149,8 +153,8 @@ class LangRow(Gtk.ListBoxRow):
     __gtype_name__ = "LangRow"
 
     # Widgets
-    name: Gtk.Label = Gtk.Template.Child()
-    selection: Gtk.Image = Gtk.Template.Child()
+    name: Gtk.Label = Gtk.Template.Child()  # type: ignore
+    selection: Gtk.Image = Gtk.Template.Child()  # type: ignore
 
     def __init__(self, lang: LangObject):
         super().__init__()

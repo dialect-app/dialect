@@ -39,10 +39,10 @@ def check_translator_availability(provider_name: str) -> bool:
     return False
 
 
-def get_fallback_translator_name() -> str | None:
+def get_fallback_translator_name() -> str:
     if TRANSLATORS:
         return next(iter(TRANSLATORS))
-    return None
+    return ""
 
 
 class ProviderObject(GObject.Object):
@@ -80,7 +80,7 @@ class ProvidersListModel(GObject.GObject, Gio.ListModel):
         else:  # Get all providers
             providers = MODULES
 
-        providers = list(providers.values())
+        providers = list(providers.values())  # type: ignore
         self.providers: list[ProviderObject] = []
         for provider in providers:
             self.providers.append(ProviderObject(provider))
@@ -100,3 +100,4 @@ class ProvidersListModel(GObject.GObject, Gio.ListModel):
         for i, prov in enumerate(self.providers):
             if prov.name == name:
                 return i
+        return 0

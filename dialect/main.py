@@ -41,28 +41,30 @@ class Dialect(Adw.Application):
         # Add command line options
         self.add_main_option(
             "selection",
-            b"n",
+            ord("n"),
             GLib.OptionFlags.NONE,
             GLib.OptionArg.NONE,
             "Translate text from the primary clipboard",
             None,
         )
-        self.add_main_option("text", b"t", GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "Text to translate", None)
-        self.add_main_option("src", b"s", GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "Source lang code", None)
-        self.add_main_option("dest", b"d", GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "Destination lang code", None)
+        self.add_main_option("text", ord("t"), GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "Text to translate", None)
+        self.add_main_option("src", ord("s"), GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "Source lang code", None)
+        self.add_main_option(
+            "dest", ord("d"), GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "Destination lang code", None
+        )
 
         self.setup_actions()
 
     def do_activate(self):
         def on_translator_loading(_win, _pspec):
-            if not self.window.translator_loading:
+            if self.window and not self.window.translator_loading:
                 # Remove signal handler
                 if self._signal_handler:
                     self.window.disconnect(self._signal_handler)
                 # Process CLI args
                 self.process_command_line()
 
-        self.window = self.props.active_window
+        self.window = self.props.active_window  # type: ignore
 
         if not self.window:
             width, height = Settings.get().window_size
@@ -162,23 +164,25 @@ class Dialect(Adw.Application):
     def _on_pronunciation(self, action: Gio.SimpleAction, value: GLib.Variant):
         """Update show pronunciation setting"""
         action.props.state = value
-        Settings.get().show_pronunciation = value
+        Settings.get().show_pronunciation = value  # type: ignore
 
         # Update UI
-        if self.window.trans_src_pron is not None:
-            self.window.src_pron_revealer.props.reveal_child = value
-        if self.window.trans_dest_pron is not None:
-            self.window.dest_pron_revealer.props.reveal_child = value
+        if self.window:
+            if self.window.trans_src_pron is not None:
+                self.window.src_pron_revealer.props.reveal_child = value  # type: ignore
+            if self.window.trans_dest_pron is not None:
+                self.window.dest_pron_revealer.props.reveal_child = value  # type: ignore
 
     def _on_preferences(self, _action, _param):
         """Show preferences window"""
-        window = DialectPreferencesDialog(self.window)
-        window.present(self.window)
+        if self.window:
+            window = DialectPreferencesDialog(self.window)
+            window.present(self.window)
 
     def _on_about(self, _action, _param):
         """Show about dialog"""
         builder = Gtk.Builder.new_from_resource(f"{RES_PATH}/about.ui")
-        about = builder.get_object("about")
+        about: Adw.AboutDialog = builder.get_object("about")  # type: ignore
 
         about.props.application_icon = APP_ID
         about.props.version = VERSION

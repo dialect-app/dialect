@@ -26,16 +26,16 @@ class DialectPreferencesDialog(Adw.PreferencesDialog):
     window: DialectWindow = NotImplemented
 
     # Child widgets
-    live_translation: Adw.ExpanderRow = Gtk.Template.Child()
-    search_provider: Adw.SwitchRow = Gtk.Template.Child()
-    translate_accel: Adw.ComboRow = Gtk.Template.Child()
-    src_auto: Adw.SwitchRow = Gtk.Template.Child()
-    translator: Adw.ComboRow = Gtk.Template.Child()
-    translator_config: Gtk.Button = Gtk.Template.Child()
-    tts: Adw.ComboRow = Gtk.Template.Child()
-    tts_config: Gtk.Button = Gtk.Template.Child()
-    custom_default_font_size: Adw.ExpanderRow = Gtk.Template.Child()
-    default_font_size: Adw.SpinRow = Gtk.Template.Child()
+    live_translation: Adw.ExpanderRow = Gtk.Template.Child()  # type: ignore
+    search_provider: Adw.SwitchRow = Gtk.Template.Child()  # type: ignore
+    translate_accel: Adw.ComboRow = Gtk.Template.Child()  # type: ignore
+    src_auto: Adw.SwitchRow = Gtk.Template.Child()  # type: ignore
+    translator: Adw.ComboRow = Gtk.Template.Child()  # type: ignore
+    translator_config: Gtk.Button = Gtk.Template.Child()  # type: ignore
+    tts: Adw.ComboRow = Gtk.Template.Child()  # type: ignore
+    tts_config: Gtk.Button = Gtk.Template.Child()  # type: ignore
+    custom_default_font_size: Adw.ExpanderRow = Gtk.Template.Child()  # type: ignore
+    default_font_size: Adw.SpinRow = Gtk.Template.Child()  # type: ignore
 
     def __init__(self, window: DialectWindow, **kwargs):
         super().__init__(**kwargs)
@@ -113,7 +113,7 @@ class DialectPreferencesDialog(Adw.PreferencesDialog):
     @Gtk.Template.Callback()
     def _switch_translator(self, _row, _value):
         """Called on self.translator::notify::selected signal"""
-        provider = self.translator.get_selected_item().name
+        provider = self.translator.get_selected_item().name  # type: ignore
         self.translator_config.props.sensitive = self._provider_has_settings(provider)
         if provider != Settings.get().active_translator:
             Settings.get().active_translator = provider
@@ -121,7 +121,7 @@ class DialectPreferencesDialog(Adw.PreferencesDialog):
     @Gtk.Template.Callback()
     def _switch_tts(self, _row, _value):
         """Called on self.tts::notify::selected signal"""
-        provider = self.tts.get_selected_item().name
+        provider = self.tts.get_selected_item().name  # type: ignore
         self.tts_config.props.sensitive = self._provider_has_settings(provider)
         if provider != Settings.get().active_tts:
             Settings.get().active_tts = provider
@@ -144,7 +144,7 @@ class DialectPreferencesDialog(Adw.PreferencesDialog):
         if row.props.enable_expansion:
             if Settings.get().default_font_size == 0:
                 # User has never set custom size before
-                Settings.default_font_size = system_font_size
+                Settings.get().default_font_size = system_font_size
                 self.default_font_size.set_value(system_font_size)
                 self.window.set_font_size(system_font_size)
 
@@ -156,5 +156,5 @@ class DialectPreferencesDialog(Adw.PreferencesDialog):
 
     def _change_default_font_size(self, adjustment: Gtk.Adjustment):
         """Called on self.default_font_size.get_adjustment()::value-changed signal"""
-        Settings.default_font_size = adjustment.props.value
-        self.window.set_font_size(adjustment.props.value)
+        Settings.get().default_font_size = int(adjustment.props.value)
+        self.window.set_font_size(int(adjustment.props.value))

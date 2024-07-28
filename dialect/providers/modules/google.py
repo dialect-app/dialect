@@ -509,7 +509,7 @@ class Provider(LocalProvider, SoupProvider):
 
                 result = Translation(
                     translated,
-                    (text, src, dest),
+                    (text, src_lang, dest_lang),
                     src,
                     (mistake, self._strip_html_tags(mistake)),
                     (origin_pronunciation, pronunciation),

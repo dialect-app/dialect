@@ -19,7 +19,7 @@ class Provider(SoupProvider):
     prettyname = "LibreTranslate"
 
     capabilities = ProviderCapability.TRANSLATION
-    features = ProviderFeature.INSTANCES | ProviderFeature.DETECTION | ProviderFeature.PRONUNCIATION
+    features = ProviderFeature.INSTANCES | ProviderFeature.DETECTION
 
     defaults = {
         "instance_url": "lt.dialectapp.org",

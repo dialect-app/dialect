@@ -12,7 +12,7 @@ from dialect.settings import Settings
 class DialectShortcutsWindow(Gtk.ShortcutsWindow):
     __gtype_name__ = "DialectShortcutsWindow"
 
-    translate_shortcut: Gtk.ShortcutsShortcut = Gtk.Template.Child()
+    translate_shortcut: Gtk.ShortcutsShortcut = Gtk.Template.Child()  # type: ignore
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

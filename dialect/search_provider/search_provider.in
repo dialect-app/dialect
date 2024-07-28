@@ -116,10 +116,10 @@ class TranslateService:
                 self.translations[error_id] = _("Failed loading the translation service")
                 callback([error_id])
             elif not self.loaded:
-                return self.GetInitialResultSet(terms)
+                return self.GetInitialResultSet(terms, callback)
 
             # If the two languages are the same, nothing is done
-            if self.src_language != self.dest_language and text != "":
+            if self.dest_language and self.src_language != self.dest_language and text != "":
                 src, dest = self.translator.denormalize_lang(self.src_language, self.dest_language)
                 self.translator.translate(text, src, dest, on_done, on_fail)
 
@@ -160,9 +160,12 @@ class TranslateService:
 
         elif len(ids) == 2 and translate_id in self.translations and ids[1] == CLIPBOARD_PREFIX + ids[0]:
             text = self.translations[translate_id]
-            lang = self.translator.get_lang_name(self.dest_language)
-            provider = Settings.get().active_translator
-            description = f"{lang} — {TRANSLATORS[provider].prettyname}" if self.live_enabled else ""
+            description = ""
+
+            if self.dest_language:
+                lang = self.translator.get_lang_name(self.dest_language)
+                provider = Settings.get().active_translator
+                description = f"{lang or self.dest_language} — {TRANSLATORS[provider].prettyname}"
 
             self.translations.clear()
 
@@ -283,7 +286,7 @@ class TranslateServiceApplication(Gio.Application):
                 + "".join(
                     map(
                         lambda argument_info: argument_info.signature,
-                        self.search_interface.lookup_method(method_name).out_args,
+                        self.search_interface.lookup_method(method_name).out_args,  # type: ignore
                     )
                 )
                 + ")"
@@ -305,4 +308,4 @@ class TranslateServiceApplication(Gio.Application):
 
 if __name__ == "__main__":
     app = TranslateServiceApplication()
-    sys.exit(app.run())
+    sys.exit(app.run(None))

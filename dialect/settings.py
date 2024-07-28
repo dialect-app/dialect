@@ -120,11 +120,10 @@ class Settings(Gio.Settings):
         """Return the systems's default font size."""
         from gi.repository import Gtk
 
-        gtk_font_name = Gtk.Settings.get_default().get_property("gtk-font-name").split(" ")
-
         try:
+            gtk_font_name = Gtk.Settings.get_default().get_property("gtk-font-name").split(" ")  # type: ignore
             return int(gtk_font_name[-1])
-        except ValueError or IndexError:
+        except Exception:
             return 11
 
     @property
