@@ -10,7 +10,6 @@ from dialect.settings import Settings
 
 class TextView(Gtk.TextView):
     __gtype_name__ = "TextView"
-    __gsignals__ = {"activate": (GObject.SIGNAL_RUN_FIRST, None, ())}
 
     activate_mod: bool = GObject.Property(type=bool, default=True)  # type: ignore
     """If activation requieres the mod key"""
@@ -37,6 +36,9 @@ class TextView(Gtk.TextView):
 
         # Add font CSS provider
         self.get_style_context().add_provider(self._font_css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
+
+    @GObject.Signal()
+    def activate(self): ...
 
     @GObject.Property(type=int)
     def font_size(self) -> int:  # type: ignore

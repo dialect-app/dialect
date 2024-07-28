@@ -22,11 +22,6 @@ class Settings(Gio.Settings):
     Dialect settings handler
     """
 
-    __gsignals__ = {
-        "translator-changed": (GObject.SIGNAL_RUN_FIRST, None, (str,)),
-        "tts-changed": (GObject.SIGNAL_RUN_FIRST, None, (str,)),
-    }
-
     instance = None
 
     def __init__(self, *args):
@@ -47,6 +42,12 @@ class Settings(Gio.Settings):
         if Settings.instance is None:
             Settings.instance = Settings.new()
         return Settings.instance
+
+    @GObject.Signal(arg_types=(str,))
+    def translator_changed(self, _name: str): ...
+
+    @GObject.Signal(arg_types=(str,))
+    def tts_changed(self, _name: str): ...
 
     @property
     def translators_list(self) -> list[str]:

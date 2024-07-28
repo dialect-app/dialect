@@ -13,7 +13,6 @@ from dialect.languages import LangObject, LanguagesListModel
 @Gtk.Template(resource_path=f"{RES_PATH}/widgets/lang_selector.ui")
 class LangSelector(Adw.Bin):
     __gtype_name__ = "LangSelector"
-    __gsignals__ = {"user-selection-changed": (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())}
 
     # Properties
     selected: str = GObject.Property(type=str)  # type: ignore
@@ -41,6 +40,9 @@ class LangSelector(Adw.Bin):
         key_events = Gtk.EventControllerKey.new()
         key_events.connect("key-pressed", self._on_key_pressed)
         self.search.add_controller(key_events)
+
+    @GObject.Signal()
+    def user_selection_changed(self): ...
 
     def bind_models(self, langs: LanguagesListModel, recent: LanguagesListModel):
         self.model = langs
