@@ -1,5 +1,5 @@
-# Copyright 2020-2022 Mufeed Ali
-# Copyright 2020-2022 Rafael Mardojai CM
+# Copyright 2020 Mufeed Ali
+# Copyright 2020 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import re
