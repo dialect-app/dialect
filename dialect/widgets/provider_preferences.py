@@ -2,12 +2,18 @@
 # Copyright 2023 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+from __future__ import annotations
+
 import re
+import typing
 
 from gi.repository import Adw, GObject, Gtk
 
 from dialect.define import RES_PATH
 from dialect.providers import ProviderCapability, ProviderFeature
+
+if typing.TYPE_CHECKING:
+    from dialect.window import DialectWindow
 
 
 @Gtk.Template(resource_path=f"{RES_PATH}/provider-preferences.ui")
@@ -15,26 +21,26 @@ class ProviderPreferences(Adw.NavigationPage):
     __gtype_name__ = "ProviderPreferences"
 
     # Properties
-    translation = GObject.Property(type=bool, default=False)
-    tts = GObject.Property(type=bool, default=False)
-    definitions = GObject.Property(type=bool, default=False)
+    translation: bool = GObject.Property(type=bool, default=False)
+    tts: bool = GObject.Property(type=bool, default=False)
+    definitions: bool = GObject.Property(type=bool, default=False)
 
     # Child widgets
-    title = Gtk.Template.Child()
-    page = Gtk.Template.Child()
-    instance_entry = Gtk.Template.Child()
-    instance_stack = Gtk.Template.Child()
-    instance_reset = Gtk.Template.Child()
-    instance_spinner = Gtk.Template.Child()
-    api_key_entry = Gtk.Template.Child()
-    api_key_stack = Gtk.Template.Child()
-    api_key_reset = Gtk.Template.Child()
-    api_key_spinner = Gtk.Template.Child()
-    api_usage_group = Gtk.Template.Child()
-    api_usage = Gtk.Template.Child()
-    api_usage_label = Gtk.Template.Child()
+    title: Adw.WindowTitle = Gtk.Template.Child()
+    page: Adw.PreferencesPage = Gtk.Template.Child()
+    instance_entry: Adw.EntryRow = Gtk.Template.Child()
+    instance_stack: Gtk.Stack = Gtk.Template.Child()
+    instance_reset: Gtk.Button = Gtk.Template.Child()
+    instance_spinner: Gtk.Spinner = Gtk.Template.Child()
+    api_key_entry: Adw.PasswordEntryRow = Gtk.Template.Child()
+    api_key_stack: Gtk.Stack = Gtk.Template.Child()
+    api_key_reset: Gtk.Button = Gtk.Template.Child()
+    api_key_spinner: Gtk.Spinner = Gtk.Template.Child()
+    api_usage_group: Adw.PreferencesGroup = Gtk.Template.Child()
+    api_usage: Gtk.LevelBar = Gtk.Template.Child()
+    api_usage_label: Gtk.Label = Gtk.Template.Child()
 
-    def __init__(self, scope, dialog, window, **kwargs):
+    def __init__(self, scope: str, dialog: Adw.PreferencesDialog, window: DialectWindow, **kwargs):
         super().__init__(**kwargs)
         self.scope = scope
         self.provider = window.provider[scope]
@@ -181,7 +187,7 @@ class ProviderPreferences(Adw.NavigationPage):
         self.api_key_entry.remove_css_class("error")
         self.api_key_entry.props.text = self.provider.api_key
 
-    def _on_translator_loading(self, window, _value):
+    def _on_translator_loading(self, window: DialectWindow, _value):
         self.page.props.sensitive = not window.translator_loading
 
         if not window.translator_loading:

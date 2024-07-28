@@ -2,11 +2,10 @@
 # Copyright 2021-2022 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-import io
 import urllib.parse
 from dataclasses import dataclass
 from enum import Enum, Flag, auto
-from typing import Callable, Optional
+from typing import Callable, IO
 
 from dialect.define import LANG_ALIASES
 from dialect.languages import get_lang_name
@@ -82,9 +81,9 @@ class ProviderError:
 class Translation:
     text: str
     original: tuple[str, str, str]
-    detected: Optional[str] = None
-    mistakes: tuple[Optional[str], Optional[str]] = (None, None)  #
-    pronunciation: tuple[Optional[str], Optional[str]] = (None, None)
+    detected: str | None = None
+    mistakes: tuple[str | None, str | None] = (None, None)
+    pronunciation: tuple[str | None, str | None] = (None, None)
 
 
 class BaseProvider:
@@ -108,18 +107,18 @@ class BaseProvider:
     """ Default provider settings """
 
     def __init__(self):
-        self.src_languages = []
+        self.src_languages: list[str] = []
         """ Source languages available for translating """
-        self.dest_languages = []
+        self.dest_languages: list[str] = []
         """ Destination languages available for translating """
-        self.tts_languages = []
+        self.tts_languages: list[str] = []
         """ Languages available for TTS """
-        self._nonstandard_langs = {}
+        self._nonstandard_langs: dict[str, str] = {}
         """ Mapping of lang codes that differ with Dialect ones """
-        self._languages_names = {}
+        self._languages_names: dict[str, str] = {}
         """ Names of languages provided by the service """
 
-        self.chars_limit = -1
+        self.chars_limit: int = -1
         """ Translation char limit """
 
         self.history: list[Translation] = []
@@ -154,7 +153,7 @@ class BaseProvider:
         """
         raise NotImplementedError()
 
-    def init_trans(self, on_done: Callable, on_fail: Callable[[ProviderError], None]):
+    def init_trans(self, on_done: Callable[[], None], on_fail: Callable[[ProviderError], None]):
         """
         Initializes the provider translation capabilities.
 
@@ -164,7 +163,7 @@ class BaseProvider:
         """
         on_done()
 
-    def init_tts(self, on_done: Callable, on_fail: Callable[[ProviderError], None]):
+    def init_tts(self, on_done: Callable[[], None], on_fail: Callable[[ProviderError], None]):
         """
         Initializes the provider text-to-speech capabilities.
 
@@ -220,7 +219,7 @@ class BaseProvider:
         self,
         text: str,
         language: str,
-        on_done: Callable[[io.BytesIO], None],
+        on_done: Callable[[IO], None],
         on_fail: Callable[[ProviderError], None],
     ):
         """
@@ -291,12 +290,12 @@ class BaseProvider:
     """
 
     @property
-    def instance_url(self):
+    def instance_url(self) -> str:
         """Instance url saved on settings."""
         return self.settings.instance_url
 
     @instance_url.setter
-    def instance_url(self, url):
+    def instance_url(self, url: str):
         self.settings.instance_url = url
 
     def reset_instance_url(self):
@@ -304,12 +303,12 @@ class BaseProvider:
         self.instance_url = ""
 
     @property
-    def api_key(self):
+    def api_key(self) -> str:
         """API key saved on settings."""
         return self.settings.api_key
 
     @api_key.setter
-    def api_key(self, api_key):
+    def api_key(self, api_key: str):
         self.settings.api_key = api_key
 
     def reset_api_key(self):
@@ -317,12 +316,12 @@ class BaseProvider:
         self.api_key = ""
 
     @property
-    def recent_src_langs(self):
+    def recent_src_langs(self) -> list[str]:
         """Saved recent source langs of the user."""
         return self.settings.src_langs
 
     @recent_src_langs.setter
-    def recent_src_langs(self, src_langs):
+    def recent_src_langs(self, src_langs: list[str]):
         self.settings.src_langs = src_langs
 
     def reset_src_langs(self):
@@ -330,12 +329,12 @@ class BaseProvider:
         self.recent_src_langs = []
 
     @property
-    def recent_dest_langs(self):
+    def recent_dest_langs(self) -> list[str]:
         """Saved recent destination langs of the user."""
         return self.settings.dest_langs
 
     @recent_dest_langs.setter
-    def recent_dest_langs(self, dest_langs):
+    def recent_dest_langs(self, dest_langs: list[str]):
         self.settings.dest_langs = dest_langs
 
     def reset_dest_langs(self):
@@ -410,7 +409,7 @@ class BaseProvider:
     def add_lang(
         self,
         original_code: str,
-        name: str = None,
+        name: str | None = None,
         trans_src: bool = True,
         trans_dest: bool = True,
         tts: bool = False,
@@ -423,7 +422,8 @@ class BaseProvider:
         Args:
             original_code: Lang code to add
             name: Language name to fallback in case Dialect doesn't provide one
-            trans: Add language as supported for translation
+            trans_src: Add language as supported for translation as src
+            trans_dest: Add language as supported for translation as dest
             tts: Add language as supported for text-to-speech
         """
 
@@ -467,6 +467,9 @@ class BaseProvider:
         Get a localized language name.
 
         Fallback to a name provided by the provider if available or ultimately just the code.
+
+        Args:
+            code: Language to get a name for
         """
         name = get_lang_name(code)  # Try getting translated name from Dialect
 

@@ -10,15 +10,16 @@ from gi.repository import Gio, GObject
 
 from dialect.providers import modules
 from dialect.providers.base import (  # noqa
+    BaseProvider,
     ProviderCapability,
     ProviderError,
     ProviderErrorCode,
     ProviderFeature,
 )
 
-MODULES = {}
-TRANSLATORS = {}
-TTS = {}
+MODULES: dict[str, type[BaseProvider]] = {}
+TRANSLATORS: dict[str, type[BaseProvider]] = {}
+TTS: dict[str, type[BaseProvider]] = {}
 for _importer, modname, _ispkg in pkgutil.iter_modules(modules.__path__):
     try:
         modclass = importlib.import_module("dialect.providers.modules." + modname).Provider
@@ -32,13 +33,13 @@ for _importer, modname, _ispkg in pkgutil.iter_modules(modules.__path__):
         logging.warning(f"Could not load the {modname} provider: {exc}")
 
 
-def check_translator_availability(provider_name):
+def check_translator_availability(provider_name: str) -> bool:
     if provider_name in TRANSLATORS:
         return True
     return False
 
 
-def get_fallback_translator_name():
+def get_fallback_translator_name() -> str | None:
     if TRANSLATORS:
         return next(iter(TRANSLATORS))
     return None
@@ -47,20 +48,20 @@ def get_fallback_translator_name():
 class ProviderObject(GObject.Object):
     __gtype_name__ = "ProviderObject"
 
-    def __init__(self, p_class=None):
+    def __init__(self, p_class: type[BaseProvider] | None = None):
         super().__init__()
 
         self.p_class = p_class
 
     @GObject.Property(type=str)
-    def name(self):
+    def name(self) -> str:
         if self.p_class is not None:
             return self.p_class.name
         else:
             return ""
 
     @GObject.Property(type=str)
-    def prettyname(self):
+    def prettyname(self) -> str:
         if self.p_class is not None:
             return self.p_class.prettyname
         else:
@@ -80,22 +81,22 @@ class ProvidersListModel(GObject.GObject, Gio.ListModel):
             providers = MODULES
 
         providers = list(providers.values())
-        self.providers = []
+        self.providers: list[ProviderObject] = []
         for provider in providers:
             self.providers.append(ProviderObject(provider))
         if show_disabled and self.providers:
             self.providers.insert(0, ProviderObject())
 
-    def do_get_item(self, position):
+    def do_get_item(self, position: int) -> ProviderObject:
         return self.providers[position]
 
     def do_get_item_type(self):
         return ProviderObject
 
-    def do_get_n_items(self):
+    def do_get_n_items(self) -> int:
         return len(self.providers)
 
-    def get_index_by_name(self, name):
+    def get_index_by_name(self, name: str) -> int:
         for i, prov in enumerate(self.providers):
             if prov.name == name:
                 return i

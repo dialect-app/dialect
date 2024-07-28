@@ -113,7 +113,7 @@ class SoupProvider(BaseProvider):
         session: Session,
         result: Gio.AsyncResult,
         message: Soup.Message,
-        on_continue: Callable[[dict | bytes], None],
+        on_continue: Callable[[dict | bytes | None], None],
         on_fail: Callable[[ProviderError], None],
         check_common: bool = True,
         json: bool = True,

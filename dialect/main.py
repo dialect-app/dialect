@@ -33,10 +33,10 @@ class Dialect(Adw.Application):
         self.set_resource_base_path(RES_PATH)
 
         # App window
-        self.window = None
+        self.window: DialectWindow | None = None
         # CLI
-        self.argv = {}
-        self._signal_handler = None
+        self.argv: dict[str, str] = {}
+        self._signal_handler: int | None = None
 
         # Add command line options
         self.add_main_option(
@@ -83,7 +83,7 @@ class Dialect(Adw.Application):
 
         self.window.present()
 
-    def do_command_line(self, command_line):
+    def do_command_line(self, command_line: Gio.ApplicationCommandLine):
         options = command_line.get_options_dict()
 
         # Save CLI args values
@@ -103,7 +103,7 @@ class Dialect(Adw.Application):
             return
 
         text = ""
-        langs = {"src": None, "dest": None}
+        langs: dict[str, str | None] = {"src": None, "dest": None}
         selection = "selection" in self.argv
 
         if "text" in self.argv:
@@ -159,7 +159,7 @@ class Dialect(Adw.Application):
         self.set_accels_for_action("win.listen-src", ["<Primary><Shift>L"])
         self.set_accels_for_action("win.show-help-overlay", ["<Primary>question"])
 
-    def _on_pronunciation(self, action, value):
+    def _on_pronunciation(self, action: Gio.SimpleAction, value: GLib.Variant):
         """Update show pronunciation setting"""
         action.props.state = value
         Settings.get().show_pronunciation = value

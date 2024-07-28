@@ -57,7 +57,7 @@ class TextView(Gtk.TextView):
         if new_size >= 6:
             self.font_size = new_size
 
-    def _on_key_pressed(self, _button, keyval, _keycode, state):
+    def _on_key_pressed(self, _ctrl, keyval: int, _keycode: int, state: Gdk.ModifierType):
         modifiers = state & Gtk.accelerator_get_default_mod_mask()
         control_mask = Gdk.ModifierType.CONTROL_MASK
         enter_keys = (Gdk.KEY_Return, Gdk.KEY_KP_Enter)

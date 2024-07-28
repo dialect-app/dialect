@@ -9,6 +9,7 @@
 import gettext
 import locale
 import sys
+from typing import Callable
 
 import gi
 
@@ -70,9 +71,6 @@ class TranslateService:
         self.loaded = False
         self.load_failed = False
 
-        # Live translation enabled
-        self.live_enabled = self.is_live_enabled()
-
         # Translations store
         self.translations = {}
         self.src_language = "auto"
@@ -83,7 +81,11 @@ class TranslateService:
         Settings.get().connect("changed", self._on_settings_changed)
         Settings.get().connect("translator-changed", self._on_translator_changed)
 
-    def GetInitialResultSet(self, terms, callback):
+    @property
+    def live_enabled(self) -> bool:
+        return Settings.get().live_translation and Settings.get().sp_translation
+
+    def GetInitialResultSet(self, terms: list[str], callback: Callable[[list[str]], None]):
         """
         Join separate terms in one ID line, start translation and send this line back
         on start of input
@@ -132,10 +134,12 @@ class TranslateService:
                 ]
             )
 
-    def GetSubsearchResultSet(self, _previous_results, new_terms, callback):
+    def GetSubsearchResultSet(
+        self, _previous_results: list[str], new_terms: list[str], callback: Callable[[list[str]], None]
+    ):
         self.GetInitialResultSet(new_terms, callback)
 
-    def GetResultMetas(self, ids, callback):
+    def GetResultMetas(self, ids: list[str], callback: Callable[[list[dict[str, GLib.Variant]]], None]):
         """Send translated text"""
 
         translate_id = ids[0]
@@ -190,18 +194,17 @@ class TranslateService:
                 ]
             )
 
-    def ActivateResult(self, result_id, terms, timestamp, callback):
+    def ActivateResult(self, result_id: str, terms: list[str], timestamp: int, callback: Callable):
         if not result_id.startswith(CLIPBOARD_PREFIX):
-            self.LaunchSearch(terms, timestamp)
+            self.LaunchSearch(terms, timestamp, callback)
+        else:
+            callback((None,))
 
-        callback((None,))
-
-    def LaunchSearch(self, terms, _timestamp):
+    def LaunchSearch(self, terms: list[str], _timestamp: int, callback: Callable):
         text = " ".join(terms)
         GLib.spawn_async_with_pipes(None, ["@BIN@", "--text", text], None, GLib.SpawnFlags.SEARCH_PATH, None)
 
-    def is_live_enabled(self):
-        return Settings.get().live_translation and Settings.get().sp_translation
+        callback((None,))
 
     def _load_translator(self):
         def on_done():
@@ -223,16 +226,14 @@ class TranslateService:
         # Init translator
         self.translator.init_trans(on_done, on_fail)
 
-    def _on_settings_changed(self, _settings, key):
+    def _on_settings_changed(self, _settings, key: str):
         if key.startswith("translator-"):
             self._load_translator()
-        if key == "live-translation" or key == "sp-translation":
-            self.live_enabled = self.is_live_enabled()
 
     def _on_translator_changed(self, *args):
         self._load_translator()
 
-    def _on_translator_settings_changed(self, _settings, key):
+    def _on_translator_settings_changed(self, _settings, key: str):
         if key == "src-langs" or key == "dest-langs":
             self.dest_language = self.translator.recent_dest_langs[0]
         else:
@@ -263,7 +264,16 @@ class TranslateServiceApplication(Gio.Application):
         finally:
             return True
 
-    def on_dbus_method_call(self, connection, sender, object_path, interface_name, method_name, parameters, invocation):
+    def on_dbus_method_call(
+        self,
+        _conn: Gio.DBusConnection,
+        _sender: str,
+        _object_path: str,
+        _interface_name: str,
+        method_name: str,
+        parameters: GLib.Variant,
+        invocation: Gio.DBusMethodInvocation,
+    ):
         def return_value(results):
             results = (results,)
             if results == (None,):

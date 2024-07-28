@@ -14,7 +14,6 @@ from dialect.providers.base import (
     Translation,
 )
 from dialect.providers.soup import SoupProvider
-from dialect.session import Session
 
 
 class Provider(SoupProvider):

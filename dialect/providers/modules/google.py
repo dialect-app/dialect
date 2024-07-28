@@ -8,7 +8,6 @@ import logging
 import random
 import re
 from tempfile import NamedTemporaryFile
-from typing import List
 
 from gtts import gTTS, lang
 
@@ -559,7 +558,7 @@ class Provider(LocalProvider, SoupProvider):
 
 
 class TranslatedPart:
-    def __init__(self, text: str, candidates: List[str]):
+    def __init__(self, text: str, candidates: list[str]):
         self.text = text
         self.candidates = candidates
 

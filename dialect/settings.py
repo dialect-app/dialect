@@ -3,6 +3,9 @@
 # Copyright 2023 Libretto
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+from __future__ import annotations
+from typing import Literal
+
 from gi.repository import Gio, GLib, GObject
 
 from dialect.define import APP_ID
@@ -32,28 +35,28 @@ class Settings(Gio.Settings):
         self._tts = self.get_child("tts")
 
     @staticmethod
-    def new():
+    def new() -> Settings:
         """Create a new instance of Settings."""
         g_settings = Settings(APP_ID)
         return g_settings
 
     @staticmethod
-    def get():
+    def get() -> Settings:
         """Return an active instance of Settings."""
         if Settings.instance is None:
             Settings.instance = Settings.new()
         return Settings.instance
 
     @property
-    def translators_list(self):
+    def translators_list(self) -> list[str]:
         return self._translators.get_strv("list")
 
     @translators_list.setter
-    def translators_list(self, translators):
+    def translators_list(self, translators: list[str]):
         self._translators.set_strv("list", translators)
 
     @property
-    def active_translator(self):
+    def active_translator(self) -> str:
         value = self._translators.get_string("active")
 
         if check_translator_availability(value):
@@ -63,22 +66,22 @@ class Settings(Gio.Settings):
         return get_fallback_translator_name()
 
     @active_translator.setter
-    def active_translator(self, translator):
+    def active_translator(self, translator: str):
         self._translators.set_string("active", translator)
         self.emit("translator-changed", translator)
 
     @property
-    def window_size(self):
+    def window_size(self) -> tuple[int, int]:
         value = self.get_value("window-size")
         return (value[0], value[1])
 
     @window_size.setter
-    def window_size(self, size):
+    def window_size(self, size: tuple[int, int]):
         width, height = size
         self.set_value("window-size", GLib.Variant("ai", [width, height]))
 
     @property
-    def translate_accel(self):
+    def translate_accel(self) -> str:
         """Return the user's preferred translation shortcut."""
         value = self.translate_accel_value
 
@@ -90,30 +93,30 @@ class Settings(Gio.Settings):
         return "<Primary>Return"
 
     @property
-    def translate_accel_value(self):
+    def translate_accel_value(self) -> int:
         """Return the user's preferred translation shortcut value."""
         return self.get_int("translate-accel")
 
     @property
-    def custom_default_font_size(self):
+    def custom_default_font_size(self) -> bool:
         """Return whether the user wants a custom default font size."""
         return self.get_boolean("custom-default-font-size")
 
     @custom_default_font_size.setter
-    def custom_default_font_size(self, enabled):
+    def custom_default_font_size(self, enabled: bool):
         self.set_boolean("custom-default-font-size", enabled)
 
     @property
-    def default_font_size(self):
+    def default_font_size(self) -> int:
         """Return the user's preferred default font size."""
         return self.get_int("default-font-size")
 
     @default_font_size.setter
-    def default_font_size(self, size):
+    def default_font_size(self, size: int):
         self.set_int("default-font-size", size)
 
     @property
-    def system_font_size(self):
+    def system_font_size(self) -> int:
         """Return the systems's default font size."""
         from gi.repository import Gtk
 
@@ -125,7 +128,7 @@ class Settings(Gio.Settings):
             return 11
 
     @property
-    def active_tts(self):
+    def active_tts(self) -> str:
         """Return the user's preferred TTS service."""
         value = self._tts.get_string("active")
 
@@ -136,51 +139,51 @@ class Settings(Gio.Settings):
         return value
 
     @active_tts.setter
-    def active_tts(self, tts):
+    def active_tts(self, tts: str):
         """Set the user's preferred TTS service."""
         self._tts.set_string("active", tts)
         self.emit("tts-changed", tts)
 
     @property
-    def color_scheme(self):
+    def color_scheme(self) -> str:
         return self.get_string("color-scheme")
 
     @color_scheme.setter
-    def color_scheme(self, scheme):
-        self.set_string("dark-mode", scheme)
+    def color_scheme(self, scheme: Literal["auto", "light", "dark"]):
+        self.set_string("color-scheme", scheme)
 
     @property
-    def live_translation(self):
+    def live_translation(self) -> bool:
         return self.get_boolean("live-translation")
 
     @live_translation.setter
-    def live_translation(self, state):
+    def live_translation(self, state: bool):
         self.set_boolean("live-translation", state)
 
     @property
-    def sp_translation(self):
+    def sp_translation(self) -> bool:
         return self.get_boolean("sp-translation")
 
     @sp_translation.setter
-    def sp_translation(self, state):
+    def sp_translation(self, state: bool):
         self.set_boolean("sp-translation", state)
 
     @property
-    def show_pronunciation(self):
+    def show_pronunciation(self) -> bool:
         return self.get_boolean("show-pronunciation")
 
     @property
-    def show_pronunciation_value(self):
+    def show_pronunciation_value(self) -> GLib.Variant:
         return self.get_value("show-pronunciation")
 
     @show_pronunciation.setter
-    def show_pronunciation(self, state):
+    def show_pronunciation(self, state: bool):
         self.set_boolean("show-pronunciation", state)
 
     @property
-    def src_auto(self):
+    def src_auto(self) -> bool:
         return self.get_boolean("src-auto")
 
     @src_auto.setter
-    def src_auto(self, state):
+    def src_auto(self, state: bool):
         self.set_boolean("src-auto", state)

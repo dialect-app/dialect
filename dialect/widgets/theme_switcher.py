@@ -17,22 +17,22 @@ class ThemeSwitcher(Gtk.Box):
     __gtype_name__ = "ThemeSwitcher"
 
     # Properties
-    show_system = GObject.property(type=bool, default=True)
-    color_scheme = "light"
+    show_system: bool = GObject.property(type=bool, default=True)
+    color_scheme: str = "light"
 
     # Child widgets
-    system = Gtk.Template.Child()
-    light = Gtk.Template.Child()
-    dark = Gtk.Template.Child()
+    system: Gtk.CheckButton = Gtk.Template.Child()
+    light: Gtk.CheckButton = Gtk.Template.Child()
+    dark: Gtk.CheckButton = Gtk.Template.Child()
 
     @GObject.Property(type=str)
-    def selected_color_scheme(self):
+    def selected_color_scheme(self) -> str:
         """Read-write integer property."""
 
         return self.color_scheme
 
     @selected_color_scheme.setter
-    def selected_color_scheme(self, color_scheme):
+    def selected_color_scheme(self, color_scheme: str):
         self.color_scheme = color_scheme
 
         if color_scheme == "auto":

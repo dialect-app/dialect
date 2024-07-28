@@ -152,7 +152,7 @@ class Provider(SoupProvider):
         return self.format_url("translate.yandex.net", path)
 
     def translate(self, text, src, dest, on_done, on_fail):
-        def on_response(data):
+        def on_response(data: dict):
             detected = None
             if "code" in data and data["code"] == 200:
                 if "lang" in data:

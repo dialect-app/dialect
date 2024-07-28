@@ -79,7 +79,7 @@ class Provider(SoupProvider):
                 else:
                     on_done()
 
-        def on_failed(error):
+        def on_failed(error: ProviderError):
             self._init_error = error
             check_finished()
 
@@ -103,7 +103,7 @@ class Provider(SoupProvider):
                 if data.get("keyRequired", False):
                     self.features ^= ProviderFeature.API_KEY_REQUIRED
 
-                self.chars_limit = data.get("charLimit", 0)
+                self.chars_limit = int(data.get("charLimit", 0))
 
                 check_finished()
 
@@ -113,7 +113,7 @@ class Provider(SoupProvider):
 
         # Keep state of multiple request
         self._init_count = 2
-        self._init_error = None
+        self._init_error: ProviderError | None = None
 
         # Request messages
         languages_message = self.create_message("GET", self.lang_url)
