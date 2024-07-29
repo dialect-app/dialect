@@ -66,8 +66,16 @@ dbus_interface_description = """
 """
 
 
-class TranslateService:
+class TranslateServiceApplication(Gio.Application):
     def __init__(self):
+        Gio.Application.__init__(
+            self,
+            application_id="@APP_ID@.SearchProvider",
+            flags=Gio.ApplicationFlags.IS_SERVICE,
+            inactivity_timeout=10000,
+        )
+        self.search_interface = Gio.DBusNodeInfo.new_for_xml(dbus_interface_description).interfaces[0]
+
         self.loaded = False
         self.load_failed = False
 
@@ -80,6 +88,53 @@ class TranslateService:
         self._load_translator()
         Settings.get().connect("changed", self._on_settings_changed)
         Settings.get().connect("translator-changed", self._on_translator_changed)
+
+    def do_dbus_register(self, connection, object_path):
+        try:
+            connection.register_object(
+                object_path=object_path,
+                interface_info=self.search_interface,
+                method_call_closure=self.on_dbus_method_call,
+            )
+        except:
+            self.quit()
+            return False
+        finally:
+            return True
+
+    def on_dbus_method_call(
+        self,
+        _conn: Gio.DBusConnection,
+        _sender: str,
+        _object_path: str,
+        _interface_name: str,
+        method_name: str,
+        parameters: GLib.Variant,
+        invocation: Gio.DBusMethodInvocation,
+    ):
+        def return_value(results):
+            results = (results,)
+            if results == (None,):
+                results = ()
+            results_type = (
+                "("
+                + "".join(
+                    map(
+                        lambda argument_info: argument_info.signature,
+                        self.search_interface.lookup_method(method_name).out_args,  # type: ignore
+                    )
+                )
+                + ")"
+            )
+            wrapped_results = GLib.Variant(results_type, results)
+
+            invocation.return_value(wrapped_results)
+
+        method = getattr(self, method_name)
+        arguments = list(parameters.unpack())
+        arguments.append(return_value)
+
+        method(*arguments)
 
     @property
     def live_enabled(self) -> bool:
@@ -94,6 +149,7 @@ class TranslateService:
         def on_done(translation):
             self.translations[text] = translation.text
             callback([text, CLIPBOARD_PREFIX + text])
+            self.release()
 
         def on_fail(error):
             match error.code:
@@ -106,6 +162,7 @@ class TranslateService:
                 case _:
                     self.translations[error_id] = _("Translation failed")
             callback([error_id])
+            self.release()
 
         text = " ".join(terms)
 
@@ -122,6 +179,7 @@ class TranslateService:
             if self.dest_language and self.src_language != self.dest_language and text != "":
                 src, dest = self.translator.denormalize_lang(self.src_language, self.dest_language)
                 self.translator.translate(text, src, dest, on_done, on_fail)
+                self.hold()
 
         else:
             provider = Settings.get().active_translator
@@ -241,69 +299,6 @@ class TranslateService:
             self.dest_language = self.translator.recent_dest_langs[0]
         else:
             self._load_translator()
-
-
-class TranslateServiceApplication(Gio.Application):
-    def __init__(self):
-        Gio.Application.__init__(
-            self,
-            application_id="@APP_ID@.SearchProvider",
-            flags=Gio.ApplicationFlags.IS_SERVICE,
-            inactivity_timeout=10000,
-        )
-        self.service_object = TranslateService()
-        self.search_interface = Gio.DBusNodeInfo.new_for_xml(dbus_interface_description).interfaces[0]
-
-    def do_dbus_register(self, connection, object_path):
-        try:
-            connection.register_object(
-                object_path=object_path,
-                interface_info=self.search_interface,
-                method_call_closure=self.on_dbus_method_call,
-            )
-        except:
-            self.quit()
-            return False
-        finally:
-            return True
-
-    def on_dbus_method_call(
-        self,
-        _conn: Gio.DBusConnection,
-        _sender: str,
-        _object_path: str,
-        _interface_name: str,
-        method_name: str,
-        parameters: GLib.Variant,
-        invocation: Gio.DBusMethodInvocation,
-    ):
-        def return_value(results):
-            results = (results,)
-            if results == (None,):
-                results = ()
-            results_type = (
-                "("
-                + "".join(
-                    map(
-                        lambda argument_info: argument_info.signature,
-                        self.search_interface.lookup_method(method_name).out_args,  # type: ignore
-                    )
-                )
-                + ")"
-            )
-            wrapped_results = GLib.Variant(results_type, results)
-
-            invocation.return_value(wrapped_results)
-
-            self.release()
-
-        self.hold()
-
-        method = getattr(self.service_object, method_name)
-        arguments = list(parameters.unpack())
-        arguments.append(return_value)
-
-        method(*arguments)
 
 
 if __name__ == "__main__":
