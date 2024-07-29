@@ -26,7 +26,7 @@ class TextView(Gtk.TextView):
         self.add_controller(key_ctrlr)
 
         # Scroll controller
-        scroll_ctrlr = Gtk.EventControllerScroll.new(Gtk.EventControllerScrollFlags.VERTICAL)
+        scroll_ctrlr = Gtk.EventControllerScroll(flags=Gtk.EventControllerScrollFlags.VERTICAL)
         scroll_ctrlr.connect("scroll", self._on_scroll)
         self.add_controller(scroll_ctrlr)
 

@@ -37,7 +37,7 @@ class LangSelector(Adw.Bin):
 
         # Setup search entry
         self.search.set_key_capture_widget(self.popover)
-        key_events = Gtk.EventControllerKey.new()
+        key_events = Gtk.EventControllerKey()
         key_events.connect("key-pressed", self._on_key_pressed)
         self.search.add_controller(key_events)
 

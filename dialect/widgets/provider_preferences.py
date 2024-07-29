@@ -103,7 +103,7 @@ class ProviderPreferences(Adw.NavigationPage):
                 self.instance_entry.add_css_class("error")
                 error_text = _("Not a valid {provider} instance")
                 error_text = error_text.format(provider=self.provider.prettyname)
-                toast = Adw.Toast.new(error_text)
+                toast = Adw.Toast(title=error_text)
                 self.dialog.add_toast(toast)
 
             self.instance_entry.props.sensitive = True
@@ -171,7 +171,7 @@ class ProviderPreferences(Adw.NavigationPage):
                 self.api_key_entry.add_css_class("error")
                 error_text = _("Not a valid {provider} API key")
                 error_text = error_text.format(provider=self.provider.prettyname)
-                toast = Adw.Toast.new(error_text)
+                toast = Adw.Toast(title=error_text)
                 self.dialog.add_toast(toast)
 
             self.instance_entry.props.sensitive = True

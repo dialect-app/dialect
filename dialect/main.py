@@ -131,15 +131,15 @@ class Dialect(Adw.Application):
         pronunciation.connect("change-state", self._on_pronunciation)
         self.add_action(pronunciation)
 
-        preferences = Gio.SimpleAction.new("preferences", None)
+        preferences = Gio.SimpleAction(name="preferences")
         preferences.connect("activate", self._on_preferences)
         self.add_action(preferences)
 
-        about = Gio.SimpleAction.new("about", None)
+        about = Gio.SimpleAction(name="about")
         about.connect("activate", self._on_about)
         self.add_action(about)
 
-        quit_action = Gio.SimpleAction.new("quit", None)
+        quit_action = Gio.SimpleAction(name="quit")
         quit_action.connect("activate", self._on_quit)
         self.add_action(quit_action)
 

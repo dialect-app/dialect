@@ -123,72 +123,72 @@ class DialectWindow(Adw.ApplicationWindow):
         self.setup()
 
     def setup_actions(self):
-        back = Gio.SimpleAction.new("back", None)
+        back = Gio.SimpleAction(name="back")
         back.props.enabled = False
         back.connect("activate", self.ui_return)
         self.add_action(back)
 
-        forward_action = Gio.SimpleAction.new("forward", None)
+        forward_action = Gio.SimpleAction(name="forward")
         forward_action.props.enabled = False
         forward_action.connect("activate", self.ui_forward)
         self.add_action(forward_action)
 
-        switch_action = Gio.SimpleAction.new("switch", None)
+        switch_action = Gio.SimpleAction(name="switch")
         switch_action.connect("activate", self.ui_switch)
         self.add_action(switch_action)
 
-        from_action = Gio.SimpleAction.new("from", None)
+        from_action = Gio.SimpleAction(name="from")
         from_action.connect("activate", self.ui_from)
         self.add_action(from_action)
 
-        to_action = Gio.SimpleAction.new("to", None)
+        to_action = Gio.SimpleAction(name="to")
         to_action.connect("activate", self.ui_to)
         self.add_action(to_action)
 
-        clear_action = Gio.SimpleAction.new("clear", None)
+        clear_action = Gio.SimpleAction(name="clear")
         clear_action.props.enabled = False
         clear_action.connect("activate", self.ui_clear)
         self.add_action(clear_action)
 
-        font_size_inc_action = Gio.SimpleAction.new("font-size-inc", None)
+        font_size_inc_action = Gio.SimpleAction(name="font-size-inc")
         font_size_inc_action.connect("activate", self.ui_font_size_inc)
         self.add_action(font_size_inc_action)
 
-        font_size_dec_action = Gio.SimpleAction.new("font-size-dec", None)
+        font_size_dec_action = Gio.SimpleAction(name="font-size-dec")
         font_size_dec_action.connect("activate", self.ui_font_size_dec)
         self.add_action(font_size_dec_action)
 
-        paste_action = Gio.SimpleAction.new("paste", None)
+        paste_action = Gio.SimpleAction(name="paste")
         paste_action.connect("activate", self.ui_paste)
         self.add_action(paste_action)
 
-        copy_action = Gio.SimpleAction.new("copy", None)
+        copy_action = Gio.SimpleAction(name="copy")
         copy_action.props.enabled = False
         copy_action.connect("activate", self.ui_copy)
         self.add_action(copy_action)
 
-        listen_dest_action = Gio.SimpleAction.new("listen-dest", None)
+        listen_dest_action = Gio.SimpleAction(name="listen-dest")
         listen_dest_action.connect("activate", self.ui_dest_voice)
         self.add_action(listen_dest_action)
 
-        suggest_action = Gio.SimpleAction.new("suggest", None)
+        suggest_action = Gio.SimpleAction(name="suggest")
         suggest_action.props.enabled = False
         suggest_action.connect("activate", self.ui_suggest)
         self.add_action(suggest_action)
 
-        suggest_ok_action = Gio.SimpleAction.new("suggest-ok", None)
+        suggest_ok_action = Gio.SimpleAction(name="suggest-ok")
         suggest_ok_action.connect("activate", self.ui_suggest_ok)
         self.add_action(suggest_ok_action)
 
-        suggest_cancel_action = Gio.SimpleAction.new("suggest-cancel", None)
+        suggest_cancel_action = Gio.SimpleAction(name="suggest-cancel")
         suggest_cancel_action.connect("activate", self.ui_suggest_cancel)
         self.add_action(suggest_cancel_action)
 
-        listen_src_action = Gio.SimpleAction.new("listen-src", None)
+        listen_src_action = Gio.SimpleAction(name="listen-src")
         listen_src_action.connect("activate", self.ui_src_voice)
         self.add_action(listen_src_action)
 
-        translation_action = Gio.SimpleAction.new("translation", None)
+        translation_action = Gio.SimpleAction(name="translation")
         translation_action.props.enabled = False
         translation_action.connect("activate", self.translation)
         self.add_action(translation_action)
@@ -589,7 +589,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         if not queue and self.toast is not None:
             self.toast.dismiss()
-        self.toast = Adw.Toast.new(text)
+        self.toast = Adw.Toast(title=text)
         self.toast.connect("dismissed", toast_dismissed)
         if action is not None:
             self.toast.props.button_label = action["label"]
