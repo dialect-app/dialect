@@ -5,7 +5,6 @@ pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.proje
 # Resources
 blueprints = custom_target('blueprints',
   input: files(
-    'about.blp',
     'shortcuts.blp',
     'window.blp',
     'widgets/lang_selector.blp',
@@ -17,14 +16,19 @@ blueprints = custom_target('blueprints',
   command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
 )
 
+gresource_conf = configuration_data()
+gresource_conf.set('appstream-path', appstream_file.full_path())
 gnome.compile_resources('dialect',
-  'dialect.gresource.xml',
-  dependencies: blueprints,
+  configure_file(
+    input: 'dialect.gresource.xml',
+    output: 'dialect.gresource.xml',
+    configuration: gresource_conf,
+  ),
+  dependencies: [blueprints, appstream_file],
   gresource_bundle: true,
   install: true,
   install_dir: pkgdatadir,
 )
-
 
 # Generate dialect bin
 configure_file(

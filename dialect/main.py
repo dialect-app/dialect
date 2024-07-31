@@ -17,7 +17,7 @@ try:
     gi.require_version("Secret", "1")
     gi.require_version("Soup", "3.0")
 
-    from gi.repository import Adw, Gio, GLib, Gst, Gtk
+    from gi.repository import Adw, Gio, GLib, Gst
 except ImportError or ValueError:
     logging.error("Error: GObject dependencies not met.")
 
@@ -181,13 +181,12 @@ class Dialect(Adw.Application):
 
     def _on_about(self, _action, _param):
         """Show about dialog"""
-        builder = Gtk.Builder.new_from_resource(f"{RES_PATH}/about.ui")
-        about: Adw.AboutDialog = builder.get_object("about")  # type: ignore
-
-        about.props.application_icon = APP_ID
-        about.props.version = VERSION
+        about = Adw.AboutDialog.new_from_appdata(f"{RES_PATH}/appdata.xml", VERSION)
+        about.props.version = VERSION  # For development version
+        about.props.comments = _("A translation app for GNOME.")
+        about.props.copyright = _("Copyright 2020–⁠2024 The Dialect Authors")
         about.props.developers = ["Mufeed Ali", "Rafael Mardojai CM http://rafaelmardojai.com", "Libretto"]
-
+        about.props.translator_credits = _("translator-credits")
         about.add_link(_("Donate"), "https://opencollective.com/dialect")
 
         about.present(self.window)
