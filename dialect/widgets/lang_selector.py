@@ -1,5 +1,5 @@
-# Copyright 2020-2022 Mufeed Ali
-# Copyright 2020-2022 Rafael Mardojai CM
+# Copyright 2020 Mufeed Ali
+# Copyright 2020 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import re
@@ -7,41 +7,44 @@ import re
 from gi.repository import Adw, Gdk, GObject, Gtk
 
 from dialect.define import RES_PATH
+from dialect.languages import LangObject, LanguagesListModel
 
 
-@Gtk.Template(resource_path=f"{RES_PATH}/lang-selector.ui")
+@Gtk.Template(resource_path=f"{RES_PATH}/widgets/lang_selector.ui")
 class LangSelector(Adw.Bin):
     __gtype_name__ = "LangSelector"
-    __gsignals__ = {"user-selection-changed": (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())}
 
     # Properties
-    selected = GObject.Property(type=str)  # Code of the selected lang
+    selected: str = GObject.Property(type=str)  # type: ignore
 
     # Child Widgets
-    button = Gtk.Template.Child()
-    label = Gtk.Template.Child()
-    insight = Gtk.Template.Child()
-    popover = Gtk.Template.Child()
-    search = Gtk.Template.Child()
-    scroll = Gtk.Template.Child()
-    revealer = Gtk.Template.Child()
-    recent_list = Gtk.Template.Child()
-    separator = Gtk.Template.Child()
-    lang_list = Gtk.Template.Child()
+    button: Gtk.MenuButton = Gtk.Template.Child()  # type: ignore
+    label: Gtk.Label = Gtk.Template.Child()  # type: ignore
+    insight: Gtk.Label = Gtk.Template.Child()  # type: ignore
+    popover: Gtk.Popover = Gtk.Template.Child()  # type: ignore
+    search: Gtk.SearchEntry = Gtk.Template.Child()  # type: ignore
+    scroll: Gtk.ScrolledWindow = Gtk.Template.Child()  # type: ignore
+    revealer: Gtk.Revealer = Gtk.Template.Child()  # type: ignore
+    recent_list: Gtk.ListBox = Gtk.Template.Child()  # type: ignore
+    separator: Gtk.Separator = Gtk.Template.Child()  # type: ignore
+    lang_list: Gtk.ListBox = Gtk.Template.Child()  # type: ignore
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.model = None
-        self.recent_model = None
+        self.model: LanguagesListModel | None = None
+        self.recent_model: LanguagesListModel | None = None
 
         # Setup search entry
         self.search.set_key_capture_widget(self.popover)
-        key_events = Gtk.EventControllerKey.new()
+        key_events = Gtk.EventControllerKey()
         key_events.connect("key-pressed", self._on_key_pressed)
         self.search.add_controller(key_events)
 
-    def bind_models(self, langs, recent):
+    @GObject.Signal()
+    def user_selection_changed(self): ...
+
+    def bind_models(self, langs: LanguagesListModel, recent: LanguagesListModel):
         self.model = langs
         self.recent_model = recent
 
@@ -49,22 +52,26 @@ class LangSelector(Adw.Bin):
 
         self.filter = Gtk.CustomFilter()
         self.filter.set_filter_func(self._filter_langs)
-        sorter = Gtk.CustomSorter.new(self._sort_langs)
-        sorted_model = Gtk.SortListModel.new(model=self.model, sorter=sorter)
-        filter_model = Gtk.FilterListModel.new(sorted_model, self.filter)
+        sorter = Gtk.CustomSorter()
+        sorter.set_sort_func(self._sort_langs)
+        sorted_model = Gtk.SortListModel(model=self.model, sorter=sorter)
+        filter_model = Gtk.FilterListModel(model=sorted_model, filter=self.filter)
         self.lang_list.bind_model(filter_model, self._create_lang_row)
 
         self.recent_list.bind_model(self.recent_model, self._create_lang_row)
 
-    def set_insight(self, code):
+    def set_insight(self, code: str):
         if self.selected == "auto":
             self.insight.props.label = f"({self._get_lang_name(code)})"
 
-    def _get_lang_name(self, code):
-        return self.model.names_func(code)
+    def _get_lang_name(self, code: str) -> str:
+        if self.model:
+            return self.model.names_func(code) or code
+        return code
 
-    def _on_recent_changed(self, _model, _position, _removed, _added):
-        self.recent_model.set_selected(self.selected)
+    def _on_recent_changed(self, _model, _position: int, _removed: int, _added: int):
+        if self.recent_model:
+            self.recent_model.set_selected(self.selected)
 
     @Gtk.Template.Callback()
     def _on_selected_changed(self, _self, _pspec):
@@ -81,7 +88,7 @@ class LangSelector(Adw.Bin):
             self.insight.props.label = ""
 
     @Gtk.Template.Callback()
-    def _activated(self, _list, row):
+    def _activated(self, _list, row: "LangRow"):
         """Called on self.(recent_list, lang_list)::row-activated signal"""
         # Close popover
         self.popover.popdown()
@@ -103,7 +110,7 @@ class LangSelector(Adw.Bin):
         # Clear search
         self.search.props.text = ""
 
-    def _create_lang_row(self, lang):
+    def _create_lang_row(self, lang: LangObject):
         return LangRow(lang)
 
     def _filter_langs(self, item):
@@ -134,7 +141,7 @@ class LangSelector(Adw.Bin):
                 self.lang_list.emit("row-activated", row)
         return Gdk.EVENT_PROPAGATE
 
-    def _on_key_pressed(self, _controller, keyval, _keycode, _mod):
+    def _on_key_pressed(self, _ctrl, keyval: int, _keycode: int, _mod: Gdk.ModifierType):
         # Close popover if ESQ key is pressed in search entry
         if keyval == Gdk.KEY_Escape:
             self.popover.popdown()
@@ -143,15 +150,15 @@ class LangSelector(Adw.Bin):
             return Gdk.EVENT_STOP
 
 
-@Gtk.Template(resource_path=f"{RES_PATH}/lang-row.ui")
+@Gtk.Template(resource_path=f"{RES_PATH}/widgets/lang_row.ui")
 class LangRow(Gtk.ListBoxRow):
     __gtype_name__ = "LangRow"
 
     # Widgets
-    name = Gtk.Template.Child()
-    selection = Gtk.Template.Child()
+    name: Gtk.Label = Gtk.Template.Child()  # type: ignore
+    selection: Gtk.Image = Gtk.Template.Child()  # type: ignore
 
-    def __init__(self, lang):
+    def __init__(self, lang: LangObject):
         super().__init__()
         self.lang = lang
         self.name.props.label = self.lang.name

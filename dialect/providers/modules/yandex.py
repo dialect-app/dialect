@@ -1,6 +1,7 @@
 # Copyright 2023 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+import logging
 from uuid import uuid4
 
 from dialect.providers.base import (
@@ -153,20 +154,25 @@ class Provider(SoupProvider):
 
     def translate(self, text, src, dest, on_done, on_fail):
         def on_response(data):
-            detected = None
-            if "code" in data and data["code"] == 200:
-                if "lang" in data:
-                    detected = data["lang"].split("-")[0]
+            try:
+                detected = None
+                if "code" in data and data["code"] == 200:
+                    if "lang" in data:
+                        detected = data["lang"].split("-")[0]
 
-                if "text" in data:
-                    translation = Translation(data["text"][0], (text, src, dest), detected)
-                    on_done(translation)
+                    if "text" in data:
+                        translation = Translation(data["text"][0], (text, src, dest), detected)
+                        on_done(translation)
+
+                    else:
+                        on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, "Translation failed"))
 
                 else:
-                    on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, "Translation failed"))
-
-            else:
-                error = data["message"] if "message" in data else ""
+                    error = data["message"] if "message" in data else ""
+                    on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, error))
+            except Exception as exc:
+                error = "Failed reading the translation data"
+                logging.warning(error, exc)
                 on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, error))
 
         # Form data

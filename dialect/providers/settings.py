@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
+from typing import TypedDict
 
 from gi.repository import Gio, GLib, Secret
 
@@ -17,13 +18,20 @@ SECRETS_SCHEMA = Secret.Schema.new(
 )
 
 
+class ProviderDefaults(TypedDict):
+    instance_url: str
+    api_key: str
+    src_langs: list[str]
+    dest_langs: list[str]
+
+
 class ProviderSettings(Gio.Settings):
     """
     Helper class for providers settings
     """
 
-    def __init__(self, name: str, defaults: dict[str, str | list[str]]):
-        super().__init__(f"{APP_ID}.translator", f"/app/drey/Dialect/translators/{name}/")
+    def __init__(self, name: str, defaults: ProviderDefaults):
+        super().__init__(schema_id=f"{APP_ID}.translator", path=f"/app/drey/Dialect/translators/{name}/")
 
         self.name = name
         self.defaults = defaults  # set of per-provider defaults
@@ -50,7 +58,7 @@ class ProviderSettings(Gio.Settings):
 
         try:
             return Secret.password_lookup_sync(SECRETS_SCHEMA, self._secret_attr, None) or self.defaults["api_key"]
-        except GLib.GError as exc:
+        except GLib.Error as exc:
             logging.warning(exc)
 
         return self.defaults["api_key"]
@@ -73,7 +81,7 @@ class ProviderSettings(Gio.Settings):
             # Fake change in api-key setting
             self.emit("changed::api-key", "api-key")
 
-        except GLib.GError as exc:
+        except GLib.Error as exc:
             logging.warning(exc)
 
     @property

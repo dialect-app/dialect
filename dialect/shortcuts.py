@@ -1,5 +1,5 @@
-# Copyright 2021-2022 Mufeed Ali
-# Copyright 2021-2022 Rafael Mardojai CM
+# Copyright 2021 Mufeed Ali
+# Copyright 2021 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from gi.repository import Gtk
@@ -12,7 +12,7 @@ from dialect.settings import Settings
 class DialectShortcutsWindow(Gtk.ShortcutsWindow):
     __gtype_name__ = "DialectShortcutsWindow"
 
-    translate_shortcut = Gtk.Template.Child()
+    translate_shortcut: Gtk.ShortcutsShortcut = Gtk.Template.Child()  # type: ignore
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

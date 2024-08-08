@@ -1,4 +1,34 @@
+gnome = import('gnome')
 python = import('python')
+pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
+
+# Resources
+blueprints = custom_target('blueprints',
+  input: files(
+    'shortcuts.blp',
+    'window.blp',
+    'widgets/lang_selector.blp',
+    'widgets/lang_row.blp',
+    'widgets/provider_preferences.blp',
+    'widgets/theme_switcher.blp',
+  ),
+  output: '.',
+  command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
+)
+
+gresource_conf = configuration_data()
+gresource_conf.set('appstream-path', appstream_file.full_path())
+gnome.compile_resources('dialect',
+  configure_file(
+    input: 'dialect.gresource.xml',
+    output: 'dialect.gresource.xml',
+    configuration: gresource_conf,
+  ),
+  dependencies: [blueprints, appstream_file],
+  gresource_bundle: true,
+  install: true,
+  install_dir: pkgdatadir,
+)
 
 # Generate dialect bin
 configure_file(

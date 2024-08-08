@@ -2,57 +2,65 @@
 # Copyright 2023 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+from __future__ import annotations
+
 import re
+import typing
 
 from gi.repository import Adw, GObject, Gtk
 
 from dialect.define import RES_PATH
 from dialect.providers import ProviderCapability, ProviderFeature
 
+if typing.TYPE_CHECKING:
+    from dialect.window import DialectWindow
 
-@Gtk.Template(resource_path=f"{RES_PATH}/provider-preferences.ui")
+
+@Gtk.Template(resource_path=f"{RES_PATH}/widgets/provider_preferences.ui")
 class ProviderPreferences(Adw.NavigationPage):
     __gtype_name__ = "ProviderPreferences"
 
     # Properties
-    translation = GObject.Property(type=bool, default=False)
-    tts = GObject.Property(type=bool, default=False)
-    definitions = GObject.Property(type=bool, default=False)
+    translation: bool = GObject.Property(type=bool, default=False)  # type: ignore
+    tts: bool = GObject.Property(type=bool, default=False)  # type: ignore
+    definitions: bool = GObject.Property(type=bool, default=False)  # type: ignore
 
     # Child widgets
-    title = Gtk.Template.Child()
-    page = Gtk.Template.Child()
-    instance_entry = Gtk.Template.Child()
-    instance_stack = Gtk.Template.Child()
-    instance_reset = Gtk.Template.Child()
-    instance_spinner = Gtk.Template.Child()
-    api_key_entry = Gtk.Template.Child()
-    api_key_stack = Gtk.Template.Child()
-    api_key_reset = Gtk.Template.Child()
-    api_key_spinner = Gtk.Template.Child()
-    api_usage_group = Gtk.Template.Child()
-    api_usage = Gtk.Template.Child()
-    api_usage_label = Gtk.Template.Child()
+    title: Adw.WindowTitle = Gtk.Template.Child()  # type: ignore
+    page: Adw.PreferencesPage = Gtk.Template.Child()  # type: ignore
+    instance_entry: Adw.EntryRow = Gtk.Template.Child()  # type: ignore
+    instance_stack: Gtk.Stack = Gtk.Template.Child()  # type: ignore
+    instance_reset: Gtk.Button = Gtk.Template.Child()  # type: ignore
+    instance_spinner: Gtk.Spinner = Gtk.Template.Child()  # type: ignore
+    api_key_entry: Adw.PasswordEntryRow = Gtk.Template.Child()  # type: ignore
+    api_key_stack: Gtk.Stack = Gtk.Template.Child()  # type: ignore
+    api_key_reset: Gtk.Button = Gtk.Template.Child()  # type: ignore
+    api_key_spinner: Gtk.Spinner = Gtk.Template.Child()  # type: ignore
+    api_usage_group: Adw.PreferencesGroup = Gtk.Template.Child()  # type: ignore
+    api_usage: Gtk.LevelBar = Gtk.Template.Child()  # type: ignore
+    api_usage_label: Gtk.Label = Gtk.Template.Child()  # type: ignore
 
-    def __init__(self, scope, dialog, window, **kwargs):
+    def __init__(self, scope: str, dialog: Adw.PreferencesDialog, window: DialectWindow, **kwargs):
         super().__init__(**kwargs)
         self.scope = scope
         self.provider = window.provider[scope]
         self.dialog = dialog
         self.window = window
 
-        self.title.props.subtitle = self.provider.prettyname
+        if self.provider:
+            self.title.props.subtitle = self.provider.prettyname
 
-        self.translation = ProviderCapability.TRANSLATION in self.provider.capabilities
-        self.tts = ProviderCapability.TTS in self.provider.capabilities
-        self.definitions = ProviderCapability.DEFINITIONS in self.provider.capabilities
+            if self.provider.capabilities is not None:
+                self.translation = ProviderCapability.TRANSLATION in self.provider.capabilities
+                self.tts = ProviderCapability.TTS in self.provider.capabilities
+                self.definitions = ProviderCapability.DEFINITIONS in self.provider.capabilities
 
-        # Check what entries to show
-        self._check_settings()
+            # Check what entries to show
+            self._check_settings()
 
-        # Load saved values
-        self.instance_entry.props.text = self.provider.instance_url
-        self.api_key_entry.props.text = self.provider.api_key
+            # Load saved values
+            self.instance_entry.props.text = self.provider.instance_url
+            self.api_key_entry.props.text = self.provider.api_key
 
         # Main window progress
         self.window.connect("notify::translator-loading", self._on_translator_loading)
@@ -82,6 +90,9 @@ class ProviderPreferences(Adw.NavigationPage):
         """Called on self.instance_entry::apply signal"""
 
         def on_done(valid):
+            if not self.provider:
+                return
+
             if valid:
                 self.provider.instance_url = self.new_instance_url
                 self.provider.reset_src_langs()
@@ -92,13 +103,16 @@ class ProviderPreferences(Adw.NavigationPage):
                 self.instance_entry.add_css_class("error")
                 error_text = _("Not a valid {provider} instance")
                 error_text = error_text.format(provider=self.provider.prettyname)
-                toast = Adw.Toast.new(error_text)
+                toast = Adw.Toast(title=error_text)
                 self.dialog.add_toast(toast)
 
             self.instance_entry.props.sensitive = True
             self.api_key_entry.props.sensitive = True
             self.instance_stack.props.visible_child_name = "reset"
             self.instance_spinner.stop()
+
+        if not self.provider:
+            return
 
         old_value = self.provider.instance_url
         new_value = self.instance_entry.props.text
@@ -122,6 +136,9 @@ class ProviderPreferences(Adw.NavigationPage):
     @Gtk.Template.Callback()
     def _on_instance_changed(self, _entry, _pspec):
         """Called on self.instance_entry::notify::text signal"""
+        if not self.provider:
+            return
+
         if self.instance_entry.props.text == self.provider.instance_url:
             self.instance_entry.props.show_apply_button = False
         elif not self.instance_entry.props.show_apply_button:
@@ -129,6 +146,9 @@ class ProviderPreferences(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     def _on_reset_instance(self, _button):
+        if not self.provider:
+            return
+
         if self.provider.instance_url != self.provider.defaults["instance_url"]:
             self.provider.reset_instance_url()
 
@@ -140,6 +160,9 @@ class ProviderPreferences(Adw.NavigationPage):
         """Called on self.api_key_entry::apply signal"""
 
         def on_done(valid):
+            if not self.provider:
+                return
+
             if valid:
                 self.provider.api_key = self.new_api_key
                 self.api_key_entry.remove_css_class("error")
@@ -148,13 +171,16 @@ class ProviderPreferences(Adw.NavigationPage):
                 self.api_key_entry.add_css_class("error")
                 error_text = _("Not a valid {provider} API key")
                 error_text = error_text.format(provider=self.provider.prettyname)
-                toast = Adw.Toast.new(error_text)
+                toast = Adw.Toast(title=error_text)
                 self.dialog.add_toast(toast)
 
             self.instance_entry.props.sensitive = True
             self.api_key_entry.props.sensitive = True
             self.api_key_stack.props.visible_child_name = "reset"
             self.api_key_spinner.stop()
+
+        if not self.provider:
+            return
 
         old_value = self.provider.api_key
         self.new_api_key = self.api_key_entry.get_text()
@@ -175,13 +201,16 @@ class ProviderPreferences(Adw.NavigationPage):
     @Gtk.Template.Callback()
     def _on_reset_api_key(self, _button):
         """Called on self.api_key_reset::clicked signal"""
+        if not self.provider:
+            return
+
         if self.provider.api_key != self.provider.defaults["api_key"]:
             self.provider.reset_api_key()
 
         self.api_key_entry.remove_css_class("error")
         self.api_key_entry.props.text = self.provider.api_key
 
-    def _on_translator_loading(self, window, _value):
+    def _on_translator_loading(self, window: DialectWindow, _value):
         self.page.props.sensitive = not window.translator_loading
 
         if not window.translator_loading:

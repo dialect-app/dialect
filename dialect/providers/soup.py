@@ -53,15 +53,18 @@ class SoupProvider(BaseProvider):
             message = Soup.Message.new_from_encoded_form(method, url, form_data)
         else:
             message = Soup.Message.new(method, url)
-        if data and not form:
-            data = self.encode_data(data)
-            message.set_request_body_from_bytes("application/json", data)
-        if headers:
-            for name, value in headers.items():
-                message.get_request_headers().append(name, value)
-        if "User-Agent" not in headers:
-            message.get_request_headers().append("User-Agent", "Dialect App")
-        return message
+
+        if message:
+            if data and not form:
+                data = self.encode_data(data)
+                message.set_request_body_from_bytes("application/json", data)
+            if headers:
+                for name, value in headers.items():
+                    message.get_request_headers().append(name, value)
+            if "User-Agent" not in headers:
+                message.get_request_headers().append("User-Agent", "Dialect App")
+
+        return message  # type: ignore
 
     def send_and_read(self, message: Soup.Message, callback: Callable[[Session, Gio.AsyncResult], None]):
         """
@@ -75,7 +78,7 @@ class SoupProvider(BaseProvider):
         """
         Session.get().send_and_read_async(message, 0, None, callback)
 
-    def read_data(self, data: bytes) -> dict:
+    def read_data(self, data: bytes | None) -> dict:
         """
         Get JSON data from bytes.
 
@@ -97,7 +100,7 @@ class SoupProvider(BaseProvider):
         response = session.get_response(session, result)
         return self.read_data(response)
 
-    def check_known_errors(self, status: Soup.Status, data: dict) -> None | ProviderError:
+    def check_known_errors(self, status: Soup.Status, data: dict | bytes | None) -> None | ProviderError:
         """
         Checks data for possible response errors and return a found error if any.
 
@@ -113,7 +116,7 @@ class SoupProvider(BaseProvider):
         session: Session,
         result: Gio.AsyncResult,
         message: Soup.Message,
-        on_continue: Callable[[dict | bytes], None],
+        on_continue: Callable[[dict | bytes | None], None],
         on_fail: Callable[[ProviderError], None],
         check_common: bool = True,
         json: bool = True,
@@ -158,7 +161,7 @@ class SoupProvider(BaseProvider):
     def send_and_read_and_process_response(
         self,
         message: Soup.Message,
-        on_continue: Callable[[dict | bytes], None],
+        on_continue: Callable[[dict | bytes | None], None],
         on_fail: Callable[[ProviderError], None],
         check_common: bool = True,
         json: bool = True,

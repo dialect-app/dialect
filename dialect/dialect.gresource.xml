@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/app/drey/Dialect">
+    <file compressed="true">style.css</file>
+    <file compressed="true">style-dark.css</file>
+
+    <file compressed="true" preprocess="xml-stripblanks">preferences.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">shortcuts.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">window.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">widgets/lang_row.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">widgets/lang_selector.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">widgets/provider_preferences.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">widgets/theme_switcher.ui</file>
+
+    <file compressed="true" preprocess="xml-stripblanks" alias="appdata.xml">@appstream-path@</file>
+  </gresource>
+
+  <gresource prefix="/app/drey/Dialect/icons/scalable/emblems/">
+    <file preprocess="xml-stripblanks" alias="dialect-settings-symbolic.svg">icons/settings-symbolic.svg</file>
+  </gresource>
+</gresources>

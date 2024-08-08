@@ -6,9 +6,9 @@ import logging
 
 from dialect.providers.base import (
     ProviderCapability,
-    ProviderFeature,
-    ProviderErrorCode,
     ProviderError,
+    ProviderErrorCode,
+    ProviderFeature,
     Translation,
 )
 from dialect.providers.soup import SoupProvider

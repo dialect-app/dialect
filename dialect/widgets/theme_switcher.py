@@ -12,27 +12,27 @@ from dialect.define import RES_PATH
 from dialect.settings import Settings
 
 
-@Gtk.Template(resource_path=f"{RES_PATH}/theme-switcher.ui")
+@Gtk.Template(resource_path=f"{RES_PATH}/widgets/theme_switcher.ui")
 class ThemeSwitcher(Gtk.Box):
     __gtype_name__ = "ThemeSwitcher"
 
     # Properties
-    show_system = GObject.property(type=bool, default=True)
-    color_scheme = "light"
+    show_system: bool = GObject.property(type=bool, default=True)  # type: ignore
+    color_scheme: str = "light"
 
     # Child widgets
-    system = Gtk.Template.Child()
-    light = Gtk.Template.Child()
-    dark = Gtk.Template.Child()
+    system: Gtk.CheckButton = Gtk.Template.Child()  # type: ignore
+    light: Gtk.CheckButton = Gtk.Template.Child()  # type: ignore
+    dark: Gtk.CheckButton = Gtk.Template.Child()  # type: ignore
 
     @GObject.Property(type=str)
-    def selected_color_scheme(self):
+    def selected_color_scheme(self) -> str:  # type: ignore
         """Read-write integer property."""
 
         return self.color_scheme
 
     @selected_color_scheme.setter
-    def selected_color_scheme(self, color_scheme):
+    def selected_color_scheme(self, color_scheme: str):
         self.color_scheme = color_scheme
 
         if color_scheme == "auto":

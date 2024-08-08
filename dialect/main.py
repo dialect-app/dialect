@@ -1,6 +1,6 @@
 # Copyright 2020 gi-lom
-# Copyright 2020-2022 Mufeed Ali
-# Copyright 2020-2022 Rafael Mardojai CM
+# Copyright 2020 Mufeed Ali
+# Copyright 2020 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 # Initial setup
@@ -17,7 +17,7 @@ try:
     gi.require_version("Secret", "1")
     gi.require_version("Soup", "3.0")
 
-    from gi.repository import Adw, Gio, GLib, Gst, Gtk
+    from gi.repository import Adw, Gio, GLib, Gst
 except ImportError or ValueError:
     logging.error("Error: GObject dependencies not met.")
 
@@ -33,36 +33,38 @@ class Dialect(Adw.Application):
         self.set_resource_base_path(RES_PATH)
 
         # App window
-        self.window = None
+        self.window: DialectWindow | None = None
         # CLI
-        self.argv = {}
-        self._signal_handler = None
+        self.argv: dict[str, str] = {}
+        self._signal_handler: int | None = None
 
         # Add command line options
         self.add_main_option(
             "selection",
-            b"n",
+            ord("n"),
             GLib.OptionFlags.NONE,
             GLib.OptionArg.NONE,
             "Translate text from the primary clipboard",
             None,
         )
-        self.add_main_option("text", b"t", GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "Text to translate", None)
-        self.add_main_option("src", b"s", GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "Source lang code", None)
-        self.add_main_option("dest", b"d", GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "Destination lang code", None)
+        self.add_main_option("text", ord("t"), GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "Text to translate", None)
+        self.add_main_option("src", ord("s"), GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "Source lang code", None)
+        self.add_main_option(
+            "dest", ord("d"), GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "Destination lang code", None
+        )
 
         self.setup_actions()
 
     def do_activate(self):
         def on_translator_loading(_win, _pspec):
-            if not self.window.translator_loading:
+            if self.window and not self.window.translator_loading:
                 # Remove signal handler
                 if self._signal_handler:
                     self.window.disconnect(self._signal_handler)
                 # Process CLI args
                 self.process_command_line()
 
-        self.window = self.props.active_window
+        self.window = self.props.active_window  # type: ignore
 
         if not self.window:
             width, height = Settings.get().window_size
@@ -83,7 +85,7 @@ class Dialect(Adw.Application):
 
         self.window.present()
 
-    def do_command_line(self, command_line):
+    def do_command_line(self, command_line: Gio.ApplicationCommandLine):
         options = command_line.get_options_dict()
 
         # Save CLI args values
@@ -103,7 +105,7 @@ class Dialect(Adw.Application):
             return
 
         text = ""
-        langs = {"src": None, "dest": None}
+        langs: dict[str, str | None] = {"src": None, "dest": None}
         selection = "selection" in self.argv
 
         if "text" in self.argv:
@@ -129,15 +131,15 @@ class Dialect(Adw.Application):
         pronunciation.connect("change-state", self._on_pronunciation)
         self.add_action(pronunciation)
 
-        preferences = Gio.SimpleAction.new("preferences", None)
+        preferences = Gio.SimpleAction(name="preferences")
         preferences.connect("activate", self._on_preferences)
         self.add_action(preferences)
 
-        about = Gio.SimpleAction.new("about", None)
+        about = Gio.SimpleAction(name="about")
         about.connect("activate", self._on_about)
         self.add_action(about)
 
-        quit_action = Gio.SimpleAction.new("quit", None)
+        quit_action = Gio.SimpleAction(name="quit")
         quit_action.connect("activate", self._on_quit)
         self.add_action(quit_action)
 
@@ -159,31 +161,32 @@ class Dialect(Adw.Application):
         self.set_accels_for_action("win.listen-src", ["<Primary><Shift>L"])
         self.set_accels_for_action("win.show-help-overlay", ["<Primary>question"])
 
-    def _on_pronunciation(self, action, value):
+    def _on_pronunciation(self, action: Gio.SimpleAction, value: GLib.Variant):
         """Update show pronunciation setting"""
         action.props.state = value
-        Settings.get().show_pronunciation = value
+        Settings.get().show_pronunciation = value  # type: ignore
 
         # Update UI
-        if self.window.trans_src_pron is not None:
-            self.window.src_pron_revealer.props.reveal_child = value
-        if self.window.trans_dest_pron is not None:
-            self.window.dest_pron_revealer.props.reveal_child = value
+        if self.window:
+            if self.window.trans_src_pron is not None:
+                self.window.src_pron_revealer.props.reveal_child = value  # type: ignore
+            if self.window.trans_dest_pron is not None:
+                self.window.dest_pron_revealer.props.reveal_child = value  # type: ignore
 
     def _on_preferences(self, _action, _param):
         """Show preferences window"""
-        window = DialectPreferencesDialog(self.window)
-        window.present(self.window)
+        if self.window:
+            window = DialectPreferencesDialog(self.window)
+            window.present(self.window)
 
     def _on_about(self, _action, _param):
         """Show about dialog"""
-        builder = Gtk.Builder.new_from_resource(f"{RES_PATH}/about.ui")
-        about = builder.get_object("about")
-
-        about.props.application_icon = APP_ID
-        about.props.version = VERSION
+        about = Adw.AboutDialog.new_from_appdata(f"{RES_PATH}/appdata.xml", VERSION)
+        about.props.version = VERSION  # For development version
+        about.props.comments = _("A translation app for GNOME.")
+        about.props.copyright = _("Copyright 2020–⁠2024 The Dialect Authors")
         about.props.developers = ["Mufeed Ali", "Rafael Mardojai CM http://rafaelmardojai.com", "Libretto"]
-
+        about.props.translator_credits = _("translator-credits")
         about.add_link(_("Donate"), "https://opencollective.com/dialect")
 
         about.present(self.window)

@@ -10,9 +10,8 @@ from dialect.settings import Settings
 
 class TextView(Gtk.TextView):
     __gtype_name__ = "TextView"
-    __gsignals__ = {"activate": (GObject.SIGNAL_RUN_FIRST, None, ())}
 
-    activate_mod: bool = GObject.Property(type=bool, default=True)
+    activate_mod: bool = GObject.Property(type=bool, default=True)  # type: ignore
     """If activation requieres the mod key"""
 
     def __init__(self, **kwargs):
@@ -27,7 +26,7 @@ class TextView(Gtk.TextView):
         self.add_controller(key_ctrlr)
 
         # Scroll controller
-        scroll_ctrlr = Gtk.EventControllerScroll.new(Gtk.EventControllerScrollFlags.VERTICAL)
+        scroll_ctrlr = Gtk.EventControllerScroll(flags=Gtk.EventControllerScrollFlags.VERTICAL)
         scroll_ctrlr.connect("scroll", self._on_scroll)
         self.add_controller(scroll_ctrlr)
 
@@ -38,8 +37,11 @@ class TextView(Gtk.TextView):
         # Add font CSS provider
         self.get_style_context().add_provider(self._font_css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
 
+    @GObject.Signal()
+    def activate(self): ...
+
     @GObject.Property(type=int)
-    def font_size(self) -> int:
+    def font_size(self) -> int:  # type: ignore
         return self._font_size
 
     @font_size.setter
@@ -57,7 +59,7 @@ class TextView(Gtk.TextView):
         if new_size >= 6:
             self.font_size = new_size
 
-    def _on_key_pressed(self, _button, keyval, _keycode, state):
+    def _on_key_pressed(self, _ctrl, keyval: int, _keycode: int, state: Gdk.ModifierType):
         modifiers = state & Gtk.accelerator_get_default_mod_mask()
         control_mask = Gdk.ModifierType.CONTROL_MASK
         enter_keys = (Gdk.KEY_Return, Gdk.KEY_KP_Enter)
