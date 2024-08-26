@@ -22,7 +22,7 @@ from dialect.providers.base import BaseProvider, Translation
 from dialect.settings import Settings
 from dialect.shortcuts import DialectShortcutsWindow
 from dialect.utils import find_item_match, first_exclude
-from dialect.widgets import LangSelector, TextView, ThemeSwitcher
+from dialect.widgets import LangSelector, TextView, ThemeSwitcher, VoiceButton
 
 
 @Gtk.Template(resource_path=f"{RES_PATH}/window.ui")
@@ -58,7 +58,7 @@ class DialectWindow(Adw.ApplicationWindow):
     src_text: TextView = Gtk.Template.Child()  # type: ignore
     clear_btn: Gtk.Button = Gtk.Template.Child()  # type: ignore
     paste_btn: Gtk.Button = Gtk.Template.Child()  # type: ignore
-    src_voice_btn: Gtk.Button = Gtk.Template.Child()  # type: ignore
+    src_voice_btn: VoiceButton = Gtk.Template.Child()  # type: ignore
     translate_btn: Gtk.Button = Gtk.Template.Child()  # type: ignore
 
     dest_box: Gtk.Box = Gtk.Template.Child()  # type: ignore
@@ -70,7 +70,7 @@ class DialectWindow(Adw.ApplicationWindow):
     trans_warning: Gtk.Image = Gtk.Template.Child()  # type: ignore
     edit_btn: Gtk.Button = Gtk.Template.Child()  # type: ignore
     copy_btn: Gtk.Button = Gtk.Template.Child()  # type: ignore
-    dest_voice_btn: Gtk.Button = Gtk.Template.Child()  # type: ignore
+    dest_voice_btn: VoiceButton = Gtk.Template.Child()  # type: ignore
 
     actionbar: Gtk.ActionBar = Gtk.Template.Child()  # type: ignore
     src_lang_selector_m: LangSelector = Gtk.Template.Child()  # type: ignore
@@ -116,7 +116,7 @@ class DialectWindow(Adw.ApplicationWindow):
         if self.player:
             if bus := self.player.get_bus():
                 bus.add_signal_watch()
-                bus.connect("message", self.on_gst_message)
+                bus.connect("message", self._on_gst_message)
 
         # Setup window
         self.setup_actions()
@@ -269,15 +269,6 @@ class DialectWindow(Adw.ApplicationWindow):
         # Translation progress spinner
         self.trans_spinner.hide()
         self.trans_warning.hide()
-
-        # Voice buttons prep-work
-        self.src_voice_warning = Gtk.Image.new_from_icon_name("dialog-warning-symbolic")
-        self.src_voice_image = Gtk.Image.new_from_icon_name("audio-speakers-symbolic")
-        self.src_voice_spinner = Gtk.Spinner()  # For use while audio is running or still loading.
-
-        self.dest_voice_warning = Gtk.Image.new_from_icon_name("dialog-warning-symbolic")
-        self.dest_voice_image = Gtk.Image.new_from_icon_name("audio-speakers-symbolic")
-        self.dest_voice_spinner = Gtk.Spinner()
 
         self.toggle_voice_spinner(True)
 
@@ -493,15 +484,8 @@ class DialectWindow(Adw.ApplicationWindow):
         if not self.provider["tts"]:
             return
 
-        self.src_voice_btn.props.child = self.src_voice_warning
-        self.src_voice_spinner.stop()
-
-        self.dest_voice_btn.props.child = self.dest_voice_warning
-        self.dest_voice_spinner.stop()
-
-        tooltip_text = _("A network issue has occurred. Retry?")
-        self.src_voice_btn.props.tooltip_text = tooltip_text
-        self.dest_voice_btn.props.tooltip_text = tooltip_text
+        self.src_voice_btn.error()
+        self.dest_voice_btn.error()
 
         if self.current_speech:
             called_from = self.current_speech["called_from"]
@@ -604,19 +588,16 @@ class DialectWindow(Adw.ApplicationWindow):
 
         if active:
             self.lookup_action("listen-src").props.enabled = False  # type: ignore
-            self.src_voice_btn.props.child = self.src_voice_spinner
-            self.src_voice_spinner.start()
+            self.src_voice_btn.loading()
 
             self.lookup_action("listen-dest").props.enabled = False  # type: ignore
-            self.dest_voice_btn.props.child = self.dest_voice_spinner
-            self.dest_voice_spinner.start()
+            self.dest_voice_btn.loading()
         else:
             src_text = self.src_buffer.get_text(self.src_buffer.get_start_iter(), self.src_buffer.get_end_iter(), True)
             self.lookup_action("listen-src").set_enabled(  # type: ignore
                 self.src_lang_selector.selected in self.provider["tts"].tts_languages and src_text != ""
             )
-            self.src_voice_btn.props.child = self.src_voice_image
-            self.src_voice_spinner.stop()
+            self.src_voice_btn.ready()
 
             dest_text = self.dest_buffer.get_text(
                 self.dest_buffer.get_start_iter(), self.dest_buffer.get_end_iter(), True
@@ -624,8 +605,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.lookup_action("listen-dest").set_enabled(  # type: ignore
                 self.dest_lang_selector.selected in self.provider["tts"].tts_languages and dest_text != ""
             )
-            self.dest_voice_btn.props.child = self.dest_voice_image
-            self.dest_voice_spinner.stop()
+            self.dest_voice_btn.ready()
 
     @Gtk.Template.Callback()
     def _on_src_lang_changed(self, _obj, _param):
@@ -856,11 +836,19 @@ class DialectWindow(Adw.ApplicationWindow):
         self.dest_text.props.editable = False
 
     def ui_src_voice(self, _action, _param):
+        if self.current_speech:
+            self._voice_reset()
+            return
+
         src_text = self.src_buffer.get_text(self.src_buffer.get_start_iter(), self.src_buffer.get_end_iter(), True)
         src_language = self.src_lang_selector.selected
         self._pre_speech(src_text, src_language, "src")
 
     def ui_dest_voice(self, _action, _param):
+        if self.current_speech:
+            self._voice_reset()
+            return
+
         dest_text = self.dest_buffer.get_text(self.dest_buffer.get_start_iter(), self.dest_buffer.get_end_iter(), True)
         dest_language = self.dest_lang_selector.selected
         self._pre_speech(dest_text, dest_language, "dest")
@@ -874,15 +862,39 @@ class DialectWindow(Adw.ApplicationWindow):
 
             self.download_speech()
 
-    def on_gst_message(self, _bus, message: Gst.Message):
+    def _voice_reset(self):
         if not self.player:
             return
 
-        if message.type == Gst.MessageType.EOS:
-            self.player.set_state(Gst.State.NULL)
-        elif message.type == Gst.MessageType.ERROR:
-            self.player.set_state(Gst.State.NULL)
-            logging.error("Some error occurred while trying to play.")
+        self.player.set_state(Gst.State.NULL)
+        self.current_speech = {}
+        self.src_voice_btn.ready()
+        self.dest_voice_btn.ready()
+
+    def _on_gst_message(self, _bus, message: Gst.Message):
+        if message.type == Gst.MessageType.EOS or message.type == Gst.MessageType.ERROR:
+            if message.type == Gst.MessageType.ERROR:
+                logging.error("Some error occurred while trying to play.")
+
+            self._voice_reset()
+
+    def _gst_progress_timeout(self):
+        if not self.player:
+            return False
+
+        if self.current_speech and self.player.get_state(Gst.CLOCK_TIME_NONE) != Gst.State.NULL:
+            have_pos, pos = self.player.query_position(Gst.Format.TIME)
+            have_dur, dur = self.player.query_duration(Gst.Format.TIME)
+
+            if have_pos and have_dur:
+                if self.current_speech["called_from"] == "src":
+                    self.src_voice_btn.progress(pos / dur)
+                else:
+                    self.dest_voice_btn.progress(pos / dur)
+
+            return True
+
+        return False
 
     def download_speech(self):
         def on_done(file: IO):
@@ -896,7 +908,6 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.toggle_voice_spinner(False)
             finally:
                 self.voice_loading = False
-                self.current_speech = {}
 
         def on_fail(_error: ProviderError):
             self.on_listen_failed()
@@ -919,6 +930,7 @@ class DialectWindow(Adw.ApplicationWindow):
         uri = "file://" + path
         self.player.set_property("uri", uri)
         self.player.set_state(Gst.State.PLAYING)
+        GLib.timeout_add(50, self._gst_progress_timeout)
 
     @Gtk.Template.Callback()
     def _on_key_event(self, _ctrl, keyval: int, _keycode: int, state: Gdk.ModifierType):

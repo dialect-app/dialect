@@ -11,6 +11,7 @@
     <file compressed="true" preprocess="xml-stripblanks">widgets/lang_selector.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">widgets/provider_preferences.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">widgets/theme_switcher.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">widgets/voice_button.ui</file>
 
     <file compressed="true" preprocess="xml-stripblanks" alias="appdata.xml">@appstream-path@</file>
   </gresource>
