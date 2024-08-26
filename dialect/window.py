@@ -169,6 +169,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         listen_dest_action = Gio.SimpleAction(name="listen-dest")
         listen_dest_action.connect("activate", self.ui_dest_voice)
+        listen_dest_action.props.enabled = False
         self.add_action(listen_dest_action)
 
         suggest_action = Gio.SimpleAction(name="suggest")
@@ -186,6 +187,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         listen_src_action = Gio.SimpleAction(name="listen-src")
         listen_src_action.connect("activate", self.ui_src_voice)
+        listen_src_action.props.enabled = False
         self.add_action(listen_src_action)
 
         translation_action = Gio.SimpleAction(name="translation")
