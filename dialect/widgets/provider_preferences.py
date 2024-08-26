@@ -31,11 +31,9 @@ class ProviderPreferences(Adw.NavigationPage):
     instance_entry: Adw.EntryRow = Gtk.Template.Child()  # type: ignore
     instance_stack: Gtk.Stack = Gtk.Template.Child()  # type: ignore
     instance_reset: Gtk.Button = Gtk.Template.Child()  # type: ignore
-    instance_spinner: Gtk.Spinner = Gtk.Template.Child()  # type: ignore
     api_key_entry: Adw.PasswordEntryRow = Gtk.Template.Child()  # type: ignore
     api_key_stack: Gtk.Stack = Gtk.Template.Child()  # type: ignore
     api_key_reset: Gtk.Button = Gtk.Template.Child()  # type: ignore
-    api_key_spinner: Gtk.Spinner = Gtk.Template.Child()  # type: ignore
     api_usage_group: Adw.PreferencesGroup = Gtk.Template.Child()  # type: ignore
     api_usage: Gtk.LevelBar = Gtk.Template.Child()  # type: ignore
     api_usage_label: Gtk.Label = Gtk.Template.Child()  # type: ignore
@@ -109,7 +107,6 @@ class ProviderPreferences(Adw.NavigationPage):
             self.instance_entry.props.sensitive = True
             self.api_key_entry.props.sensitive = True
             self.instance_stack.props.visible_child_name = "reset"
-            self.instance_spinner.stop()
 
         if not self.provider:
             return
@@ -126,7 +123,6 @@ class ProviderPreferences(Adw.NavigationPage):
             self.instance_entry.props.sensitive = False
             self.api_key_entry.props.sensitive = False
             self.instance_stack.props.visible_child_name = "spinner"
-            self.instance_spinner.start()
 
             # TODO: Use on_fail to notify network error
             self.provider.validate_instance(self.new_instance_url, on_done, lambda _: on_done(False))
@@ -177,7 +173,6 @@ class ProviderPreferences(Adw.NavigationPage):
             self.instance_entry.props.sensitive = True
             self.api_key_entry.props.sensitive = True
             self.api_key_stack.props.visible_child_name = "reset"
-            self.api_key_spinner.stop()
 
         if not self.provider:
             return
@@ -191,7 +186,6 @@ class ProviderPreferences(Adw.NavigationPage):
             self.instance_entry.props.sensitive = False
             self.api_key_entry.props.sensitive = False
             self.api_key_stack.props.visible_child_name = "spinner"
-            self.api_key_spinner.start()
 
             # TODO: Use on_fail to notify network error
             self.provider.validate_api_key(self.new_api_key, on_done, lambda _: on_done(False))

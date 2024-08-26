@@ -66,7 +66,7 @@ class DialectWindow(Adw.ApplicationWindow):
     dest_pron_label: Gtk.Label = Gtk.Template.Child()  # type: ignore
     dest_text: TextView = Gtk.Template.Child()  # type: ignore
     dest_toolbar_stack: Gtk.Stack = Gtk.Template.Child()  # type: ignore
-    trans_spinner: Gtk.Spinner = Gtk.Template.Child()  # type: ignore
+    trans_spinner: Adw.Spinner = Gtk.Template.Child()  # type: ignore
     trans_warning: Gtk.Image = Gtk.Template.Child()  # type: ignore
     edit_btn: Gtk.Button = Gtk.Template.Child()  # type: ignore
     copy_btn: Gtk.Button = Gtk.Template.Child()  # type: ignore
@@ -1171,12 +1171,10 @@ class DialectWindow(Adw.ApplicationWindow):
 
     def translation_loading(self):
         self.trans_spinner.show()
-        self.trans_spinner.start()
         self.dest_box.props.sensitive = False
         self.langs_button_box.props.sensitive = False
 
     def translation_finish(self):
-        self.trans_spinner.stop()
         self.trans_spinner.hide()
         self.dest_box.props.sensitive = True
         self.langs_button_box.props.sensitive = True
