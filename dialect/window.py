@@ -777,6 +777,7 @@ class DialectWindow(Adw.ApplicationWindow):
         dest_text = self.dest_buffer.get_text(self.dest_buffer.get_start_iter(), self.dest_buffer.get_end_iter(), True)
         if display := Gdk.Display.get_default():
             display.get_clipboard().set(dest_text)
+            self.send_notification(_("Copied to clipboard"), timeout=1)
 
     def ui_paste(self, _action, _param):
         def on_paste(clipboard: Gdk.Clipboard, result: Gio.AsyncResult):
