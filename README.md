@@ -47,8 +47,8 @@ sudo apt-get install dialect
 
 - Python 3 `python`
 - PyGObject `python-gobject`
-- GTK4 `gtk4`
-- libadwaita (>= 1.4.0) `libadwaita`
+- GTK4 (>= 4.16.0) `gtk4`
+- libadwaita (>= 1.6.0) `libadwaita`
 - libsoup (>= 3.0) `libsoup`
 - libsecret
 - GStreamer 1.0 `gstreamer`
