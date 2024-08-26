@@ -1,0 +1,46 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $VoiceButton : Button {
+  tooltip-text: _("Listen");
+
+  styles ["voice-button"]
+
+  child: Overlay {
+    [overlay]
+    ProgressBar progress_bar {
+      visible: false;
+      valign: end;
+
+      styles ["osd"]
+    }
+
+    child: Stack stack {
+      StackPage {
+        name: "ready";
+        child: Image {
+          icon-name: "audio-speakers-symbolic";
+        };
+      }
+
+      StackPage {
+        name: "progress";
+        child: Image {
+          icon-name: "media-playback-stop-symbolic";
+        };
+      }
+
+      StackPage {
+        name: "error";
+        child: Image {
+          icon-name: "dialog-warning-symbolic";
+        };
+      }
+
+      StackPage {
+        name: "loading";
+        child: Adw.Spinner {};
+      }
+    };
+  };
+}

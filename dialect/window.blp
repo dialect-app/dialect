@@ -392,7 +392,7 @@ template $DialectWindow : Adw.ApplicationWindow {
                     icon-name: "edit-paste-symbolic";
                   }
 
-                  Button src_voice_btn {
+                  $VoiceButton src_voice_btn {
                     action-name: "win.listen-src";
                     tooltip-text: _("Listen");
 
@@ -510,7 +510,7 @@ template $DialectWindow : Adw.ApplicationWindow {
                         icon-name: "document-edit-symbolic";
                       }
 
-                      Button dest_voice_btn {
+                      $VoiceButton dest_voice_btn {
                         action-name: "win.listen-dest";
                         tooltip-text: _("Listen");
 
