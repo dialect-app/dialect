@@ -59,29 +59,13 @@ template $DialectWindow : Adw.ApplicationWindow {
     StackPage {
       name: "loading";
       child: WindowHandle {
-        Box {
-          orientation: vertical;
-          spacing: 12;
-          margin-top: 12;
-          margin-bottom: 12;
-          margin-start: 12;
-          margin-end: 12;
-          halign: center;
-          valign: center;
+        Adw.StatusPage loading_page {
+          paintable: Adw.SpinnerPaintable {
+            widget: loading_page;
+          };
 
-          Spinner {
-            spinning: true;
-            width-request: 32;
-            height-request: 32;
-          }
-
-          Label {
-            wrap: true;
+          accessibility {
             label: _("Loading…");
-
-            styles [
-              "title-1",
-            ]
           }
         }
       };
@@ -501,7 +485,7 @@ template $DialectWindow : Adw.ApplicationWindow {
                   StackPage {
                     name: "default";
                     child: Box {
-                      Spinner trans_spinner {
+                      Adw.Spinner trans_spinner {
                         tooltip-text: _("Translating…");
                         margin-start: 8;
                       }
