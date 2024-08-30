@@ -1,10 +1,10 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $VoiceButton : Button {
+template $SpeechButton : Button {
   tooltip-text: _("Listen");
 
-  styles ["voice-button"]
+  styles ["speech-button"]
 
   child: Overlay {
     [overlay]
@@ -33,7 +33,7 @@ template $VoiceButton : Button {
       StackPage {
         name: "error";
         child: Image {
-          icon-name: "dialog-warning-symbolic";
+          icon-name: "dialect-speakers-broken-symbolic";
         };
       }
 
