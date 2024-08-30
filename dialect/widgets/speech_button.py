@@ -7,9 +7,9 @@ from gi.repository import Gtk
 from dialect.define import RES_PATH
 
 
-@Gtk.Template(resource_path=f"{RES_PATH}/widgets/voice_button.ui")
-class VoiceButton(Gtk.Button):
-    __gtype_name__ = "VoiceButton"
+@Gtk.Template(resource_path=f"{RES_PATH}/widgets/speech_button.ui")
+class SpeechButton(Gtk.Button):
+    __gtype_name__ = "SpeechButton"
 
     stack: Gtk.Stack = Gtk.Template.Child()  # type: ignore
     progress_bar: Gtk.ProgressBar = Gtk.Template.Child()  # type: ignore
@@ -30,7 +30,7 @@ class VoiceButton(Gtk.Button):
 
         self.progress_bar.props.fraction = fraction
 
-    def error(self, message: str = _("A network issue has occurred. Retry?")):
+    def error(self, message: str):
         self.stack.props.visible_child_name = "error"
         self.props.tooltip_text = message
         self.progress_bar.props.visible = False

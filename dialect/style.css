@@ -107,14 +107,13 @@ actionbar.flat > revealer > box {
   color: var(--accent-fg-color);
 }
 
-/* Voice Button */
-.voice-button {
+/* Speech Button */
+.speech-button {
   padding: 0;
 }
-.voice-button image {
+.speech-button image {
   padding: 5px 9px;
 }
-.voice-button progressbar trough {
+.speech-button progressbar trough {
   min-width: 34px;
-  max-width: 34px;
 }
