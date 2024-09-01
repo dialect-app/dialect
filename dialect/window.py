@@ -920,7 +920,7 @@ class DialectWindow(Adw.ApplicationWindow):
         uri = "file://" + path
         self.player.set_property("uri", uri)
         self.player.set_state(Gst.State.PLAYING)
-        GLib.timeout_add(50, self._gst_progress_timeout)
+        self.add_tick_callback(self._gst_progress_timeout)
 
     def _on_gst_message(self, _bus, message: Gst.Message):
         if message.type == Gst.MessageType.EOS or message.type == Gst.MessageType.ERROR:
@@ -928,7 +928,7 @@ class DialectWindow(Adw.ApplicationWindow):
                 logging.error("Some error occurred while trying to play.")
             self._speech_reset()
 
-    def _gst_progress_timeout(self):
+    def _gst_progress_timeout(self, _widget, _clock):
         if not self.player:
             return False
 
