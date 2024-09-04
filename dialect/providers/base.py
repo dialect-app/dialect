@@ -5,7 +5,7 @@
 import urllib.parse
 from dataclasses import dataclass
 from enum import Enum, Flag, auto
-from typing import IO, Callable
+from typing import IO
 
 from dialect.define import LANG_ALIASES
 from dialect.languages import get_lang_name
@@ -53,28 +53,6 @@ class ProvideLangModel(Enum):
     The provider only populate its `src_languages` property.
     The `dest_langs_for` method will be used to get possible destination codes for a code.
     """
-
-
-class ProviderErrorCode(Enum):
-    UNEXPECTED = auto()
-    NETWORK = auto()
-    EMPTY = auto()
-    API_KEY_REQUIRED = auto()
-    API_KEY_INVALID = auto()
-    INVALID_LANG_CODE = auto()
-    BATCH_SIZE_EXCEEDED = auto()
-    CHARACTERS_LIMIT_EXCEEDED = auto()
-    SERVICE_LIMIT_REACHED = auto()
-    TRANSLATION_FAILED = auto()
-    TTS_FAILED = auto()
-
-
-class ProviderError:
-    """Helper error handing class to be passed between callbacks"""
-
-    def __init__(self, code: ProviderErrorCode, message: str = "") -> None:
-        self.code = code  # Serves for quick error matching
-        self.message = message  # More detailed error info if needed
 
 
 @dataclass
@@ -131,39 +109,31 @@ class BaseProvider:
     Providers API methods
     """
 
-    def validate_instance(self, url: str, on_done: Callable[[bool], None], on_fail: Callable[[ProviderError], None]):
+    async def validate_instance(self, url: str) -> bool:
         """
         Validate an instance of the provider.
 
         Args:
             url: The instance URL to test, only hostname and tld, e.g. libretranslate.com, localhost
-            on_done: Called when the validation is done, argument is the result of the validation
-            on_fail: Called when there's a fail in the validation process
         """
         raise NotImplementedError()
 
-    def validate_api_key(self, key: str, on_done: Callable[[bool], None], on_fail: Callable[[ProviderError], None]):
+    async def validate_api_key(self, key: str) -> bool:
         """
         Validate an API key.
 
         Args:
             key: The API key to validate
-            on_done: Called when the validation is done, argument is the result of the validation
-            on_fail: Called when there's a fail in the validation process
         """
         raise NotImplementedError()
 
-    def init_trans(self, on_done: Callable[[], None], on_fail: Callable[[ProviderError], None]):
+    async def init_trans(self) -> None:
         """
         Initializes the provider translation capabilities.
-
-        Args:
-            on_done: Called after the provider was successfully initialized
-            on_fail: Called after any error on initialization
         """
-        on_done()
+        raise NotImplementedError()
 
-    def init_tts(self, on_done: Callable[[], None], on_fail: Callable[[ProviderError], None]):
+    async def init_tts(self) -> None:
         """
         Initializes the provider text-to-speech capabilities.
 
@@ -171,16 +141,14 @@ class BaseProvider:
             on_done: Called after the provider was successfully initialized
             on_fail: Called after any error on initialization
         """
-        on_done()
+        raise NotImplementedError()
 
-    def translate(
+    async def translate(
         self,
         text: str,
         src: str,
         dest: str,
-        on_done: Callable[[Translation], None],
-        on_fail: Callable[[ProviderError], None],
-    ):
+    ) -> Translation:
         """
         Translates text in the provider.
 
@@ -188,20 +156,10 @@ class BaseProvider:
             text: The text to translate
             src: The lang code of the source text
             dest: The lang code to translate the text to
-            on_done: Called after the text was successfully translated
-            on_fail: Called after any error on translation
         """
         raise NotImplementedError()
 
-    def suggest(
-        self,
-        text: str,
-        src: str,
-        dest: str,
-        suggestion: str,
-        on_done: Callable[[bool], None],
-        on_fail: Callable[[ProviderError], None],
-    ):
+    async def suggest(self, text: str, src: str, dest: str, suggestion: str) -> bool:
         """
         Sends a translation suggestion to the provider.
 
@@ -210,40 +168,25 @@ class BaseProvider:
             src: The lang code of the original text
             dest: The lang code of the translated text
             suggestion: Suggested translation for text
-            on_done: Called after the suggestion was successfully send, argument means if it was accepted or rejected
-            on_fail: Called after any error on the suggestion process
         """
         raise NotImplementedError()
 
-    def speech(
-        self,
-        text: str,
-        language: str,
-        on_done: Callable[[IO], None],
-        on_fail: Callable[[ProviderError], None],
-    ):
+    async def speech(self, text: str, language: str) -> IO:
         """
         Generate speech audio from text
 
         Args:
             text: Text to generate speech from
             language: The lang code of text
-            on_done: Called after the process successful
-            on_fail: Called after any error on the speech process
         """
         raise NotImplementedError()
 
-    def api_char_usage(
-        self,
-        on_done: Callable[[int, int], None],
-        on_fail: Callable[[ProviderError], None],
-    ):
+    async def api_char_usage(self) -> tuple[int, int]:
         """
         Retrieves the API usage status
 
-        Args:
-            on_done: Called after the process successful, with the usage and limit as args
-            on_fail: Called after any error on the speech process
+        Returns:
+            The current usage and limit
         """
         raise NotImplementedError()
 

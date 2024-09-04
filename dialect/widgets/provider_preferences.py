@@ -4,13 +4,15 @@
 
 from __future__ import annotations
 
+import logging
 import re
 import typing
 
 from gi.repository import Adw, GObject, Gtk
 
+from dialect.asyncio import create_background_task
 from dialect.define import RES_PATH
-from dialect.providers import ProviderCapability, ProviderFeature
+from dialect.providers import ProviderCapability, ProviderFeature, RequestError
 
 if typing.TYPE_CHECKING:
     from dialect.window import DialectWindow
@@ -64,50 +66,37 @@ class ProviderPreferences(Adw.NavigationPage):
         self.window.connect("notify::translator-loading", self._on_translator_loading)
 
     def _check_settings(self):
-        def on_usage(usage, limit):
+        if not self.provider:
+            return
+
+        self.instance_entry.props.visible = ProviderFeature.INSTANCES in self.provider.features
+        self.api_key_entry.props.visible = ProviderFeature.API_KEY in self.provider.features
+
+        self.api_usage_group.props.visible = False
+        if ProviderFeature.API_KEY_USAGE in self.provider.features:
+            create_background_task(self._load_api_usage())
+
+    async def _load_api_usage(self):
+        if not self.provider:
+            return
+
+        try:
+            usage, limit = await self.provider.api_char_usage()
             level = usage / limit
             label = _("{usage:n} of {limit:n} characters").format(usage=usage, limit=limit)
 
             self.api_usage.props.value = level
             self.api_usage_label.props.label = label
             self.api_usage_group.props.visible = True
-
-        def on_usage_fail(_error):
-            pass
-
-        if self.provider:
-            self.instance_entry.props.visible = ProviderFeature.INSTANCES in self.provider.features
-            self.api_key_entry.props.visible = ProviderFeature.API_KEY in self.provider.features
-
-            self.api_usage_group.props.visible = False
-            if ProviderFeature.API_KEY_USAGE in self.provider.features:
-                self.provider.api_char_usage(on_usage, on_usage_fail)
+        except Exception as exc:
+            logging.error(exc)
 
     @Gtk.Template.Callback()
     def _on_instance_apply(self, _row):
         """Called on self.instance_entry::apply signal"""
+        create_background_task(self._instance_apply())
 
-        def on_done(valid):
-            if not self.provider:
-                return
-
-            if valid:
-                self.provider.instance_url = self.new_instance_url
-                self.provider.reset_src_langs()
-                self.provider.reset_dest_langs()
-                self.instance_entry.remove_css_class("error")
-                self.instance_entry.props.text = self.provider.instance_url
-            else:
-                self.instance_entry.add_css_class("error")
-                error_text = _("Not a valid {provider} instance")
-                error_text = error_text.format(provider=self.provider.prettyname)
-                toast = Adw.Toast(title=error_text)
-                self.dialog.add_toast(toast)
-
-            self.instance_entry.props.sensitive = True
-            self.api_key_entry.props.sensitive = True
-            self.instance_stack.props.visible_child_name = "reset"
-
+    async def _instance_apply(self):
         if not self.provider:
             return
 
@@ -124,8 +113,27 @@ class ProviderPreferences(Adw.NavigationPage):
             self.api_key_entry.props.sensitive = False
             self.instance_stack.props.visible_child_name = "spinner"
 
-            # TODO: Use on_fail to notify network error
-            self.provider.validate_instance(self.new_instance_url, on_done, lambda _: on_done(False))
+            try:
+                if await self.provider.validate_instance(self.new_instance_url):
+                    self.provider.instance_url = self.new_instance_url
+                    self.provider.reset_src_langs()
+                    self.provider.reset_dest_langs()
+                    self.instance_entry.remove_css_class("error")
+                    self.instance_entry.props.text = self.provider.instance_url
+                else:
+                    self.instance_entry.add_css_class("error")
+                    error_text = _("Not a valid {provider} instance")
+                    error_text = error_text.format(provider=self.provider.prettyname)
+                    toast = Adw.Toast(title=error_text)
+                    self.dialog.add_toast(toast)
+            except RequestError as exc:
+                logging.error(exc)
+                toast = Adw.Toast(title=_("Failed validating instance, check for network issues"))
+                self.dialog.add_toast(toast)
+            finally:
+                self.instance_entry.props.sensitive = True
+                self.api_key_entry.props.sensitive = True
+                self.instance_stack.props.visible_child_name = "reset"
         else:
             self.instance_entry.remove_css_class("error")
 
@@ -154,26 +162,9 @@ class ProviderPreferences(Adw.NavigationPage):
     @Gtk.Template.Callback()
     def _on_api_key_apply(self, _row):
         """Called on self.api_key_entry::apply signal"""
+        create_background_task(self._api_key_apply())
 
-        def on_done(valid):
-            if not self.provider:
-                return
-
-            if valid:
-                self.provider.api_key = self.new_api_key
-                self.api_key_entry.remove_css_class("error")
-                self.api_key_entry.props.text = self.provider.api_key
-            else:
-                self.api_key_entry.add_css_class("error")
-                error_text = _("Not a valid {provider} API key")
-                error_text = error_text.format(provider=self.provider.prettyname)
-                toast = Adw.Toast(title=error_text)
-                self.dialog.add_toast(toast)
-
-            self.instance_entry.props.sensitive = True
-            self.api_key_entry.props.sensitive = True
-            self.api_key_stack.props.visible_child_name = "reset"
-
+    async def _api_key_apply(self):
         if not self.provider:
             return
 
@@ -187,8 +178,25 @@ class ProviderPreferences(Adw.NavigationPage):
             self.api_key_entry.props.sensitive = False
             self.api_key_stack.props.visible_child_name = "spinner"
 
-            # TODO: Use on_fail to notify network error
-            self.provider.validate_api_key(self.new_api_key, on_done, lambda _: on_done(False))
+            try:
+                if await self.provider.validate_api_key(self.new_api_key):
+                    self.provider.api_key = self.new_api_key
+                    self.api_key_entry.remove_css_class("error")
+                    self.api_key_entry.props.text = self.provider.api_key
+                else:
+                    self.api_key_entry.add_css_class("error")
+                    error_text = _("Not a valid {provider} API key")
+                    error_text = error_text.format(provider=self.provider.prettyname)
+                    toast = Adw.Toast(title=error_text)
+                    self.dialog.add_toast(toast)
+            except RequestError as exc:
+                logging.error(exc)
+                toast = Adw.Toast(title=_("Failed validating API key, check for network issues"))
+                self.dialog.add_toast(toast)
+            finally:
+                self.instance_entry.props.sensitive = True
+                self.api_key_entry.props.sensitive = True
+                self.api_key_stack.props.visible_child_name = "reset"
         else:
             self.api_key_entry.remove_css_class("error")
 

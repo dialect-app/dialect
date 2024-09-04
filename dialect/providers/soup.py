@@ -4,11 +4,12 @@
 
 import json
 import logging
-from typing import Callable
+from typing import Any
 
-from gi.repository import Gio, GLib, Soup
+from gi.repository import GLib, Soup
 
-from dialect.providers.base import BaseProvider, ProviderError, ProviderErrorCode
+from dialect.providers.base import BaseProvider
+from dialect.providers.errors import RequestError
 from dialect.session import Session
 
 
@@ -18,7 +19,7 @@ class SoupProvider(BaseProvider):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def encode_data(self, data) -> GLib.Bytes | None:
+    def encode_data(self, data: Any) -> GLib.Bytes | None:
         """
         Convert Python data to JSON and bytes.
 
@@ -33,7 +34,9 @@ class SoupProvider(BaseProvider):
             logging.warning(exc)
         return data_glib_bytes
 
-    def create_message(self, method: str, url: str, data={}, headers: dict = {}, form: bool = False) -> Soup.Message:
+    def create_message(
+        self, method: str, url: str, data: Any = {}, headers: dict = {}, form: bool = False
+    ) -> Soup.Message:
         """
         Create a libsoup's message.
 
@@ -66,119 +69,126 @@ class SoupProvider(BaseProvider):
 
         return message  # type: ignore
 
-    def send_and_read(self, message: Soup.Message, callback: Callable[[Session, Gio.AsyncResult], None]):
+    async def send_and_read(self, message: Soup.Message) -> bytes | None:
         """
         Helper method for libsoup's send_and_read_async.
 
-        Useful when priority and cancellable is not needed.
+        Args:
+            message: Message to send
+        """
+        response: GLib.Bytes = await Session.get().send_and_read_async(message, 0)  # type: ignore
+        return response.get_data()
+
+    async def send_and_read_json(self, message: Soup.Message) -> Any:
+        """
+        Like `SoupProvider.send_and_read` but returns JSON parsed
 
         Args:
             message: Message to send
-            callback: Callback called from send_and_read_async to finish request
         """
-        Session.get().send_and_read_async(message, 0, None, callback)
+        response = await self.send_and_read(message)
+        return json.loads(response) if response else {}
 
-    def read_data(self, data: bytes | None) -> dict:
+    def check_known_errors(self, status: Soup.Status, data: Any) -> None:
         """
-        Get JSON data from bytes.
-
-        Args:
-            data: Bytes to read
-        """
-        return json.loads(data) if data else {}
-
-    def read_response(self, session: Session, result: Gio.AsyncResult) -> dict:
-        """
-        Get JSON data from session result.
-
-        Finishes request from send_and_read_async and gets body dict.
-
-        Args:
-            session: Session where the request wa sent
-            result: Result of send_and_read_async callback
-        """
-        response = session.get_response(session, result)
-        return self.read_data(response)
-
-    def check_known_errors(self, status: Soup.Status, data: dict | bytes | None) -> None | ProviderError:
-        """
-        Checks data for possible response errors and return a found error if any.
+        Checks data for possible response errors and raises appropriated exceptions.
 
         This should be implemented by subclases.
 
         Args:
+            status: HTTP status
             data: Response body data
         """
-        return None
 
-    def process_response(
+    async def send_and_read_and_process(
         self,
-        session: Session,
-        result: Gio.AsyncResult,
         message: Soup.Message,
-        on_continue: Callable[[dict | bytes | None], None],
-        on_fail: Callable[[ProviderError], None],
         check_common: bool = True,
         json: bool = True,
-    ):
+    ) -> Any:
         """
-        Helper method for the most common workflow for processing soup responses.
+        Helper mixing `send_and_read`, `send_and_read_json` and `check_known_errors`.
 
-        Checks for soup errors, then checks for common errors on data and calls on_fail
-        if any, otherwise calls on_continue where the provider will finish the process.
+        Converts `GLib.Error` to `RequestError`.
 
-        If json is false check_common is ignored and the data isn't processed as JSON and bites are passed to
-        on_continue.
-
-        Args:
-            session: Session where the request wa sent
-            result: Result of send_and_read_async callback
-            message: The message that was sent
-            on_continue: Called after data was got successfully
-            on_fail: Called after any error on request or in check_known_errors
-            check_common: If response data should be checked for errors using check_known_errors
-            json: If data should be processed as JSON using read_response
+        message: Message to send
+        check_common: If response data should be checked for errors using check_known_errors
+        json: If data should be processed as JSON
         """
 
         try:
             if json:
-                data = self.read_response(session, result)
+                response = await self.send_and_read_json(message)
             else:
-                data = Session.get_response(session, result)
+                response = await self.send_and_read(message)
 
             if check_common:
-                error = self.check_known_errors(message.get_status(), data)
-                if error:
-                    on_fail(error)
-                    return
+                self.check_known_errors(message.get_status(), response)
 
-            on_continue(data)
+            return response
+        except GLib.Error as exc:
+            raise RequestError(exc.message)
 
-        except Exception as exc:
-            logging.warning(exc)
-            on_fail(ProviderError(ProviderErrorCode.NETWORK, str(exc)))
-
-    def send_and_read_and_process_response(
+    async def request(
         self,
-        message: Soup.Message,
-        on_continue: Callable[[dict | bytes | None], None],
-        on_fail: Callable[[ProviderError], None],
+        method: str,
+        url: str,
+        data: Any = {},
+        headers: dict = {},
+        form: bool = False,
         check_common: bool = True,
         json: bool = True,
-    ):
+    ) -> Any:
         """
-        Helper packaging send_and_read and process_response.
+        Helper for regular HTTP request.
 
-        Avoids providers having to deal with many callbacks.
-
-        message: Message to send
-        on_continue: Called after data was got successfully
-        on_fail: Called after any error on request or in check_known_errors
+        method: HTTP method of the request
+        url: Url of the request
+        data: Request body or form data
+        headers: HTTP headers of the message
+        form: If the data should be encoded as a form
         check_common: If response data should be checked for errors using check_known_errors
-        json: If data should be processed as JSON using read_response
+        json: If data should be processed as JSON
         """
+        message = self.create_message(method, url, data, headers, form)
+        return await self.send_and_read_and_process(message, check_common, json)
 
-        def on_response(session: Session, result: Gio.AsyncResult):
-            self.process_response(session, result, message, on_continue, on_fail, check_common, json)
+    async def get(
+        self,
+        url: str,
+        headers: dict = {},
+        form: bool = False,
+        check_common: bool = True,
+        json: bool = True,
+    ) -> Any:
+        """
+        Helper for GET HTTP request.
 
-        self.send_and_read(message, on_response)
+        url: Url of the request
+        headers: HTTP headers of the message
+        form: If the data should be encoded as a form
+        check_common: If response data should be checked for errors using check_known_errors
+        json: If data should be processed as JSON
+        """
+        return await self.request("GET", url, headers=headers, form=form, check_common=check_common, json=json)
+
+    async def post(
+        self,
+        url: str,
+        data: Any = {},
+        headers: dict = {},
+        form: bool = False,
+        check_common: bool = True,
+        json: bool = True,
+    ) -> Any:
+        """
+        Helper for POST HTTP request.
+
+        url: Url of the request
+        data: Request body or form data
+        headers: HTTP headers of the message
+        form: If the data should be encoded as a form
+        check_common: If response data should be checked for errors using check_known_errors
+        json: If data should be processed as JSON
+        """
+        return await self.request("POST", url, data, headers, form, check_common, json)

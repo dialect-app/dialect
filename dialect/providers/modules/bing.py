@@ -1,18 +1,12 @@
 # Copyright 2023 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-import logging
 import re
 
 from bs4 import BeautifulSoup, Tag
 
-from dialect.providers.base import (
-    ProviderCapability,
-    ProviderError,
-    ProviderErrorCode,
-    ProviderFeature,
-    Translation,
-)
+from dialect.providers.base import ProviderCapability, ProviderFeature, Translation
+from dialect.providers.errors import ProviderError, UnexpectedError
 from dialect.providers.soup import SoupProvider
 
 
@@ -58,78 +52,44 @@ class Provider(SoupProvider):
         }
         return self.format_url("www.bing.com", "/ttranslatev3", params)
 
-    def init_trans(self, on_done, on_fail):
-        def on_response(data):
-            if data:
-                try:
-                    soup = BeautifulSoup(data, "html.parser")
+    async def init_trans(self):
+        response = await self.get(self.html_url, self._headers, check_common=False, json=False)
 
-                    # Get Langs
-                    langs = soup.find("optgroup", {"id": "t_tgtAllLang"})
-                    if isinstance(langs, Tag):
-                        for child in langs.findChildren():
-                            if child.name == "option":
-                                self.add_lang(child["value"], child.contents[0])
-
-                    # Get IID
-                    iid = soup.find("div", {"id": "rich_tta"})
-                    if isinstance(iid, Tag):
-                        self._iid = iid["data-iid"]
-
-                    # Decode response bytes
-                    data = data.decode("utf-8")
-
-                    # Look for abuse prevention data
-                    params = re.findall(r"var params_AbusePreventionHelper = \[(.*?)\];", data)[0]  # noqa
-                    abuse_params = params.replace('"', "").split(",")
-                    self._key = abuse_params[0]
-                    self._token = abuse_params[1]
-
-                    # Look for IG
-                    self._ig = re.findall('IG:"(.*?)",', data)[0]
-
-                    on_done()
-
-                except Exception as exc:
-                    error = "Failed parsing HTML from bing.com"
-                    logging.warning(error, exc)
-                    on_fail(ProviderError(ProviderErrorCode.NETWORK, error))
-
-            else:
-                on_fail(ProviderError(ProviderErrorCode.EMPTY, "Could not get HTML from bing.com"))
-
-        # Message request to get bing's website html
-        message = self.create_message("GET", self.html_url, headers=self._headers)
-
-        # Do async request
-        self.send_and_read_and_process_response(message, on_response, on_fail, False, False)
-
-    def translate(self, text, src, dest, on_done, on_fail):
-        def on_response(data):
+        if response:
             try:
-                data = data[0]
-                detected = None
-                pronunciation = None
+                soup = BeautifulSoup(response, "html.parser")
 
-                if "translations" in data:
-                    if "detectedLanguage" in data:
-                        detected = data["detectedLanguage"]["language"]
+                # Get Langs
+                langs = soup.find("optgroup", {"id": "t_tgtAllLang"})
+                if isinstance(langs, Tag):
+                    for child in langs.findChildren():
+                        if child.name == "option":
+                            self.add_lang(child["value"], child.contents[0])
 
-                    if "transliteration" in data["translations"][0]:
-                        pronunciation = data["translations"][0]["transliteration"]["text"]
+                # Get IID
+                iid = soup.find("div", {"id": "rich_tta"})
+                if isinstance(iid, Tag):
+                    self._iid = iid["data-iid"]
 
-                    translation = Translation(
-                        data["translations"][0]["text"],
-                        (text, src, dest),
-                        detected=detected,
-                        pronunciation=(None, pronunciation),
-                    )
-                    on_done(translation)
+                # Decode response bytes
+                text = response.decode("utf-8")
+
+                # Look for abuse prevention data
+                params = re.findall(r"var params_AbusePreventionHelper = \[(.*?)\];", text)[0]  # noqa
+                abuse_params = params.replace('"', "").split(",")
+                self._key = abuse_params[0]
+                self._token = abuse_params[1]
+
+                # Look for IG
+                self._ig = re.findall('IG:"(.*?)",', text)[0]
 
             except Exception as exc:
-                logging.warning(exc)
-                on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, str(exc)))
+                raise UnexpectedError("Failed parsing HTML from bing.com") from exc
 
+        else:
+            raise UnexpectedError("Could not get HTML from bing.com")
+
+    async def translate(self, text, src, dest):
         # Increment requests count
         self._count += 1
 
@@ -141,14 +101,35 @@ class Provider(SoupProvider):
             "token": self._token,
             "key": self._key,
         }
-        # Request message
-        message = self.create_message("POST", self.translate_url, data, self._headers, True)
-        # Do async request
-        self.send_and_read_and_process_response(message, on_response, on_fail)
+
+        # Do request
+        response = await self.post(self.translate_url, data, self._headers, True)
+
+        try:
+            data = response[0]
+            detected = None
+            pronunciation = None
+
+            if "translations" in data:
+                if "detectedLanguage" in data:
+                    detected = data["detectedLanguage"]["language"]
+
+                if "transliteration" in data["translations"][0]:
+                    pronunciation = data["translations"][0]["transliteration"]["text"]
+
+                return Translation(
+                    data["translations"][0]["text"],
+                    (text, src, dest),
+                    detected=detected,
+                    pronunciation=(None, pronunciation),
+                )
+
+        except Exception as exc:
+            raise UnexpectedError from exc
 
     def check_known_errors(self, _status, data):
         if not data:
-            return ProviderError(ProviderErrorCode.EMPTY, "Response is empty!")
+            raise UnexpectedError("Response is empty!")
 
         if "errorMessage" in data:
             error = data["errorMessage"]
@@ -156,6 +137,6 @@ class Provider(SoupProvider):
 
             match code:
                 case _:
-                    return ProviderError(ProviderErrorCode.UNEXPECTED, error)
+                    raise ProviderError(error)
 
         return None

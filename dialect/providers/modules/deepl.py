@@ -2,15 +2,12 @@
 # Copyright 2024 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-import logging
-
 from dialect.providers.base import (
     ProviderCapability,
-    ProviderError,
-    ProviderErrorCode,
     ProviderFeature,
     Translation,
 )
+from dialect.providers.errors import APIKeyInvalid, APIKeyRequired, ServiceLimitReached, UnexpectedError
 from dialect.providers.soup import SoupProvider
 
 API_V = "v2"
@@ -69,74 +66,31 @@ class Provider(SoupProvider):
     def headers(self):
         return {"Authorization": f"DeepL-Auth-Key {self.api_key}"}
 
-    def init_trans(self, on_done, on_fail):
-        def check_finished():
-            self._init_count -= 1
+    async def init_trans(self):
+        # Get languages
+        src_langs = await self.get(self.source_lang_url, headers=self.headers)
+        dest_langs = await self.get(self.target_lang_url, headers=self.headers)
 
-            if self._init_count == 0:
-                if self._init_error:
-                    on_fail(self._init_error)
-                else:
-                    on_done()
+        if src_langs and dest_langs and isinstance(src_langs, list) and isinstance(dest_langs, list):
+            for lang in src_langs:
+                self.add_lang(lang["language"], lang["name"], trans_dest=False)
+            for lang in src_langs:
+                self.add_lang(lang["language"], lang["name"], trans_src=False)
 
-        def on_failed(error):
-            self._init_error = error
-            check_finished()
-
-        def on_languages_response(data, type_):
-            try:
-                trans_src = type_ == "src"
-                trans_dest = type_ == "dest"
-
-                for lang in data:
-                    self.add_lang(lang["language"], lang["name"], trans_src=trans_src, trans_dest=trans_dest)
-
-                check_finished()
-
-            except Exception as exc:
-                print(type_)
-                logging.warning(exc)
-                on_failed(ProviderError(ProviderErrorCode.UNEXPECTED, str(exc)))
-
-        # Keep state of multiple request
-        self._init_count = 2
-        self._init_error = None
-
-        # Request messages
-        src_langs_message = self.create_message("GET", self.source_lang_url, headers=self.headers)
-        dest_langs_message = self.create_message("GET", self.target_lang_url, headers=self.headers)
-
-        # Do async requests
-        self.send_and_read_and_process_response(src_langs_message, lambda d: on_languages_response(d, "src"), on_failed)
-        self.send_and_read_and_process_response(
-            dest_langs_message, lambda d: on_languages_response(d, "dest"), on_failed
-        )
-
-    def validate_api_key(self, key, on_done, on_fail):
-        def on_response(_data):
-            on_done(True)
-
+    async def validate_api_key(self, key):
         api_url = self.__get_api_url(key)
         url = self.format_url(api_url, f"/{API_V}/languages", {"type": "source"})
-        # Headers
         headers = {"Authorization": f"DeepL-Auth-Key {key}"}
-        # Request messages
-        languages_message = self.create_message("GET", url, headers=headers)
-        # Do async requests
-        self.send_and_read_and_process_response(languages_message, on_response, on_fail)
 
-    def translate(self, text, src, dest, on_done, on_fail):
-        def on_response(data):
-            try:
-                translations = data.get("translations")
-                detected = translations[0].get("detected_source_language")
-                translation = Translation(translations[0]["text"], (text, src, dest), detected)
-                on_done(translation)
+        try:
+            await self.get(url, headers=headers)
+            return True
+        except (APIKeyInvalid, APIKeyRequired):
+            return False
+        except Exception:
+            raise
 
-            except Exception as exc:
-                logging.warning(exc)
-                on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, str(exc)))
-
+    async def translate(self, text, src, dest):
         # Request body
         data = {
             "text": [text],
@@ -145,26 +99,29 @@ class Provider(SoupProvider):
         if src != "auto":
             data["source_lang"] = src
 
-        # Request message
-        message = self.create_message("POST", self.translate_url, data, self.headers)
-        # Do async request
-        self.send_and_read_and_process_response(message, on_response, on_fail)
+        response = await self.post(self.translate_url, data, self.headers)
 
-    def api_char_usage(self, on_done, on_fail):
-        def on_response(data):
-            try:
-                usage = data.get("character_count")
-                limit = data.get("character_limit")
-                on_done(usage, limit)
+        # Read translation
+        if response and isinstance(response, dict):
+            translations: list[dict[str, str]] | None = response.get("translations")
+            if translations:
+                detected = translations[0].get("detected_source_language")
+                translation = Translation(translations[0]["text"], (text, src, dest), detected)
+                return translation
 
-            except Exception as exc:
-                logging.warning(exc)
-                on_fail(ProviderError(ProviderErrorCode.UNEXPECTED, str(exc)))
+        raise UnexpectedError
 
-        # Request message
-        message = self.create_message("GET", self.usage_url, headers=self.headers)
-        # Do async request
-        self.send_and_read_and_process_response(message, on_response, on_fail)
+    async def api_char_usage(self):
+        response = await self.get(self.usage_url, headers=self.headers)
+
+        try:
+            usage = response.get("character_count")
+            limit = response.get("character_limit")
+
+            return usage, limit
+
+        except Exception as exc:
+            raise UnexpectedError from exc
 
     def cmp_langs(self, a, b):
         # Early return if both langs are just the same
@@ -186,10 +143,13 @@ class Provider(SoupProvider):
         match status:
             case 403:
                 if not self.api_key:
-                    return ProviderError(ProviderErrorCode.API_KEY_REQUIRED, message)
-                return ProviderError(ProviderErrorCode.API_KEY_INVALID, message)
+                    raise APIKeyRequired(message)
+                raise APIKeyInvalid(message)
             case 456:
-                return ProviderError(ProviderErrorCode.SERVICE_LIMIT_REACHED, message)
+                raise ServiceLimitReached(message)
 
         if status != 200:
-            return ProviderError(ProviderErrorCode.UNEXPECTED, message)
+            raise UnexpectedError(message)
+
+        if not data:
+            raise UnexpectedError

@@ -1,16 +1,14 @@
 # Copyright 2023 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-import logging
 from uuid import uuid4
 
 from dialect.providers.base import (
     ProviderCapability,
-    ProviderError,
-    ProviderErrorCode,
     ProviderFeature,
     Translation,
 )
+from dialect.providers.errors import ProviderError, UnexpectedError
 from dialect.providers.soup import SoupProvider
 
 
@@ -39,7 +37,7 @@ class Provider(SoupProvider):
 
         self._uuid = str(uuid4()).replace("-", "")
 
-    def init_trans(self, on_done, on_fail):
+    async def init_trans(self):
         languages = [
             "af",
             "sq",
@@ -145,43 +143,27 @@ class Provider(SoupProvider):
         for code in languages:
             self.add_lang(code)
 
-        on_done()
-
     @property
     def translate_url(self):
         path = f"/api/v1/tr.json/translate?id={self._uuid}-0-0&srv=android"
         return self.format_url("translate.yandex.net", path)
 
-    def translate(self, text, src, dest, on_done, on_fail):
-        def on_response(data):
-            try:
-                detected = None
-                if "code" in data and data["code"] == 200:
-                    if "lang" in data:
-                        detected = data["lang"].split("-")[0]
-
-                    if "text" in data:
-                        translation = Translation(data["text"][0], (text, src, dest), detected)
-                        on_done(translation)
-
-                    else:
-                        on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, "Translation failed"))
-
-                else:
-                    error = data["message"] if "message" in data else ""
-                    on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, error))
-            except Exception as exc:
-                error = "Failed reading the translation data"
-                logging.warning(error, exc)
-                on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, error))
-
+    async def translate(self, text, src, dest):
         # Form data
         data = {"lang": dest, "text": text}
         if src != "auto":
             data["lang"] = f"{src}-{dest}"
 
-        # Request message
-        message = self.create_message("POST", self.translate_url, data, self._headers, True)
-
-        # Do async request
-        self.send_and_read_and_process_response(message, on_response, on_fail)
+        # Do request
+        response = await self.post(self.translate_url, data, self._headers, True)
+        try:
+            detected = None
+            if "code" in response and response["code"] == 200:
+                if "lang" in response:
+                    detected = response["lang"].split("-")[0]
+                return Translation(response["text"][0], (text, src, dest), detected)
+            else:
+                error = response["message"] if "message" in response else ""
+                raise ProviderError(error)
+        except Exception as exc:
+            raise UnexpectedError from exc

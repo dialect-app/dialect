@@ -12,9 +12,18 @@ from dialect.providers import modules
 from dialect.providers.base import (  # noqa
     BaseProvider,
     ProviderCapability,
-    ProviderError,
-    ProviderErrorCode,
     ProviderFeature,
+)
+from dialect.providers.errors import (  # noqa
+    APIKeyInvalid,
+    APIKeyRequired,
+    BatchSizeExceeded,
+    CharactersLimitExceeded,
+    InvalidLangCode,
+    ProviderError,
+    RequestError,
+    ServiceLimitReached,
+    UnexpectedError,
 )
 
 MODULES: dict[str, type[BaseProvider]] = {}

@@ -4,7 +4,6 @@
 
 import html
 import json
-import logging
 import random
 import re
 from tempfile import NamedTemporaryFile
@@ -13,11 +12,10 @@ from gtts import gTTS, lang
 
 from dialect.providers.base import (
     ProviderCapability,
-    ProviderError,
-    ProviderErrorCode,
     ProviderFeature,
     Translation,
 )
+from dialect.providers.errors import UnexpectedError
 from dialect.providers.local import LocalProvider
 from dialect.providers.soup import SoupProvider
 
@@ -250,7 +248,7 @@ class Provider(LocalProvider, SoupProvider):
 
         self.chars_limit = 2000
 
-    def init_trans(self, on_done, on_fail):
+    async def init_trans(self):
         languages = [
             "af",
             "sq",
@@ -365,13 +363,9 @@ class Provider(LocalProvider, SoupProvider):
         for code in languages:
             self.add_lang(code)
 
-        on_done()
-
-    def init_tts(self, on_done, on_fail):
+    async def init_tts(self):
         for code in lang.tts_langs().keys():
             self.add_lang(code, trans_src=False, trans_dest=False, tts=True)
-
-        on_done()
 
     @staticmethod
     def _build_rpc_request(text: str, src: str, dest: str):
@@ -408,128 +402,120 @@ class Provider(LocalProvider, SoupProvider):
 
         return self.format_url(url, params=params)
 
-    def translate(self, text, src_lang, dest_lang, on_done, on_fail):
-        def on_response(data):
-            try:
-                token_found = False
-                square_bracket_counts = [0, 0]
-                resp = ""
-                data = data.decode("utf-8")
-
-                for line in data.split("\n"):
-                    token_found = token_found or f'"{RPC_ID}"' in line[:30]
-                    if not token_found:
-                        continue
-
-                    is_in_string = False
-                    for index, char in enumerate(line):
-                        if char == '"' and line[max(0, index - 1)] != "\\":
-                            is_in_string = not is_in_string
-                        if not is_in_string:
-                            if char == "[":
-                                square_bracket_counts[0] += 1
-                            elif char == "]":
-                                square_bracket_counts[1] += 1
-
-                    resp += line
-                    if square_bracket_counts[0] == square_bracket_counts[1]:
-                        break
-
-                data = json.loads(resp)
-                parsed = json.loads(data[0][2])
-                translated_parts = None
-                translated = None
-                try:
-                    translated_parts = list(
-                        map(
-                            lambda part: TranslatedPart(
-                                part[0] if len(part) > 0 else "", part[1] if len(part) >= 2 else []
-                            ),
-                            parsed[1][0][0][5],
-                        )
-                    )
-                except TypeError:
-                    translated_parts = [TranslatedPart(parsed[1][0][1][0], [parsed[1][0][0][0], parsed[1][0][1][0]])]
-
-                first_iter = True
-                translated = ""
-                for part in translated_parts:
-                    if not part.text.isspace() and not first_iter:
-                        translated += " "
-                    if first_iter:
-                        first_iter = False
-                    translated += part.text
-
-                src = None
-                try:
-                    src = parsed[1][-1][1]
-                except (IndexError, TypeError):
-                    pass
-
-                if not src == src_lang:
-                    on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, "source language mismatch"))
-                    return
-
-                if src == "auto":
-                    try:
-                        if parsed[0][2] in self.src_languages:
-                            src = parsed[0][2]
-                    except (IndexError, TypeError):
-                        pass
-
-                dest = None
-                try:
-                    dest = parsed[1][-1][2]
-                except (IndexError, TypeError):
-                    pass
-
-                if not dest == dest_lang:
-                    on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, "destination language mismatch"))
-                    return
-
-                origin_pronunciation = None
-                try:
-                    origin_pronunciation = parsed[0][0]
-                except (IndexError, TypeError):
-                    pass
-
-                pronunciation = None
-                try:
-                    pronunciation = parsed[1][0][0][1]
-                except (IndexError, TypeError):
-                    pass
-
-                mistake = None
-                try:
-                    mistake = parsed[0][1][0][0][1]
-                    # Convert to pango markup
-                    mistake = mistake.replace("<em>", "<b>").replace("</em>", "</b>")
-                except (IndexError, TypeError):
-                    pass
-
-                result = Translation(
-                    translated,
-                    (text, src_lang, dest_lang),
-                    src,
-                    (mistake, self._strip_html_tags(mistake)),
-                    (origin_pronunciation, pronunciation),
-                )
-                on_done(result)
-
-            except Exception as exc:
-                logging.warning(exc)
-                on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, str(exc)))
-
+    async def translate(self, text, src_lang, dest_lang):
         # Form data
         data = {
             "f.req": self._build_rpc_request(text, src_lang, dest_lang),
         }
 
-        # Request message
-        message = self.create_message("POST", self.translate_url, data, self._headers, True)
+        # Do request
+        response = await self.post(self.translate_url, data, self._headers, True, False, False)
 
-        # Do async request
-        self.send_and_read_and_process_response(message, on_response, on_fail, False, False)
+        try:
+            token_found = False
+            square_bracket_counts = [0, 0]
+            resp = ""
+            data = response.decode("utf-8")
+
+            for line in data.split("\n"):
+                token_found = token_found or f'"{RPC_ID}"' in line[:30]
+                if not token_found:
+                    continue
+
+                is_in_string = False
+                for index, char in enumerate(line):
+                    if char == '"' and line[max(0, index - 1)] != "\\":
+                        is_in_string = not is_in_string
+                    if not is_in_string:
+                        if char == "[":
+                            square_bracket_counts[0] += 1
+                        elif char == "]":
+                            square_bracket_counts[1] += 1
+
+                resp += line
+                if square_bracket_counts[0] == square_bracket_counts[1]:
+                    break
+
+            data = json.loads(resp)
+            parsed = json.loads(data[0][2])
+            translated_parts = None
+            translated = None
+            try:
+                translated_parts = list(
+                    map(
+                        lambda part: TranslatedPart(
+                            part[0] if len(part) > 0 else "", part[1] if len(part) >= 2 else []
+                        ),
+                        parsed[1][0][0][5],
+                    )
+                )
+            except TypeError:
+                translated_parts = [TranslatedPart(parsed[1][0][1][0], [parsed[1][0][0][0], parsed[1][0][1][0]])]
+
+            first_iter = True
+            translated = ""
+            for part in translated_parts:
+                if not part.text.isspace() and not first_iter:
+                    translated += " "
+                if first_iter:
+                    first_iter = False
+                translated += part.text
+
+            src = None
+            try:
+                src = parsed[1][-1][1]
+            except (IndexError, TypeError):
+                pass
+
+            if not src == src_lang:
+                raise UnexpectedError("source language mismatch")
+
+            if src == "auto":
+                try:
+                    if parsed[0][2] in self.src_languages:
+                        src = parsed[0][2]
+                except (IndexError, TypeError):
+                    pass
+
+            dest = None
+            try:
+                dest = parsed[1][-1][2]
+            except (IndexError, TypeError):
+                pass
+
+            if not dest == dest_lang:
+                raise UnexpectedError("destination language mismatch")
+
+            origin_pronunciation = None
+            try:
+                origin_pronunciation = parsed[0][0]
+            except (IndexError, TypeError):
+                pass
+
+            pronunciation = None
+            try:
+                pronunciation = parsed[1][0][0][1]
+            except (IndexError, TypeError):
+                pass
+
+            mistake = None
+            try:
+                mistake = parsed[0][1][0][0][1]
+                # Convert to pango markup
+                mistake = mistake.replace("<em>", "<b>").replace("</em>", "</b>")
+            except (IndexError, TypeError):
+                pass
+
+            return Translation(
+                translated,
+                (text, src_lang, dest_lang),
+                src,
+                (mistake, self._strip_html_tags(mistake)),
+                (origin_pronunciation, pronunciation),
+            )
+
+        except Exception as exc:
+            raise UnexpectedError from exc
 
     def _strip_html_tags(self, text):
         """Strip html tags"""
@@ -541,20 +527,19 @@ class Provider(LocalProvider, SoupProvider):
         escaped = html.escape(tags_removed)
         return escaped
 
-    def speech(self, text, language, on_done, on_fail):
-        def work():
+    async def speech(self, text, language):
+        def get_speech():
             try:
                 file = NamedTemporaryFile()
                 tts = gTTS(text, lang=language, lang_check=False)
                 tts.write_to_fp(file)
                 file.seek(0)
 
-                on_done(file)
-            except Exception as exc:
-                logging.warning(exc)
-                on_fail(ProviderError(ProviderErrorCode.TTS_FAILED, str(exc)))
+                return file
+            except Exception:
+                raise
 
-        self.launch_thread(work)
+        return await self.run_async(get_speech)
 
 
 class TranslatedPart:
