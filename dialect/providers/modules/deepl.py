@@ -2,11 +2,7 @@
 # Copyright 2024 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from dialect.providers.base import (
-    ProviderCapability,
-    ProviderFeature,
-    Translation,
-)
+from dialect.providers.base import ProviderCapability, ProviderFeature, Translation
 from dialect.providers.errors import APIKeyInvalid, APIKeyRequired, ServiceLimitReached, UnexpectedError
 from dialect.providers.soup import SoupProvider
 
@@ -90,14 +86,14 @@ class Provider(SoupProvider):
         except Exception:
             raise
 
-    async def translate(self, text, src, dest):
+    async def translate(self, request):
         # Request body
         data = {
-            "text": [text],
-            "target_lang": dest,
+            "text": [request.text],
+            "target_lang": request.dest,
         }
-        if src != "auto":
-            data["source_lang"] = src
+        if request.src != "auto":
+            data["source_lang"] = request.src
 
         response = await self.post(self.translate_url, data, self.headers)
 
@@ -106,7 +102,7 @@ class Provider(SoupProvider):
             translations: list[dict[str, str]] | None = response.get("translations")
             if translations:
                 detected = translations[0].get("detected_source_language")
-                translation = Translation(translations[0]["text"], (text, src, dest), detected)
+                translation = Translation(translations[0]["text"], request, detected)
                 return translation
 
         raise UnexpectedError

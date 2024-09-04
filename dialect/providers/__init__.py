@@ -13,6 +13,10 @@ from dialect.providers.base import (  # noqa
     BaseProvider,
     ProviderCapability,
     ProviderFeature,
+    Translation,
+    TranslationMistake,
+    TranslationPronunciation,
+    TranslationRequest,
 )
 from dialect.providers.errors import (  # noqa
     APIKeyInvalid,

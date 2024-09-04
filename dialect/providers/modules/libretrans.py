@@ -103,12 +103,12 @@ class Provider(SoupProvider):
         except Exception as exc:
             raise UnexpectedError from exc
 
-    async def translate(self, text, src, dest):
+    async def translate(self, request):
         # Request body
         data = {
-            "q": text,
-            "source": src,
-            "target": dest,
+            "q": request.text,
+            "source": request.src,
+            "target": request.dest,
         }
         if self.api_key and ProviderFeature.API_KEY in self.features:
             data["api_key"] = self.api_key
@@ -117,7 +117,7 @@ class Provider(SoupProvider):
         response = await self.post(self.translate_url, data)
         try:
             detected = response.get("detectedLanguage", {}).get("language", None)
-            return Translation(response["translatedText"], (text, src, dest), detected)
+            return Translation(response["translatedText"], request, detected)
         except Exception as exc:
             raise UnexpectedError from exc
 

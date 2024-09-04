@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import urllib.parse
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum, Flag, auto
 from typing import IO
 
@@ -56,12 +56,31 @@ class ProvideLangModel(Enum):
 
 
 @dataclass
+class TranslationRequest:
+    text: str
+    src: str
+    dest: str
+
+
+@dataclass
+class TranslationMistake:
+    markup: str
+    text: str
+
+
+@dataclass
+class TranslationPronunciation:
+    src: str | None
+    dest: str | None
+
+
+@dataclass
 class Translation:
     text: str
-    original: tuple[str, str, str]
+    original: TranslationRequest
     detected: str | None = None
-    mistakes: tuple[str | None, str | None] = (None, None)
-    pronunciation: tuple[str | None, str | None] = (None, None)
+    mistakes: TranslationMistake | None = None
+    pronunciation: TranslationPronunciation = field(default_factory=lambda: TranslationPronunciation(None, None))
 
 
 class BaseProvider:
@@ -143,12 +162,7 @@ class BaseProvider:
         """
         raise NotImplementedError()
 
-    async def translate(
-        self,
-        text: str,
-        src: str,
-        dest: str,
-    ) -> Translation:
+    async def translate(self, request: TranslationRequest) -> Translation:
         """
         Translates text in the provider.
 

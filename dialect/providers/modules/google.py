@@ -14,6 +14,8 @@ from dialect.providers.base import (
     ProviderCapability,
     ProviderFeature,
     Translation,
+    TranslationMistake,
+    TranslationPronunciation,
 )
 from dialect.providers.errors import UnexpectedError
 from dialect.providers.local import LocalProvider
@@ -402,10 +404,10 @@ class Provider(LocalProvider, SoupProvider):
 
         return self.format_url(url, params=params)
 
-    async def translate(self, text, src_lang, dest_lang):
+    async def translate(self, request):
         # Form data
         data = {
-            "f.req": self._build_rpc_request(text, src_lang, dest_lang),
+            "f.req": self._build_rpc_request(request.text, request.src, request.dest),
         }
 
         # Do request
@@ -467,7 +469,7 @@ class Provider(LocalProvider, SoupProvider):
             except (IndexError, TypeError):
                 pass
 
-            if not src == src_lang:
+            if not src == request.src:
                 raise UnexpectedError("source language mismatch")
 
             if src == "auto":
@@ -483,7 +485,7 @@ class Provider(LocalProvider, SoupProvider):
             except (IndexError, TypeError):
                 pass
 
-            if not dest == dest_lang:
+            if not dest == request.dest:
                 raise UnexpectedError("destination language mismatch")
 
             origin_pronunciation = None
@@ -508,20 +510,17 @@ class Provider(LocalProvider, SoupProvider):
 
             return Translation(
                 translated,
-                (text, src_lang, dest_lang),
+                request,
                 src,
-                (mistake, self._strip_html_tags(mistake)),
-                (origin_pronunciation, pronunciation),
+                TranslationMistake(mistake, self._strip_html_tags(mistake)) if mistake else None,
+                TranslationPronunciation(origin_pronunciation, pronunciation)
             )
 
         except Exception as exc:
             raise UnexpectedError from exc
 
-    def _strip_html_tags(self, text):
+    def _strip_html_tags(self, text: str):
         """Strip html tags"""
-        if text is None:
-            return None
-
         tags_re = re.compile(r"(<!--.*?-->|<[^>]*>)")
         tags_removed = tags_re.sub("", text)
         escaped = html.escape(tags_removed)

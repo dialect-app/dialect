@@ -5,7 +5,7 @@ import re
 
 from bs4 import BeautifulSoup, Tag
 
-from dialect.providers.base import ProviderCapability, ProviderFeature, Translation
+from dialect.providers.base import ProviderCapability, ProviderFeature, Translation, TranslationPronunciation
 from dialect.providers.errors import ProviderError, UnexpectedError
 from dialect.providers.soup import SoupProvider
 
@@ -89,15 +89,15 @@ class Provider(SoupProvider):
         else:
             raise UnexpectedError("Could not get HTML from bing.com")
 
-    async def translate(self, text, src, dest):
+    async def translate(self, request):
         # Increment requests count
         self._count += 1
 
         # Form data
         data = {
-            "fromLang": "auto-detect" if src == "auto" else src,
-            "text": text,
-            "to": dest,
+            "fromLang": "auto-detect" if request.src == "auto" else request.src,
+            "text": request.text,
+            "to": request.dest,
             "token": self._token,
             "key": self._key,
         }
@@ -119,9 +119,9 @@ class Provider(SoupProvider):
 
                 return Translation(
                     data["translations"][0]["text"],
-                    (text, src, dest),
+                    request,
                     detected=detected,
-                    pronunciation=(None, pronunciation),
+                    pronunciation=TranslationPronunciation(None, pronunciation),
                 )
 
         except Exception as exc:

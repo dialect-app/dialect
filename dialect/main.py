@@ -169,10 +169,7 @@ class Dialect(Adw.Application):
 
         # Update UI
         if self.window:
-            if self.window.trans_src_pron is not None:
-                self.window.src_pron_revealer.props.reveal_child = value  # type: ignore
-            if self.window.trans_dest_pron is not None:
-                self.window.dest_pron_revealer.props.reveal_child = value  # type: ignore
+            self.window._check_pronunciation()
 
     def _on_preferences(self, _action, _param):
         """Show preferences window"""

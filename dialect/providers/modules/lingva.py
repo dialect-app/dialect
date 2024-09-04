@@ -9,6 +9,8 @@ from dialect.providers.base import (
     ProviderCapability,
     ProviderFeature,
     Translation,
+    TranslationMistake,
+    TranslationPronunciation,
 )
 from dialect.providers.errors import InvalidLangCode, UnexpectedError
 from dialect.providers.soup import SoupProvider
@@ -77,10 +79,10 @@ class Provider(SoupProvider):
     async def init_tts(self):
         await self.init()
 
-    async def translate(self, text, src, dest):
+    async def translate(self, request):
         # Format url query data
-        text = quote(text, safe="")
-        url = self.translate_url.format(text=text, src=src, dest=dest)
+        text = quote(request.text, safe="")
+        url = self.translate_url.format(text=text, src=request.src, dest=request.dest)
 
         # Do request
         response = await self.get(url)
@@ -92,10 +94,10 @@ class Provider(SoupProvider):
 
             return Translation(
                 response["translation"],
-                (text, src, dest),
+                request,
                 detected,
-                (mistakes, mistakes),
-                (src_pronunciation, dest_pronunciation),
+                TranslationMistake(mistakes, mistakes) if mistakes else None,
+                TranslationPronunciation(src_pronunciation, dest_pronunciation),
             )
 
         except Exception as exc:

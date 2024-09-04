@@ -12,8 +12,17 @@ from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk
 from dialect.asyncio import create_background_task
 from dialect.define import APP_ID, PROFILE, RES_PATH, TRANS_NUMBER
 from dialect.languages import LanguagesListModel
-from dialect.providers import TRANSLATORS, TTS, APIKeyInvalid, APIKeyRequired, ProviderError, RequestError
-from dialect.providers.base import BaseProvider, Translation
+from dialect.providers import (
+    TRANSLATORS,
+    TTS,
+    APIKeyInvalid,
+    APIKeyRequired,
+    BaseProvider,
+    ProviderError,
+    RequestError,
+    Translation,
+    TranslationRequest,
+)
 from dialect.settings import Settings
 from dialect.shortcuts import DialectShortcutsWindow
 from dialect.utils import find_item_match, first_exclude
@@ -102,14 +111,11 @@ class DialectWindow(Adw.ApplicationWindow):
     current_history = 0  # for history management
 
     # Translation-related variables
-    next_trans = {}  # for ongoing translation
-    ongoing_trans = False  # for ongoing translation
-    trans_mistakes: tuple[str | None, str | None] = (None, None)  # "mistakes" suggestions
-    # Pronunciations
-    trans_src_pron = None
-    trans_dest_pron = None
+    next_translation: TranslationRequest | None = None  # for ongoing translation
+    translation_loading = False  # for ongoing translation
+
     # Suggestions
-    before_suggest = None
+    before_suggest: str | None = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -310,21 +316,15 @@ class DialectWindow(Adw.ApplicationWindow):
             # Do provider init
             await self.provider["trans"].init_trans()
 
-            # Mistakes support
-            if not self.provider["trans"].supports_mistakes:
-                self.mistakes.props.reveal_child = False
-
-            # Suggestions support
+            # Update navigation UI
+            self._check_navigation_enabled()
+            # Check mistakes support
+            self._check_mistakes()
+            # Check pronunciation support
+            self._check_pronunciation()
+            # Check suggestions support and update UI
             self._on_suggest_cancel_action()
             self.edit_btn.props.visible = self.provider["trans"].supports_suggestions
-
-            # Pronunciation support
-            if not self.provider["trans"].supports_pronunciation:
-                self.src_pron_revealer.props.reveal_child = False
-                self.dest_pron_revealer.props.reveal_child = False
-                self.app.lookup_action("pronunciation").props.enabled = False  # type: ignore
-            else:
-                self.app.lookup_action("pronunciation").props.enabled = True  # type: ignore
 
             # Update langs
             self.src_lang_model.set_langs(self.provider["trans"].src_languages)
@@ -583,9 +583,56 @@ class DialectWindow(Adw.ApplicationWindow):
         self.provider["trans"].history.insert(0, translation)
         self._check_navigation_enabled()
 
+    @property
+    def current_translation(self) -> Translation | None:
+        """Get the current active translation, respecting the history navigation"""
+        if not self.provider["trans"]:
+            return None
+
+        try:
+            return self.provider["trans"].history[self.current_history]
+        except IndexError:
+            return None
+
     def _check_navigation_enabled(self):
         self.lookup_action("back").props.enabled = self.current_history < len(self.provider["trans"].history) - 1  # type: ignore
         self.lookup_action("forward").props.enabled = self.current_history > 0  # type: ignore
+
+    def _check_mistakes(self):
+        if not self.provider["trans"]:
+            return
+
+        translation = self.current_translation
+        if self.provider["trans"].supports_mistakes and translation and translation.mistakes:
+            self.mistakes_label.set_markup(_("Did you mean: ") + f'<a href="#">{translation.mistakes.markup}</a>')
+            self.mistakes.props.reveal_child = True
+        elif self.mistakes.props.reveal_child:
+            self.mistakes.props.reveal_child = False
+
+    def _check_pronunciation(self):
+        if not self.provider["trans"]:
+            return
+
+        if not self.provider["trans"].supports_pronunciation:
+            self.src_pron_revealer.props.reveal_child = False
+            self.dest_pron_revealer.props.reveal_child = False
+            self.app.lookup_action("pronunciation").props.enabled = False  # type: ignore
+        else:
+            self.app.lookup_action("pronunciation").props.enabled = True  # type: ignore
+            reveal = Settings.get().show_pronunciation
+            translation = self.current_translation
+
+            if translation and translation.pronunciation.src and not translation.mistakes:
+                self.src_pron_label.props.label = translation.pronunciation.src
+                self.src_pron_revealer.props.reveal_child = reveal
+            elif self.src_pron_revealer.props.reveal_child:
+                self.src_pron_revealer.props.reveal_child = False
+
+            if translation and translation.pronunciation.dest:
+                self.dest_pron_label.props.label = translation.pronunciation.dest
+                self.dest_pron_revealer.props.reveal_child = reveal
+            elif self.dest_pron_revealer.props.reveal_child:
+                self.dest_pron_revealer.props.reveal_child = False
 
     def _check_speech_enabled(self):
         if not self.provider["tts"]:
@@ -644,12 +691,15 @@ class DialectWindow(Adw.ApplicationWindow):
         if not self.provider["trans"]:
             return
 
-        self._check_navigation_enabled()
-        translation = self.provider["trans"].history[self.current_history]
-        self.src_lang_selector.selected = translation.original[1]
-        self.dest_lang_selector.selected = translation.original[2]
-        self.src_buffer.props.text = translation.original[0]
-        self.dest_buffer.props.text = translation.text
+        if translation := self.current_translation:
+            self.src_lang_selector.selected = translation.original.src
+            self.dest_lang_selector.selected = translation.original.dest
+            self.src_buffer.props.text = translation.original.text
+            self.dest_buffer.props.text = translation.text
+
+            self._check_navigation_enabled()
+            self._check_mistakes()
+            self._check_pronunciation()
 
     def _on_switch_action(self, *_args):
         # Get variables
@@ -667,7 +717,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.dest_lang_selector.selected = src_language
         self.src_buffer.props.text = dest_text
         self.dest_buffer.props.text = src_text
-        self.add_history_entry(Translation(src_text, (dest_text, src_language, dest_language)))
+        self.add_history_entry(Translation(src_text, TranslationRequest(dest_text, src_language, dest_language)))
 
         # Re-enable widgets
         self.langs_button_box.props.sensitive = True
@@ -724,17 +774,16 @@ class DialectWindow(Adw.ApplicationWindow):
             dest_text = self.dest_buffer.get_text(
                 self.dest_buffer.get_start_iter(), self.dest_buffer.get_end_iter(), True
             )
-            src, dest = self.provider["trans"].denormalize_lang(
-                self.provider["trans"].history[self.current_history].original[1],
-                self.provider["trans"].history[self.current_history].original[2],
-            )
+            if translation := self.current_translation:
+                src, dest = self.provider["trans"].denormalize_lang(
+                    translation.original.src,
+                    translation.original.dest,
+                )
 
-            if await self.provider["trans"].suggest(
-                self.provider["trans"].history[self.current_history].original[0], src, dest, dest_text
-            ):
-                self.send_notification(_("New translation has been suggested!"))
-            else:
-                self.send_notification(_("Suggestion failed."))
+                if await self.provider["trans"].suggest(translation.original.text, src, dest, dest_text):
+                    self.send_notification(_("New translation has been suggested!"))
+                else:
+                    self.send_notification(_("Suggestion failed."))
 
         except (RequestError, ProviderError) as exc:
             logging.error(exc)
@@ -1021,8 +1070,14 @@ class DialectWindow(Adw.ApplicationWindow):
     def _on_mistakes_clicked(self, *_args):
         """Called on self.mistakes_label::activate-link signal"""
         self.mistakes.props.reveal_child = False
-        if self.trans_mistakes[1]:
-            self.src_buffer.props.text = self.trans_mistakes[1]
+
+        translation = self.current_translation
+        if translation and translation.mistakes:
+            self.src_buffer.props.text = translation.mistakes.text
+            # Ensure we're in the same languages
+            self.src_lang_selector.selected = translation.original.src
+            self.dest_lang_selector.selected = translation.original.dest
+
         # Run translation again
         self._on_translation()
 
@@ -1044,11 +1099,13 @@ class DialectWindow(Adw.ApplicationWindow):
         src_language = self.src_lang_selector.selected
         dest_language = self.dest_lang_selector.selected
         src_text = self.src_buffer.get_text(self.src_buffer.get_start_iter(), self.src_buffer.get_end_iter(), True)
+        translation = self.current_translation
         if (
             len(self.provider["trans"].history) >= self.current_history + 1
-            and (self.provider["trans"].history[self.current_history].original[1] == src_language or "auto")
-            and self.provider["trans"].history[self.current_history].original[2] == dest_language
-            and self.provider["trans"].history[self.current_history].original[0] == src_text
+            and translation
+            and (translation.original.src == src_language or "auto")
+            and translation.original.dest == dest_language
+            and translation.original.text == src_text
         ):
             return True
         return False
@@ -1057,19 +1114,19 @@ class DialectWindow(Adw.ApplicationWindow):
         if not self.provider["trans"]:
             return
 
-        src_text = self.src_buffer.get_text(self.src_buffer.get_start_iter(), self.src_buffer.get_end_iter(), True)
-        src_language = self.src_lang_selector.selected
-        dest_language = self.dest_lang_selector.selected
+        if self.next_translation:
+            request = self.next_translation
+            self.next_translation = None
+        else:
+            text = self.src_buffer.get_text(self.src_buffer.get_start_iter(), self.src_buffer.get_end_iter(), True)
+            src, dest = self.provider["trans"].denormalize_lang(
+                self.src_lang_selector.selected, self.dest_lang_selector.selected
+            )
+            request = TranslationRequest(text, src, dest)
 
-        if self.ongoing_trans:
-            self.next_trans = {"text": src_text, "src": src_language, "dest": dest_language}
-            return
-
-        if self.next_trans:
-            src_text = self.next_trans["text"]
-            src_language = self.next_trans["src"]
-            dest_language = self.next_trans["dest"]
-            self.next_trans = {}
+            if self.translation_loading:
+                self.next_translation = request
+                return
 
         # Show feedback for start of translation.
         self.trans_spinner.show()
@@ -1077,12 +1134,11 @@ class DialectWindow(Adw.ApplicationWindow):
         self.langs_button_box.props.sensitive = False
 
         # If the two languages are the same, nothing is done
-        if src_language != dest_language or src_text != "":
-            self.ongoing_trans = True
+        if request.src != request.dest or request.text != "":
+            self.translation_loading = True
 
             try:
-                src, dest = self.provider["trans"].denormalize_lang(src_language, dest_language)
-                translation = await self.provider["trans"].translate(src_text, src, dest)
+                translation = await self.provider["trans"].translate(request)
 
                 if translation.detected and self.src_lang_selector.selected == "auto":
                     if Settings.get().src_auto:
@@ -1094,37 +1150,11 @@ class DialectWindow(Adw.ApplicationWindow):
 
                 self.dest_buffer.props.text = translation.text
 
-                self.trans_mistakes = translation.mistakes
-                self.trans_src_pron = translation.pronunciation[0]
-                self.trans_dest_pron = translation.pronunciation[1]
-
                 # Finally, translation is saved in history
                 self.add_history_entry(translation)
 
-                # Mistakes
-                if self.provider["trans"].supports_mistakes and not self.trans_mistakes == (
-                    None,
-                    None,
-                ):
-                    self.mistakes_label.set_markup(_("Did you mean: ") + f'<a href="#">{self.trans_mistakes[0]}</a>')
-                    self.mistakes.props.reveal_child = True
-                elif self.mistakes.props.reveal_child:
-                    self.mistakes.props.reveal_child = False
-
-                # Pronunciation
-                reveal = Settings.get().show_pronunciation
-                if self.provider["trans"].supports_pronunciation:
-                    if self.trans_src_pron is not None and self.trans_mistakes == (None, None):
-                        self.src_pron_label.props.label = self.trans_src_pron
-                        self.src_pron_revealer.props.reveal_child = reveal
-                    elif self.src_pron_revealer.props.reveal_child:
-                        self.src_pron_revealer.props.reveal_child = False
-
-                    if self.trans_dest_pron is not None:
-                        self.dest_pron_label.props.label = self.trans_dest_pron
-                        self.dest_pron_revealer.props.reveal_child = reveal
-                    elif self.dest_pron_revealer.props.reveal_child:
-                        self.dest_pron_revealer.props.reveal_child = False
+                self._check_mistakes()
+                self._check_pronunciation()
 
             # Translation failed
             except (RequestError, ProviderError) as exc:
@@ -1170,19 +1200,17 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.trans_warning.props.visible = False
 
             finally:
-                self.ongoing_trans = False
+                self.translation_loading = False
 
-                if self.next_trans:
+                if self.next_translation:
                     self._on_translation()
                 else:
                     self._translation_finish()
         else:
-            self.trans_mistakes = (None, None)
-            self.trans_src_pron = None
-            self.trans_dest_pron = None
+            self.trans_mistakes = None
             self.dest_buffer.props.text = ""
 
-            if not self.ongoing_trans:
+            if not self.translation_loading:
                 self._translation_finish()
 
     def _translation_finish(self):

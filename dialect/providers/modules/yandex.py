@@ -148,11 +148,11 @@ class Provider(SoupProvider):
         path = f"/api/v1/tr.json/translate?id={self._uuid}-0-0&srv=android"
         return self.format_url("translate.yandex.net", path)
 
-    async def translate(self, text, src, dest):
+    async def translate(self, request):
         # Form data
-        data = {"lang": dest, "text": text}
-        if src != "auto":
-            data["lang"] = f"{src}-{dest}"
+        data = {"lang": request.dest, "text": request.text}
+        if request.src != "auto":
+            data["lang"] = f"{request.src}-{request.dest}"
 
         # Do request
         response = await self.post(self.translate_url, data, self._headers, True)
@@ -161,7 +161,7 @@ class Provider(SoupProvider):
             if "code" in response and response["code"] == 200:
                 if "lang" in response:
                     detected = response["lang"].split("-")[0]
-                return Translation(response["text"][0], (text, src, dest), detected)
+                return Translation(response["text"][0], request, detected)
             else:
                 error = response["message"] if "message" in response else ""
                 raise ProviderError(error)
