@@ -149,10 +149,11 @@ class Provider(SoupProvider):
         return self.format_url("translate.yandex.net", path)
 
     async def translate(self, request):
+        src, dest = self.denormalize_lang(request.src, request.dest)
         # Form data
-        data = {"lang": request.dest, "text": request.text}
-        if request.src != "auto":
-            data["lang"] = f"{request.src}-{request.dest}"
+        data = {"lang": dest, "text": request.text}
+        if src != "auto":
+            data["lang"] = f"{src}-{dest}"
 
         # Do request
         response = await self.post(self.translate_url, data, self._headers, True)

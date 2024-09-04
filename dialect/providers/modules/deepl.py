@@ -87,13 +87,15 @@ class Provider(SoupProvider):
             raise
 
     async def translate(self, request):
+        src, dest = self.denormalize_lang(request.src, request.dest)
+
         # Request body
         data = {
             "text": [request.text],
-            "target_lang": request.dest,
+            "target_lang": dest,
         }
-        if request.src != "auto":
-            data["source_lang"] = request.src
+        if src != "auto":
+            data["source_lang"] = src
 
         response = await self.post(self.translate_url, data, self.headers)
 

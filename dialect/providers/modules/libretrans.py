@@ -104,11 +104,13 @@ class Provider(SoupProvider):
             raise UnexpectedError from exc
 
     async def translate(self, request):
+        src, dest = self.denormalize_lang(request.src, request.dest)
+
         # Request body
         data = {
             "q": request.text,
-            "source": request.src,
-            "target": request.dest,
+            "source": src,
+            "target": dest,
         }
         if self.api_key and ProviderFeature.API_KEY in self.features:
             data["api_key"] = self.api_key
@@ -122,6 +124,8 @@ class Provider(SoupProvider):
             raise UnexpectedError from exc
 
     async def suggest(self, text, src, dest, suggestion):
+        src, dest = self.denormalize_lang(src, dest)
+
         # Form data
         data = {
             "q": text,

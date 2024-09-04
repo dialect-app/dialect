@@ -405,9 +405,11 @@ class Provider(LocalProvider, SoupProvider):
         return self.format_url(url, params=params)
 
     async def translate(self, request):
+        src_lang, dest_lang = self.denormalize_lang(request.src, request.dest)
+
         # Form data
         data = {
-            "f.req": self._build_rpc_request(request.text, request.src, request.dest),
+            "f.req": self._build_rpc_request(request.text, src_lang, dest_lang),
         }
 
         # Do request
@@ -469,7 +471,7 @@ class Provider(LocalProvider, SoupProvider):
             except (IndexError, TypeError):
                 pass
 
-            if not src == request.src:
+            if not src == src_lang:
                 raise UnexpectedError("source language mismatch")
 
             if src == "auto":
@@ -485,7 +487,7 @@ class Provider(LocalProvider, SoupProvider):
             except (IndexError, TypeError):
                 pass
 
-            if not dest == request.dest:
+            if not dest == dest_lang:
                 raise UnexpectedError("destination language mismatch")
 
             origin_pronunciation = None
@@ -513,7 +515,7 @@ class Provider(LocalProvider, SoupProvider):
                 request,
                 src,
                 TranslationMistake(mistake, self._strip_html_tags(mistake)) if mistake else None,
-                TranslationPronunciation(origin_pronunciation, pronunciation)
+                TranslationPronunciation(origin_pronunciation, pronunciation),
             )
 
         except Exception as exc:
@@ -530,7 +532,8 @@ class Provider(LocalProvider, SoupProvider):
         def get_speech():
             try:
                 file = NamedTemporaryFile()
-                tts = gTTS(text, lang=language, lang_check=False)
+                lang = self.denormalize_lang(language)
+                tts = gTTS(text, lang=lang, lang_check=False)
                 tts.write_to_fp(file)
                 file.seek(0)
 

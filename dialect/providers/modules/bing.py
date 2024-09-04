@@ -90,14 +90,16 @@ class Provider(SoupProvider):
             raise UnexpectedError("Could not get HTML from bing.com")
 
     async def translate(self, request):
+        src, dest = self.denormalize_lang(request.src, request.dest)
+
         # Increment requests count
         self._count += 1
 
         # Form data
         data = {
-            "fromLang": "auto-detect" if request.src == "auto" else request.src,
+            "fromLang": "auto-detect" if src == "auto" else src,
             "text": request.text,
-            "to": request.dest,
+            "to": dest,
             "token": self._token,
             "key": self._key,
         }

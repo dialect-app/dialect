@@ -166,16 +166,20 @@ class BaseProvider:
         """
         Translates text in the provider.
 
+        Providers are expected to use `denormalize_lang` because `request`
+        will use normalized lang codes.
+
         Args:
-            text: The text to translate
-            src: The lang code of the source text
-            dest: The lang code to translate the text to
+            request: The translation request
         """
         raise NotImplementedError()
 
     async def suggest(self, text: str, src: str, dest: str, suggestion: str) -> bool:
         """
         Sends a translation suggestion to the provider.
+
+        Providers are expected to use `denormalize_lang` because `src` and
+        `dest` will use normalized lang codes.
 
         Args:
             text: Original text without translation
@@ -188,6 +192,9 @@ class BaseProvider:
     async def speech(self, text: str, language: str) -> IO:
         """
         Generate speech audio from text
+
+        Providers are expected to use `denormalize_lang` because `language`
+        will use normalized lang codes.
 
         Args:
             text: Text to generate speech from
@@ -208,7 +215,8 @@ class BaseProvider:
         """
         Compare two language codes.
 
-        It assumes that the codes have been normalized by `normalize_lang_code`.
+        It assumes that the codes have been normalized by `normalize_lang_code`
+        so providers might need to use `denormalize_lang` on `a` and `b`.
 
         This method exists so providers can add additional comparison logic.
 

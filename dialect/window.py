@@ -775,12 +775,9 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.dest_buffer.get_start_iter(), self.dest_buffer.get_end_iter(), True
             )
             if translation := self.current_translation:
-                src, dest = self.provider["trans"].denormalize_lang(
-                    translation.original.src,
-                    translation.original.dest,
-                )
-
-                if await self.provider["trans"].suggest(translation.original.text, src, dest, dest_text):
+                if await self.provider["trans"].suggest(
+                    translation.original.text, translation.original.src, translation.original.dest, dest_text
+                ):
                     self.send_notification(_("New translation has been suggested!"))
                 else:
                     self.send_notification(_("Suggestion failed."))
@@ -854,8 +851,7 @@ class DialectWindow(Adw.ApplicationWindow):
             return
 
         try:
-            lang: str = self.provider["tts"].denormalize_lang(self.current_speech["lang"])  # type: ignore
-            speech_file = await self.provider["tts"].speech(self.current_speech["text"], lang)
+            speech_file = await self.provider["tts"].speech(self.current_speech["text"], self.current_speech["lang"])
 
             self._play_audio(speech_file.name)
             speech_file.close()
@@ -1119,10 +1115,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.next_translation = None
         else:
             text = self.src_buffer.get_text(self.src_buffer.get_start_iter(), self.src_buffer.get_end_iter(), True)
-            src, dest = self.provider["trans"].denormalize_lang(
-                self.src_lang_selector.selected, self.dest_lang_selector.selected
-            )
-            request = TranslationRequest(text, src, dest)
+            request = TranslationRequest(text, self.src_lang_selector.selected, self.dest_lang_selector.selected)
 
             if self.translation_loading:
                 self.next_translation = request
