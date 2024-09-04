@@ -131,74 +131,74 @@ class DialectWindow(Adw.ApplicationWindow):
     def setup_actions(self):
         back = Gio.SimpleAction(name="back")
         back.props.enabled = False
-        back.connect("activate", self.ui_return)
+        back.connect("activate", self._on_back_action)
         self.add_action(back)
 
         forward_action = Gio.SimpleAction(name="forward")
         forward_action.props.enabled = False
-        forward_action.connect("activate", self.ui_forward)
+        forward_action.connect("activate", self._on_forward_action)
         self.add_action(forward_action)
 
         switch_action = Gio.SimpleAction(name="switch")
-        switch_action.connect("activate", self.ui_switch)
+        switch_action.connect("activate", self._on_switch_action)
         self.add_action(switch_action)
 
         from_action = Gio.SimpleAction(name="from")
-        from_action.connect("activate", self.ui_from)
+        from_action.connect("activate", self._on_from_action)
         self.add_action(from_action)
 
         to_action = Gio.SimpleAction(name="to")
-        to_action.connect("activate", self.ui_to)
+        to_action.connect("activate", self._on_to_action)
         self.add_action(to_action)
 
         clear_action = Gio.SimpleAction(name="clear")
         clear_action.props.enabled = False
-        clear_action.connect("activate", self.ui_clear)
+        clear_action.connect("activate", self._on_clear_action)
         self.add_action(clear_action)
 
         font_size_inc_action = Gio.SimpleAction(name="font-size-inc")
-        font_size_inc_action.connect("activate", self.ui_font_size_inc)
+        font_size_inc_action.connect("activate", self._on_font_size_inc_action)
         self.add_action(font_size_inc_action)
 
         font_size_dec_action = Gio.SimpleAction(name="font-size-dec")
-        font_size_dec_action.connect("activate", self.ui_font_size_dec)
+        font_size_dec_action.connect("activate", self._on_font_size_dec_action)
         self.add_action(font_size_dec_action)
 
         paste_action = Gio.SimpleAction(name="paste")
-        paste_action.connect("activate", self.ui_paste)
+        paste_action.connect("activate", self._on_paste_action)
         self.add_action(paste_action)
 
         copy_action = Gio.SimpleAction(name="copy")
         copy_action.props.enabled = False
-        copy_action.connect("activate", self.ui_copy)
+        copy_action.connect("activate", self._on_copy_action)
         self.add_action(copy_action)
 
         listen_dest_action = Gio.SimpleAction(name="listen-dest")
-        listen_dest_action.connect("activate", self.ui_dest_listen)
+        listen_dest_action.connect("activate", self._on_dest_listen_action)
         listen_dest_action.props.enabled = False
         self.add_action(listen_dest_action)
 
         suggest_action = Gio.SimpleAction(name="suggest")
         suggest_action.props.enabled = False
-        suggest_action.connect("activate", self.ui_suggest)
+        suggest_action.connect("activate", self._on_suggest_action)
         self.add_action(suggest_action)
 
         suggest_ok_action = Gio.SimpleAction(name="suggest-ok")
-        suggest_ok_action.connect("activate", self.ui_suggest_ok)
+        suggest_ok_action.connect("activate", self._on_suggest_ok_action)
         self.add_action(suggest_ok_action)
 
         suggest_cancel_action = Gio.SimpleAction(name="suggest-cancel")
-        suggest_cancel_action.connect("activate", self.ui_suggest_cancel)
+        suggest_cancel_action.connect("activate", self._on_suggest_cancel_action)
         self.add_action(suggest_cancel_action)
 
         listen_src_action = Gio.SimpleAction(name="listen-src")
-        listen_src_action.connect("activate", self.ui_src_listen)
+        listen_src_action.connect("activate", self._on_src_listen_action)
         listen_src_action.props.enabled = False
         self.add_action(listen_src_action)
 
         translation_action = Gio.SimpleAction(name="translation")
         translation_action.props.enabled = False
-        translation_action.connect("activate", self.translation)
+        translation_action.connect("activate", self._on_translation)
         self.add_action(translation_action)
 
     def setup(self):
@@ -266,16 +266,24 @@ class DialectWindow(Adw.ApplicationWindow):
     def setup_translation(self):
         # Src buffer
         self.src_buffer = self.src_text.props.buffer
-        self.src_buffer.connect("changed", self.on_src_text_changed)
-        self.src_buffer.connect("end-user-action", self.user_action_ended)
+        self.src_buffer.connect("changed", self._on_src_text_changed)
+        self.src_buffer.connect("end-user-action", self._on_user_action_ended)
 
         # Dest buffer
         self.dest_buffer = self.dest_text.props.buffer
         self.dest_buffer.props.text = ""
-        self.dest_buffer.connect("changed", self.on_dest_text_changed)
-        # Translation progress spinner
+        self.dest_buffer.connect("changed", self._on_dest_text_changed)
+
+        # Translation progress
         self.trans_spinner.hide()
         self.trans_warning.hide()
+
+    def reload_provider(self, kind: str):
+        match kind:
+            case "translator":
+                create_background_task(self.load_translator())
+            case "tts":
+                create_background_task(self.load_tts())
 
     async def load_translator(self):
         self.translator_loading = True
@@ -307,7 +315,7 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.mistakes.props.reveal_child = False
 
             # Suggestions support
-            self.ui_suggest_cancel(None, None)
+            self._on_suggest_cancel_action()
             self.edit_btn.props.visible = self.provider["trans"].supports_suggestions
 
             # Pronunciation support
@@ -436,16 +444,6 @@ class DialectWindow(Adw.ApplicationWindow):
 
         self.main_stack.props.visible_child_name = "api-key"
 
-    @Gtk.Template.Callback()
-    def retry_load_translator(self, _button):
-        create_background_task(self.load_translator())
-
-    @Gtk.Template.Callback()
-    def remove_key_and_reload(self, _button):
-        if self.provider["trans"]:
-            self.provider["trans"].reset_api_key()
-        create_background_task(self.load_translator())
-
     async def load_tts(self):
         self.src_speech_btn.loading()
         self.dest_speech_btn.loading()
@@ -516,9 +514,11 @@ class DialectWindow(Adw.ApplicationWindow):
         # Set text to src buffer
         self.src_buffer.props.text = text
         # Run translation
-        self.translation()
+        self._on_translation()
 
     def translate_selection(self, src_lang: str | None, dest_lang: str | None):
+        """Runs `translate` with the selection clipboard text"""
+
         def on_paste(clipboard, result):
             text = clipboard.read_text_finish(result)
             self.translate(text, src_lang, dest_lang)
@@ -567,6 +567,26 @@ class DialectWindow(Adw.ApplicationWindow):
         self.toast.props.priority = priority
         self.toast_overlay.add_toast(self.toast)
 
+    def set_font_size(self, size: int):
+        self.src_text.font_size = size
+
+    def add_history_entry(self, translation: Translation):
+        """Add a history entry to the history list."""
+        if not self.provider["trans"]:
+            return
+
+        if self.current_history > 0:
+            del self.provider["trans"].history[: self.current_history]
+            self.current_history = 0
+        if len(self.provider["trans"].history) == TRANS_NUMBER:
+            self.provider["trans"].history.pop()
+        self.provider["trans"].history.insert(0, translation)
+        self._check_navigation_enabled()
+
+    def _check_navigation_enabled(self):
+        self.lookup_action("back").props.enabled = self.current_history < len(self.provider["trans"].history) - 1  # type: ignore
+        self.lookup_action("forward").props.enabled = self.current_history > 0  # type: ignore
+
     def _check_speech_enabled(self):
         if not self.provider["tts"]:
             return
@@ -594,79 +614,6 @@ class DialectWindow(Adw.ApplicationWindow):
             and not src_playing
         )
 
-    @Gtk.Template.Callback()
-    def _on_src_lang_changed(self, _obj, _param):
-        """Called on self.src_lang_selector::notify::selected signal"""
-        if not self.provider["trans"]:
-            return
-
-        code = self.src_lang_selector.selected
-        dest_code = self.dest_lang_selector.selected
-
-        if self.provider["trans"].cmp_langs(code, dest_code):
-            # Get first lang from saved src langs that is not current dest
-            if valid := first_exclude(self.src_langs, dest_code):
-                # Check if it's a valid dest lang
-                valid = find_item_match([valid], self.provider["trans"].dest_languages)
-            if not valid:  # If not, just get the first lang from the list that is not selected
-                valid = first_exclude(self.provider["trans"].dest_languages, dest_code)
-
-            self.dest_lang_selector.selected = valid or ""
-
-        if code in self.provider["trans"].src_languages:
-            # Update saved src langs list
-            if code in self.src_langs:
-                # Bring lang to the top
-                self.src_langs.remove(code)
-            elif code.lower() in self.src_langs:
-                # Bring lang to the top
-                self.src_langs.remove(code.lower())
-            elif len(self.src_langs) == 4:
-                self.src_langs.pop()
-            self.src_langs.insert(0, code)
-
-        # Rewrite recent langs
-        self.src_recent_lang_model.set_langs(self.src_langs, auto=True)
-
-        self._check_switch_enabled()
-        self._check_speech_enabled()
-
-    @Gtk.Template.Callback()
-    def _on_dest_lang_changed(self, _obj, _param):
-        """Called on self.dest_lang_selector::notify::selected signal"""
-        if not self.provider["trans"]:
-            return
-
-        code = self.dest_lang_selector.selected
-        src_code = self.src_lang_selector.selected
-
-        if self.provider["trans"].cmp_langs(code, src_code):
-            # Get first lang from saved dest langs that is not current src
-            if valid := first_exclude(self.dest_langs, src_code):
-                # Check if it's a valid src lang
-                valid = find_item_match([valid], self.provider["trans"].src_languages)
-            if not valid:  # If not, just get the first lang from the list that is not selected
-                valid = first_exclude(self.provider["trans"].src_languages, src_code)
-
-            self.src_lang_selector.selected = valid or ""
-
-        # Update saved dest langs list
-        if code in self.dest_langs:
-            # Bring lang to the top
-            self.dest_langs.remove(code)
-        elif code.lower() in self.dest_langs:
-            # Bring lang to the top
-            self.dest_langs.remove(code.lower())
-        elif len(self.src_langs) == 4:
-            self.dest_langs.pop()
-        self.dest_langs.insert(0, code)
-
-        # Rewrite recent langs
-        self.dest_recent_lang_model.set_langs(self.dest_langs)
-
-        self._check_switch_enabled()
-        self._check_speech_enabled()
-
     def _check_switch_enabled(self):
         if not self.provider["trans"]:
             return
@@ -681,43 +628,30 @@ class DialectWindow(Adw.ApplicationWindow):
     User interface functions
     """
 
-    def ui_return(self, _action, _param):
+    def _on_back_action(self, *_args):
         """Go back one step in history."""
         if self.current_history != TRANS_NUMBER:
             self.current_history += 1
-            self.history_update()
+            self._history_update()
 
-    def ui_forward(self, _action, _param):
+    def _on_forward_action(self, *_args):
         """Go forward one step in history."""
         if self.current_history != 0:
             self.current_history -= 1
-            self.history_update()
+            self._history_update()
 
-    def add_history_entry(self, translation: Translation):
-        """Add a history entry to the history list."""
+    def _history_update(self):
         if not self.provider["trans"]:
             return
 
-        if self.current_history > 0:
-            del self.provider["trans"].history[: self.current_history]
-            self.current_history = 0
-        if len(self.provider["trans"].history) == TRANS_NUMBER:
-            self.provider["trans"].history.pop()
-        self.provider["trans"].history.insert(0, translation)
-        GLib.idle_add(self.reset_return_forward_btns)
+        self._check_navigation_enabled()
+        translation = self.provider["trans"].history[self.current_history]
+        self.src_lang_selector.selected = translation.original[1]
+        self.dest_lang_selector.selected = translation.original[2]
+        self.src_buffer.props.text = translation.original[0]
+        self.dest_buffer.props.text = translation.text
 
-    def switch_all(self, src_language: str, dest_language: str, src_text: str, dest_text: str):
-        self.src_lang_selector.selected = dest_language
-        self.dest_lang_selector.selected = src_language
-        self.src_buffer.props.text = dest_text
-        self.dest_buffer.props.text = src_text
-        self.add_history_entry(Translation(src_text, (dest_text, src_language, dest_language)))
-
-        # Re-enable widgets
-        self.langs_button_box.props.sensitive = True
-        self.lookup_action("translation").props.enabled = self.src_buffer.get_char_count() != 0  # type: ignore
-
-    def ui_switch(self, _action, _param):
+    def _on_switch_action(self, *_args):
         # Get variables
         self.langs_button_box.props.sensitive = False
         self.lookup_action("translation").props.enabled = False  # type: ignore
@@ -729,34 +663,39 @@ class DialectWindow(Adw.ApplicationWindow):
             return
 
         # Switch all
-        self.switch_all(src_language, dest_language, src_text, dest_text)
+        self.src_lang_selector.selected = dest_language
+        self.dest_lang_selector.selected = src_language
+        self.src_buffer.props.text = dest_text
+        self.dest_buffer.props.text = src_text
+        self.add_history_entry(Translation(src_text, (dest_text, src_language, dest_language)))
 
-    def ui_from(self, _action, _param):
+        # Re-enable widgets
+        self.langs_button_box.props.sensitive = True
+        self.lookup_action("translation").props.enabled = self.src_buffer.get_char_count() != 0  # type: ignore
+
+    def _on_from_action(self, *_args):
         self.src_lang_selector.button.popup()
 
-    def ui_to(self, _action, _param):
+    def _on_to_action(self, *_args):
         self.dest_lang_selector.button.popup()
 
-    def ui_clear(self, _action, _param):
+    def _on_clear_action(self, *_args):
         self.src_buffer.props.text = ""
         self.src_buffer.emit("end-user-action")
 
-    def set_font_size(self, size: int):
-        self.src_text.font_size = size
-
-    def ui_font_size_inc(self, _action, _param):
+    def _on_font_size_inc_action(self, *_args):
         self.src_text.font_size_inc()
 
-    def ui_font_size_dec(self, _action, _param):
+    def _on_font_size_dec_action(self, *_args):
         self.src_text.font_size_dec()
 
-    def ui_copy(self, _action, _param):
+    def _on_copy_action(self, *_args):
         dest_text = self.dest_buffer.get_text(self.dest_buffer.get_start_iter(), self.dest_buffer.get_end_iter(), True)
         if display := Gdk.Display.get_default():
             display.get_clipboard().set(dest_text)
             self.send_notification(_("Copied to clipboard"), timeout=1)
 
-    def ui_paste(self, _action, _param):
+    def _on_paste_action(self, *_args):
         def on_paste(clipboard: Gdk.Clipboard, result: Gio.AsyncResult):
             text = clipboard.read_text_finish(result)
             if text is not None:
@@ -767,14 +706,14 @@ class DialectWindow(Adw.ApplicationWindow):
         if display := Gdk.Display.get_default():
             display.get_clipboard().read_text_async(None, on_paste)
 
-    def ui_suggest(self, _action, _param):
+    def _on_suggest_action(self, *_args):
         self.dest_toolbar_stack.props.visible_child_name = "edit"
         self.before_suggest = self.dest_buffer.get_text(
             self.dest_buffer.get_start_iter(), self.dest_buffer.get_end_iter(), True
         )
         self.dest_text.props.editable = True
 
-    def ui_suggest_ok(self, _action, _param):
+    def _on_suggest_ok_action(self, *_args):
         create_background_task(self._send_suggestion())
 
     async def _send_suggestion(self):
@@ -806,14 +745,14 @@ class DialectWindow(Adw.ApplicationWindow):
             self.dest_text.props.editable = False
             self.before_suggest = None
 
-    def ui_suggest_cancel(self, _action, _param):
+    def _on_suggest_cancel_action(self, *_args):
         self.dest_toolbar_stack.props.visible_child_name = "default"
         if self.before_suggest is not None:
             self.dest_buffer.props.text = self.before_suggest
             self.before_suggest = None
         self.dest_text.props.editable = False
 
-    def ui_src_listen(self, _action, _param):
+    def _on_src_listen_action(self, *_args):
         if self.current_speech:
             self._speech_reset()
             return
@@ -822,7 +761,7 @@ class DialectWindow(Adw.ApplicationWindow):
         src_language = self.src_lang_selector.selected
         self._pre_speech(src_text, src_language, "src")
 
-    def ui_dest_listen(self, _action, _param):
+    def _on_dest_listen_action(self, *_args):
         if self.current_speech:
             self._speech_reset()
             return
@@ -934,6 +873,126 @@ class DialectWindow(Adw.ApplicationWindow):
 
         return False
 
+    def _on_src_text_changed(self, buffer: Gtk.TextBuffer):
+        if not self.provider["trans"]:
+            return
+
+        char_count = buffer.get_char_count()
+
+        # If the text is over the highest number of characters allowed, it is truncated.
+        # This is done for avoiding exceeding the limit imposed by translation services.
+        if self.provider["trans"].chars_limit == -1:  # -1 means unlimited
+            self.char_counter.props.label = ""
+        else:
+            self.char_counter.props.label = f'{str(char_count)}/{self.provider["trans"].chars_limit}'
+
+            if char_count >= self.provider["trans"].chars_limit:
+                self.send_notification(_("{} characters limit reached!").format(self.provider["trans"].chars_limit))
+                buffer.delete(buffer.get_iter_at_offset(self.provider["trans"].chars_limit), buffer.get_end_iter())
+
+        sensitive = char_count != 0
+        self.lookup_action("translation").props.enabled = sensitive  # type: ignore
+        self.lookup_action("clear").props.enabled = sensitive  # type: ignore
+        self._check_speech_enabled()
+
+    def _on_dest_text_changed(self, buffer: Gtk.TextBuffer):
+        if not self.provider["trans"]:
+            return
+
+        sensitive = buffer.get_char_count() != 0
+        self.lookup_action("copy").props.enabled = sensitive  # type: ignore
+        self.lookup_action("suggest").set_enabled(  # type: ignore
+            self.provider["trans"].supports_suggestions and sensitive
+        )
+        self._check_speech_enabled()
+
+    def _on_user_action_ended(self, _buffer):
+        if Settings.get().live_translation:
+            self._on_translation()
+
+    @Gtk.Template.Callback()
+    def _on_retry_load_translator_clicked(self, *_args):
+        self.reload_provider("translator")
+
+    @Gtk.Template.Callback()
+    def _on_remove_key_and_reload_clicked(self, *_args):
+        if self.provider["trans"]:
+            self.provider["trans"].reset_api_key()
+        self.reload_provider("translator")
+
+    @Gtk.Template.Callback()
+    def _on_src_lang_changed(self, *_args):
+        """Called on self.src_lang_selector::notify::selected signal"""
+        if not self.provider["trans"]:
+            return
+
+        code = self.src_lang_selector.selected
+        dest_code = self.dest_lang_selector.selected
+
+        if self.provider["trans"].cmp_langs(code, dest_code):
+            # Get first lang from saved src langs that is not current dest
+            if valid := first_exclude(self.src_langs, dest_code):
+                # Check if it's a valid dest lang
+                valid = find_item_match([valid], self.provider["trans"].dest_languages)
+            if not valid:  # If not, just get the first lang from the list that is not selected
+                valid = first_exclude(self.provider["trans"].dest_languages, dest_code)
+
+            self.dest_lang_selector.selected = valid or ""
+
+        if code in self.provider["trans"].src_languages:
+            # Update saved src langs list
+            if code in self.src_langs:
+                # Bring lang to the top
+                self.src_langs.remove(code)
+            elif code.lower() in self.src_langs:
+                # Bring lang to the top
+                self.src_langs.remove(code.lower())
+            elif len(self.src_langs) == 4:
+                self.src_langs.pop()
+            self.src_langs.insert(0, code)
+
+        # Rewrite recent langs
+        self.src_recent_lang_model.set_langs(self.src_langs, auto=True)
+
+        self._check_switch_enabled()
+        self._check_speech_enabled()
+
+    @Gtk.Template.Callback()
+    def _on_dest_lang_changed(self, *_args):
+        """Called on self.dest_lang_selector::notify::selected signal"""
+        if not self.provider["trans"]:
+            return
+
+        code = self.dest_lang_selector.selected
+        src_code = self.src_lang_selector.selected
+
+        if self.provider["trans"].cmp_langs(code, src_code):
+            # Get first lang from saved dest langs that is not current src
+            if valid := first_exclude(self.dest_langs, src_code):
+                # Check if it's a valid src lang
+                valid = find_item_match([valid], self.provider["trans"].src_languages)
+            if not valid:  # If not, just get the first lang from the list that is not selected
+                valid = first_exclude(self.provider["trans"].src_languages, src_code)
+
+            self.src_lang_selector.selected = valid or ""
+
+        # Update saved dest langs list
+        if code in self.dest_langs:
+            # Bring lang to the top
+            self.dest_langs.remove(code)
+        elif code.lower() in self.dest_langs:
+            # Bring lang to the top
+            self.dest_langs.remove(code.lower())
+        elif len(self.src_langs) == 4:
+            self.dest_langs.pop()
+        self.dest_langs.insert(0, code)
+
+        # Rewrite recent langs
+        self.dest_recent_lang_model.set_langs(self.dest_langs)
+
+        self._check_switch_enabled()
+        self._check_speech_enabled()
+
     @Gtk.Template.Callback()
     def _on_key_event(self, _ctrl, keyval: int, _keycode: int, state: Gdk.ModifierType):
         """Called on self.win_key_ctrlr::key-pressed signal"""
@@ -956,74 +1015,29 @@ class DialectWindow(Adw.ApplicationWindow):
     def _on_src_activated(self, _texview):
         """Called on self.src_text::active signal"""
         if not Settings.get().live_translation:
-            self.translation()
+            self._on_translation()
 
     @Gtk.Template.Callback()
-    def _on_mistakes_clicked(self, _button, _data):
+    def _on_mistakes_clicked(self, *_args):
         """Called on self.mistakes_label::activate-link signal"""
         self.mistakes.props.reveal_child = False
         if self.trans_mistakes[1]:
             self.src_buffer.props.text = self.trans_mistakes[1]
         # Run translation again
-        self.translation()
+        self._on_translation()
 
         return Gdk.EVENT_STOP
 
-    def on_src_text_changed(self, buffer: Gtk.TextBuffer):
+    @Gtk.Template.Callback()
+    def _on_translation(self, *_args):
         if not self.provider["trans"]:
             return
 
-        char_count = buffer.get_char_count()
+        # If it's like the last translation then it's useless to continue
+        if not self._appeared_before():
+            create_background_task(self._translation())
 
-        # If the text is over the highest number of characters allowed, it is truncated.
-        # This is done for avoiding exceeding the limit imposed by translation services.
-        if self.provider["trans"].chars_limit == -1:  # -1 means unlimited
-            self.char_counter.props.label = ""
-        else:
-            self.char_counter.props.label = f'{str(char_count)}/{self.provider["trans"].chars_limit}'
-
-            if char_count >= self.provider["trans"].chars_limit:
-                self.send_notification(_("{} characters limit reached!").format(self.provider["trans"].chars_limit))
-                buffer.delete(buffer.get_iter_at_offset(self.provider["trans"].chars_limit), buffer.get_end_iter())
-
-        sensitive = char_count != 0
-        self.lookup_action("translation").props.enabled = sensitive  # type: ignore
-        self.lookup_action("clear").props.enabled = sensitive  # type: ignore
-        self._check_speech_enabled()
-
-    def on_dest_text_changed(self, buffer: Gtk.TextBuffer):
-        if not self.provider["trans"]:
-            return
-
-        sensitive = buffer.get_char_count() != 0
-        self.lookup_action("copy").props.enabled = sensitive  # type: ignore
-        self.lookup_action("suggest").set_enabled(  # type: ignore
-            self.provider["trans"].supports_suggestions and sensitive
-        )
-        self._check_speech_enabled()
-
-    def user_action_ended(self, _buffer):
-        if Settings.get().live_translation:
-            self.translation()
-
-    # The history part
-    def reset_return_forward_btns(self):
-        self.lookup_action("back").props.enabled = self.current_history < len(self.provider["trans"].history) - 1  # type: ignore
-        self.lookup_action("forward").props.enabled = self.current_history > 0  # type: ignore
-
-    # Retrieve translation history
-    def history_update(self):
-        if not self.provider["trans"]:
-            return
-
-        self.reset_return_forward_btns()
-        translation = self.provider["trans"].history[self.current_history]
-        self.src_lang_selector.selected = translation.original[1]
-        self.dest_lang_selector.selected = translation.original[2]
-        self.src_buffer.props.text = translation.original[0]
-        self.dest_buffer.props.text = translation.text
-
-    def appeared_before(self):
+    def _appeared_before(self):
         if not self.provider["trans"]:
             return
 
@@ -1039,16 +1053,7 @@ class DialectWindow(Adw.ApplicationWindow):
             return True
         return False
 
-    @Gtk.Template.Callback()
-    def translation(self, _action=None, _param=None):
-        if not self.provider["trans"]:
-            return
-
-        # If it's like the last translation then it's useless to continue
-        if not self.appeared_before():
-            create_background_task(self.do_translation())
-
-    async def do_translation(self):
+    async def _translation(self):
         if not self.provider["trans"]:
             return
 
@@ -1067,7 +1072,9 @@ class DialectWindow(Adw.ApplicationWindow):
             self.next_trans = {}
 
         # Show feedback for start of translation.
-        self.translation_loading()
+        self.trans_spinner.show()
+        self.dest_box.props.sensitive = False
+        self.langs_button_box.props.sensitive = False
 
         # If the two languages are the same, nothing is done
         if src_language != dest_language or src_text != "":
@@ -1166,9 +1173,9 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.ongoing_trans = False
 
                 if self.next_trans:
-                    self.translation()
+                    self._on_translation()
                 else:
-                    self.translation_finish()
+                    self._translation_finish()
         else:
             self.trans_mistakes = (None, None)
             self.trans_src_pron = None
@@ -1176,33 +1183,25 @@ class DialectWindow(Adw.ApplicationWindow):
             self.dest_buffer.props.text = ""
 
             if not self.ongoing_trans:
-                self.translation_finish()
+                self._translation_finish()
 
-    def translation_loading(self):
-        self.trans_spinner.show()
-        self.dest_box.props.sensitive = False
-        self.langs_button_box.props.sensitive = False
-
-    def translation_finish(self):
+    def _translation_finish(self):
         self.trans_spinner.hide()
         self.dest_box.props.sensitive = True
         self.langs_button_box.props.sensitive = True
 
-    def reload_translator(self):
-        create_background_task(self.load_translator())
+    """
+    Provider changes functions
+    """
 
     def _on_active_provider_changed(self, _settings: Settings, kind: str, _name: str):
         self.save_settings()
-        match kind:
-            case "translator":
-                self.reload_translator()
-            case "tts":
-                create_background_task(self.load_tts())
+        self.reload_provider(kind)
 
     def _on_provider_changed(self, _settings: Gio.Settings, _key: str, name: str):
         if not self.translator_loading:
             if self.provider["trans"] and name == self.provider["trans"].name:
-                self.reload_translator()
+                self.reload_provider("translator")
 
             if self.provider["tts"] and name == self.provider["tts"].name:
-                create_background_task(self.load_tts())
+                self.reload_provider("tts")
