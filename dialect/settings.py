@@ -43,11 +43,8 @@ class Settings(Gio.Settings):
             Settings.instance = Settings.new()
         return Settings.instance
 
-    @GObject.Signal(arg_types=(str,))
-    def translator_changed(self, _name: str): ...
-
-    @GObject.Signal(arg_types=(str,))
-    def tts_changed(self, _name: str): ...
+    @GObject.Signal(flags=GObject.SignalFlags.DETAILED, arg_types=(str, str))
+    def provider_changed(self, name: str): ...
 
     @property
     def translators_list(self) -> list[str]:
@@ -70,7 +67,7 @@ class Settings(Gio.Settings):
     @active_translator.setter
     def active_translator(self, translator: str):
         self._translators.set_string("active", translator)
-        self.emit("translator-changed", translator)
+        self.emit("provider-changed::translator", "translator", translator)
 
     @property
     def window_size(self) -> tuple[int, int]:
@@ -143,7 +140,7 @@ class Settings(Gio.Settings):
     def active_tts(self, tts: str):
         """Set the user's preferred TTS service."""
         self._tts.set_string("active", tts)
-        self.emit("tts-changed", tts)
+        self.emit("provider-changed::tts", "tts", tts)
 
     @property
     def color_scheme(self) -> str:

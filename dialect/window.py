@@ -226,8 +226,7 @@ class DialectWindow(Adw.ApplicationWindow):
         create_background_task(self.load_tts())
 
         # Listen to active providers changes
-        Settings.get().connect("translator-changed", self._on_active_provider_changed, "trans")
-        Settings.get().connect("tts-changed", self._on_active_provider_changed, "tts")
+        Settings.get().connect("provider-changed", self._on_active_provider_changed)
 
         # Bind text views font size
         self.src_text.bind_property("font-size", self.dest_text, "font-size", GObject.BindingFlags.BIDIRECTIONAL)
@@ -1192,10 +1191,10 @@ class DialectWindow(Adw.ApplicationWindow):
     def reload_translator(self):
         create_background_task(self.load_translator())
 
-    def _on_active_provider_changed(self, _settings: Gio.Settings, _provider: str, kind: str):
+    def _on_active_provider_changed(self, _settings: Settings, kind: str, _name: str):
         self.save_settings()
         match kind:
-            case "trans":
+            case "translator":
                 self.reload_translator()
             case "tts":
                 create_background_task(self.load_tts())
