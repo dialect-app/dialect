@@ -12,15 +12,7 @@ from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk
 from dialect.asyncio import create_background_task
 from dialect.define import APP_ID, PROFILE, RES_PATH, TRANS_NUMBER
 from dialect.languages import LanguagesListModel
-from dialect.providers import (
-    TRANSLATORS,
-    TTS,
-    APIKeyInvalid,
-    APIKeyRequired,
-    ProviderError,
-    ProviderFeature,
-    RequestError,
-)
+from dialect.providers import TRANSLATORS, TTS, APIKeyInvalid, APIKeyRequired, ProviderError, RequestError
 from dialect.providers.base import BaseProvider, Translation
 from dialect.settings import Settings
 from dialect.shortcuts import DialectShortcutsWindow
@@ -287,6 +279,8 @@ class DialectWindow(Adw.ApplicationWindow):
         self.trans_warning.hide()
 
     async def load_translator(self):
+        self.translator_loading = True
+
         provider = Settings.get().active_translator
 
         # Show loading view
@@ -310,18 +304,15 @@ class DialectWindow(Adw.ApplicationWindow):
             await self.provider["trans"].init_trans()
 
             # Mistakes support
-            if ProviderFeature.MISTAKES not in self.provider["trans"].features:
+            if not self.provider["trans"].supports_mistakes:
                 self.mistakes.props.reveal_child = False
 
             # Suggestions support
             self.ui_suggest_cancel(None, None)
-            if ProviderFeature.SUGGESTIONS not in self.provider["trans"].features:
-                self.edit_btn.props.visible = False
-            else:
-                self.edit_btn.props.visible = True
+            self.edit_btn.props.visible = self.provider["trans"].supports_suggestions
 
             # Pronunciation support
-            if ProviderFeature.PRONUNCIATION not in self.provider["trans"].features:
+            if not self.provider["trans"].supports_pronunciation:
                 self.src_pron_revealer.props.reveal_child = False
                 self.dest_pron_revealer.props.reveal_child = False
                 self.app.lookup_action("pronunciation").props.enabled = False  # type: ignore
@@ -333,7 +324,7 @@ class DialectWindow(Adw.ApplicationWindow):
             self.dest_lang_model.set_langs(self.provider["trans"].dest_languages)
 
             # Update selected langs
-            set_auto = Settings.get().src_auto and ProviderFeature.DETECTION in self.provider["trans"].features
+            set_auto = Settings.get().src_auto and self.provider["trans"].supports_detection
             src_lang = self.provider["trans"].src_languages[0]
             if self.src_langs and self.src_langs[0] in self.provider["trans"].src_languages:
                 src_lang = self.src_langs[0]
@@ -352,7 +343,7 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.char_counter.props.label = count
 
             # Check API key
-            if ProviderFeature.API_KEY in self.provider["trans"].features:
+            if self.provider["trans"].supports_api_key:
                 if self.provider["trans"].api_key:
                     try:
                         if await self.provider["trans"].validate_api_key(self.provider["trans"].api_key):
@@ -361,10 +352,7 @@ class DialectWindow(Adw.ApplicationWindow):
                             self.show_translator_api_key_view()
                     except ProviderError or RequestError as exc:
                         self.show_translator_error_view(detail=str(exc))
-                elif (
-                    not self.provider["trans"].api_key
-                    and ProviderFeature.API_KEY_REQUIRED in self.provider["trans"].features
-                ):
+                elif not self.provider["trans"].api_key and self.provider["trans"].api_key_required:
                     self.show_translator_api_key_view(required=True)
                 else:
                     self.main_stack.props.visible_child_name = "translate"
@@ -390,7 +378,7 @@ class DialectWindow(Adw.ApplicationWindow):
                 if isinstance(exc, RequestError):
                     title = _("Couldn’t connect to the translation service")
                     description = _("We can’t connect to the server. Please check for network issues.")
-                    if ProviderFeature.INSTANCES in self.provider["trans"].features:
+                    if self.provider["trans"].supports_instances:
                         description = _(
                             (
                                 "We can’t connect to the {service} instance “{url}“.\n"
@@ -398,7 +386,7 @@ class DialectWindow(Adw.ApplicationWindow):
                             )
                         ).format(service=service, url=url)
                     self.show_translator_error_view(title, description, detail)
-                elif ProviderFeature.INSTANCES in self.provider["trans"].features:
+                elif self.provider["trans"].supports_instances:
                     description = _(
                         (
                             "Failed loading “{url}“, check if the instance address is correct or report in the Dialect bug tracker"
@@ -438,7 +426,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         else:
             self.key_page.props.title = _("The provided API key is invalid")
-            if ProviderFeature.API_KEY_REQUIRED in self.provider["trans"].features:
+            if self.provider["trans"].api_key_required:
                 self.key_page.props.description = _("Please set a valid API key in the preferences.")
             else:
                 self.key_page.props.description = _(
@@ -795,7 +783,9 @@ class DialectWindow(Adw.ApplicationWindow):
             return
 
         try:
-            dest_text = self.dest_buffer.get_text(self.dest_buffer.get_start_iter(), self.dest_buffer.get_end_iter(), True)
+            dest_text = self.dest_buffer.get_text(
+                self.dest_buffer.get_start_iter(), self.dest_buffer.get_end_iter(), True
+            )
             src, dest = self.provider["trans"].denormalize_lang(
                 self.provider["trans"].history[self.current_history].original[1],
                 self.provider["trans"].history[self.current_history].original[2],
@@ -885,7 +875,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         except (RequestError, ProviderError) as exc:
             logging.error(exc)
-            
+
             text = _("Text-to-Speech failed")
             action: _NotificationAction | None = None
 
@@ -906,7 +896,7 @@ class DialectWindow(Adw.ApplicationWindow):
                     self.dest_speech_btn.error(button_text)
 
             self.send_notification(text, action=action)
-            self._speech_reset(False)      
+            self._speech_reset(False)
 
     def _play_audio(self, path: str):
         if not self.player:
@@ -1009,7 +999,7 @@ class DialectWindow(Adw.ApplicationWindow):
         sensitive = buffer.get_char_count() != 0
         self.lookup_action("copy").props.enabled = sensitive  # type: ignore
         self.lookup_action("suggest").set_enabled(  # type: ignore
-            ProviderFeature.SUGGESTIONS in self.provider["trans"].features and sensitive
+            self.provider["trans"].supports_suggestions and sensitive
         )
         self._check_speech_enabled()
 
@@ -1106,7 +1096,7 @@ class DialectWindow(Adw.ApplicationWindow):
                 self.add_history_entry(translation)
 
                 # Mistakes
-                if ProviderFeature.MISTAKES in self.provider["trans"].features and not self.trans_mistakes == (
+                if self.provider["trans"].supports_mistakes and not self.trans_mistakes == (
                     None,
                     None,
                 ):
@@ -1117,7 +1107,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
                 # Pronunciation
                 reveal = Settings.get().show_pronunciation
-                if ProviderFeature.PRONUNCIATION in self.provider["trans"].features:
+                if self.provider["trans"].supports_pronunciation:
                     if self.trans_src_pron is not None and self.trans_mistakes == (None, None):
                         self.src_pron_label.props.label = self.trans_src_pron
                         self.src_pron_revealer.props.reveal_child = reveal
@@ -1200,9 +1190,6 @@ class DialectWindow(Adw.ApplicationWindow):
         self.langs_button_box.props.sensitive = True
 
     def reload_translator(self):
-        self.translator_loading = True
-
-        # Load translator
         create_background_task(self.load_translator())
 
     def _on_active_provider_changed(self, _settings: Gio.Settings, _provider: str, kind: str):

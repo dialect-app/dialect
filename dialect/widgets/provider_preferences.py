@@ -12,7 +12,7 @@ from gi.repository import Adw, GObject, Gtk
 
 from dialect.asyncio import create_background_task
 from dialect.define import RES_PATH
-from dialect.providers import ProviderCapability, ProviderFeature, RequestError
+from dialect.providers import ProviderCapability, RequestError
 
 if typing.TYPE_CHECKING:
     from dialect.window import DialectWindow
@@ -69,11 +69,11 @@ class ProviderPreferences(Adw.NavigationPage):
         if not self.provider:
             return
 
-        self.instance_entry.props.visible = ProviderFeature.INSTANCES in self.provider.features
-        self.api_key_entry.props.visible = ProviderFeature.API_KEY in self.provider.features
+        self.instance_entry.props.visible = self.provider.supports_instances
+        self.api_key_entry.props.visible = self.provider.supports_api_key
 
         self.api_usage_group.props.visible = False
-        if ProviderFeature.API_KEY_USAGE in self.provider.features:
+        if self.provider.supports_api_usage:
             create_background_task(self._load_api_usage())
 
     async def _load_api_usage(self):

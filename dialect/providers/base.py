@@ -229,6 +229,42 @@ class BaseProvider:
         return {}
 
     """
+    Provider features helpers
+    """
+
+    @property
+    def supports_instances(self) -> bool:
+        return ProviderFeature.INSTANCES in self.features
+
+    @property
+    def supports_api_key(self) -> bool:
+        return ProviderFeature.API_KEY in self.features
+
+    @property
+    def api_key_required(self) -> bool:
+        return ProviderFeature.API_KEY_REQUIRED in self.features
+
+    @property
+    def supports_api_usage(self) -> bool:
+        return ProviderFeature.API_KEY_USAGE in self.features
+
+    @property
+    def supports_detection(self) -> bool:
+        return ProviderFeature.DETECTION in self.features
+
+    @property
+    def supports_mistakes(self) -> bool:
+        return ProviderFeature.MISTAKES in self.features
+
+    @property
+    def supports_pronunciation(self) -> bool:
+        return ProviderFeature.PRONUNCIATION in self.features
+
+    @property
+    def supports_suggestions(self) -> bool:
+        return ProviderFeature.SUGGESTIONS in self.features
+
+    """
     Provider settings helpers and properties
     """
 
