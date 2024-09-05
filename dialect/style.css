@@ -16,11 +16,11 @@
 }
 
 .translation-scrolled undershoot.bottom {
-  border-bottom: 1px solid #ededed;
+  border-bottom: 1px solid var(--shade-color);
 }
 
 .translation-scrolled.top-undershoot undershoot.top {
-  border-top: 1px solid #ededed;
+  border-top: 1px solid var(--shade-color);
 }
 
 .mistakes {
