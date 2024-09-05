@@ -133,7 +133,10 @@ class BaseProvider:
         Validate an instance of the provider.
 
         Args:
-            url: The instance URL to test, only hostname and tld, e.g. libretranslate.com, localhost
+            url: The instance URL to test, only hostname and tld, e.g. ``libretranslate.com``, ``localhost``.
+
+        Returns:
+            If the URL is a valid instance of the provider ot not.
         """
         raise NotImplementedError()
 
@@ -142,35 +145,33 @@ class BaseProvider:
         Validate an API key.
 
         Args:
-            key: The API key to validate
+            key: The API key to validate.
+
+        Returns:
+            If the API key is valid or not.
         """
         raise NotImplementedError()
 
     async def init_trans(self) -> None:
-        """
-        Initializes the provider translation capabilities.
-        """
+        """Initializes the provider translation capabilities."""
         raise NotImplementedError()
 
     async def init_tts(self) -> None:
-        """
-        Initializes the provider text-to-speech capabilities.
-
-        Args:
-            on_done: Called after the provider was successfully initialized
-            on_fail: Called after any error on initialization
-        """
+        """Initializes the provider text-to-speech capabilities."""
         raise NotImplementedError()
 
     async def translate(self, request: TranslationRequest) -> Translation:
         """
         Translates text in the provider.
 
-        Providers are expected to use `denormalize_lang` because `request`
-        will use normalized lang codes.
+        Providers are expected to use ``BaseProvider.denormalize_lang`` because
+        ``request`` will use normalized lang codes.
 
         Args:
-            request: The translation request
+            request: The translation request.
+
+        Returns:
+            A new translation object.
         """
         raise NotImplementedError()
 
@@ -178,36 +179,42 @@ class BaseProvider:
         """
         Sends a translation suggestion to the provider.
 
-        Providers are expected to use `denormalize_lang` because `src` and
-        `dest` will use normalized lang codes.
+        Providers are expected to use ``BaseProvider.denormalize_lang`` because
+        ``src`` and ``dest`` will use normalized lang codes.
 
         Args:
-            text: Original text without translation
-            src: The lang code of the original text
-            dest: The lang code of the translated text
-            suggestion: Suggested translation for text
+            text: Original text without translation.
+            src: The lang code of the original text.
+            dest: The lang code of the translated text.
+            suggestion: Suggested translation for text.
+
+        Returns:
+            If the suggestion was successful or not.
         """
         raise NotImplementedError()
 
     async def speech(self, text: str, language: str) -> IO:
         """
-        Generate speech audio from text
+        Generate speech audio from text.
 
-        Providers are expected to use `denormalize_lang` because `language`
-        will use normalized lang codes.
+        Providers are expected to use ``BaseProvider.denormalize_lang`` because
+        ``language`` will use normalized lang codes.
 
         Args:
-            text: Text to generate speech from
-            language: The lang code of text
+            text: Text to generate speech from.
+            language: The lang code of text.
+
+        Returns:
+            The file object with the speech audio written.
         """
         raise NotImplementedError()
 
     async def api_char_usage(self) -> tuple[int, int]:
         """
-        Retrieves the API usage status
+        Retrieves the API usage status.
 
         Returns:
-            The current usage and limit
+            The current usage and limit.
         """
         raise NotImplementedError()
 
@@ -215,14 +222,17 @@ class BaseProvider:
         """
         Compare two language codes.
 
-        It assumes that the codes have been normalized by `normalize_lang_code`
-        so providers might need to use `denormalize_lang` on `a` and `b`.
+        It assumes that the codes have been normalized by ``BaseProvider.normalize_lang_code``
+        so providers might need to use ``BaseProvider.denormalize_lang`` on ``a`` and ``b``.
 
         This method exists so providers can add additional comparison logic.
 
         Args:
-            a: First lang to compare
-            b: Second lang to compare
+            a: First lang to compare.
+            b: Second lang to compare.
+
+        Returns:
+            Whether both languages are equals in some way or not.
         """
 
         return a == b
@@ -230,6 +240,9 @@ class BaseProvider:
     def dest_langs_for(self, code: str) -> list[str]:
         """
         Get the available destination languages for a source language.
+
+        Returns:
+            The codes of available languages.
         """
         raise NotImplementedError()
 
@@ -238,15 +251,15 @@ class BaseProvider:
         """
         Mapping of Dialect/CLDR's lang codes to the provider ones.
 
-        Some providers might use different lang codes from the ones used by Dialect to for example get localized
-        language names.
+        Some providers might use different lang codes from the ones used by Dialect.
 
-        This dict is used by `add_lang` so lang codes can later be denormalized with `denormalize_lang`.
+        This dict is used by ``BaseProvider.add_lang`` so lang codes can later be denormalized with
+        ``BaseProvider.denormalize_lang``.
 
-        Codes must be formatted with the criteria from normalize_lang_code, because this value would be used by
-        `add_lang` after normalization.
+        Codes must be formatted with the criteria from ``BaseProvider.normalize_lang_code``, because this value would
+        be used by ``BaseProvider.add_lang`` after normalization.
 
-        Check `dialect.define.LANG_ALIASES` for reference mappings.
+        Check ``dialect.define.LANG_ALIASES`` for reference mappings.
         """
         return {}
 
@@ -292,7 +305,7 @@ class BaseProvider:
 
     @property
     def instance_url(self) -> str:
-        """Instance url saved on settings."""
+        """Instance url saved on settings"""
         return self.settings.instance_url
 
     @instance_url.setter
@@ -300,12 +313,12 @@ class BaseProvider:
         self.settings.instance_url = url
 
     def reset_instance_url(self):
-        """Resets saved instance url."""
+        """Resets saved instance url"""
         self.instance_url = ""
 
     @property
     def api_key(self) -> str:
-        """API key saved on settings."""
+        """API key saved on settings"""
         return self.settings.api_key
 
     @api_key.setter
@@ -318,7 +331,7 @@ class BaseProvider:
 
     @property
     def recent_src_langs(self) -> list[str]:
-        """Saved recent source langs of the user."""
+        """Saved recent source langs of the user"""
         return self.settings.src_langs
 
     @recent_src_langs.setter
@@ -331,7 +344,7 @@ class BaseProvider:
 
     @property
     def recent_dest_langs(self) -> list[str]:
-        """Saved recent destination langs of the user."""
+        """Saved recent destination langs of the user"""
         return self.settings.dest_langs
 
     @recent_dest_langs.setter
@@ -347,17 +360,20 @@ class BaseProvider:
     """
 
     @staticmethod
-    def format_url(url: str, path: str = "", params: dict = {}, http: bool = False):
+    def format_url(url: str, path: str = "", params: dict = {}, http: bool = False) -> str:
         """
         Compose a HTTP url with the given pieces.
 
-        If url is localhost, `http` is ignored and HTTP protocol is forced.
+        If url is "localhost", ``http`` is ignored and HTTP protocol is forced.
 
         Args:
-            url: Base url, hostname and tld
-            path: Path of the url
-            params: Params to populate a url query
-            http: If HTTP should be used instead of HTTPS
+            url: Base url, hostname and tld.
+            path: Path of the url.
+            params: Params to populate a url query.
+            http: If HTTP should be used instead of HTTPS.
+
+        Returns:
+            The new formatted URL.
         """
 
         if not path.startswith("/"):
@@ -373,21 +389,25 @@ class BaseProvider:
 
         return protocol + url + path + params_str
 
-    def normalize_lang_code(self, code: str):
+    def normalize_lang_code(self, code: str) -> str:
         """
-        Normalice a language code to Dialect's criteria.
+        Normalice a language code with Dialect's criteria.
+
+        This method also maps to lang codes aliases using ``BaseProvider.lang_aliases`` and
+        ``dialect.define.LANG_ALIASES``.
 
         Criteria:
-        - Codes must be lowercase, e.g. ES => es
-        - Codes can have a second code delimited by a hyphen, e.g. zh_CN => zh-CN
-        - If second code is two chars long it's considered a country code and must be uppercase, e.g. zh-cn => zh-CN
-        - If second code is four chars long it's considered a script code and must be capitalized,
-        e.g. zh-HANS => zh-Hans
-
-        This method also maps lang codes aliases using `lang_aliases` and `dialect.define.LANG_ALIASES`.
+            - Codes must be lowercase, e.g. ES => es
+            - Codes can have a second code delimited by a hyphen, e.g. zh_CN => zh-CN
+            - If second code is two chars long it's considered a country code and must be uppercase, e.g. zh-cn => zh-CN
+            - If second code is four chars long it's considered a script code and must be capitalized,
+            e.g. zh-HANS => zh-Hans
 
         Args:
-            code: Language ISO code
+            code: Language ISO code.
+
+        Returns:
+            The normalize language code.
         """
         code = code.replace("_", "-").lower()  # Normalize separator
         codes = code.split("-")
@@ -414,11 +434,12 @@ class BaseProvider:
         trans_src: bool = True,
         trans_dest: bool = True,
         tts: bool = False,
-    ):
+    ) -> None:
         """
-        Add lang supported by provider after normalization.
+        Register lang supported by the provider.
 
-        Normalized lang codes are saved for latter denormalization using `denormalize_lang`.
+        Lang codes are normalized and saved for latter denormalization using
+        ``BaseProvider.denormalize_lang``.
 
         Args:
             original_code: Lang code to add
@@ -442,21 +463,19 @@ class BaseProvider:
             self._nonstandard_langs[code] = original_code
 
         if name is not None and code not in self._languages_names:
-            # Save name provider by the service
+            # Save name provided by the service
             self._languages_names[code] = name
 
-    def denormalize_lang(self, *codes: str) -> str | tuple[str, ...]:
+    def denormalize_lang(self, *codes: str) -> tuple[str, ...]:
         """
         Get denormalized lang code if available.
 
-        This method will return a tuple with the same length of given codes or a str if only one code was passed.
-
         Args:
-        *codes: Lang codes to denormalize
-        """
+            *codes: Lang codes to denormalize
 
-        if len(codes) == 1:
-            return self._nonstandard_langs.get(codes[0], codes[0])
+        Returns:
+            The same amount of given codes but denormalized.
+        """
 
         result = []
         for code in codes:
@@ -467,10 +486,14 @@ class BaseProvider:
         """
         Get a localized language name.
 
-        Fallback to a name provided by the provider if available or ultimately just the code.
+        Fallback to a name provided by the provider if available or ultimately
+        just the code.
 
         Args:
             code: Language to get a name for
+
+        Returns:
+            The language name.
         """
         name = get_lang_name(code)  # Try getting translated name from Dialect
 

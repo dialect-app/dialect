@@ -105,7 +105,7 @@ class Provider(SoupProvider):
             raise UnexpectedError("Failed reading the translation data") from exc
 
     async def speech(self, text, language):
-        language = self.denormalize_lang(language)
+        (language,) = self.denormalize_lang(language)
         # Format url query data
         url = self.speech_url.format(text=text, lang=language)
         # Do request

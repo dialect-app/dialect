@@ -19,8 +19,8 @@ class LocalProvider(BaseProvider):
         Runs worker in a ThreadPoolExecutor.
 
         Args:
-            worker: Function to execute on the thread
-            *args: Args for the worker
+            worker: Function to execute on the thread.
+            *args: Args for the worker function.
         """
 
         loop = asyncio.get_running_loop()

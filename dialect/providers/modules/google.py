@@ -532,7 +532,7 @@ class Provider(LocalProvider, SoupProvider):
         def get_speech():
             try:
                 file = NamedTemporaryFile()
-                lang = self.denormalize_lang(language)
+                (lang,) = self.denormalize_lang(language)
                 tts = gTTS(text, lang=lang, lang_check=False)
                 tts.write_to_fp(file)
                 file.seek(0)

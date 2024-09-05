@@ -24,7 +24,10 @@ class SoupProvider(BaseProvider):
         Convert Python data to JSON and bytes.
 
         Args:
-            data: Data to encode, anything json.dumps can handle
+            data: Data to encode, anything json.dumps can handle.
+
+        Returns:
+            The GLib Bytes or None if something failed.
         """
         data_glib_bytes = None
         try:
@@ -38,17 +41,19 @@ class SoupProvider(BaseProvider):
         self, method: str, url: str, data: Any = {}, headers: dict = {}, form: bool = False
     ) -> Soup.Message:
         """
-        Create a libsoup's message.
+        Create a Soup's message.
 
         Encodes data and adds it to the message as the request body.
-        If form is true, data is encoded as application/x-www-form-urlencoded.
 
         Args:
-            method: HTTP method of the message
-            url: Url of the message
-            data: Request body or form data
-            headers: HTTP headers of the message
-            form: If the data should be encoded as a form
+            method: HTTP method of the message.
+            url: Url of the message.
+            data: Request body or form data.
+            headers: HTTP headers of the message.
+            form: If the data should be encoded as ``application/x-www-form-urlencoded``.
+
+        Returns:
+            The Soup Message for the given parameters.
         """
 
         if form and data:
@@ -71,20 +76,26 @@ class SoupProvider(BaseProvider):
 
     async def send_and_read(self, message: Soup.Message) -> bytes | None:
         """
-        Helper method for libsoup's send_and_read_async.
+        Helper method for Soup's send_and_read_async.
 
         Args:
-            message: Message to send
+            message: Message to send.
+
+        Returns:
+            The bytes of the response or None.
         """
         response: GLib.Bytes = await Session.get().send_and_read_async(message, 0)  # type: ignore
         return response.get_data()
 
     async def send_and_read_json(self, message: Soup.Message) -> Any:
         """
-        Like `SoupProvider.send_and_read` but returns JSON parsed
+        Like ``SoupProvider.send_and_read`` but returns JSON parsed.
 
         Args:
-            message: Message to send
+            message: Message to send.
+
+        Returns:
+            The JSON of the response deserialized to a python object.
         """
         response = await self.send_and_read(message)
         return json.loads(response) if response else {}
@@ -96,8 +107,8 @@ class SoupProvider(BaseProvider):
         This should be implemented by subclases.
 
         Args:
-            status: HTTP status
-            data: Response body data
+            status: HTTP status.
+            data: Response body data.
         """
 
     async def send_and_read_and_process(
@@ -107,13 +118,18 @@ class SoupProvider(BaseProvider):
         json: bool = True,
     ) -> Any:
         """
-        Helper mixing `send_and_read`, `send_and_read_json` and `check_known_errors`.
+        Helper mixing ``SoupProvider.send_and_read``, ``SoupProvider.send_and_read_json``
+        and ``SoupProvider.check_known_errors``.
 
         Converts `GLib.Error` to `RequestError`.
 
-        message: Message to send
-        check_common: If response data should be checked for errors using check_known_errors
-        json: If data should be processed as JSON
+        Args:
+            message: Message to send.
+            check_common: If response data should be checked for errors using check_known_errors.
+            json: If data should be processed as JSON.
+
+        Returns:
+            The JSON deserialized to a python object or bytes if ``json`` is ``False``.
         """
 
         try:
@@ -142,13 +158,17 @@ class SoupProvider(BaseProvider):
         """
         Helper for regular HTTP request.
 
-        method: HTTP method of the request
-        url: Url of the request
-        data: Request body or form data
-        headers: HTTP headers of the message
-        form: If the data should be encoded as a form
-        check_common: If response data should be checked for errors using check_known_errors
-        json: If data should be processed as JSON
+        Args:
+            method: HTTP method of the request.
+            url: Url of the request.
+            data: Request body or form data.
+            headers: HTTP headers of the message.
+            form: If the data should be encoded as a form.
+            check_common: If response data should be checked for errors using check_known_errors.
+            json: If data should be processed as JSON.
+
+        Returns:
+            The JSON deserialized to a python object or bytes if ``json`` is ``False``.
         """
         message = self.create_message(method, url, data, headers, form)
         return await self.send_and_read_and_process(message, check_common, json)
@@ -164,11 +184,15 @@ class SoupProvider(BaseProvider):
         """
         Helper for GET HTTP request.
 
-        url: Url of the request
-        headers: HTTP headers of the message
-        form: If the data should be encoded as a form
-        check_common: If response data should be checked for errors using check_known_errors
-        json: If data should be processed as JSON
+        Args:
+            url: Url of the request.
+            headers: HTTP headers of the message.
+            form: If the data should be encoded as a form.
+            check_common: If response data should be checked for errors using check_known_errors.
+            json: If data should be processed as JSON.
+
+        Returns:
+            The JSON deserialized to a python object or bytes if ``json`` is ``False``.
         """
         return await self.request("GET", url, headers=headers, form=form, check_common=check_common, json=json)
 
@@ -184,11 +208,15 @@ class SoupProvider(BaseProvider):
         """
         Helper for POST HTTP request.
 
-        url: Url of the request
-        data: Request body or form data
-        headers: HTTP headers of the message
-        form: If the data should be encoded as a form
-        check_common: If response data should be checked for errors using check_known_errors
-        json: If data should be processed as JSON
+        Args:
+            url: Url of the request.
+            data: Request body or form data.
+            headers: HTTP headers of the message.
+            form: If the data should be encoded as a form.
+            check_common: If response data should be checked for errors using check_known_errors.
+            json: If data should be processed as JSON.
+
+        Returns:
+            The JSON deserialized to a python object or bytes if ``json`` is ``False``.
         """
         return await self.request("POST", url, data, headers, form, check_common, json)
