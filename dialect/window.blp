@@ -47,8 +47,10 @@ template $DialectWindow : Adw.ApplicationWindow {
   Adw.Breakpoint {
     condition ("max-width: 680px")
     setters {
-      actionbar.revealed: true;
-      title_stack.visible-child-name: "label";
+      multi_layout.layout-name: "mobile";
+      error_buttons.orientation: vertical;
+      key_buttons.orientation: vertical;
+      mobile_buttons_size.mode: horizontal;
       translator_box.orientation: vertical;
     }
   }
@@ -81,63 +83,29 @@ template $DialectWindow : Adw.ApplicationWindow {
         Adw.StatusPage error_page {
           vexpand: true;
 
-          child: Adw.Squeezer {
-            homogeneous: false;
+          child: Box error_buttons {
+            spacing: 12;
+            halign: center;
 
-            Box {
-              spacing: 12;
-              halign: center;
+            Button error_retry_btn {
+              can-shrink: true;
+              label: _("Retry");
+              clicked => $_on_retry_load_translator_clicked();
 
-              Button {
-                label: _("Retry");
-                clicked => $_on_retry_load_translator_clicked();
-
-                styles [
-                  "pill",
-                  "suggested-action",
-                ]
-              }
-
-              Button {
-                label: _("Open Preferences");
-                action-name: "app.preferences";
-
-                styles [
-                  "pill",
-                ]
-              }
+              styles [
+                "pill",
+                "suggested-action",
+              ]
             }
 
-            Box {
-              spacing: 12;
-              orientation: vertical;
+            Button error_open_prefs_btn {
+              can-shrink: true;
+              label: _("Open Preferences");
+              action-name: "app.preferences";
 
-              Button error_retry_btn {
-                clicked => $_on_retry_load_translator_clicked();
-
-                styles [
-                  "pill",
-                  "suggested-action",
-                ]
-
-                child: Label {
-                  label: _("Retry");
-                  ellipsize: end;
-                };
-              }
-
-              Button error_preferences_btn {
-                action-name: "app.preferences";
-
-                styles [
-                  "pill",
-                ]
-
-                child: Label {
-                  label: _("Open Preferences");
-                  ellipsize: end;
-                };
-              }
+              styles [
+                "pill",
+              ]
             }
           };
         }
@@ -155,433 +123,425 @@ template $DialectWindow : Adw.ApplicationWindow {
           icon-name: "dialog-password-symbolic";
           vexpand: true;
 
-          child: Adw.Squeezer {
-            homogeneous: false;
+          child: Box key_buttons {
+            spacing: 12;
+            halign: center;
 
-            Box {
-              spacing: 12;
-              halign: center;
+            Button rmv_key_btn {
+              visible: false;
+              can-shrink: true;
+              label: _("Remove Key and Retry");
+              clicked => $_on_remove_key_and_reload_clicked();
 
-              Button rmv_key_btn {
-                visible: false;
-                label: _("Remove Key and Retry");
-                clicked => $_on_remove_key_and_reload_clicked();
-
-                styles [
-                  "pill",
-                  "suggested-action",
-                ]
-              }
-
-              Button {
-                label: _("Open Preferences");
-                action-name: "app.preferences";
-
-                styles [
-                  "pill",
-                ]
-              }
+              styles [
+                "pill",
+                "suggested-action",
+              ]
             }
 
-            Box {
-              spacing: 12;
-              orientation: vertical;
+            Button key_open_prefs_btn {
+              can-shrink: true;
+              label: _("Open Preferences");
+              action-name: "app.preferences";
 
-              Button error_api_key_btn {
-                visible: false;
-                clicked => $_on_remove_key_and_reload_clicked();
-
-                styles [
-                  "pill",
-                  "suggested-action",
-                ]
-
-                child: Label {
-                  label: _("Remove Key and Retry");
-                  ellipsize: end;
-                };
-              }
-
-              Button error_preferences2_btn {
-                action-name: "app.preferences";
-
-                styles [
-                  "pill",
-                ]
-
-                child: Label {
-                  label: _("Open Preferences");
-                  ellipsize: end;
-                };
-              }
+              styles [
+                "pill",
+              ]
             }
           };
         }
       };
     }
 
+    /* Translation View */
     StackPage {
       name: "translate";
       child: Adw.ToastOverlay toast_overlay {
         vexpand: true;
-        child: Adw.ToolbarView {
 
-          [top]
-          Adw.HeaderBar {
-            centering-policy: strict;
-            title-widget: Stack title_stack {
-              transition-type: crossfade;
-              hhomogeneous: false;
+        child: Adw.MultiLayoutView multi_layout {
 
-              StackPage {
-                name: "selector";
-                child: Box langs_button_box {
-                  spacing: 6;
+          /* Desktop Layout */
+          Adw.Layout {
+            name: "desktop";
+            content: Adw.ToolbarView {
 
-                  $LangSelector src_lang_selector {
-                    notify::selected => $_on_src_lang_changed();
-                    user-selection-changed => $_on_translation();
-                    tooltip-text: _("Change Source Language");
-                  }
+              [top]
+              Adw.HeaderBar {
+                centering-policy: strict;
 
-                  Button switch_btn {
-                    action-name: "win.switch";
-                    tooltip-text: _("Switch Languages");
-                    icon-name: "object-flip-horizontal-symbolic";
-                  }
-
-                  $LangSelector dest_lang_selector {
-                    notify::selected => $_on_dest_lang_changed();
-                    user-selection-changed => $_on_translation();
-                    tooltip-text: _("Change Destination Language");
-                  }
+                title-widget: Adw.LayoutSlot {
+                    id: "langs-selector";
                 };
+
+                Adw.LayoutSlot {
+                  id: "back-btn";
+                }
+
+                Adw.LayoutSlot {
+                  id: "forward-btn";
+                }
+
+                [end]
+                Adw.LayoutSlot {
+                  id: "menu";
+                }
               }
 
-              StackPage {
-                name: "label";
-                child: Adw.WindowTitle {
-                  title: _("Dialect");
-                };
+              Adw.LayoutSlot {
+                id: "translation";
               }
             };
+          }
 
-            Button return_btn {
-              action-name: "win.back";
-              tooltip-text: _("Previous Translation");
-              icon-name: "go-previous-symbolic";
+          /* Mobile Layout */
+          Adw.Layout {
+            name: "mobile";
+            content: Adw.ToolbarView {
+              [top]
+              Adw.HeaderBar {
+
+                Adw.LayoutSlot {
+                  id: "back-btn";
+                }
+
+                Adw.LayoutSlot {
+                  id: "forward-btn";
+                }
+
+                [end]
+                Adw.LayoutSlot {
+                  id: "menu";
+                }
+              }
+
+              Adw.LayoutSlot {
+                id: "translation";
+              }
+
+              [bottom]
+              Adw.LayoutSlot {
+                id: "langs-selector";
+
+                halign: center;
+
+                styles [
+                  "toolbar",
+                ]
+              }
+            };
+          }
+
+          /* Menu */
+          [menu]
+          MenuButton menu_btn {
+            menu-model: app-menu;
+            tooltip-text: _("Main Menu");
+            icon-name: "open-menu-symbolic";
+            primary: true;
+          }
+
+          /* Nav back */
+          [back-btn]
+          Button return_btn {
+            action-name: "win.back";
+            tooltip-text: _("Previous Translation");
+            icon-name: "go-previous-symbolic";
+          }
+
+          /* Nav forward */
+          [forward-btn]
+          Button forward_btn {
+            action-name: "win.forward";
+            tooltip-text: _("Next Translation");
+            icon-name: "go-next-symbolic";
+          }
+
+          /* Languages Selector */
+          [langs-selector]
+          Box langs_button_box {
+            spacing: 6;
+
+            $LangSelector src_lang_selector {
+              notify::selected => $_on_src_lang_changed();
+              user-selection-changed => $_on_translation();
+              tooltip-text: _("Change Source Language");
             }
 
-            Button forward_btn {
-              action-name: "win.forward";
-              tooltip-text: _("Next Translation");
-              icon-name: "go-next-symbolic";
+            Button switch_btn {
+              action-name: "win.switch";
+              tooltip-text: _("Switch Languages");
+              icon-name: "object-flip-horizontal-symbolic";
             }
 
-            [end]
-            MenuButton menu_btn {
-              menu-model: app-menu;
-              tooltip-text: _("Main Menu");
-              icon-name: "open-menu-symbolic";
-              primary: true;
+            $LangSelector dest_lang_selector {
+              notify::selected => $_on_dest_lang_changed();
+              user-selection-changed => $_on_translation();
+              tooltip-text: _("Change Destination Language");
             }
           }
 
-          Box {
-            orientation: vertical;
+          /* Translation Booxes */
+          [translation]
+          Box translator_box {
+            vexpand: true;
+            spacing: 12;
+            homogeneous: true;
 
-            Box translator_box {
-              vexpand: true;
-              spacing: 12;
-              homogeneous: true;
+            styles [
+              "translation-box",
+            ]
+
+            Box {
+              orientation: vertical;
+              overflow: hidden;
 
               styles [
-                "translation-box",
+                "card",
+                "translation-side-box",
               ]
 
-              Box {
-                orientation: vertical;
-                overflow: hidden;
+              ScrolledWindow {
+                vexpand: true;
+
+                $TextView src_text {
+                  left-margin: 9;
+                  right-margin: 9;
+                  top-margin: 9;
+                  bottom-margin: 9;
+
+                  activate => $_on_src_activated();
+                }
 
                 styles [
-                  "card",
-                  "translation-side-box",
+                  "translation-scrolled"
                 ]
+              }
+
+              Revealer src_pron_revealer {
+                transition-type: slide_down;
+                reveal-child: false;
 
                 ScrolledWindow {
-                  vexpand: true;
-
-                  $TextView src_text {
-                    left-margin: 9;
-                    right-margin: 9;
-                    top-margin: 9;
-                    bottom-margin: 9;
-
-                    activate => $_on_src_activated();
-                  }
-
-                  styles [
-                    "translation-scrolled"
-                  ]
-                }
-
-                Revealer src_pron_revealer {
-                  transition-type: slide_down;
-                  reveal-child: false;
-
-                  ScrolledWindow {
-                    Label src_pron_label {
-                      xalign: 0;
-                      wrap: true;
-                      wrap-mode: word_char;
-                      selectable: true;
-                      valign: end;
-
-                      styles [
-                        "pronunciation",
-                        "dim-label",
-                      ]
-                    }
+                  Label src_pron_label {
+                    xalign: 0;
+                    wrap: true;
+                    wrap-mode: word_char;
+                    selectable: true;
+                    valign: end;
 
                     styles [
-                      "translation-scrolled",
-                      "top-undershoot"
-                    ]
-                  }
-                }
-
-                Revealer mistakes {
-                  can-focus: false;
-                  reveal-child: false;
-
-                  Box {
-                    can-focus: false;
-                    orientation: horizontal;
-                    spacing: 8;
-
-                    Image {
-                      can-focus: false;
-                      icon-name: "error-correct-symbolic";
-                    }
-
-                    Label mistakes_label {
-                      can-focus: false;
-                      wrap: true;
-                      wrap-mode: word_char;
-
-                      activate-link => $_on_mistakes_clicked();
-                    }
-
-                    styles [
-                      "card",
-                      "mistakes"
-                    ]
-                  }
-                }
-
-                Box {
-                  Button clear_btn {
-                    action-name: "win.clear";
-                    tooltip-text: _("Clear");
-                    icon-name: "edit-clear-symbolic";
-                  }
-
-                  Button paste_btn {
-                    action-name: "win.paste";
-                    tooltip-text: _("Paste");
-                    icon-name: "edit-paste-symbolic";
-                  }
-
-                  $SpeechButton src_speech_btn {
-                    action-name: "win.listen-src";
-                    tooltip-text: _("Listen");
-
-                    styles [
-                      "flat",
-                    ]
-                  }
-
-                  Label char_counter {
-                    margin-start: 4;
-                    margin-end: 4;
-                    hexpand: true;
-                    halign: end;
-
-                    styles [
+                      "pronunciation",
                       "dim-label",
-                      "caption-heading",
-                      "numeric"
-                    ]
-                  }
-
-                  Button translate_btn {
-                    label: _("Translate");
-                    action-name: "win.translation";
-
-                    styles [
-                      "suggested-action",
                     ]
                   }
 
                   styles [
-                    "toolbar",
+                    "translation-scrolled",
+                    "top-undershoot"
                   ]
                 }
               }
 
-              Box dest_box {
-                orientation: vertical;
-                overflow: hidden;
+              Revealer mistakes {
+                can-focus: false;
+                reveal-child: false;
 
-                styles [
-                  "card",
-                  "translation-side-box",
-                ]
+                Box {
+                  can-focus: false;
+                  orientation: horizontal;
+                  spacing: 8;
 
-                ScrolledWindow {
-                  vexpand: true;
+                  Image {
+                    can-focus: false;
+                    icon-name: "error-correct-symbolic";
+                  }
 
-                  $TextView dest_text {
-                    editable: false;
-                    left-margin: 9;
-                    right-margin: 9;
-                    top-margin: 9;
-                    bottom-margin: 9;
+                  Label mistakes_label {
+                    can-focus: false;
+                    wrap: true;
+                    wrap-mode: word_char;
+
+                    activate-link => $_on_mistakes_clicked();
                   }
 
                   styles [
-                    "translation-scrolled"
+                    "card",
+                    "mistakes"
+                  ]
+                }
+              }
+
+              Box {
+                Button clear_btn {
+                  action-name: "win.clear";
+                  tooltip-text: _("Clear");
+                  icon-name: "edit-clear-symbolic";
+                }
+
+                Button paste_btn {
+                  action-name: "win.paste";
+                  tooltip-text: _("Paste");
+                  icon-name: "edit-paste-symbolic";
+                }
+
+                $SpeechButton src_speech_btn {
+                  action-name: "win.listen-src";
+                  tooltip-text: _("Listen");
+
+                  styles [
+                    "flat",
                   ]
                 }
 
-                Revealer dest_pron_revealer {
-                  transition-type: slide_down;
-                  reveal-child: false;
+                Label char_counter {
+                  margin-start: 4;
+                  margin-end: 4;
+                  hexpand: true;
+                  halign: end;
 
-                  ScrolledWindow {
-                    Label dest_pron_label {
-                      xalign: 0;
-                      wrap: true;
-                      wrap-mode: word_char;
-                      selectable: true;
-                      valign: end;
-
-                      styles [
-                        "pronunciation",
-                        "dim-label",
-                      ]
-                    }
-
-                    styles [
-                      "translation-scrolled",
-                      "top-undershoot"
-                    ]
-                  }
+                  styles [
+                    "dim-label",
+                    "caption-heading",
+                    "numeric"
+                  ]
                 }
 
-                Stack dest_toolbar_stack {
-                  transition-type: crossfade;
+                Button translate_btn {
+                  label: _("Translate");
+                  action-name: "win.translation";
 
-                  StackPage {
-                    name: "default";
-                    child: Box {
-                      Adw.Spinner trans_spinner {
-                        tooltip-text: _("Translating…");
-                        margin-start: 8;
-                      }
-
-                      Image trans_warning {
-                        tooltip-text: _("Could not Translate the Text");
-                        margin-start: 8;
-                        icon-name: "dialog-warning-symbolic";
-                      }
-
-                      Button copy_btn {
-                        action-name: "win.copy";
-                        tooltip-text: _("Copy");
-                        icon-name: "edit-copy-symbolic";
-                        hexpand: true;
-                        halign: end;
-                      }
-
-                      Button edit_btn {
-                        action-name: "win.suggest";
-                        tooltip-text: _("Suggest Translation");
-                        icon-name: "document-edit-symbolic";
-                      }
-
-                      $SpeechButton dest_speech_btn {
-                        action-name: "win.listen-dest";
-                        tooltip-text: _("Listen");
-
-                        styles [
-                          "flat",
-                        ]
-                      }
-
-                      styles [
-                        "toolbar",
-                      ]
-                    };
-                  }
-
-                  StackPage {
-                    name: "edit";
-                    child: Box {
-                      Button cancel_btn {
-                        action-name: "win.suggest-cancel";
-                        label: _("Cancel");
-                        hexpand: true;
-                        halign: end;
-                      }
-
-                      Button save_btn {
-                        action-name: "win.suggest-ok";
-                        label: _("Save");
-
-                        styles [
-                          "suggested-action",
-                        ]
-                      }
-
-                      styles [
-                        "toolbar",
-                      ]
-                    };
-                  }
+                  styles [
+                    "suggested-action",
+                  ]
                 }
+
+                styles [
+                  "toolbar",
+                ]
               }
             }
 
-            ActionBar actionbar {
-              sensitive: bind langs_button_box.sensitive no-sync-create;
-              revealed: false;
+            Box dest_box {
+              orientation: vertical;
+              overflow: hidden;
 
               styles [
-                "flat",
+                "card",
+                "translation-side-box",
               ]
 
-              $LangSelector src_lang_selector_m {
-                selected: bind src_lang_selector.selected bidirectional;
-                tooltip-text: _("Change Source Language");
+              ScrolledWindow {
+                vexpand: true;
 
-                user-selection-changed => $_on_translation();
+                $TextView dest_text {
+                  editable: false;
+                  left-margin: 9;
+                  right-margin: 9;
+                  top-margin: 9;
+                  bottom-margin: 9;
+                }
+
+                styles [
+                  "translation-scrolled"
+                ]
               }
 
-              [center]
-              Button switch_btn2 {
-                sensitive: bind switch_btn.sensitive no-sync-create;
-                tooltip-text: _("Switch Languages");
-                action-name: "win.switch";
-                icon-name: "object-flip-horizontal-symbolic";
+              Revealer dest_pron_revealer {
+                transition-type: slide_down;
+                reveal-child: false;
+
+                ScrolledWindow {
+                  Label dest_pron_label {
+                    xalign: 0;
+                    wrap: true;
+                    wrap-mode: word_char;
+                    selectable: true;
+                    valign: end;
+
+                    styles [
+                      "pronunciation",
+                      "dim-label",
+                    ]
+                  }
+
+                  styles [
+                    "translation-scrolled",
+                    "top-undershoot"
+                  ]
+                }
               }
 
-              [end]
-              $LangSelector dest_lang_selector_m {
-                selected: bind dest_lang_selector.selected bidirectional;
-                tooltip-text: _("Change Destination Language");
+              Stack dest_toolbar_stack {
+                transition-type: crossfade;
 
-                user-selection-changed => $_on_translation();
+                StackPage {
+                  name: "default";
+                  child: Box {
+                    Adw.Spinner trans_spinner {
+                      tooltip-text: _("Translating…");
+                      margin-start: 8;
+                    }
+
+                    Image trans_warning {
+                      tooltip-text: _("Could not Translate the Text");
+                      margin-start: 8;
+                      icon-name: "dialog-warning-symbolic";
+                    }
+
+                    Button copy_btn {
+                      action-name: "win.copy";
+                      tooltip-text: _("Copy");
+                      icon-name: "edit-copy-symbolic";
+                      hexpand: true;
+                      halign: end;
+                    }
+
+                    Button edit_btn {
+                      action-name: "win.suggest";
+                      tooltip-text: _("Suggest Translation");
+                      icon-name: "document-edit-symbolic";
+                    }
+
+                    $SpeechButton dest_speech_btn {
+                      action-name: "win.listen-dest";
+                      tooltip-text: _("Listen");
+
+                      styles [
+                        "flat",
+                      ]
+                    }
+
+                    styles [
+                      "toolbar",
+                    ]
+                  };
+                }
+
+                StackPage {
+                  name: "edit";
+                  child: Box {
+                    Button cancel_btn {
+                      action-name: "win.suggest-cancel";
+                      label: _("Cancel");
+                      hexpand: true;
+                      halign: end;
+                    }
+
+                    Button save_btn {
+                      action-name: "win.suggest-ok";
+                      label: _("Save");
+
+                      styles [
+                        "suggested-action",
+                      ]
+                    }
+
+                    styles [
+                      "toolbar",
+                    ]
+                  };
+                }
               }
             }
           }
@@ -600,10 +560,7 @@ Gtk.SizeGroup {
   widgets [src_lang_selector, dest_lang_selector]
 }
 
-Gtk.SizeGroup {
-  widgets [error_retry_btn, error_preferences_btn]
-}
-
-Gtk.SizeGroup {
-  widgets [error_api_key_btn, error_preferences2_btn]
+Gtk.SizeGroup mobile_buttons_size {
+  mode: none;
+  widgets [error_retry_btn, error_open_prefs_btn, rmv_key_btn, key_open_prefs_btn]
 }

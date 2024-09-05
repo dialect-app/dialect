@@ -54,9 +54,7 @@ class DialectWindow(Adw.ApplicationWindow):
     translator_box: Gtk.Box = Gtk.Template.Child()  # type: ignore
     key_page: Adw.StatusPage = Gtk.Template.Child()  # type: ignore
     rmv_key_btn: Gtk.Button = Gtk.Template.Child()  # type: ignore
-    error_api_key_btn: Gtk.Button = Gtk.Template.Child()  # type: ignore
 
-    title_stack: Gtk.Stack = Gtk.Template.Child()  # type: ignore
     langs_button_box: Gtk.Box = Gtk.Template.Child()  # type: ignore
     switch_btn: Gtk.Button = Gtk.Template.Child()  # type: ignore
     src_lang_selector: LangSelector = Gtk.Template.Child()  # type: ignore
@@ -86,10 +84,6 @@ class DialectWindow(Adw.ApplicationWindow):
     edit_btn: Gtk.Button = Gtk.Template.Child()  # type: ignore
     copy_btn: Gtk.Button = Gtk.Template.Child()  # type: ignore
     dest_speech_btn: SpeechButton = Gtk.Template.Child()  # type: ignore
-
-    actionbar: Gtk.ActionBar = Gtk.Template.Child()  # type: ignore
-    src_lang_selector_m: LangSelector = Gtk.Template.Child()  # type: ignore
-    dest_lang_selector_m: LangSelector = Gtk.Template.Child()  # type: ignore
 
     toast: Adw.Toast | None = None  # for notification management
     toast_overlay: Adw.ToastOverlay = Gtk.Template.Child()  # type: ignore
@@ -261,13 +255,8 @@ class DialectWindow(Adw.ApplicationWindow):
 
         # Src lang selector
         self.src_lang_selector.bind_models(self.src_lang_model, self.src_recent_lang_model)
-        self.src_lang_selector_m.bind_models(self.src_lang_model, self.src_recent_lang_model)
-
         # Dest lang selector
         self.dest_lang_selector.bind_models(self.dest_lang_model, self.dest_recent_lang_model)
-        self.dest_lang_selector_m.bind_models(self.dest_lang_model, self.dest_recent_lang_model)
-
-        self.langs_button_box.props.homogeneous = False
 
     def setup_translation(self):
         # Src buffer
@@ -441,7 +430,6 @@ class DialectWindow(Adw.ApplicationWindow):
                     "Please set a valid API key or unset the API key in the preferences."
                 )
                 self.rmv_key_btn.props.visible = True
-                self.error_api_key_btn.props.visible = True
 
         self.main_stack.props.visible_child_name = "api-key"
 
