@@ -9,7 +9,7 @@ from typing import Literal, TypedDict
 
 from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk
 
-from dialect.asyncio import create_background_task
+from dialect.asyncio import background_task
 from dialect.define import APP_ID, PROFILE, RES_PATH, TRANS_NUMBER
 from dialect.languages import LanguagesListModel
 from dialect.providers import (
@@ -227,9 +227,9 @@ class DialectWindow(Adw.ApplicationWindow):
         self.set_help_overlay(DialectShortcutsWindow())
 
         # Load translator
-        create_background_task(self.load_translator())
+        self.load_translator()
         # Load text to speech
-        create_background_task(self.load_tts())
+        self.load_tts()
 
         # Listen to active providers changes
         Settings.get().connect("provider-changed", self._on_active_provider_changed)
@@ -287,10 +287,11 @@ class DialectWindow(Adw.ApplicationWindow):
     def reload_provider(self, kind: str):
         match kind:
             case "translator":
-                create_background_task(self.load_translator())
+                self.load_translator()
             case "tts":
-                create_background_task(self.load_tts())
+                self.load_tts()
 
+    @background_task
     async def load_translator(self):
         self.translator_loading = True
 
@@ -444,6 +445,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         self.main_stack.props.visible_child_name = "api-key"
 
+    @background_task
     async def load_tts(self):
         self.src_speech_btn.loading()
         self.dest_speech_btn.loading()
@@ -516,15 +518,13 @@ class DialectWindow(Adw.ApplicationWindow):
         # Run translation
         self._on_translation()
 
-    def translate_selection(self, src_lang: str | None, dest_lang: str | None):
+    @background_task
+    async def translate_selection(self, src_lang: str | None, dest_lang: str | None):
         """Runs `translate` with the selection clipboard text"""
-
-        def on_paste(clipboard, result):
-            text = clipboard.read_text_finish(result)
-            self.translate(text, src_lang, dest_lang)
-
         if display := Gdk.Display.get_default():
-            display.get_primary_clipboard().read_text_async(None, on_paste)
+            clipboard = display.get_primary_clipboard()
+            if text := await clipboard.read_text_async():  # type: ignore
+                self.translate(text, src_lang, dest_lang)
 
     def save_settings(self, *args, **kwargs):
         if not self.is_maximized():
@@ -745,16 +745,14 @@ class DialectWindow(Adw.ApplicationWindow):
             display.get_clipboard().set(dest_text)
             self.send_notification(_("Copied to clipboard"), timeout=1)
 
-    def _on_paste_action(self, *_args):
-        def on_paste(clipboard: Gdk.Clipboard, result: Gio.AsyncResult):
-            text = clipboard.read_text_finish(result)
-            if text is not None:
+    @background_task
+    async def _on_paste_action(self, *_args):
+        if display := Gdk.Display.get_default():
+            clipboard = display.get_clipboard()
+            if text := await clipboard.read_text_async():  # type: ignore
                 end_iter = self.src_buffer.get_end_iter()
                 self.src_buffer.insert(end_iter, text)
                 self.src_buffer.emit("end-user-action")
-
-        if display := Gdk.Display.get_default():
-            display.get_clipboard().read_text_async(None, on_paste)
 
     def _on_suggest_action(self, *_args):
         self.dest_toolbar_stack.props.visible_child_name = "edit"
@@ -763,10 +761,8 @@ class DialectWindow(Adw.ApplicationWindow):
         )
         self.dest_text.props.editable = True
 
-    def _on_suggest_ok_action(self, *_args):
-        create_background_task(self._send_suggestion())
-
-    async def _send_suggestion(self):
+    @background_task
+    async def _on_suggest_ok_action(self, *_args):
         if not self.provider["trans"]:
             return
 
@@ -805,7 +801,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         src_text = self.src_buffer.get_text(self.src_buffer.get_start_iter(), self.src_buffer.get_end_iter(), True)
         src_language = self.src_lang_selector.selected
-        self._pre_speech(src_text, src_language, "src")
+        self._on_speech(src_text, src_language, "src")
 
     def _on_dest_listen_action(self, *_args):
         if self.current_speech:
@@ -814,47 +810,36 @@ class DialectWindow(Adw.ApplicationWindow):
 
         dest_text = self.dest_buffer.get_text(self.dest_buffer.get_start_iter(), self.dest_buffer.get_end_iter(), True)
         dest_language = self.dest_lang_selector.selected
-        self._pre_speech(dest_text, dest_language, "dest")
+        self._on_speech(dest_text, dest_language, "dest")
 
-    def _pre_speech(self, text: str, lang: str, called_from: Literal["src", "dest"]):
+    @background_task
+    async def _on_speech(self, text: str, lang: str, called_from: Literal["src", "dest"]):
         # Retry loading TTS provider
         if self.speech_provider_failed:
-            create_background_task(self.load_tts())
+            self.load_tts()
             return
 
-        if text != "":
-            self.speech_loading = True
-            self.current_speech = {"text": text, "lang": lang, "called_from": called_from}
-            self._check_speech_enabled()
-            create_background_task(self._download_speech())
-
-            if called_from == "src":  # Show spinner on button
-                self.src_speech_btn.loading()
-            else:
-                self.dest_speech_btn.loading()
-
-    def _speech_reset(self, set_ready: bool = True):
-        if not self.player:
+        if not text or not self.provider["tts"] or not self.player:
             return
 
-        self.player.set_state(Gst.State.NULL)
-        self.current_speech = None
-        self.speech_loading = False
+        # Set loading state and current speech to update UI
+        self.speech_loading = True
+        self.current_speech = {"text": text, "lang": lang, "called_from": called_from}
         self._check_speech_enabled()
 
-        if set_ready:
-            self.src_speech_btn.ready()
-            self.dest_speech_btn.ready()
+        if called_from == "src":  # Show spinner on button
+            self.src_speech_btn.loading()
+        else:
+            self.dest_speech_btn.loading()
 
-    async def _download_speech(self):
-        if not self.provider["tts"] or not self.current_speech:
-            return
-
+        # Download speech
         try:
-            speech_file = await self.provider["tts"].speech(self.current_speech["text"], self.current_speech["lang"])
-
-            self._play_audio(speech_file.name)
-            speech_file.close()
+            file_ = await self.provider["tts"].speech(self.current_speech["text"], self.current_speech["lang"])
+            uri = "file://" + file_.name
+            self.player.set_property("uri", uri)
+            self.player.set_state(Gst.State.PLAYING)
+            self.add_tick_callback(self._gst_progress_timeout)
+            file_.close()
 
         except (RequestError, ProviderError) as exc:
             logging.error(exc)
@@ -881,14 +866,18 @@ class DialectWindow(Adw.ApplicationWindow):
             self.send_notification(text, action=action)
             self._speech_reset(False)
 
-    def _play_audio(self, path: str):
+    def _speech_reset(self, set_ready: bool = True):
         if not self.player:
             return
 
-        uri = "file://" + path
-        self.player.set_property("uri", uri)
-        self.player.set_state(Gst.State.PLAYING)
-        self.add_tick_callback(self._gst_progress_timeout)
+        self.player.set_state(Gst.State.NULL)
+        self.current_speech = None
+        self.speech_loading = False
+        self._check_speech_enabled()
+
+        if set_ready:
+            self.src_speech_btn.ready()
+            self.dest_speech_btn.ready()
 
     def _on_gst_message(self, _bus, message: Gst.Message):
         if message.type == Gst.MessageType.EOS or message.type == Gst.MessageType.ERROR:
@@ -1080,36 +1069,13 @@ class DialectWindow(Adw.ApplicationWindow):
         return Gdk.EVENT_STOP
 
     @Gtk.Template.Callback()
-    def _on_translation(self, *_args):
-        if not self.provider["trans"]:
+    @background_task
+    async def _on_translation(self, *_args):
+        if not self.provider["trans"] or self._appeared_before():
+            # If it's like the last translation then it's useless to continue
             return
 
-        # If it's like the last translation then it's useless to continue
-        if not self._appeared_before():
-            create_background_task(self._translation())
-
-    def _appeared_before(self):
-        if not self.provider["trans"]:
-            return
-
-        src_language = self.src_lang_selector.selected
-        dest_language = self.dest_lang_selector.selected
-        src_text = self.src_buffer.get_text(self.src_buffer.get_start_iter(), self.src_buffer.get_end_iter(), True)
-        translation = self.current_translation
-        if (
-            len(self.provider["trans"].history) >= self.current_history + 1
-            and translation
-            and (translation.original.src == src_language or "auto")
-            and translation.original.dest == dest_language
-            and translation.original.text == src_text
-        ):
-            return True
-        return False
-
-    async def _translation(self):
-        if not self.provider["trans"]:
-            return
-
+        # Run translation
         if self.next_translation:
             request = self.next_translation
             self.next_translation = None
@@ -1205,6 +1171,24 @@ class DialectWindow(Adw.ApplicationWindow):
 
             if not self.translation_loading:
                 self._translation_finish()
+
+    def _appeared_before(self):
+        if not self.provider["trans"]:
+            return
+
+        src_language = self.src_lang_selector.selected
+        dest_language = self.dest_lang_selector.selected
+        src_text = self.src_buffer.get_text(self.src_buffer.get_start_iter(), self.src_buffer.get_end_iter(), True)
+        translation = self.current_translation
+        if (
+            len(self.provider["trans"].history) >= self.current_history + 1
+            and translation
+            and (translation.original.src == src_language or "auto")
+            and translation.original.dest == dest_language
+            and translation.original.text == src_text
+        ):
+            return True
+        return False
 
     def _translation_finish(self):
         self.trans_spinner.hide()
