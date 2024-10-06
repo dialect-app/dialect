@@ -1,6 +1,9 @@
 
 ### In Development
 
+### 2.5.0
+- User interface improvements
+
 ### 2.4.1
 - Bug fixes
 
