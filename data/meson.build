@@ -9,7 +9,7 @@ desktop_file = i18n.merge_file(
   ),
   output: '@0@.desktop'.format(application_id),
   type: 'desktop',
-  po_dir: '../po',
+  po_dir: '../po/ui',
   install: true,
   install_dir: join_paths(get_option('datadir'), 'applications')
 )
@@ -31,7 +31,7 @@ appstream_file = i18n.merge_file(
     configuration: appdata_conf
   ),
   output: '@0@.metainfo.xml'.format(application_id),
-  po_dir: '../po',
+  po_dir: '../po/ui',
   install: true,
   install_dir: join_paths(get_option('datadir'), 'metainfo')
 )
