@@ -59,6 +59,7 @@ subdir('search_provider')
 # Python sources
 sources = [
   '__init__.py',
+  'asyncio.py',
   'languages.py',
   'main.py',
   'preferences.py',

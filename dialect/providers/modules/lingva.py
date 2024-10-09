@@ -2,17 +2,17 @@
 # Copyright 2021 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-import logging
 from tempfile import NamedTemporaryFile
 from urllib.parse import quote
 
 from dialect.providers.base import (
     ProviderCapability,
-    ProviderError,
-    ProviderErrorCode,
     ProviderFeature,
     Translation,
+    TranslationMistake,
+    TranslationPronunciation,
 )
+from dialect.providers.errors import InvalidLangCode, UnexpectedError
 from dialect.providers.soup import SoupProvider
 
 
@@ -37,21 +37,6 @@ class Provider(SoupProvider):
 
         self.chars_limit = 5000
 
-    def validate_instance(self, url, on_done, on_fail):
-        def on_response(data):
-            valid = False
-            try:
-                valid = "translation" in data
-            except:  # noqa
-                pass
-
-            on_done(valid)
-
-        # Lingva translation endpoint
-        message = self.create_message("GET", self.format_url(url, "/api/v1/en/es/hello"))
-        # Do async request
-        self.send_and_read_and_process_response(message, on_response, on_fail, False)
-
     @property
     def lang_url(self):
         return self.format_url(self.instance_url, "/api/v1/languages/")
@@ -64,89 +49,87 @@ class Provider(SoupProvider):
     def speech_url(self):
         return self.format_url(self.instance_url, "/api/v1/audio/{lang}/{text}")
 
-    def init(self, on_done, on_fail):
-        def on_response(data):
-            if "languages" in data:
-                for lang in data["languages"]:
+    async def validate_instance(self, url):
+        request = await self.get(self.format_url(url, "/api/v1/en/es/hello"), check_common=False)
+
+        valid = False
+        try:
+            valid = "translation" in request
+        except:  # noqa
+            pass
+
+        return valid
+
+    async def init(self) -> None:
+        response = await self.get(self.lang_url)
+
+        try:
+            if "languages" in response:
+                for lang in response["languages"]:
                     if lang["code"] != "auto":
                         self.add_lang(lang["code"], lang["name"], tts=True)
-                on_done()
             else:
-                on_fail(ProviderError(ProviderErrorCode.UNEXPECTED, "No langs found in server."))
+                raise UnexpectedError("No langs found in server.")
+        except Exception as exc:
+            raise UnexpectedError from exc
 
-        # Languages message request
-        message = self.create_message("GET", self.lang_url)
-        # Do async request
-        self.send_and_read_and_process_response(message, on_response, on_fail)
+    async def init_trans(self):
+        await self.init()
 
-    def init_trans(self, on_done, on_fail):
-        self.init(on_done, on_fail)
+    async def init_tts(self):
+        await self.init()
 
-    def init_tts(self, on_done, on_fail):
-        self.init(on_done, on_fail)
-
-    def translate(self, text, src, dest, on_done, on_fail):
-        def on_response(data):
-            try:
-                detected = data.get("info", {}).get("detectedSource", None)
-                mistakes = data.get("info", {}).get("typo", None)
-                src_pronunciation = data.get("info", {}).get("pronunciation", {}).get("query", None)
-                dest_pronunciation = data.get("info", {}).get("pronunciation", {}).get("translation", None)
-
-                translation = Translation(
-                    data["translation"],
-                    (text, src, dest),
-                    detected,
-                    (mistakes, mistakes),
-                    (src_pronunciation, dest_pronunciation),
-                )
-
-                on_done(translation)
-
-            except Exception as exc:
-                error = "Failed reading the translation data"
-                logging.warning(error, exc)
-                on_fail(ProviderError(ProviderErrorCode.TRANSLATION_FAILED, error))
-
+    async def translate(self, request):
+        src, dest = self.denormalize_lang(request.src, request.dest)
         # Format url query data
-        text = quote(text, safe="")
+        text = quote(request.text, safe="")
         url = self.translate_url.format(text=text, src=src, dest=dest)
 
-        # Request message
-        message = self.create_message("GET", url)
+        # Do request
+        response = await self.get(url)
+        try:
+            detected = response.get("info", {}).get("detectedSource", None)
+            mistakes = response.get("info", {}).get("typo", None)
+            src_pronunciation = response.get("info", {}).get("pronunciation", {}).get("query", None)
+            dest_pronunciation = response.get("info", {}).get("pronunciation", {}).get("translation", None)
 
-        # Do async request
-        self.send_and_read_and_process_response(message, on_response, on_fail)
+            return Translation(
+                response["translation"],
+                request,
+                detected,
+                TranslationMistake(mistakes, mistakes) if mistakes else None,
+                TranslationPronunciation(src_pronunciation, dest_pronunciation),
+            )
 
-    def speech(self, text, language, on_done, on_fail):
-        def on_response(data):
-            if "audio" in data:
-                file = NamedTemporaryFile()
-                audio = bytearray(data["audio"])
-                file.write(audio)
-                file.seek(0)
+        except Exception as exc:
+            raise UnexpectedError("Failed reading the translation data") from exc
 
-                on_done(file)
-            else:
-                on_fail(ProviderError(ProviderErrorCode.TTS_FAILED, "No audio was found."))
-
+    async def speech(self, text, language):
+        (language,) = self.denormalize_lang(language)
         # Format url query data
         url = self.speech_url.format(text=text, lang=language)
+        # Do request
+        response = await self.get(url)
 
-        # Request message
-        message = self.create_message("GET", url)
-
-        # Do async request
-        self.send_and_read_and_process_response(message, on_response, on_fail)
+        try:
+            file = NamedTemporaryFile()
+            audio = bytearray(response["audio"])
+            file.write(audio)
+            file.seek(0)
+            return file
+        except Exception as exc:
+            file.close()
+            raise UnexpectedError from exc
 
     def check_known_errors(self, _status, data):
         """Raises a proper Exception if an error is found in the data."""
         if not data:
-            return ProviderError(ProviderErrorCode.EMPTY, "Response is empty!")
+            raise UnexpectedError("Response is empty!")
+
         if "error" in data:
             error = data["error"]
 
             if error == "Invalid target language" or error == "Invalid source language":
-                return ProviderError(ProviderErrorCode.INVALID_LANG_CODE, error)
+                raise InvalidLangCode(error)
             else:
-                return ProviderError(ProviderErrorCode.UNEXPECTED, error)
+                raise UnexpectedError(error)

@@ -90,7 +90,7 @@ template $DialectWindow : Adw.ApplicationWindow {
 
               Button {
                 label: _("Retry");
-                clicked => $retry_load_translator();
+                clicked => $_on_retry_load_translator_clicked();
 
                 styles [
                   "pill",
@@ -113,7 +113,7 @@ template $DialectWindow : Adw.ApplicationWindow {
               orientation: vertical;
 
               Button error_retry_btn {
-                clicked => $retry_load_translator();
+                clicked => $_on_retry_load_translator_clicked();
 
                 styles [
                   "pill",
@@ -165,7 +165,7 @@ template $DialectWindow : Adw.ApplicationWindow {
               Button rmv_key_btn {
                 visible: false;
                 label: _("Remove Key and Retry");
-                clicked => $remove_key_and_reload();
+                clicked => $_on_remove_key_and_reload_clicked();
 
                 styles [
                   "pill",
@@ -189,7 +189,7 @@ template $DialectWindow : Adw.ApplicationWindow {
 
               Button error_api_key_btn {
                 visible: false;
-                clicked => $remove_key_and_reload();
+                clicked => $_on_remove_key_and_reload_clicked();
 
                 styles [
                   "pill",
@@ -240,7 +240,7 @@ template $DialectWindow : Adw.ApplicationWindow {
 
                   $LangSelector src_lang_selector {
                     notify::selected => $_on_src_lang_changed();
-                    user-selection-changed => $translation();
+                    user-selection-changed => $_on_translation();
                     tooltip-text: _("Change Source Language");
                   }
 
@@ -252,7 +252,7 @@ template $DialectWindow : Adw.ApplicationWindow {
 
                   $LangSelector dest_lang_selector {
                     notify::selected => $_on_dest_lang_changed();
-                    user-selection-changed => $translation();
+                    user-selection-changed => $_on_translation();
                     tooltip-text: _("Change Destination Language");
                   }
                 };
@@ -565,7 +565,7 @@ template $DialectWindow : Adw.ApplicationWindow {
                 selected: bind src_lang_selector.selected bidirectional;
                 tooltip-text: _("Change Source Language");
 
-                user-selection-changed => $translation();
+                user-selection-changed => $_on_translation();
               }
 
               [center]
@@ -581,7 +581,7 @@ template $DialectWindow : Adw.ApplicationWindow {
                 selected: bind dest_lang_selector.selected bidirectional;
                 tooltip-text: _("Change Destination Language");
 
-                user-selection-changed => $translation();
+                user-selection-changed => $_on_translation();
               }
             }
           }

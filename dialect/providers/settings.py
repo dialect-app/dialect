@@ -36,6 +36,7 @@ class ProviderSettings(Gio.Settings):
         self.name = name
         self.defaults = defaults  # set of per-provider defaults
         self._secret_attr = {"provider": name}
+        self._api_key: str | None = None
 
     @property
     def instance_url(self) -> str:
@@ -50,6 +51,9 @@ class ProviderSettings(Gio.Settings):
     def api_key(self) -> str:
         """API key."""
 
+        if self._api_key:
+            return self._api_key
+
         # Check if we have an old API KEY in GSettings for migration
         if gsettings := self.get_string("api-key"):
             self.api_key = gsettings  # Save to secret
@@ -57,7 +61,10 @@ class ProviderSettings(Gio.Settings):
             return gsettings
 
         try:
-            return Secret.password_lookup_sync(SECRETS_SCHEMA, self._secret_attr, None) or self.defaults["api_key"]
+            self._api_key = (
+                Secret.password_lookup_sync(SECRETS_SCHEMA, self._secret_attr, None) or self.defaults["api_key"]
+            )
+            return self._api_key
         except GLib.Error as exc:
             logging.warning(exc)
 
@@ -75,7 +82,9 @@ class ProviderSettings(Gio.Settings):
                     api_key,
                     None,
                 )
+                self._api_key = api_key
             else:  # Remove secret
+                self._api_key = None
                 Secret.password_clear_sync(SECRETS_SCHEMA, self._secret_attr, None)
 
             # Fake change in api-key setting

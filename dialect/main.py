@@ -21,6 +21,7 @@ try:
 except ImportError or ValueError:
     logging.error("Error: GObject dependencies not met.")
 
+from dialect.asyncio import glib_event_loop_policy
 from dialect.define import APP_ID, RES_PATH, VERSION
 from dialect.preferences import DialectPreferencesDialog
 from dialect.settings import Settings
@@ -168,10 +169,7 @@ class Dialect(Adw.Application):
 
         # Update UI
         if self.window:
-            if self.window.trans_src_pron is not None:
-                self.window.src_pron_revealer.props.reveal_child = value  # type: ignore
-            if self.window.trans_dest_pron is not None:
-                self.window.dest_pron_revealer.props.reveal_child = value  # type: ignore
+            self.window._check_pronunciation()
 
     def _on_preferences(self, _action, _param):
         """Show preferences window"""
@@ -198,4 +196,9 @@ class Dialect(Adw.Application):
 def main():
     # Run the Application
     app = Dialect()
-    return app.run(sys.argv)
+    exit_code = 0
+
+    with glib_event_loop_policy():
+        exit_code = app.run(sys.argv)
+
+    return exit_code
