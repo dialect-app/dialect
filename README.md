@@ -24,9 +24,9 @@ A translation app for GNOME.
 
 <a href='https://flathub.org/apps/details/app.drey.Dialect'><img alt='Download on Flathub' src='https://flathub.org/api/badge?svg&locale=en'/></a>
 
-### AUR
+### Arch Linux
 
-Arch-based distro users can install from the AUR: [`dialect`](https://aur.archlinux.org/packages/dialect) for the stable version or [`dialect-git`](https://aur.archlinux.org/packages/dialect-git/) for the latest git revision.
+The stable version is available from the official `Extra` repository: [`dialect`](https://archlinux.org/packages/extra/any/dialect/) and the latest git revision is available as an AUR package: [`dialect-git`](https://aur.archlinux.org/packages/dialect-git/)
 
 ### Fedora
 
