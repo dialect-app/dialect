@@ -118,7 +118,7 @@ class Dialect(Adw.Application):
 
         if self.window is not None:
             if not text and selection:
-                self.window.translate_selection(langs["src"], langs["dest"])
+                self.window.queue_selection_translation(langs["src"], langs["dest"])
             elif text:
                 self.window.translate(text, langs["src"], langs["dest"])
 

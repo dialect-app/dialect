@@ -44,6 +44,8 @@ template $DialectWindow : Adw.ApplicationWindow {
   height-request: 320;
   focus-widget: src_text;
 
+  notify::is-active => $_on_is_active_changed();
+
   Adw.Breakpoint {
     condition ("max-width: 680px")
     setters {

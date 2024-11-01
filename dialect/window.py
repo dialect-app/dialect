@@ -46,6 +46,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
     # Properties
     translator_loading: bool = GObject.Property(type=bool, default=True)  # type: ignore
+    selection_translation_queued: bool = GObject.Property(type=bool, default=False)  # type: ignore
 
     # Child widgets
     menu_btn: Gtk.MenuButton = Gtk.Template.Child()  # type: ignore
@@ -105,6 +106,7 @@ class DialectWindow(Adw.ApplicationWindow):
     current_history = 0  # for history management
 
     # Translation-related variables
+    selection_translation_langs: tuple[str | None, str | None] = (None, None)
     next_translation: TranslationRequest | None = None  # for ongoing translation
     translation_loading = False  # for ongoing translation
 
@@ -511,8 +513,20 @@ class DialectWindow(Adw.ApplicationWindow):
         """Runs `translate` with the selection clipboard text"""
         if display := Gdk.Display.get_default():
             clipboard = display.get_primary_clipboard()
-            if text := await clipboard.read_text_async():  # type: ignore
-                self.translate(text, src_lang, dest_lang)
+            try:
+                if text := await clipboard.read_text_async():  # type: ignore
+                    self.translate(text, src_lang, dest_lang)
+            except GLib.Error as exc:
+                logging.error(exc)
+                self.send_notification(_("Couldn’t read selection clip board!"))
+
+    def queue_selection_translation(self, src_lang: str | None, dest_lang: str | None):
+        """Call `translate_selection` or queue it until the window is focused"""
+        if self.props.is_active:
+            self.translate_selection(src_lang, dest_lang)
+        else:
+            self.selection_translation_queued = True
+            self.selection_translation_langs = (src_lang, dest_lang)
 
     def save_settings(self, *args, **kwargs):
         if not self.is_maximized():
@@ -931,6 +945,14 @@ class DialectWindow(Adw.ApplicationWindow):
     def _on_user_action_ended(self, _buffer):
         if Settings.get().live_translation:
             self._on_translation()
+
+    @Gtk.Template.Callback()
+    def _on_is_active_changed(self, *_args):
+        if self.selection_translation_queued and self.props.is_active:
+            src, dest = self.selection_translation_langs
+            self.selection_translation_queued = False
+            self.selection_translation_langs = (None, None)
+            self.translate_selection(src, dest)
 
     @Gtk.Template.Callback()
     def _on_retry_load_translator_clicked(self, *_args):
