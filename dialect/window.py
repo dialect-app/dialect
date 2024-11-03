@@ -1103,7 +1103,7 @@ class DialectWindow(Adw.ApplicationWindow):
         self.langs_button_box.props.sensitive = False
 
         # If the two languages are the same, nothing is done
-        if request.src != request.dest or request.text != "":
+        if request.src != request.dest and request.text != "":
             self.translation_loading = True
 
             try:
