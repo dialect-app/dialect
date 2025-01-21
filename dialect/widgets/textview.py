@@ -3,12 +3,12 @@
 # Copyright 2023 Libretto
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Gdk, GObject, Gtk
+from gi.repository import Gdk, GObject, Gtk, GtkSource
 
 from dialect.settings import Settings
 
 
-class TextView(Gtk.TextView):
+class TextView(GtkSource.View):
     __gtype_name__ = "TextView"
 
     activate_mod: bool = GObject.Property(type=bool, default=True)  # type: ignore
@@ -35,7 +35,9 @@ class TextView(Gtk.TextView):
         self._font_css_provider = Gtk.CssProvider()
 
         # Add font CSS provider
-        self.get_style_context().add_provider(self._font_css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
+        widget_style_context = self.get_style_context()
+        widget_style_context.add_provider(self._font_css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
+        widget_style_context.add_class("dialect-sourceview")
 
     @GObject.Signal()
     def activate(self): ...
