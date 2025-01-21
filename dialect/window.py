@@ -5,9 +5,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
+import re
 from typing import Literal, TypedDict
 
-from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk
+from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk, Spelling
 
 from dialect.asyncio import background_task
 from dialect.define import APP_ID, PROFILE, RES_PATH, TRANS_NUMBER
@@ -220,6 +221,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
         self.setup_selectors()
         self.setup_translation()
+        self.setup_spell_checking()
         self.set_help_overlay(DialectShortcutsWindow())
 
         # Load translator
@@ -244,6 +246,25 @@ class DialectWindow(Adw.ApplicationWindow):
             "changed::translate-accel",
             lambda s, _k: self.src_text.set_property("activate_mod", not bool(s.translate_accel_value)),
         )
+
+    def setup_spell_checking(self):
+        # Enable spell-checking
+        self.spell_checker: Spelling.Checker = Spelling.Checker.get_default()
+        spell_checker_adapter = Spelling.TextBufferAdapter.new(self.src_buffer, self.spell_checker)
+        spell_checker_menu = spell_checker_adapter.get_menu_model()
+        self.src_text.set_extra_menu(spell_checker_menu)
+        self.src_text.insert_action_group("spelling", spell_checker_adapter)
+        spell_checker_adapter.set_enabled(True)
+
+        # Collect the spell checking provider's supported languages.
+        spell_checker_supported_languages_glist = self.spell_checker.get_provider().list_languages()
+        self.spell_checker_supported_languages = {}
+        for lang_object in spell_checker_supported_languages_glist:
+            lang_code = lang_object.get_code()
+            lang_base_code = re.split("_|-", lang_code)[0]
+            if lang_base_code not in self.spell_checker_supported_languages:
+                self.spell_checker_supported_languages[lang_base_code] = []
+            self.spell_checker_supported_languages[lang_base_code].append(lang_code)
 
     def setup_selectors(self):
         def lang_names_func(code: str):
@@ -673,6 +694,30 @@ class DialectWindow(Adw.ApplicationWindow):
             and self.dest_lang_selector.selected in self.provider["trans"].src_languages
         )
 
+    def _pick_spell_checking_language(self, lang_code: str):
+        # Try and set the correct language if available.
+        lang_base_code = lang_code.split("-")[0]
+        default_user_lang_code = self.spell_checker.get_provider().get_default_code()
+
+        spell_checker_lang_code = default_user_lang_code  # Default to the user's preference
+
+        if lang_base_code in self.spell_checker_supported_languages:
+            if lang_code in self.spell_checker_supported_languages[lang_base_code]:
+                # The language is matched exactly.
+                spell_checker_lang_code = lang_code
+            elif lang_code.replace("-", "_") in self.spell_checker_supported_languages[lang_base_code]:
+                # The language code needs underscores within the provider.
+                spell_checker_lang_code = lang_code.replace("-", "_")
+            elif default_user_lang_code.startswith(lang_base_code):
+                # Default to user preference if at least the base language code matches.
+                # Probably the most common scenario: en -> en_US.
+                spell_checker_lang_code = default_user_lang_code
+            else:
+                # Try to set the language even if the country code doesn't match, to the first available one.
+                spell_checker_lang_code = self.spell_checker_supported_languages[lang_base_code][0]
+
+        self.spell_checker.set_language(spell_checker_lang_code)
+
     """
     User interface functions
     """
@@ -920,7 +965,7 @@ class DialectWindow(Adw.ApplicationWindow):
         if self.provider["trans"].chars_limit == -1:  # -1 means unlimited
             self.char_counter.props.label = ""
         else:
-            self.char_counter.props.label = f'{str(char_count)}/{self.provider["trans"].chars_limit}'
+            self.char_counter.props.label = f"{str(char_count)}/{self.provider['trans'].chars_limit}"
 
             if char_count >= self.provider["trans"].chars_limit:
                 self.send_notification(_("{} characters limit reached!").format(self.provider["trans"].chars_limit))

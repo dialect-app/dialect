@@ -16,6 +16,8 @@ try:
     gi.require_version("Adw", "1")
     gi.require_version("Secret", "1")
     gi.require_version("Soup", "3.0")
+    gi.require_version("Spelling", "1")
+    gi.require_version("GtkSource", "5")
 
     from gi.repository import Adw, Gio, GLib, Gst
 except ImportError or ValueError:

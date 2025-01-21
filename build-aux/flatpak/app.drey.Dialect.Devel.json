@@ -31,6 +31,17 @@
             ]
         },
         {
+            "name" : "libspelling",
+            "buildsystem" : "meson",
+            "sources" : [
+                {
+                    "type" : "git",
+                    "url" : "https://gitlab.gnome.org/GNOME/libspelling.git",
+                    "branch" : "main"
+                }
+            ]
+        },
+        {
             "name" : "dialect",
             "buildsystem" : "meson",
             "run-tests": true,

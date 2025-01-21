@@ -117,3 +117,9 @@ actionbar.flat > revealer > box {
 .speech-button progressbar trough {
   min-width: 34px;
 }
+
+/* Set GtkSourceView Caret Color */
+.dialect-sourceview {
+  caret-color: var(--view-fg-color);
+}
+
