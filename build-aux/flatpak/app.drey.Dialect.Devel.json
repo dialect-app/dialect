@@ -1,10 +1,10 @@
 {
-    "app-id" : "app.drey.Dialect.Devel",
-    "runtime" : "org.gnome.Platform",
-    "runtime-version" : "master",
-    "sdk" : "org.gnome.Sdk",
-    "command" : "dialect",
-    "finish-args" : [
+    "id": "app.drey.Dialect.Devel",
+    "runtime": "org.gnome.Platform",
+    "runtime-version": "master",
+    "sdk": "org.gnome.Sdk",
+    "command": "dialect",
+    "finish-args": [
         "--share=network",
         "--share=ipc",
         "--device=dri",
@@ -13,10 +13,10 @@
         "--socket=pulseaudio",
         "--own-name=app.drey.Dialect.Devel.SearchProvider"
     ],
-    "cleanup" : [
+    "cleanup": [
         "*blueprint*"
     ],
-    "modules" : [
+    "modules": [
         "pypi-dependencies.json",
         {
             "name": "blueprint",
@@ -25,31 +25,30 @@
                 {
                     "type": "git",
                     "url": "https://gitlab.gnome.org/jwestman/blueprint-compiler",
-                    "tag": "v0.10.0",
-                    "commit": "2a39a16391122af2f3d812e478c1c1398c98b972"
+                    "branch": "main"
                 }
             ]
         },
         {
-            "name" : "libspelling",
-            "buildsystem" : "meson",
-            "sources" : [
+            "name": "libspelling",
+            "buildsystem": "meson",
+            "sources": [
                 {
-                    "type" : "git",
-                    "url" : "https://gitlab.gnome.org/GNOME/libspelling.git",
-                    "branch" : "main"
+                    "type": "git",
+                    "url": "https://gitlab.gnome.org/GNOME/libspelling.git",
+                    "branch": "main"
                 }
             ]
         },
         {
-            "name" : "dialect",
-            "buildsystem" : "meson",
+            "name": "dialect",
+            "buildsystem": "meson",
             "run-tests": true,
             "config-opts": ["-Dprofile=development"],
-            "sources" : [
+            "sources": [
                 {
-                    "type" : "dir",
-                    "path" : "../../."
+                    "type": "dir",
+                    "path": "../../."
                 }
             ]
         }
