@@ -257,9 +257,8 @@ class DialectWindow(Adw.ApplicationWindow):
         spell_checker_adapter.set_enabled(True)
 
         # Collect the spell checking provider's supported languages.
-        spell_checker_supported_languages_glist = self.spell_checker.get_provider().list_languages()
         self.spell_checker_supported_languages = {}
-        for lang_object in spell_checker_supported_languages_glist:
+        for lang_object in self.spell_checker.get_provider().list_languages():
             lang_code = lang_object.get_code()
             lang_base_code = re.split("_|-", lang_code)[0]
             if lang_base_code not in self.spell_checker_supported_languages:
@@ -705,9 +704,9 @@ class DialectWindow(Adw.ApplicationWindow):
             if lang_code in self.spell_checker_supported_languages[lang_base_code]:
                 # The language is matched exactly.
                 spell_checker_lang_code = lang_code
-            elif lang_code.replace("-", "_") in self.spell_checker_supported_languages[lang_base_code]:
+            elif (code := lang_code.replace("-", "_")) in self.spell_checker_supported_languages[lang_base_code]:
                 # The language code needs underscores within the provider.
-                spell_checker_lang_code = lang_code.replace("-", "_")
+                spell_checker_lang_code = code
             elif default_user_lang_code.startswith(lang_base_code):
                 # Default to user preference if at least the base language code matches.
                 # Probably the most common scenario: en -> en_US.
@@ -1039,6 +1038,9 @@ class DialectWindow(Adw.ApplicationWindow):
             elif len(self.src_langs) == 4:
                 self.src_langs.pop()
             self.src_langs.insert(0, code)
+
+        # Try to set the language in the spell checker.
+        self._pick_spell_checking_language(code)
 
         # Rewrite recent langs
         self.src_recent_lang_model.set_langs(self.src_langs, auto=True)
