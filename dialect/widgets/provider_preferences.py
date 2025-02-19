@@ -10,7 +10,7 @@ import typing
 
 from gi.repository import Adw, GObject, Gtk
 
-from dialect.asyncio import create_background_task
+from dialect.asyncio import background_task
 from dialect.define import RES_PATH
 from dialect.providers import ProviderCapability, RequestError
 
@@ -74,8 +74,9 @@ class ProviderPreferences(Adw.NavigationPage):
 
         self.api_usage_group.props.visible = False
         if self.provider.supports_api_usage:
-            create_background_task(self._load_api_usage())
+            self._load_api_usage()
 
+    @background_task
     async def _load_api_usage(self):
         if not self.provider:
             return
@@ -92,11 +93,9 @@ class ProviderPreferences(Adw.NavigationPage):
             logging.error(exc)
 
     @Gtk.Template.Callback()
-    def _on_instance_apply(self, _row):
+    @background_task
+    async def _on_instance_apply(self, _row):
         """Called on self.instance_entry::apply signal"""
-        create_background_task(self._instance_apply())
-
-    async def _instance_apply(self):
         if not self.provider:
             return
 
@@ -160,11 +159,9 @@ class ProviderPreferences(Adw.NavigationPage):
         self.instance_entry.props.text = self.provider.instance_url
 
     @Gtk.Template.Callback()
-    def _on_api_key_apply(self, _row):
+    @background_task
+    async def _on_api_key_apply(self, _row):
         """Called on self.api_key_entry::apply signal"""
-        create_background_task(self._api_key_apply())
-
-    async def _api_key_apply(self):
         if not self.provider:
             return
 
