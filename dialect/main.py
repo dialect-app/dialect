@@ -4,10 +4,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 # Initial setup
+import asyncio
 import logging
 import sys
 
 import gi
+from gi.events import GLibEventLoopPolicy
 
 try:
     gi.require_version("Gdk", "4.0")
@@ -23,7 +25,6 @@ try:
 except ImportError or ValueError:
     logging.error("Error: GObject dependencies not met.")
 
-from dialect.asyncio import glib_event_loop_policy
 from dialect.define import APP_ID, RES_PATH, VERSION
 from dialect.preferences import DialectPreferencesDialog
 from dialect.settings import Settings
@@ -196,11 +197,8 @@ class Dialect(Adw.Application):
 
 
 def main():
+    # Set the asyncio event loop policy from PyGObject
+    asyncio.set_event_loop_policy(GLibEventLoopPolicy())
     # Run the Application
     app = Dialect()
-    exit_code = 0
-
-    with glib_event_loop_policy():
-        exit_code = app.run(sys.argv)
-
-    return exit_code
+    return app.run(sys.argv)
