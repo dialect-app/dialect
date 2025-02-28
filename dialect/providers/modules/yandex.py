@@ -109,6 +109,7 @@ class Provider(SoupProvider):
             "fa",
             "pl",
             "pt",
+            "pt_BR",
             "pa",
             "ro",
             "ru",
