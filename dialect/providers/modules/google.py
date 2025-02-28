@@ -196,6 +196,7 @@ TRANSLATE_TLDS = (
     ".pn",
     ".ps",
     ".pt",
+    ".pt_BR",
     ".ro",
     ".rs",
     ".ru",
