@@ -42,7 +42,7 @@ class ProviderFeature(Flag):
     """ If it supports sending translation suggestions to the service """
 
 
-class ProvideLangModel(Enum):
+class ProviderLangModel(Enum):
     STATIC = auto()
     """
     The provider populate its `src_languages` and `dest_languages` properties.
@@ -53,6 +53,13 @@ class ProvideLangModel(Enum):
     The provider only populate its `src_languages` property.
     The `dest_langs_for` method will be used to get possible destination codes for a code.
     """
+
+
+class ProviderLangComparison(Enum):
+    PLAIN = auto()
+    """Perform a simple language codes comparision. a == b"""
+    DEEP = auto()
+    """Check for ISO 3166-1 and 15924 codes, and compare if base languages """
 
 
 @dataclass
@@ -92,8 +99,10 @@ class BaseProvider:
     """ Provider capabilities, translation, tts, etc """
     features: ProviderFeature = ProviderFeature.NONE
     """ Provider features """
-    lang_model: ProvideLangModel = ProvideLangModel.STATIC
+    lang_model: ProviderLangModel = ProviderLangModel.STATIC
     """ Translation language model """
+    lang_comp: ProviderLangComparison = ProviderLangComparison.PLAIN
+    """ Define behavior of default `cmp_langs` method """
 
     defaults: ProviderDefaults = {
         "instance_url": "",
@@ -222,10 +231,10 @@ class BaseProvider:
         """
         Compare two language codes.
 
-        It assumes that the codes have been normalized by ``BaseProvider.normalize_lang_code``
-        so providers might need to use ``BaseProvider.denormalize_lang`` on ``a`` and ``b``.
+        It assumes that the codes have been normalized by ``BaseProvider.normalize_lang_code``.
 
         This method exists so providers can add additional comparison logic.
+        Default behavior depends on `self.lang_comp` value.
 
         Args:
             a: First lang to compare.
@@ -235,7 +244,23 @@ class BaseProvider:
             Whether both languages are equals in some way or not.
         """
 
-        return a == b
+        # Early return if both langs are just the same
+        if a == b:
+            return True
+
+        # Plain comparison
+        if self.lang_comp == ProviderLangComparison.PLAIN:
+            return a == b
+
+        # Split lang code to separate possible country/script code
+        a_codes = a.split("-")
+        b_codes = b.split("-")
+
+        if a_codes[0] == b_codes[0]:  # Check base codes
+            return True
+
+        return False
+
 
     def dest_langs_for(self, code: str) -> list[str]:
         """
