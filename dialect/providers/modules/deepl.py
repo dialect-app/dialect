@@ -2,7 +2,7 @@
 # Copyright 2024 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from dialect.providers.base import ProviderCapability, ProviderFeature, Translation
+from dialect.providers.base import ProviderCapability, ProviderFeature, ProviderLangComparison, Translation
 from dialect.providers.errors import APIKeyInvalid, APIKeyRequired, ServiceLimitReached, UnexpectedError
 from dialect.providers.soup import SoupProvider
 
@@ -20,6 +20,7 @@ class Provider(SoupProvider):
         | ProviderFeature.API_KEY_REQUIRED
         | ProviderFeature.API_KEY_USAGE
     )
+    lang_comp = ProviderLangComparison.DEEP
 
     defaults = {
         "instance_url": "",
@@ -120,20 +121,6 @@ class Provider(SoupProvider):
 
         except Exception as exc:
             raise UnexpectedError from exc
-
-    def cmp_langs(self, a, b):
-        # Early return if both langs are just the same
-        if a == b:
-            return True
-
-        # Split lang code to separate it from possible country/script code
-        a_codes = a.split("-")
-        b_codes = b.split("-")
-
-        if a_codes[0] == b_codes[0]:  # Check base codes
-            return True
-
-        return False
 
     def check_known_errors(self, status, data):
         message = data.get("message", "") if isinstance(data, dict) else ""
