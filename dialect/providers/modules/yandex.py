@@ -1,11 +1,14 @@
 # Copyright 2023 Rafael Mardojai CM
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+import json
+import re
 from uuid import uuid4
 
 from dialect.providers.base import (
     ProviderCapability,
     ProviderFeature,
+    ProviderLangComparison,
     Translation,
 )
 from dialect.providers.errors import ProviderError, UnexpectedError
@@ -18,6 +21,7 @@ class Provider(SoupProvider):
 
     capabilities = ProviderCapability.TRANSLATION
     features = ProviderFeature.DETECTION
+    lang_comp = ProviderLangComparison.DEEP
 
     defaults = {
         "instance_url": "",
@@ -37,116 +41,35 @@ class Provider(SoupProvider):
 
         self._uuid = str(uuid4()).replace("-", "")
 
-    async def init_trans(self):
-        languages = [
-            "af",
-            "sq",
-            "am",
-            "ar",
-            "hy",
-            "az",
-            "ba",
-            "eu",
-            "be",
-            "bn",
-            "bs",
-            "bg",
-            "my",
-            "ca",
-            "ceb",
-            "zh",
-            "cv",
-            "hr",
-            "cs",
-            "da",
-            "nl",
-            "sjn",
-            "emj",
-            "en",
-            "eo",
-            "et",
-            "fi",
-            "fr",
-            "gl",
-            "ka",
-            "de",
-            "el",
-            "gu",
-            "ht",
-            "he",
-            "mrj",
-            "hi",
-            "hu",
-            "is",
-            "id",
-            "ga",
-            "it",
-            "ja",
-            "jv",
-            "kn",
-            "kk",
-            "kazlat",
-            "km",
-            "ko",
-            "ky",
-            "lo",
-            "la",
-            "lv",
-            "lt",
-            "lb",
-            "mk",
-            "mg",
-            "ms",
-            "ml",
-            "mt",
-            "mi",
-            "mr",
-            "mhr",
-            "mn",
-            "ne",
-            "no",
-            "pap",
-            "fa",
-            "pl",
-            "pt",
-            "pa",
-            "ro",
-            "ru",
-            "gd",
-            "sr",
-            "si",
-            "sk",
-            "sl",
-            "es",
-            "su",
-            "sw",
-            "sv",
-            "tl",
-            "tg",
-            "ta",
-            "tt",
-            "te",
-            "th",
-            "tr",
-            "udm",
-            "uk",
-            "ur",
-            "uz",
-            "uzbcyr",
-            "vi",
-            "cy",
-            "xh",
-            "sah",
-            "yi",
-            "zu",
-        ]
-        for code in languages:
-            self.add_lang(code)
-
     @property
     def translate_url(self):
-        path = f"/api/v1/tr.json/translate?id={self._uuid}-0-0&srv=android"
-        return self.format_url("translate.yandex.net", path)
+        params = {"id": self._uuid + "-0-0", "srv": "android"}
+        return self.format_url("translate.yandex.net", "/api/v1/tr.json/translate", params)
+
+    async def init_trans(self):
+        # Get Yandex Translate web HTML to parse languages
+        # Using `/api/v1/tr.json/getLangs` doesn't provide all the languages that Yandex supports
+        html_url = self.format_url("translate.yandex.com")
+        response = await self.get(html_url, check_common=False, json=False)
+
+        if response:
+            try:
+                # Decode response bytes
+                text = response.decode("utf-8")
+                # Get Yandex languages
+                languages = re.findall(r"TRANSLATOR_LANGS: (.*?),\n", text)[0]  # noqa
+                languages: dict[str, str] = json.loads(languages)  # type: ignore
+                # Get Yandex dialects list, dialects aren't valid src tranlation langs
+                dialects = re.findall(r"DIALECTS: (.*?),\n", text)[0]  # noqa
+                dialects: list[str] = json.loads(dialects)  # type: ignore
+                # Populate languages lists
+                for code, name in languages.items():
+                    self.add_lang(code, name, trans_src=code not in dialects)
+
+            except Exception as exc:
+                raise UnexpectedError("Failed parsing HTML from yandex.com") from exc
+        else:
+            raise UnexpectedError("Could not get HTML from yandex.com")
 
     async def translate(self, request):
         src, dest = self.denormalize_lang(request.src, request.dest)
