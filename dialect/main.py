@@ -56,6 +56,9 @@ class Dialect(Adw.Application):
         self.add_main_option(
             "dest", ord("d"), GLib.OptionFlags.NONE, GLib.OptionArg.STRING, "Destination lang code", None
         )
+        self.add_main_option(
+            "copy", ord("c"), GLib.OptionFlags.NONE, GLib.OptionArg.NONE, "Copy translated text to clipboard", None
+        )
 
         self.setup_actions()
 
@@ -111,6 +114,7 @@ class Dialect(Adw.Application):
         text = ""
         langs: dict[str, str | None] = {"src": None, "dest": None}
         selection = "selection" in self.argv
+        copy_to_clipboard = "copy" in self.argv  # Verificando a opção --copy
 
         if "text" in self.argv:
             text = self.argv["text"]
@@ -123,10 +127,20 @@ class Dialect(Adw.Application):
             if not text and selection:
                 self.window.queue_selection_translation(langs["src"], langs["dest"])
             elif text:
-                self.window.translate(text, langs["src"], langs["dest"])
+                translated_text = self.window.translate(text, langs["src"], langs["dest"])
 
-        # Clean CLI args
+                # Se o comando --copy for passado, copia o texto traduzido para a área de transferência
+                if copy_to_clipboard:
+                    self.copy_to_clipboard(translated_text)
+
+        # Limpar argumentos da linha de comando
         self.argv = {}
+
+    def copy_to_clipboard(self, text: str):
+        """Função para copiar o texto para a área de transferência."""
+        clipboard = Gio.Clipboard.get(Gio.SELECTION_CLIPBOARD)
+        clipboard.set_text(text, -1)  # Copiar para a área de transferência
+        clipboard.store()
 
     def setup_actions(self):
         """Setup menu actions"""
