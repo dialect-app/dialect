@@ -253,7 +253,7 @@ class Provider(LocalProvider, SoupProvider):
         langs_url = self.format_url(
             self._get_translate_host(".com"), "/translate_a/l", {"client": "t", "alpha": "true"}
         )
-        response = await self.get(langs_url, self._headers, check_common=False)
+        response = await self.get(langs_url, self._headers, False)
 
         try:
             for code, name in response["tl"].items():
@@ -447,9 +447,3 @@ class TranslatedPart:
 
     def __str__(self):
         return self.text
-
-    def __dict__(self):
-        return {
-            "text": self.text,
-            "candidates": self.candidates,
-        }

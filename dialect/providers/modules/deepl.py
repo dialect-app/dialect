@@ -65,8 +65,8 @@ class Provider(SoupProvider):
 
     async def init_trans(self):
         # Get languages
-        src_langs = await self.get(self.source_lang_url, headers=self.headers)
-        dest_langs = await self.get(self.target_lang_url, headers=self.headers)
+        src_langs = await self.get(self.source_lang_url, self.headers)
+        dest_langs = await self.get(self.target_lang_url, self.headers)
 
         if src_langs and dest_langs and isinstance(src_langs, list) and isinstance(dest_langs, list):
             for lang in src_langs:
@@ -80,7 +80,7 @@ class Provider(SoupProvider):
         headers = {"Authorization": f"DeepL-Auth-Key {key}"}
 
         try:
-            await self.get(url, headers=headers)
+            await self.get(url, headers)
             return True
         except (APIKeyInvalid, APIKeyRequired):
             return False
@@ -111,7 +111,7 @@ class Provider(SoupProvider):
         raise UnexpectedError
 
     async def api_char_usage(self):
-        response = await self.get(self.usage_url, headers=self.headers)
+        response = await self.get(self.usage_url, self.headers)
 
         try:
             usage = response.get("character_count")
