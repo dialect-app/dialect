@@ -53,7 +53,7 @@ class Provider(SoupProvider):
         return self.format_url("www.bing.com", "/ttranslatev3", params)
 
     async def init_trans(self):
-        response = await self.get(self.html_url, self._headers, check_common=False, json=False)
+        response = await self.get(self.html_url, self._headers, check_common=False, return_json=False)
 
         if response:
             try:
@@ -125,11 +125,13 @@ class Provider(SoupProvider):
                     detected=detected,
                     pronunciation=TranslationPronunciation(None, pronunciation),
                 )
+            else:
+                raise UnexpectedError("Unexpected translation response")
 
         except Exception as exc:
             raise UnexpectedError from exc
 
-    def check_known_errors(self, _status, data):
+    def check_known_errors(self, status, data):
         if not data:
             raise UnexpectedError("Response is empty!")
 

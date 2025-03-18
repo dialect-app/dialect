@@ -50,7 +50,7 @@ class Provider(SoupProvider):
         # Get Yandex Translate web HTML to parse languages
         # Using `/api/v1/tr.json/getLangs` doesn't provide all the languages that Yandex supports
         html_url = self.format_url("translate.yandex.com")
-        response = await self.get(html_url, check_common=False, json=False)
+        response = await self.get(html_url, check_common=False, return_json=False)
 
         if response:
             try:

@@ -115,7 +115,7 @@ class SoupProvider(BaseProvider):
         self,
         message: Soup.Message,
         check_common: bool = True,
-        json: bool = True,
+        return_json: bool = True,
     ) -> Any:
         """
         Helper mixing ``SoupProvider.send_and_read``, ``SoupProvider.send_and_read_json``
@@ -126,14 +126,14 @@ class SoupProvider(BaseProvider):
         Args:
             message: Message to send.
             check_common: If response data should be checked for errors using check_known_errors.
-            json: If data should be processed as JSON.
+            return_json: If the response should be parsed as JSON.
 
         Returns:
             The JSON deserialized to a python object or bytes if ``json`` is ``False``.
         """
 
         try:
-            if json:
+            if return_json:
                 response = await self.send_and_read_json(message)
             else:
                 response = await self.send_and_read(message)
@@ -153,7 +153,7 @@ class SoupProvider(BaseProvider):
         headers: dict = {},
         form: bool = False,
         check_common: bool = True,
-        json: bool = True,
+        return_json: bool = True,
     ) -> Any:
         """
         Helper for regular HTTP request.
@@ -165,21 +165,20 @@ class SoupProvider(BaseProvider):
             headers: HTTP headers of the message.
             form: If the data should be encoded as a form.
             check_common: If response data should be checked for errors using check_known_errors.
-            json: If data should be processed as JSON.
+            return_json: If the response should be parsed as JSON.
 
         Returns:
             The JSON deserialized to a python object or bytes if ``json`` is ``False``.
         """
         message = self.create_message(method, url, data, headers, form)
-        return await self.send_and_read_and_process(message, check_common, json)
+        return await self.send_and_read_and_process(message, check_common, return_json)
 
     async def get(
         self,
         url: str,
         headers: dict = {},
-        form: bool = False,
         check_common: bool = True,
-        json: bool = True,
+        return_json: bool = True,
     ) -> Any:
         """
         Helper for GET HTTP request.
@@ -187,14 +186,13 @@ class SoupProvider(BaseProvider):
         Args:
             url: Url of the request.
             headers: HTTP headers of the message.
-            form: If the data should be encoded as a form.
             check_common: If response data should be checked for errors using check_known_errors.
-            json: If data should be processed as JSON.
+            return_json: If the response should be parsed as JSON.
 
         Returns:
             The JSON deserialized to a python object or bytes if ``json`` is ``False``.
         """
-        return await self.request("GET", url, headers=headers, form=form, check_common=check_common, json=json)
+        return await self.request("GET", url, headers=headers, check_common=check_common, return_json=return_json)
 
     async def post(
         self,
@@ -203,7 +201,7 @@ class SoupProvider(BaseProvider):
         headers: dict = {},
         form: bool = False,
         check_common: bool = True,
-        json: bool = True,
+        return_json: bool = True,
     ) -> Any:
         """
         Helper for POST HTTP request.
@@ -214,9 +212,9 @@ class SoupProvider(BaseProvider):
             headers: HTTP headers of the message.
             form: If the data should be encoded as a form.
             check_common: If response data should be checked for errors using check_known_errors.
-            json: If data should be processed as JSON.
+            return_json: If the response should be parsed as JSON.
 
         Returns:
             The JSON deserialized to a python object or bytes if ``json`` is ``False``.
         """
-        return await self.request("POST", url, data, headers, form, check_common, json)
+        return await self.request("POST", url, data, headers, form, check_common, return_json)

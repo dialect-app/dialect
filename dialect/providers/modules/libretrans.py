@@ -143,7 +143,7 @@ class Provider(SoupProvider):
         except:  # noqa
             return False
 
-    def check_known_errors(self, _status, data):
+    def check_known_errors(self, status, data):
         if not data:
             raise UnexpectedError("Response is empty!")
 

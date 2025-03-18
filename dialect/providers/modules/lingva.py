@@ -121,7 +121,7 @@ class Provider(SoupProvider):
             file.close()
             raise UnexpectedError from exc
 
-    def check_known_errors(self, _status, data):
+    def check_known_errors(self, status, data):
         """Raises a proper Exception if an error is found in the data."""
         if not data:
             raise UnexpectedError("Response is empty!")
