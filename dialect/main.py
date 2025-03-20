@@ -114,7 +114,7 @@ class Dialect(Adw.Application):
         text = ""
         langs: dict[str, str | None] = {"src": None, "dest": None}
         selection = "selection" in self.argv
-        copy_to_clipboard = "copy" in self.argv  # Verificando a opção --copy
+        copy_to_clipboard = "copy" in self.argv  # Checking the --copy option
 
         if "text" in self.argv:
             text = self.argv["text"]
@@ -129,17 +129,17 @@ class Dialect(Adw.Application):
             elif text:
                 translated_text = self.window.translate(text, langs["src"], langs["dest"])
 
-                # Se o comando --copy for passado, copia o texto traduzido para a área de transferência
+                # If the --copy command is passed, copies the translated text to the clipboard
                 if copy_to_clipboard:
                     self.copy_to_clipboard(translated_text)
 
-        # Limpar argumentos da linha de comando
+        # Clear command line arguments
         self.argv = {}
 
     def copy_to_clipboard(self, text: str):
         """Função para copiar o texto para a área de transferência."""
         clipboard = Gio.Clipboard.get(Gio.SELECTION_CLIPBOARD)
-        clipboard.set_text(text, -1)  # Copiar para a área de transferência
+        clipboard.set_text(text, -1)  # Copy to clipboard
         clipboard.store()
 
     def setup_actions(self):
