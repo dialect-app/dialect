@@ -35,6 +35,7 @@ class Provider(SoupProvider):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+        self.retry_errors = (429,)
         self.chars_limit = 5000
 
         # DeepL API Free keys can be identified by the suffix ":fx"
@@ -132,6 +133,8 @@ class Provider(SoupProvider):
                 raise APIKeyInvalid(message)
             case 456:
                 raise ServiceLimitReached(message)
+            case 429:
+                raise UnexpectedError("Too many requests!")
 
         if status != 200:
             raise UnexpectedError(message)

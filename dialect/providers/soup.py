@@ -4,6 +4,7 @@
 
 import json
 import logging
+from asyncio import sleep
 from typing import Any
 
 from gi.repository import GLib, Soup
@@ -18,6 +19,11 @@ class SoupProvider(BaseProvider):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        
+        self.retry_errors: tuple[int] = tuple()
+        """ Error codes that should be retried automatically """
+        self.max_retries = 5
+        """ Max number of tries """
 
     def encode_data(self, data: Any) -> GLib.Bytes | None:
         """
@@ -123,6 +129,8 @@ class SoupProvider(BaseProvider):
 
         Converts `GLib.Error` to `RequestError`.
 
+        It also handles retries for status codes listen in ``self.retry_errors``.
+
         Args:
             message: Message to send.
             check_common: If response data should be checked for errors using check_known_errors.
@@ -132,11 +140,27 @@ class SoupProvider(BaseProvider):
             The JSON deserialized to a python object or bytes if ``json`` is ``False``.
         """
 
-        try:
+        async def send_and_read() -> Any:
             if return_json:
-                response = await self.send_and_read_json(message)
+                return await self.send_and_read_json(message)
             else:
-                response = await self.send_and_read(message)
+                return await self.send_and_read(message)
+
+        try:
+            response = await send_and_read()
+
+            # Do retries with exponential backoff for errors
+            if message.get_status() in self.retry_errors:
+                delay = 1
+
+                for _ in range(self.max_retries):
+                    await sleep(delay)
+                    response = await send_and_read()
+
+                    if message.get_status() in self.retry_errors:
+                        delay *= 2
+                    else:
+                        break
 
             if check_common:
                 self.check_known_errors(message.get_status(), response)
