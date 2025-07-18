@@ -370,6 +370,7 @@ class DialectWindow(Adw.ApplicationWindow):
                         else:
                             self.show_translator_api_key_view()
                     except ProviderError or RequestError as exc:
+                        logging.error(exc, exc_info=exc)
                         self.show_translator_error_view(detail=str(exc))
                 elif not self.provider["trans"].api_key and self.provider["trans"].api_key_required:
                     self.show_translator_api_key_view(required=True)
