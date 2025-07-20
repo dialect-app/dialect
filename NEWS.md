@@ -1,5 +1,12 @@
 
 ### In Development
+- Fix DeepL provider when expected HTTP 429 status is returned 
+- Fetch Google languages list dynamically
+- Fetch Yandex languages list dynamically
+- Spell-checking support
+- Fix primary clipboard handling
+- Code cleanups and optimizations
+- Bug fixes
 
 ### 2.5.0
 - User interface improvements
