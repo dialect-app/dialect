@@ -1,6 +1,8 @@
 
 ### In Development
-- Fix DeepL provider when expected HTTP 429 status is returned 
+
+### 2.6.0
+- Fix DeepL provider when expected HTTP 429 status is returned
 - Fetch Google languages list dynamically
 - Fetch Yandex languages list dynamically
 - Spell-checking support
