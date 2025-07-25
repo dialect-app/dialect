@@ -35,17 +35,20 @@ Dialect is available for Fedora 33 and later:
 ```bash
 sudo dnf install dialect
 ```
+
 ### Debian
 
 Dialect is available in Debian 12:
+
 ```bash
 sudo apt-get install dialect
 ```
+
 ## Building
 
 ### Requirements
 
-- Python 3 `python`
+- Python 3 (>=3.10) `python`
 - PyGObject `python-gobject`
 - GTK4 (>= 4.16.0) `gtk4`
 - libadwaita (>= 1.6.0) `libadwaita`
