@@ -6,6 +6,7 @@
 # Copyright 2023 Markus Göllnitz
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+import asyncio
 import gettext
 import locale
 import sys
@@ -17,9 +18,10 @@ import gi
 
 gi.require_version("Secret", "1")
 gi.require_version("Soup", "3.0")
+from gi.events import GLibEventLoopPolicy
 from gi.repository import Gio, GLib
 
-from dialect.asyncio import create_background_task, glib_event_loop_policy
+from dialect.asyncio import background_task
 from dialect.providers import (
     TRANSLATORS,
     TranslationRequest,
@@ -134,6 +136,7 @@ class TranslateServiceApplication(Gio.Application):
 
             return GLib.Variant(results_type, results)
 
+        @background_task
         async def return_async_value(method: Callable[..., Coroutine], *args):
             results = wrap_results(await method(*args))
             self.release()
@@ -143,7 +146,7 @@ class TranslateServiceApplication(Gio.Application):
         args = list(parameters.unpack())
 
         if inspect.iscoroutinefunction(method):  # Async methods
-            create_background_task(return_async_value(method, *args))
+            return_async_value(method, *args)
             self.hold()
         else:  # Sync methods
             results = wrap_results(method(*args))
@@ -295,11 +298,11 @@ class TranslateServiceApplication(Gio.Application):
 
 
 def main():
+    # Set the asyncio event loop policy from PyGObject
+    asyncio.set_event_loop_policy(GLibEventLoopPolicy())
+    # Run the Application
     app = TranslateServiceApplication()
-    exit_code = 0
-    with glib_event_loop_policy():
-        exit_code = app.run(None)
-    return exit_code
+    return app.run(sys.argv)
 
 
 if __name__ == "__main__":
