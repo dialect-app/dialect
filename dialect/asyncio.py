@@ -17,6 +17,6 @@ def background_task(f: Callable[..., Coroutine]):
     @functools.wraps(f)
     def decor(*args, **kwargs):
         app = Gio.Application.get_default()
-        app.create_asyncio_task(f(*args, **kwargs))
+        app.create_asyncio_task(f(*args, **kwargs))  # type: ignore
 
     return decor

@@ -13,18 +13,16 @@
         "--socket=pulseaudio",
         "--own-name=app.drey.Dialect.Devel.SearchProvider"
     ],
-    "cleanup": [
-        "*blueprint*"
-    ],
     "modules": [
         "pypi-dependencies.json",
         {
             "name": "blueprint",
             "buildsystem": "meson",
+            "cleanup": ["*"],
             "sources": [
                 {
                     "type": "git",
-                    "url": "https://gitlab.gnome.org/jwestman/blueprint-compiler",
+                    "url": "https://gitlab.gnome.org/GNOME/blueprint-compiler",
                     "branch": "main"
                 }
             ]

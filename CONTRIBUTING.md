@@ -1,20 +1,17 @@
+## Development environment
+
+When developing Dialect it is encouraged to use the [uv](https://docs.astral.sh/uv/) project manager.
+
+After installing uv, run `uv sync` to create or sync a venv with the projects dependencies.
 
 ## Code Style
 
-We use [Black](https://black.readthedocs.io/en/stable/) (PEP 8 compliant) for code formatting.
+We use the Ruff formatter (PEP 8 compliant) for code formatting.
 
-Install it to format your code after writing code or use it in your IDE as code formatter.
-
-To format run:
+To format the code run:
 
 ```sh
-black dialect
-```
-
-We also use [isort](https://pycqa.github.io/isort/) for imports sorting.
-
-```sh
-isort dialect
+ruff check --select I --fix && ruff format
 ```
 
 ### Type Annotations
@@ -25,14 +22,14 @@ We try to use Python type annotations whenever is possible.
 
 - Explicit classes instantiation like:
 
-    ```python
-    var = Class()
-    ```
+  ```python
+  var = Class()
+  ```
 
 - Non-nullable argument with default value:
 
-    ```python
-    # We omit `int` typing for `number`
-    def method(text: str, number = 5, other: int | None = 20):
-        ...
-    ```
+  ```python
+  # We omit `int` typing for `number`
+  def method(text: str, number = 5, other: int | None = 20):
+      ...
+  ```

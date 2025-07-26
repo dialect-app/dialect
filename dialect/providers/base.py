@@ -261,7 +261,6 @@ class BaseProvider:
 
         return False
 
-
     def dest_langs_for(self, code: str) -> list[str]:
         """
         Get the available destination languages for a source language.

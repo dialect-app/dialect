@@ -24,6 +24,7 @@ try:
     from gi.repository import Adw, Gio, GLib, Gst
 except ImportError or ValueError:
     logging.error("Error: GObject dependencies not met.")
+    exit()
 
 from dialect.define import APP_ID, RES_PATH, VERSION
 from dialect.preferences import DialectPreferencesDialog
