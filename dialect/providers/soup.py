@@ -19,7 +19,7 @@ class SoupProvider(BaseProvider):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
+
         self.retry_errors: tuple[int] = tuple()
         """ Error codes that should be retried automatically """
         self.max_retries = 5
