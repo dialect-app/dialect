@@ -6,13 +6,20 @@ A translation app for GNOME.
 
 ![Dialect](preview.png?raw=true)
 
+## Translation Providers
+
+- Proprietary:
+    - [Google Translate](https://translate.google.com/)
+    - [DeepL](https://www.deepl.com/en/translator) - Requires a Free or Paid API key.
+    - [Kagi Translate](https://translate.kagi.com/) - Requires session token (not complete URL) from [Kagi settings](https://kagi.com/settings/user_details) as API Key.
+    - [Microsoft Translator (Bing)](https://www.bing.com/translator)
+    - [Yandex Translate](https://translate.yandex.com/)
+- Open Source:
+    - LibreTranslate - Use any public instance, defaults to [our own](https://lt.dialectapp.org/).
+    - Lingva Translate - Use any public instance, defaults to [our own](https://lingva.dialectapp.org/).
+
 ## Features
 
-- Translation based on Google Translate
-- Translation based on the LibreTranslate API, allowing you to use any public instance
-- Translation based on Lingva Translate API</li>
-- Translation based on Bing
-- Translation based on Yandex
 - Translation history
 - Automatic language detection
 - Text to speech

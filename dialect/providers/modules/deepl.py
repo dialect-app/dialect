@@ -85,8 +85,6 @@ class Provider(SoupProvider):
             return True
         except (APIKeyInvalid, APIKeyRequired):
             return False
-        except Exception:
-            raise
 
     async def translate(self, request):
         src, dest = self.denormalize_lang(request.src, request.dest)
