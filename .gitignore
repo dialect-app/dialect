@@ -15,6 +15,7 @@ _build/
 .flatpak/
 *.flatpak
 .flatpak-builder/
+.flatplay/
 develop-eggs/
 dist/
 downloads/

@@ -1,8 +1,11 @@
-
 [project]
 name = "Dialect"
-version = "2.4.2"
-requires-python = ">=3.9"
+version = "2.6.0"
+requires-python = ">=3.10"
+dependencies = [
+    "beautifulsoup4>=4.13.4",
+    "gtts>=2.5.4",
+]
 
 [tool.black]
 line-length = 120
@@ -16,3 +19,13 @@ builtins = ["_", "gettext"]
 
 [tool.pyright]
 reportMissingModuleSource = false
+reportIncompatibleMethodOverride = false
+typeCheckingMode = "standard"
+ignore = ['po/']
+
+[dependency-groups]
+dev = [
+    "basedpyright>=1.31.0",
+    "pygobject-stubs>=2.13.0",
+    "ruff>=0.12.5",
+]

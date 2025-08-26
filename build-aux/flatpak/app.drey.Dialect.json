@@ -1,7 +1,7 @@
 {
     "id": "app.drey.Dialect",
     "runtime": "org.gnome.Platform",
-    "runtime-version": "47",
+    "runtime-version": "48",
     "sdk": "org.gnome.Sdk",
     "command": "dialect",
     "finish-args": [
@@ -17,15 +17,13 @@
         {
             "name": "blueprint",
             "buildsystem": "meson",
-            "cleanup": [
-                "*"
-            ],
+            "cleanup": ["*"],
             "sources": [
                 {
                     "type": "git",
-                    "url": "https://gitlab.gnome.org/jwestman/blueprint-compiler",
-                    "tag": "v0.16.0",
-                    "commit": "04ef0944db56ab01307a29aaa7303df6067cb3c0"
+                    "url": "https://gitlab.gnome.org/GNOME/blueprint-compiler",
+                    "tag": "0.18.0",
+                    "commit": "07c9c9df9cd1b6b4454ecba21ee58211e9144a4b"
                 }
             ]
         },
@@ -36,8 +34,8 @@
                 {
                     "type": "git",
                     "url": "https://gitlab.gnome.org/GNOME/libspelling.git",
-                    "tag": "0.4.5",
-                    "commit": "ab64511edd5cf53c8a81a51e2883d6f69e585f64"
+                    "tag": "0.4.8",
+                    "commit": "07d3bbbbad393b7594918b8df3486531edb61aaf"
                 }
             ]
         },

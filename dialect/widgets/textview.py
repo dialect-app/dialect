@@ -51,7 +51,7 @@ class TextView(GtkSource.View):
         # Save value
         self._font_size = value
         # Update CSS
-        self._font_css_provider.load_from_data(f"textview {{ font-size: { str(value) }pt; }}")
+        self._font_css_provider.load_from_data(f"textview {{ font-size: {str(value)}pt; }}")
 
     def font_size_inc(self):
         self.font_size += 5

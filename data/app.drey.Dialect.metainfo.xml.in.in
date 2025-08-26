@@ -53,6 +53,26 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="2.6.1" date="2025-07-26">
+      <description translate="no">
+        <ul>
+          <li>Fix search provider</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.6.0" date="2025-07-22">
+      <description translate="no">
+        <ul>
+          <li>Fix DeepL provider when expected HTTP 429 status is returned</li>
+          <li>Fetch Google languages list dynamically</li>
+          <li>Fetch Yandex languages list dynamically</li>
+          <li>Spell-checking support</li>
+          <li>Fix primary clipboard handling</li>
+          <li>Code cleanups and optimizations</li>
+          <li>Bug fixes</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.5.0" date="2024-10-06">
       <description translate="no">
         <ul>

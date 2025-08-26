@@ -1,8 +1,10 @@
-project('dialect',
-          version: '2.5.0',
-    meson_version: '>= 0.59.0',
-  default_options: [ 'warning_level=2',
-                   ],
+project(
+  'dialect',
+  version: '2.6.1',
+  meson_version: '>= 0.59.0',
+  default_options: [
+    'warning_level=2',
+  ],
 )
 
 python = import('python')
@@ -34,7 +36,10 @@ conf.set('PYTHON', python.find_installation('python3').full_path())
 conf.set('PROFILE', profile)
 conf.set('VERSION', meson.project_version() + version_suffix)
 conf.set('APP_ID', application_id)
-conf.set('BIN', join_paths(get_option('prefix'), get_option('bindir'), meson.project_name()))
+conf.set(
+  'BIN',
+  join_paths(get_option('prefix'), get_option('bindir'), meson.project_name()),
+)
 conf.set('object_path', object_path)
 conf.set('pkgdatadir', pkgdatadir)
 conf.set('datadir', get_option('datadir'))
@@ -44,18 +49,19 @@ conf.set('localedir', join_paths(get_option('prefix'), get_option('localedir')))
 message('Looking for dependencies')
 py_installation = python.find_installation('python3')
 if not py_installation.found()
-    error('No valid python3 binary found')
+  error('No valid python3 binary found')
 else
-    message('Found python3 binary')
+  message('Found python3 binary')
 endif
 
 dependency('glib-2.0')
 dependency('gobject-introspection-1.0', version: '>= 1.35.0')
 dependency('gstreamer-1.0', version: '>= 1.18')
-dependency('gtk4', version: '>= 4.6')
-dependency('libadwaita-1', version: '>= 1.0')
+dependency('gtk4', version: '>= 4.17.5')
+dependency('libadwaita-1', version: '>= 1.7')
 dependency('libsoup-3.0')
-dependency('pygobject-3.0', version: '>= 3.40')
+dependency('libspelling-1')
+dependency('pygobject-3.0', version: '>= 3.51')
 
 subdir('data')
 subdir('dialect')
