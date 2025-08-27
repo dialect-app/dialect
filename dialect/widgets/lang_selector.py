@@ -4,7 +4,7 @@
 
 import re
 
-from gi.repository import Adw, Gdk, GObject, Gtk
+from gi.repository import Adw, Gdk, GObject, Gtk, Pango
 
 from dialect.define import RES_PATH
 from dialect.languages import LangObject, LanguagesListModel
@@ -162,5 +162,7 @@ class LangRow(Gtk.ListBoxRow):
         super().__init__()
         self.lang = lang
         self.name.props.label = self.lang.name
+        self.props.tooltip_text = self.lang.name
+        self.name.props.ellipsize = Pango.EllipsizeMode.END
 
         self.lang.bind_property("selected", self.selection, "visible", GObject.BindingFlags.SYNC_CREATE)
