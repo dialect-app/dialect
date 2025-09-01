@@ -80,8 +80,6 @@ class Provider(SoupProvider):
             return "confidence" in response[0]
         except (APIKeyInvalid, APIKeyRequired):
             return False
-        except Exception:
-            raise
 
     async def init_trans(self):
         languages = await self.get(self.lang_url)
