@@ -17,6 +17,7 @@ A translation app for GNOME.
 - Open Source:
     - LibreTranslate - Use any public instance, defaults to [our own](https://lt.dialectapp.org/).
     - Lingva Translate - Use any public instance, defaults to [our own](https://lingva.dialectapp.org/).
+    - [MinT](https://www.mediawiki.org/wiki/MinT) - Use any public instance, defaults to [Wikimedia Cloud Services](https://translate.wmcloud.org/)
 
 ## Features
 
