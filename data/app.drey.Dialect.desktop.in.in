@@ -10,6 +10,6 @@ Comment=Translate between languages
 Categories=Network;GTK;
 Icon=@icon@
 # Translators: These are search terms to find this application. Do NOT translate or localize the semicolons. The list MUST also end with a semicolon.
-Keywords=translate;translation;Google Translate;LibreTranslate;Lingva Translate;Bing Microsoft Translator;Bing Translator;Microsoft Translator;Yandex Translate; 
+Keywords=translate;translation;Google Translate;LibreTranslate;Bing Microsoft Translator;Bing Translator;Microsoft Translator;Yandex Translate;
 # Translators: Do NOT translate or transliterate this text (these are enum types)!
 X-Purism-FormFactor=Workstation;Mobile;
