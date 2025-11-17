@@ -510,15 +510,20 @@ class DialectWindow(Adw.ApplicationWindow):
 
     def translate(self, text: str, src_lang: str | None, dest_lang: str | None):
         """
-        Translates the given text from auto detected language to last used
-        language
+        Translates the given text from auto detected or last used src language to
+        last used dest language
         """
         if not self.provider["trans"]:
             return
 
-        # Set src lang to Auto
         if src_lang is None:
-            self.src_lang_selector.selected = "auto"
+            # Check if provider supports detection
+            if self.provider["trans"].supports_detection:
+                # Set src lang to Auto
+                self.src_lang_selector.selected = "auto"
+            else:
+                # Fallback to last used src lang
+                self.src_lang_selector.selected = self.provider["trans"].recent_src_langs[0]
         else:
             self.src_lang_selector.selected = src_lang
         if dest_lang is not None and dest_lang in self.provider["trans"].dest_languages:
@@ -1044,7 +1049,10 @@ class DialectWindow(Adw.ApplicationWindow):
         self._pick_spell_checking_language(code)
 
         # Rewrite recent langs
-        self.src_recent_lang_model.set_langs(self.src_langs, auto=True)
+        self.src_recent_lang_model.set_langs(
+            self.src_langs,
+            self.provider["trans"].supports_detection,
+        )
 
         self._check_switch_enabled()
         self._check_speech_enabled()
@@ -1159,6 +1167,7 @@ class DialectWindow(Adw.ApplicationWindow):
 
                 if translation.detected and self.src_lang_selector.selected == "auto":
                     if Settings.get().src_auto:
+                        # If the user likes defaulting to Auto, we set the insight instead of switching langs
                         self.src_lang_selector.set_insight(
                             self.provider["trans"].normalize_lang_code(translation.detected)
                         )

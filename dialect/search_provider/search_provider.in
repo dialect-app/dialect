@@ -18,6 +18,7 @@ import gi
 
 gi.require_version("Secret", "1")
 gi.require_version("Soup", "3.0")
+
 from gi.events import GLibEventLoopPolicy
 from gi.repository import Gio, GLib
 
@@ -89,7 +90,7 @@ class TranslateServiceApplication(Gio.Application):
 
         self.loaded = False
         self.translations = {}  # Translations store
-        self.src_language = "auto"
+        self.src_language = "auto" if self.translator.supports_detection else self.translator.recent_src_langs[0]
         self.dest_language = None
 
         # Translator
@@ -280,10 +281,12 @@ class TranslateServiceApplication(Gio.Application):
             await self.translator.init_trans()
 
             self.loaded = True
+            self.src_language = "auto" if self.translator.supports_detection else self.translator.recent_src_langs[0]
             self.dest_language = self.translator.recent_dest_langs[0]
             self.translator.settings.connect("changed", self._on_translator_settings_changed)
 
         except Exception:
+            self.src_language = None
             self.dest_language = None
             raise
 
@@ -292,6 +295,7 @@ class TranslateServiceApplication(Gio.Application):
 
     def _on_translator_settings_changed(self, _settings, key: str):
         if key == "src-langs" or key == "dest-langs":
+            self.src_language = "auto" if self.translator.supports_detection else self.translator.recent_src_langs[0]
             self.dest_language = self.translator.recent_dest_langs[0]
         else:
             self.loaded = False
