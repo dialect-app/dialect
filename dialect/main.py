@@ -21,7 +21,7 @@ try:
     gi.require_version("Spelling", "1")
     gi.require_version("GtkSource", "5")
 
-    from gi.repository import Adw, Gio, GLib, Gst
+    from gi.repository import Adw, Gio, GLib, Gst, Gtk
 except ImportError or ValueError:
     logging.error("Error: GObject dependencies not met.")
     exit()
@@ -144,12 +144,17 @@ class Dialect(Adw.Application):
         about.connect("activate", self._on_about)
         self.add_action(about)
 
+        shortcuts = Gio.SimpleAction(name="shortcuts")
+        shortcuts.connect("activate", self._on_shortcuts)
+        self.add_action(shortcuts)
+
         quit_action = Gio.SimpleAction(name="quit")
         quit_action.connect("activate", self._on_quit)
         self.add_action(quit_action)
 
         self.set_accels_for_action("app.pronunciation", ["<Primary>P"])
         self.set_accels_for_action("app.preferences", ["<Primary>comma"])
+        self.set_accels_for_action("app.shortcuts", ["<Primary>question"])
         self.set_accels_for_action("app.quit", ["<Primary>Q"])
 
         self.set_accels_for_action("win.back", ["<Alt>Left"])
@@ -164,7 +169,6 @@ class Dialect(Adw.Application):
         self.set_accels_for_action("win.copy", ["<Primary><Shift>C"])
         self.set_accels_for_action("win.listen-dest", ["<Primary>L"])
         self.set_accels_for_action("win.listen-src", ["<Primary><Shift>L"])
-        self.set_accels_for_action("win.show-help-overlay", ["<Primary>question"])
 
     def _on_pronunciation(self, action: Gio.SimpleAction, value: GLib.Variant):
         """Update show pronunciation setting"""
@@ -192,6 +196,27 @@ class Dialect(Adw.Application):
         about.add_link(_("Donate"), "https://opencollective.com/dialect")
 
         about.present(self.window)
+
+    def _on_shortcuts(self, _action, _param):
+        """Show shortcuts dialog"""
+        if not self.window:
+            return
+
+        # Load the shortcuts dialog from resources
+        builder = Gtk.Builder.new_from_resource(f"{RES_PATH}/shortcuts-dialog.ui")
+        dialog = builder.get_object("shortcuts_dialog")
+        translation_section = builder.get_object("translation_section")
+
+        if not Settings.get().live_translation:
+            # Set the accelerator from settings
+            translate_shortcut = Adw.ShortcutsItem(
+                title=_("Translate"),
+                accelerator=Settings.get().translate_accel,
+            )
+            translation_section.add(translate_shortcut)
+
+        if dialog:
+            dialog.present(self.window)
 
     def _on_quit(self, _action, _param):
         self.quit()
