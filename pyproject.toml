@@ -3,7 +3,7 @@ name = "Dialect"
 version = "2.6.0"
 requires-python = ">=3.10"
 dependencies = [
-    "beautifulsoup4>=4.13.4",
+    "beautifulsoup4>=4.14.3",
     "gtts>=2.5.4",
 ]
 
@@ -25,7 +25,7 @@ ignore = ['po/']
 
 [dependency-groups]
 dev = [
-    "basedpyright>=1.31.0",
-    "pygobject-stubs>=2.13.0",
-    "ruff>=0.12.5",
+    "pygobject-stubs>=2.16.0",
+    "ruff>=0.14.9",
+    "ty>=0.0.1a34",
 ]
