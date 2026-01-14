@@ -43,6 +43,10 @@ class Dialect(Adw.Application):
         self.argv: dict[str, str] = {}
         self._signal_handler: int | None = None
 
+        # Shortcuts dialog
+        self._shortcuts_dialog: Adw.ShortcutsDialog | None = None
+        self._translate_shortcut_item: Adw.ShortcutsItem | None = None
+
         # Add command line options
         self.add_main_option(
             "selection",
@@ -198,25 +202,19 @@ class Dialect(Adw.Application):
         about.present(self.window)
 
     def _on_shortcuts(self, _action, _param):
-        """Show shortcuts dialog"""
-        if not self.window:
+        """Show shortcuts dialog."""
+        if self.window is None:
             return
 
-        # Load the shortcuts dialog from resources
-        builder = Gtk.Builder.new_from_resource(f"{RES_PATH}/shortcuts-dialog.ui")
-        dialog = builder.get_object("shortcuts_dialog")
-        translation_section = builder.get_object("translation_section")
+        if self._shortcuts_dialog is None:
+            builder = Gtk.Builder.new_from_resource(f"{RES_PATH}/shortcuts-dialog.ui")
+            self._shortcuts_dialog = builder.get_object("shortcuts_dialog")
+            self._translate_shortcut_item = builder.get_object("translate_shortcut")
 
-        if not Settings.get().live_translation:
-            # Set the accelerator from settings
-            translate_shortcut = Adw.ShortcutsItem(
-                title=_("Translate"),
-                accelerator=Settings.get().translate_accel,
-            )
-            translation_section.add(translate_shortcut)
-
-        if dialog:
-            dialog.present(self.window)
+        self._translate_shortcut_item.set_accelerator(
+            Settings.get().translate_accel if not Settings.get().live_translation else ""
+        )
+        self._shortcuts_dialog.present(self.window)
 
     def _on_quit(self, _action, _param):
         self.quit()
