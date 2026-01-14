@@ -396,12 +396,12 @@ class DialectWindow(Adw.ApplicationWindow):
                 detail = str(exc)
 
                 if isinstance(exc, RequestError):
-                    title = _("Couldn’t connect to the translation service")
-                    description = _("We can’t connect to the server. Please check for network issues.")
+                    title = _("Unable to connect to the translation service.")
+                    description = _("Unable to connect to the server. Please check for network issues.")
                     if self.provider["trans"].supports_instances:
                         description = _(
                             (
-                                "We can’t connect to the {service} instance “{url}“.\n"
+                                "Unable to connect to the {service} instance “{url}“.\n"
                                 "Please check for network issues or if the address is correct."
                             )
                         ).format(service=service, url=url)
@@ -544,7 +544,7 @@ class DialectWindow(Adw.ApplicationWindow):
                     self.translate(text, src_lang, dest_lang)
             except GLib.Error as exc:
                 logging.error(exc)
-                self.send_notification(_("Couldn’t read selection clip board!"))
+                self.send_notification(_("Unable to read the selected text."))
 
     def queue_selection_translation(self, src_lang: str | None, dest_lang: str | None):
         """Call `translate_selection` or queue it until the window is focused"""
