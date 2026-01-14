@@ -26,6 +26,6 @@ ignore = ['po/']
 [dependency-groups]
 dev = [
     "pygobject-stubs>=2.16.0",
-    "ruff>=0.14.9",
-    "ty>=0.0.1a34",
+    "ruff>=0.14.11",
+    "ty>=0.0.11",
 ]
