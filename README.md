@@ -16,7 +16,6 @@ A translation app for GNOME.
     - [Yandex Translate](https://translate.yandex.com/)
 - Open Source:
     - LibreTranslate - Use any public instance, defaults to [our own](https://lt.dialectapp.org/).
-    - Lingva Translate - Use any public instance, defaults to [our own](https://lingva.dialectapp.org/).
 
 ## Features
 
