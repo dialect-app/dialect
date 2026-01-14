@@ -214,6 +214,9 @@ class Dialect(Adw.Application):
         self._translate_shortcut_item.set_accelerator(
             Settings.get().translate_accel if not Settings.get().live_translation else ""
         )
+        self._translate_shortcut_item.set_subtitle(
+            _("Live translation is currently enabled.") if Settings.get().live_translation else ""
+        )
         self._shortcuts_dialog.present(self.window)
 
     def _on_quit(self, _action, _param):
