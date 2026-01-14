@@ -5,7 +5,7 @@ pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.proje
 # Resources
 blueprints = custom_target('blueprints',
   input: files(
-    'shortcuts.blp',
+    'shortcuts-dialog.blp',
     'window.blp',
     'widgets/lang_selector.blp',
     'widgets/lang_row.blp',
@@ -65,7 +65,6 @@ sources = [
   'preferences.py',
   'session.py',
   'settings.py',
-  'shortcuts.py',
   'utils.py',
   'window.py',
 ]

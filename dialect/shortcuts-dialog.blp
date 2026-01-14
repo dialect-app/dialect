@@ -1,0 +1,99 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.ShortcutsDialog shortcuts_dialog {
+    Adw.ShortcutsSection translation_section {
+        title: C_("shortcuts window", "Translator");
+
+        Adw.ShortcutsItem translate_shortcut {
+            title: C_("shortcuts window", "Translate");
+        }
+
+        Adw.ShortcutsItem switch_shortcut {
+            title: C_("shortcuts window", "Switch Languages");
+            action-name: "win.switch";
+        }
+
+        Adw.ShortcutsItem from_shortcut {
+            title: C_("shortcuts window", "Select source language");
+            action-name: "win.from";
+        }
+
+        Adw.ShortcutsItem to_shortcut {
+            title: C_("shortcuts window", "Select destination language");
+            action-name: "win.to";
+        }
+
+        Adw.ShortcutsItem {
+            title: C_("shortcuts window", "Clear source text");
+            action-name: "win.clear";
+        }
+
+        Adw.ShortcutsItem {
+            title: C_("shortcuts window", "Copy translation");
+            action-name: "win.copy";
+        }
+
+        Adw.ShortcutsItem {
+            title: C_("shortcuts window", "Show Pronunciation");
+            action-name: "app.pronunciation";
+        }
+
+        Adw.ShortcutsItem {
+            title: C_("shortcuts window", "Increase font size");
+            action-name: "win.font-size-inc";
+        }
+
+        Adw.ShortcutsItem {
+            title: C_("shortcuts window", "Decrease font size");
+            action-name: "win.font-size-dec";
+        }
+    }
+
+    Adw.ShortcutsSection {
+        title: C_("shortcuts window", "Text-to-Speech");
+
+        Adw.ShortcutsItem {
+            title: C_("shortcuts window", "Listen to source text");
+            action-name: "win.listen-src";
+        }
+
+        Adw.ShortcutsItem {
+            title: C_("shortcuts window", "Listen to translation");
+            action-name: "win.listen-dest";
+        }
+    }
+
+    Adw.ShortcutsSection {
+        title: C_("shortcuts window", "Navigation");
+
+        Adw.ShortcutsItem {
+            title: C_("shortcuts window", "Go back in history");
+            action-name: "win.back";
+        }
+
+        Adw.ShortcutsItem {
+            title: C_("shortcuts window", "Go forward in history");
+            action-name: "win.forward";
+        }
+    }
+
+    Adw.ShortcutsSection {
+        title: C_("shortcuts window", "General");
+
+        Adw.ShortcutsItem {
+            title: C_("shortcuts window", "Preferences");
+            action-name: "app.preferences";
+        }
+
+        Adw.ShortcutsItem {
+            title: C_("shortcuts window", "Shortcuts");
+            action-name: "app.shortcuts";
+        }
+
+        Adw.ShortcutsItem {
+            title: C_("shortcuts window", "Quit");
+            action-name: "app.quit";
+        }
+    }
+}
