@@ -45,7 +45,7 @@ sudo dnf install dialect
 
 ### Debian
 
-Dialect is available in Debian 12:
+Dialect is available in Debian 12 and later:
 
 ```bash
 sudo apt-get install dialect
