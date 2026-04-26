@@ -782,6 +782,8 @@ class DialectWindow(Adw.ApplicationWindow):
         self.dest_lang_selector.button.popup()
 
     def _on_clear_action(self, *_args):
+        if self.provider["trans"] and hasattr(self.provider["trans"], "_cancel_ongoing"):
+            self.provider["trans"]._cancel_ongoing()
         self.src_buffer.props.text = ""
         self.src_buffer.emit("end-user-action")
 
@@ -1150,6 +1152,8 @@ class DialectWindow(Adw.ApplicationWindow):
             request = TranslationRequest(text, self.src_lang_selector.selected, self.dest_lang_selector.selected)
 
             if self.translation_loading:
+                if hasattr(self.provider["trans"], "_cancel_ongoing"):
+                    self.provider["trans"]._cancel_ongoing()
                 self.next_translation = request
                 return
 
@@ -1164,6 +1168,9 @@ class DialectWindow(Adw.ApplicationWindow):
 
             try:
                 translation = await self.provider["trans"].translate(request)
+
+                if translation.text == "" and request.text != "":
+                    return
 
                 if translation.detected and self.src_lang_selector.selected == "auto":
                     if Settings.get().src_auto:
@@ -1184,6 +1191,17 @@ class DialectWindow(Adw.ApplicationWindow):
 
             # Translation failed
             except (RequestError, ProviderError) as exc:
+                provider = self.provider["trans"]
+                logging.error(
+                    "Translation failed with provider error",
+                    exc_info=exc,
+                    extra={
+                        "provider_name": provider.name if provider else None,
+                        "provider_prettyname": provider.prettyname if provider else None,
+                        "provider_instance_url": provider.instance_url if provider and provider.supports_instances else None,
+                        "error_type": type(exc).__name__,
+                    },
+                )
                 self.trans_warning.props.visible = True
                 self.lookup_action("copy").props.enabled = False  # type: ignore
                 self.lookup_action("listen-src").props.enabled = False  # type: ignore
