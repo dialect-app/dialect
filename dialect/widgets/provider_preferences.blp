@@ -97,6 +97,58 @@ template $ProviderPreferences : Adw.NavigationPage {
         }
 
       }
+
+      Adw.PreferencesGroup advanced_group {
+        title: _("Advanced Options");
+        visible: false;
+
+        Adw.EntryRow model_name_entry {
+          title: _("Model Name");
+          tooltip-text: _("e.g. gpt-4o-mini, gpt-4o, deepseek-chat");
+          show-apply-button: true;
+
+          apply => $_on_model_name_apply();
+        }
+
+        Adw.SpinRow temperature_spin {
+          title: _("Temperature");
+          subtitle: _("Lower values produce more consistent translations. Recommended: 0.3");
+
+          adjustment: Gtk.Adjustment {
+            lower: 0.0;
+            upper: 2.0;
+            step-increment: 0.1;
+            page-increment: 0.5;
+            value: 0.3;
+          };
+        }
+
+        Adw.ExpanderRow system_prompt_expander {
+          title: _("Custom System Prompt");
+          subtitle: _("Use {source_lang} and {target_lang} as placeholders");
+
+          Adw.EntryRow system_prompt_entry {
+            title: _("System Prompt");
+            tooltip-text: _("Leave empty for the default prompt template");
+            show-apply-button: true;
+
+            apply => $_on_system_prompt_apply();
+          }
+
+          Adw.ActionRow {
+            title: _("Reset System Prompt");
+
+            [suffix]
+            Button system_prompt_reset {
+              label: _("Reset to Default");
+              tooltip-text: _("Reset system prompt to default template");
+              valign: center;
+
+              clicked => $_on_reset_system_prompt();
+            }
+          }
+        }
+      }
     }
   }
 }

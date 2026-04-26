@@ -39,6 +39,11 @@ class ProviderPreferences(Adw.NavigationPage):
     api_usage_group: Adw.PreferencesGroup = Gtk.Template.Child()  # type: ignore
     api_usage: Gtk.LevelBar = Gtk.Template.Child()  # type: ignore
     api_usage_label: Gtk.Label = Gtk.Template.Child()  # type: ignore
+    advanced_group: Adw.PreferencesGroup = Gtk.Template.Child()  # type: ignore
+    model_name_entry: Adw.EntryRow = Gtk.Template.Child()  # type: ignore
+    temperature_spin: Adw.SpinRow = Gtk.Template.Child()  # type: ignore
+    system_prompt_expander: Adw.ExpanderRow = Gtk.Template.Child()  # type: ignore
+    system_prompt_entry: Adw.EntryRow = Gtk.Template.Child()  # type: ignore
 
     def __init__(self, scope: str, dialog: Adw.PreferencesDialog, window: DialectWindow, **kwargs):
         super().__init__(**kwargs)
@@ -57,10 +62,13 @@ class ProviderPreferences(Adw.NavigationPage):
 
             # Check what entries to show
             self._check_settings()
+            self._check_advanced_options()
 
             # Load saved values
             self.instance_entry.props.text = self.provider.instance_url
             self.api_key_entry.props.text = self.provider.api_key
+
+        self.temperature_spin.get_adjustment().connect("value-changed", self._on_temperature_changed)
 
         # Main window progress
         self.window.connect("notify::translator-loading", self._on_translator_loading)
@@ -75,6 +83,20 @@ class ProviderPreferences(Adw.NavigationPage):
         self.api_usage_group.props.visible = False
         if self.provider.supports_api_usage:
             self._load_api_usage()
+
+    def _check_advanced_options(self):
+        """Show OpenAI-compatible advanced settings when applicable."""
+        if not self.provider:
+            self.advanced_group.props.visible = False
+            return
+
+        self.advanced_group.props.visible = self.provider.name == "openai_compatible"
+        if self.provider.name != "openai_compatible":
+            return
+
+        self.model_name_entry.props.text = self.provider.settings.model_name
+        self.temperature_spin.set_value(self.provider.settings.temperature)
+        self.system_prompt_entry.props.text = self.provider.settings.system_prompt
 
     @background_task
     async def _load_api_usage(self):
@@ -209,9 +231,63 @@ class ProviderPreferences(Adw.NavigationPage):
         self.api_key_entry.remove_css_class("error")
         self.api_key_entry.props.text = self.provider.api_key
 
+    @Gtk.Template.Callback()
+    def _on_model_name_apply(self, _row):
+        """Called on self.model_name_entry::apply signal"""
+        if not self.provider or self.provider.name != "openai_compatible":
+            return
+
+        model_name = self.model_name_entry.props.text.strip()
+        if model_name:
+            self.provider.settings.model_name = model_name
+            return
+
+        self.model_name_entry.props.text = self.provider.settings.model_name
+
+    def _on_temperature_changed(self, _adjustment):
+        """Called on self.temperature_spin adjustment::value-changed signal."""
+        if not self.provider or self.provider.name != "openai_compatible":
+            return
+
+        self.provider.settings.temperature = self.temperature_spin.get_value()
+
+    @Gtk.Template.Callback()
+    def _on_system_prompt_apply(self, _row):
+        """Called on self.system_prompt_entry::apply signal"""
+        if not self.provider or self.provider.name != "openai_compatible":
+            return
+
+        custom_prompt = self.system_prompt_entry.props.text
+        self.provider.settings.system_prompt = custom_prompt
+
+        missing = [
+            placeholder
+            for placeholder in ("{source_lang}", "{target_lang}")
+            if placeholder not in custom_prompt
+        ]
+        if custom_prompt and missing:
+            placeholders = ", ".join(missing)
+            toast = Adw.Toast(
+                title=_("Prompt missing {placeholders}; language context will be appended automatically").format(
+                    placeholders=placeholders,
+                )
+            )
+            self.dialog.add_toast(toast)
+
+    @Gtk.Template.Callback()
+    def _on_reset_system_prompt(self, _button):
+        """Called on system_prompt_reset::clicked signal"""
+        if not self.provider or self.provider.name != "openai_compatible":
+            return
+
+        self.provider.settings.system_prompt = ""
+        self.system_prompt_entry.props.text = ""
+        self.system_prompt_entry.remove_css_class("error")
+
     def _on_translator_loading(self, window: DialectWindow, _value):
         self.page.props.sensitive = not window.translator_loading
 
         if not window.translator_loading:
             self.provider = self.window.provider[self.scope]
             self._check_settings()
+            self._check_advanced_options()
