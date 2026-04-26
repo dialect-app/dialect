@@ -74,6 +74,20 @@
     </key>
   </schema>
 
+  <!-- OpenAI-compatible translator specific settings -->
+  <schema id="@app-id@.openai-translator" extends="@app-id@.translator">
+    <key type="s" name="model-name">
+      <default>"gpt-4o-mini"</default>
+    </key>
+    <key type="s" name="system-prompt">
+      <default>""</default>
+    </key>
+    <key type="d" name="temperature">
+      <default>0.3</default>
+      <range min="0.0" max="2.0"/>
+    </key>
+  </schema>
+
   <!-- TTS list schema -->
   <schema id="@app-id@.TTSList" extends="@app-id@.SettingsList">
     <override name="active">"google"</override>
