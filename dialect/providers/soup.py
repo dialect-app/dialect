@@ -7,7 +7,7 @@ import logging
 from asyncio import sleep
 from typing import Any
 
-from gi.repository import GLib, Soup
+from gi.repository import Gio, GLib, Soup
 
 from dialect.providers.base import BaseProvider
 from dialect.providers.errors import RequestError
@@ -80,30 +80,32 @@ class SoupProvider(BaseProvider):
 
         return message  # type: ignore
 
-    async def send_and_read(self, message: Soup.Message) -> bytes | None:
+    async def send_and_read(self, message: Soup.Message, cancellable: Gio.Cancellable | None = None) -> bytes | None:
         """
         Helper method for Soup's send_and_read_async.
 
         Args:
             message: Message to send.
+            cancellable: Optional cancellable used to abort the request.
 
         Returns:
             The bytes of the response or None.
         """
-        response: GLib.Bytes = await Session.get().send_and_read_async(message, 0)  # type: ignore
+        response: GLib.Bytes = await Session.get().send_and_read_async(message, 0, cancellable)  # type: ignore
         return response.get_data()
 
-    async def send_and_read_json(self, message: Soup.Message) -> Any:
+    async def send_and_read_json(self, message: Soup.Message, cancellable: Gio.Cancellable | None = None) -> Any:
         """
         Like ``SoupProvider.send_and_read`` but returns JSON parsed.
 
         Args:
             message: Message to send.
+            cancellable: Optional cancellable used to abort the request.
 
         Returns:
             The JSON of the response deserialized to a python object.
         """
-        response = await self.send_and_read(message)
+        response = await self.send_and_read(message, cancellable)
         return json.loads(response) if response else {}
 
     def check_known_errors(self, status: Soup.Status, data: Any) -> None:
@@ -122,6 +124,7 @@ class SoupProvider(BaseProvider):
         message: Soup.Message,
         check_common: bool = True,
         return_json: bool = True,
+        cancellable: Gio.Cancellable | None = None,
     ) -> Any:
         """
         Helper mixing ``SoupProvider.send_and_read``, ``SoupProvider.send_and_read_json``
@@ -135,6 +138,7 @@ class SoupProvider(BaseProvider):
             message: Message to send.
             check_common: If response data should be checked for errors using check_known_errors.
             return_json: If the response should be parsed as JSON.
+            cancellable: Optional cancellable used to abort the request.
 
         Returns:
             The JSON deserialized to a python object or bytes if ``json`` is ``False``.
@@ -142,9 +146,9 @@ class SoupProvider(BaseProvider):
 
         async def send_and_read() -> Any:
             if return_json:
-                return await self.send_and_read_json(message)
+                return await self.send_and_read_json(message, cancellable)
             else:
-                return await self.send_and_read(message)
+                return await self.send_and_read(message, cancellable)
 
         try:
             response = await send_and_read()
@@ -167,6 +171,8 @@ class SoupProvider(BaseProvider):
 
             return response
         except GLib.Error as exc:
+            if exc.matches(Gio.io_error_quark(), Gio.IOErrorEnum.CANCELLED):
+                raise
             raise RequestError(exc.message)
 
     async def request(
@@ -178,6 +184,7 @@ class SoupProvider(BaseProvider):
         form: bool = False,
         check_common: bool = True,
         return_json: bool = True,
+        cancellable: Gio.Cancellable | None = None,
     ) -> Any:
         """
         Helper for regular HTTP request.
@@ -190,12 +197,13 @@ class SoupProvider(BaseProvider):
             form: If the data should be encoded as a form.
             check_common: If response data should be checked for errors using check_known_errors.
             return_json: If the response should be parsed as JSON.
+            cancellable: Optional cancellable used to abort the request.
 
         Returns:
             The JSON deserialized to a python object or bytes if ``json`` is ``False``.
         """
         message = self.create_message(method, url, data, headers, form)
-        return await self.send_and_read_and_process(message, check_common, return_json)
+        return await self.send_and_read_and_process(message, check_common, return_json, cancellable)
 
     async def get(
         self,
@@ -203,6 +211,7 @@ class SoupProvider(BaseProvider):
         headers: dict = {},
         check_common: bool = True,
         return_json: bool = True,
+        cancellable: Gio.Cancellable | None = None,
     ) -> Any:
         """
         Helper for GET HTTP request.
@@ -212,11 +221,19 @@ class SoupProvider(BaseProvider):
             headers: HTTP headers of the message.
             check_common: If response data should be checked for errors using check_known_errors.
             return_json: If the response should be parsed as JSON.
+            cancellable: Optional cancellable used to abort the request.
 
         Returns:
             The JSON deserialized to a python object or bytes if ``json`` is ``False``.
         """
-        return await self.request("GET", url, headers=headers, check_common=check_common, return_json=return_json)
+        return await self.request(
+            "GET",
+            url,
+            headers=headers,
+            check_common=check_common,
+            return_json=return_json,
+            cancellable=cancellable,
+        )
 
     async def post(
         self,
@@ -226,6 +243,7 @@ class SoupProvider(BaseProvider):
         form: bool = False,
         check_common: bool = True,
         return_json: bool = True,
+        cancellable: Gio.Cancellable | None = None,
     ) -> Any:
         """
         Helper for POST HTTP request.
@@ -237,8 +255,18 @@ class SoupProvider(BaseProvider):
             form: If the data should be encoded as a form.
             check_common: If response data should be checked for errors using check_known_errors.
             return_json: If the response should be parsed as JSON.
+            cancellable: Optional cancellable used to abort the request.
 
         Returns:
             The JSON deserialized to a python object or bytes if ``json`` is ``False``.
         """
-        return await self.request("POST", url, data, headers, form, check_common, return_json)
+        return await self.request(
+            "POST",
+            url,
+            data=data,
+            headers=headers,
+            form=form,
+            check_common=check_common,
+            return_json=return_json,
+            cancellable=cancellable,
+        )
