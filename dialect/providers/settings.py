@@ -30,8 +30,9 @@ class ProviderSettings(Gio.Settings):
     Helper class for providers settings
     """
 
-    def __init__(self, name: str, defaults: ProviderDefaults):
-        super().__init__(schema_id=f"{APP_ID}.translator", path=f"/app/drey/Dialect/translators/{name}/")
+    def __init__(self, name: str, defaults: ProviderDefaults, schema_id: str | None = None):
+        effective_schema = schema_id or f"{APP_ID}.translator"
+        super().__init__(schema_id=effective_schema, path=f"/app/drey/Dialect/translators/{name}/")
 
         self.name = name
         self.defaults = defaults  # set of per-provider defaults
@@ -110,3 +111,39 @@ class ProviderSettings(Gio.Settings):
     @dest_langs.setter
     def dest_langs(self, dest_langs: list[str]):
         self.set_strv("dest-langs", dest_langs)
+
+    @property
+    def model_name(self) -> str:
+        """Model name for OpenAI-compatible provider."""
+        try:
+            return self.get_string("model-name") or "gpt-4o-mini"
+        except GLib.Error:
+            return "gpt-4o-mini"
+
+    @model_name.setter
+    def model_name(self, value: str):
+        self.set_string("model-name", value)
+
+    @property
+    def system_prompt(self) -> str:
+        """Custom system prompt for OpenAI-compatible provider. Empty means use default."""
+        try:
+            return self.get_string("system-prompt")
+        except GLib.Error:
+            return ""
+
+    @system_prompt.setter
+    def system_prompt(self, value: str):
+        self.set_string("system-prompt", value)
+
+    @property
+    def temperature(self) -> float:
+        """Temperature for OpenAI-compatible provider."""
+        try:
+            return self.get_double("temperature")
+        except GLib.Error:
+            return 0.3
+
+    @temperature.setter
+    def temperature(self, value: float):
+        self.set_double("temperature", value)

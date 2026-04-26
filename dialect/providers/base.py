@@ -103,6 +103,8 @@ class BaseProvider:
     """ Translation language model """
     lang_comp: ProviderLangComparison = ProviderLangComparison.PLAIN
     """ Define behavior of default `cmp_langs` method """
+    settings_schema_id: str | None = None
+    """ Optional override for the provider's GSettings schema """
 
     defaults: ProviderDefaults = {
         "instance_url": "",
@@ -131,7 +133,7 @@ class BaseProvider:
         """ Here we save the translation history """
 
         # GSettings
-        self.settings = ProviderSettings(self.name, self.defaults)
+        self.settings = ProviderSettings(self.name, self.defaults, schema_id=self.settings_schema_id)
 
     """
     Providers API methods
