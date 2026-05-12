@@ -105,7 +105,11 @@ class DialectPreferencesDialog(Adw.PreferencesDialog):
         if not name:
             return False
 
-        if ProviderFeature.INSTANCES in MODULES[name].features or ProviderFeature.API_KEY in MODULES[name].features:
+        if (
+            ProviderFeature.INSTANCES in MODULES[name].features
+            or ProviderFeature.API_KEY in MODULES[name].features
+            or ProviderFeature.ENGINES in MODULES[name].features
+        ):
             return True
 
         return False

@@ -20,6 +20,7 @@ SECRETS_SCHEMA = Secret.Schema.new(
 
 class ProviderDefaults(TypedDict):
     instance_url: str
+    engine_name: str
     api_key: str
     src_langs: list[str]
     dest_langs: list[str]
@@ -46,6 +47,15 @@ class ProviderSettings(Gio.Settings):
     @instance_url.setter
     def instance_url(self, url: str):
         self.set_string("instance-url", url)
+
+    @property
+    def engine(self) -> str:
+        """Translation engine model name."""
+        return self.get_string("engine-name") or self.defaults["engine_name"]
+
+    @engine.setter
+    def engine(self, name: str):
+        self.set_string("engine-name", name)
 
     @property
     def api_key(self) -> str:

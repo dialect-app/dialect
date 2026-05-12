@@ -24,6 +24,7 @@ class Provider(SoupProvider):
 
     defaults = {
         "instance_url": "",
+        "engine_name": "",
         "api_key": "",
         "src_langs": ["en", "fr", "es", "de"],
         "dest_langs": ["fr", "es", "de", "en-US"],

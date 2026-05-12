@@ -48,6 +48,37 @@ template $ProviderPreferences : Adw.NavigationPage {
           }
         }
 
+        Adw.EntryRow engine_entry {
+          title: _("Model name");
+          tooltip-text: _("Enter the name of the translation engine model.");
+          show-apply-button: true;
+
+          apply => $_on_engine_apply();
+          notify::text => $_on_engine_changed();
+
+          Stack engine_stack {
+            StackPage {
+              name: "reset";
+              child:  Button engine_reset {
+                tooltip-text: _("Reset to Default");
+                icon-name: "view-refresh-symbolic";
+                valign: center;
+
+                clicked => $_on_reset_engine();
+
+                styles ["flat"]
+              };
+            }
+
+            StackPage {
+              name: "spinner";
+              child: Adw.Spinner {
+                valign: center;
+              };
+            }
+          }
+        }
+
         Adw.PasswordEntryRow api_key_entry {
           title: _("API Key");
           tooltip-text: _("Enter an API Key for the Provider.");

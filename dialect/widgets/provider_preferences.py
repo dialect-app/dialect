@@ -33,6 +33,9 @@ class ProviderPreferences(Adw.NavigationPage):
     instance_entry: Adw.EntryRow = Gtk.Template.Child()  # type: ignore
     instance_stack: Gtk.Stack = Gtk.Template.Child()  # type: ignore
     instance_reset: Gtk.Button = Gtk.Template.Child()  # type: ignore
+    engine_entry: Adw.EntryRow = Gtk.Template.Child()  # type: ignore
+    engine_stack: Gtk.Stack = Gtk.Template.Child()  # type: ignore
+    engine_reset: Gtk.Button = Gtk.Template.Child()  # type: ignore
     api_key_entry: Adw.PasswordEntryRow = Gtk.Template.Child()  # type: ignore
     api_key_stack: Gtk.Stack = Gtk.Template.Child()  # type: ignore
     api_key_reset: Gtk.Button = Gtk.Template.Child()  # type: ignore
@@ -60,6 +63,7 @@ class ProviderPreferences(Adw.NavigationPage):
 
             # Load saved values
             self.instance_entry.props.text = self.provider.instance_url
+            self.engine_entry.props.text = self.provider.engine
             self.api_key_entry.props.text = self.provider.api_key
 
         # Main window progress
@@ -70,6 +74,7 @@ class ProviderPreferences(Adw.NavigationPage):
             return
 
         self.instance_entry.props.visible = self.provider.supports_instances
+        self.engine_entry.props.visible = self.provider.supports_engines
         self.api_key_entry.props.visible = self.provider.supports_api_key
 
         self.api_usage_group.props.visible = False
@@ -160,6 +165,63 @@ class ProviderPreferences(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     @background_task
+    async def _on_engine_apply(self, _row):
+        """Called on self.engine_entry::apply signal"""
+        if not self.provider:
+            return
+
+        old_value = self.provider.engine
+        new_value = self.engine_entry.props.text.strip()
+
+        if new_value != old_value:
+            self.engine_entry.props.sensitive = False
+            self.engine_stack.props.visible_child_name = "spinner"
+
+            try:
+                if await self.provider.validate_engine(new_value):
+                    self.provider.engine = new_value
+                    self.engine_entry.remove_css_class("error")
+                    self.engine_entry.props.text = self.provider.engine
+                else:
+                    self.engine_entry.add_css_class("error")
+                    error_text = _('Model "{name}" is not available on this instance')
+                    error_text = error_text.format(name=new_value)
+                    toast = Adw.Toast(title=error_text)
+                    self.dialog.add_toast(toast)
+            except RequestError as exc:
+                logging.error(exc)
+                toast = Adw.Toast(title=_("Failed validating engine, check for network issues"))
+                self.dialog.add_toast(toast)
+            finally:
+                self.engine_entry.props.sensitive = True
+                self.engine_stack.props.visible_child_name = "reset"
+        else:
+            self.engine_entry.remove_css_class("error")
+
+    @Gtk.Template.Callback()
+    def _on_engine_changed(self, _entry, _pspec):
+        """Called on self.engine_entry::notify::text signal"""
+        if not self.provider:
+            return
+
+        if self.engine_entry.props.text == self.provider.engine:
+            self.engine_entry.props.show_apply_button = False
+        elif not self.engine_entry.props.show_apply_button:
+            self.engine_entry.props.show_apply_button = True
+
+    @Gtk.Template.Callback()
+    def _on_reset_engine(self, _button):
+        if not self.provider:
+            return
+
+        if self.provider.engine != self.provider.defaults["engine_name"]:
+            self.provider.reset_engine()
+
+        self.engine_entry.remove_css_class("error")
+        self.engine_entry.props.text = self.provider.engine
+
+    @Gtk.Template.Callback()
+    @background_task
     async def _on_api_key_apply(self, _row):
         """Called on self.api_key_entry::apply signal"""
         if not self.provider:
@@ -172,6 +234,7 @@ class ProviderPreferences(Adw.NavigationPage):
         if self.new_api_key != old_value:
             # Progress feedback
             self.instance_entry.props.sensitive = False
+            self.engine_entry.props.sensitive = False
             self.api_key_entry.props.sensitive = False
             self.api_key_stack.props.visible_child_name = "spinner"
 
@@ -192,6 +255,7 @@ class ProviderPreferences(Adw.NavigationPage):
                 self.dialog.add_toast(toast)
             finally:
                 self.instance_entry.props.sensitive = True
+                self.engine_entry.props.sensitive = True
                 self.api_key_entry.props.sensitive = True
                 self.api_key_stack.props.visible_child_name = "reset"
         else:

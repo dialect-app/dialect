@@ -20,6 +20,7 @@ from dialect.providers import (
     APIKeyRequired,
     BaseProvider,
     ProviderError,
+    ProviderFeature,
     RequestError,
     Translation,
     TranslationRequest,
@@ -319,6 +320,9 @@ class DialectWindow(Adw.ApplicationWindow):
         # Connect to provider settings changes
         self.provider["trans"].settings.connect(
             "changed::instance-url", self._on_provider_changed, self.provider["trans"].name
+        )
+        self.provider["trans"].settings.connect(
+            "changed::engine-name", self._on_provider_changed, self.provider["trans"].name
         )
         self.provider["trans"].settings.connect(
             "changed::api-key", self._on_provider_changed, self.provider["trans"].name
@@ -1163,7 +1167,15 @@ class DialectWindow(Adw.ApplicationWindow):
             self.translation_loading = True
 
             try:
-                translation = await self.provider["trans"].translate(request)
+                if ProviderFeature.STREAMING in self.provider["trans"].features:
+                    self.dest_buffer.props.text = ""
+                    parts = []
+                    async for token in self.provider["trans"].stream_translate(request):
+                        parts.append(token)
+                        self.dest_buffer.props.text = "".join(parts)
+                    translation = Translation("".join(parts), request)
+                else:
+                    translation = await self.provider["trans"].translate(request)
 
                 if translation.detected and self.src_lang_selector.selected == "auto":
                     if Settings.get().src_auto:
@@ -1174,7 +1186,8 @@ class DialectWindow(Adw.ApplicationWindow):
                     else:
                         self.src_lang_selector.selected = translation.detected
 
-                self.dest_buffer.props.text = translation.text
+                if ProviderFeature.STREAMING not in self.provider["trans"].features:
+                    self.dest_buffer.props.text = translation.text
 
                 # Finally, translation is saved in history
                 self.add_history_entry(translation)

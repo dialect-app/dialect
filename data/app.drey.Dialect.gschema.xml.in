@@ -69,6 +69,9 @@
     <key type="s" name="instance-url">
         <default>""</default>
     </key>
+    <key type="s" name="engine-name">
+        <default>""</default>
+    </key>
     <key type="s" name="api-key">
         <default>""</default>
     </key>
