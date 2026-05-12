@@ -25,7 +25,6 @@ from dialect.providers import (
     TranslationRequest,
 )
 from dialect.settings import Settings
-from dialect.shortcuts import DialectShortcutsWindow
 from dialect.utils import find_item_match, first_exclude
 from dialect.widgets import LangSelector, SpeechButton, TextView, ThemeSwitcher
 
@@ -222,7 +221,6 @@ class DialectWindow(Adw.ApplicationWindow):
         self.setup_selectors()
         self.setup_translation()
         self.setup_spell_checking()
-        self.set_help_overlay(DialectShortcutsWindow())
 
         # Load translator
         self.load_translator()

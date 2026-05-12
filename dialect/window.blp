@@ -27,7 +27,7 @@ menu app-menu {
 
     item {
       label: _("Keyboard Shortcuts");
-      action: "win.show-help-overlay";
+      action: "app.shortcuts";
     }
 
     item {
@@ -37,17 +37,17 @@ menu app-menu {
   }
 }
 
-template $DialectWindow : Adw.ApplicationWindow {
+template $DialectWindow: Adw.ApplicationWindow {
   default-width: 800;
   default-height: 300;
   width-request: 360;
   height-request: 320;
   focus-widget: src_text;
-
   notify::is-active => $_on_is_active_changed();
 
   Adw.Breakpoint {
     condition ("max-width: 680px")
+
     setters {
       multi_layout.layout-name: "mobile";
       error_buttons.orientation: vertical;
@@ -62,6 +62,7 @@ template $DialectWindow : Adw.ApplicationWindow {
 
     StackPage {
       name: "loading";
+
       child: WindowHandle {
         Adw.StatusPage loading_page {
           paintable: Adw.SpinnerPaintable {
@@ -77,8 +78,8 @@ template $DialectWindow : Adw.ApplicationWindow {
 
     StackPage {
       name: "error";
-      child: Adw.ToolbarView {
 
+      child: Adw.ToolbarView {
         [top]
         Adw.HeaderBar {}
 
@@ -116,8 +117,8 @@ template $DialectWindow : Adw.ApplicationWindow {
 
     StackPage {
       name: "api-key";
-      child: Adw.ToolbarView {
 
+      child: Adw.ToolbarView {
         [top]
         Adw.HeaderBar {}
 
@@ -158,22 +159,22 @@ template $DialectWindow : Adw.ApplicationWindow {
     /* Translation View */
     StackPage {
       name: "translate";
+
       child: Adw.ToastOverlay toast_overlay {
         vexpand: true;
 
         child: Adw.MultiLayoutView multi_layout {
-
           /* Desktop Layout */
           Adw.Layout {
             name: "desktop";
-            content: Adw.ToolbarView {
 
+            content: Adw.ToolbarView {
               [top]
               Adw.HeaderBar {
                 centering-policy: strict;
 
                 title-widget: Adw.LayoutSlot {
-                    id: "langs-selector";
+                  id: "langs-selector";
                 };
 
                 Adw.LayoutSlot {
@@ -199,10 +200,10 @@ template $DialectWindow : Adw.ApplicationWindow {
           /* Mobile Layout */
           Adw.Layout {
             name: "mobile";
+
             content: Adw.ToolbarView {
               [top]
               Adw.HeaderBar {
-
                 Adw.LayoutSlot {
                   id: "back-btn";
                 }
@@ -224,7 +225,6 @@ template $DialectWindow : Adw.ApplicationWindow {
               [bottom]
               Adw.LayoutSlot {
                 id: "langs-selector";
-
                 halign: center;
 
                 styles [
@@ -235,6 +235,7 @@ template $DialectWindow : Adw.ApplicationWindow {
           }
 
           /* Menu */
+
           [menu]
           MenuButton menu_btn {
             menu-model: app-menu;
@@ -244,6 +245,7 @@ template $DialectWindow : Adw.ApplicationWindow {
           }
 
           /* Nav back */
+
           [back-btn]
           Button return_btn {
             action-name: "win.back";
@@ -252,6 +254,7 @@ template $DialectWindow : Adw.ApplicationWindow {
           }
 
           /* Nav forward */
+
           [forward-btn]
           Button forward_btn {
             action-name: "win.forward";
@@ -260,6 +263,7 @@ template $DialectWindow : Adw.ApplicationWindow {
           }
 
           /* Languages Selector */
+
           [langs-selector]
           Box langs_button_box {
             spacing: 6;
@@ -284,6 +288,7 @@ template $DialectWindow : Adw.ApplicationWindow {
           }
 
           /* Translation Booxes */
+
           [translation]
           Box translator_box {
             vexpand: true;
@@ -311,12 +316,11 @@ template $DialectWindow : Adw.ApplicationWindow {
                   right-margin: 9;
                   top-margin: 9;
                   bottom-margin: 9;
-
                   activate => $_on_src_activated();
                 }
 
                 styles [
-                  "translation-scrolled"
+                  "translation-scrolled",
                 ]
               }
 
@@ -340,7 +344,7 @@ template $DialectWindow : Adw.ApplicationWindow {
 
                   styles [
                     "translation-scrolled",
-                    "top-undershoot"
+                    "top-undershoot",
                   ]
                 }
               }
@@ -363,13 +367,12 @@ template $DialectWindow : Adw.ApplicationWindow {
                     can-focus: false;
                     wrap: true;
                     wrap-mode: word_char;
-
                     activate-link => $_on_mistakes_clicked();
                   }
 
                   styles [
                     "card",
-                    "mistakes"
+                    "mistakes",
                   ]
                 }
               }
@@ -405,7 +408,7 @@ template $DialectWindow : Adw.ApplicationWindow {
                   styles [
                     "dim-label",
                     "caption-heading",
-                    "numeric"
+                    "numeric",
                   ]
                 }
 
@@ -445,7 +448,7 @@ template $DialectWindow : Adw.ApplicationWindow {
                 }
 
                 styles [
-                  "translation-scrolled"
+                  "translation-scrolled",
                 ]
               }
 
@@ -469,7 +472,7 @@ template $DialectWindow : Adw.ApplicationWindow {
 
                   styles [
                     "translation-scrolled",
-                    "top-undershoot"
+                    "top-undershoot",
                   ]
                 }
               }
@@ -479,6 +482,7 @@ template $DialectWindow : Adw.ApplicationWindow {
 
                 StackPage {
                   name: "default";
+
                   child: Box {
                     Adw.Spinner trans_spinner {
                       tooltip-text: _("Translating…");
@@ -522,6 +526,7 @@ template $DialectWindow : Adw.ApplicationWindow {
 
                 StackPage {
                   name: "edit";
+
                   child: Box {
                     Button cancel_btn {
                       action-name: "win.suggest-cancel";
@@ -559,10 +564,20 @@ template $DialectWindow : Adw.ApplicationWindow {
 
 Gtk.SizeGroup {
   mode: both;
-  widgets [src_lang_selector, dest_lang_selector]
+
+  widgets [
+    src_lang_selector,
+    dest_lang_selector,
+  ]
 }
 
 Gtk.SizeGroup mobile_buttons_size {
   mode: none;
-  widgets [error_retry_btn, error_open_prefs_btn, rmv_key_btn, key_open_prefs_btn]
+
+  widgets [
+    error_retry_btn,
+    error_open_prefs_btn,
+    rmv_key_btn,
+    key_open_prefs_btn,
+  ]
 }
