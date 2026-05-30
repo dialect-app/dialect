@@ -247,7 +247,7 @@ class Provider(LocalProvider, SoupProvider):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.chars_limit = 2000
+        self.chars_limit = 5000
 
     async def init_trans(self):
         langs_url = self.format_url(
